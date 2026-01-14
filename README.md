@@ -1,2 +1,44 @@
-# alqurmani-x-
- The Central Core for Al-Karmani X Ecosystem - Secure Infrastructure. 
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عالم القرماني اكس | السيادة الرقمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold-1: #d4af37; --gold-2: #f1d592; --gold-3: #aa8c2e; --bg-dark: #050505; }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Cairo', sans-serif; margin: 0; overflow-x: hidden; }
+        .currency-bar { width: 100%; background: rgba(212, 175, 55, 0.1); border-bottom: 1px solid var(--gold-1); padding: 8px 0; overflow: hidden; position: sticky; top: 0; z-index: 1000; }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 25s linear infinite; color: var(--gold-1); font-weight: bold; font-size: 1rem; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .sidebar { height: 100%; width: 260px; position: fixed; right: 0; top: 0; background: #0a0a0a; border-left: 2px solid var(--gold-1); padding-top: 80px; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
+        .sidebar a { padding: 18px 25px; text-decoration: none; font-size: 17px; display: block; font-weight: 700; transition: 0.5s; margin-bottom: 5px; border-right: 4px solid transparent; animation: breathe 3s infinite ease-in-out; }
+        @keyframes breathe { 0% { color: var(--gold-3); border-right-color: var(--gold-3); } 50% { color: var(--gold-1); border-right-color: var(--gold-1); } 100% { color: var(--gold-2); border-right-color: var(--gold-2); } }
+        .main-content { margin-right: 260px; padding: 60px 20px; text-align: center; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+        .hero-title { font-size: 4rem; color: var(--gold-1); text-transform: uppercase; letter-spacing: 4px; margin-bottom: 0; text-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        .btn-sovereign { background: linear-gradient(45deg, var(--gold-3), var(--gold-1)); color: black; padding: 22px 50px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 1.6rem; box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); transition: 0.4s; display: inline-block; margin-top: 50px; border: 2px solid white; }
+    </style>
+</head>
+<body>
+    <div class="currency-bar">
+        <div class="ticker">🪙 القرماني كوين (ALX): 1.42$ ↑ (+12.5%) &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 🚀 تم تفعيل بروتوكول السيادة بنجاح &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 🔥 تم حرق 10,000 وحدة اليوم</div>
+    </div>
+    <div class="sidebar">
+        <a href="#">📜 ميثاق القرماني اكس</a>
+        <a href="#">🪙 عملة القرماني كوين</a>
+        <a href="#">📚 مدوناتنا</a>
+        <a href="#">💼 خدماتنا</a>
+        <a href="#">🛒 متجرنا</a>
+        <a href="#">🛠️ أدواتنا المجانية</a>
+        <a href="#">🔗 اختصار الروابط</a>
+        <a href="#">📢 أعلن لدينا</a>
+        <a href="#">📞 تواصل معنا</a>
+    </div>
+    <div class="main-content">
+        <h1 class="hero-title">عالم القرماني اكس</h1>
+        <p style="font-size: 1.5rem; color: #888;">حيث تبدأ السيادة المالية والتقنية</p>
+        <a href="https://www.effectivegatecpm.com/x0jg9narr?key=74b1754dfbe0f8a140cf8ad99f88a185" target="_blank" class="btn-sovereign">انضم إلى عالمنا</a>
+        <footer style="margin-top: auto; color: #333; font-size: 0.9rem;">&copy; 2026 AL-KARMANI X WORLD</footer>
+    </div>
+</body>
+</html>
