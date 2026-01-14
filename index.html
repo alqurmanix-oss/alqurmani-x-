@@ -6,39 +6,78 @@
     <title>عالم القرماني اكس | السيادة الرقمية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold-1: #d4af37; --gold-2: #f1d592; --gold-3: #aa8c2e; --bg-dark: #050505; }
-        body { background-color: var(--bg-dark); color: white; font-family: 'Cairo', sans-serif; margin: 0; overflow-x: hidden; }
-        .currency-bar { width: 100%; background: rgba(212, 175, 55, 0.1); border-bottom: 1px solid var(--gold-1); padding: 8px 0; overflow: hidden; position: sticky; top: 0; z-index: 1000; }
-        .ticker { display: inline-block; white-space: nowrap; animation: ticker 25s linear infinite; color: var(--gold-1); font-weight: bold; font-size: 1rem; }
+        :root { --gold: #d4af37; --bg: #050505; }
+        body { background-color: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        /* أزرار التحكم */
+        .menu-btn { position: fixed; right: 20px; top: 20px; font-size: 24px; color: var(--gold); cursor: pointer; z-index: 1001; background: rgba(0,0,0,0.8); padding: 8px 15px; border-radius: 50px; border: 1px solid var(--gold); }
+        .audio-status { position: fixed; left: 20px; top: 20px; font-size: 14px; color: var(--gold); z-index: 1001; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; border: 1px solid #333; }
+
+        /* القائمة الجانبية */
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 1002; top: 0; right: 0; background-color: #0a0a0a; overflow-x: hidden; transition: 0.5s; padding-top: 60px; border-left: 0px solid var(--gold); }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 18px; color: var(--gold); display: block; transition: 0.3s; white-space: nowrap; border-bottom: 1px solid #1a1a1a; }
+        .sidebar .close-btn { position: absolute; top: 10px; left: 25px; font-size: 36px; color: white; }
+
+        /* المحتوى */
+        .main-content { padding: 40px 20px; text-align: center; }
+        .hero-title { font-size: 2.8rem; color: var(--gold); margin-top: 60px; text-shadow: 0 0 20px rgba(212, 175, 55, 0.6); animation: glow 2s infinite alternate; }
+        @keyframes glow { from { text-shadow: 0 0 10px var(--gold); } to { text-shadow: 0 0 30px #fff; } }
+        
+        .btn-earn { background: linear-gradient(45deg, #aa8c2e, #d4af37); color: black; padding: 20px 40px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 1.4rem; display: inline-block; margin-top: 40px; box-shadow: 0 0 25px var(--gold); transition: 0.3s; }
+        .btn-earn:hover { transform: scale(1.05); background: white; }
+
+        .ticker-wrap { width: 100%; background: rgba(212, 175, 55, 0.1); border-bottom: 1px solid var(--gold); padding: 10px 0; margin-top: 20px; }
+        .ticker { white-space: nowrap; animation: ticker 25s linear infinite; display: inline-block; color: var(--gold); }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        .sidebar { height: 100%; width: 260px; position: fixed; right: 0; top: 0; background: #0a0a0a; border-left: 2px solid var(--gold-1); padding-top: 80px; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
-        .sidebar a { padding: 18px 25px; text-decoration: none; font-size: 17px; display: block; font-weight: 700; transition: 0.5s; margin-bottom: 5px; border-right: 4px solid transparent; animation: breathe 3s infinite ease-in-out; }
-        @keyframes breathe { 0% { color: var(--gold-3); border-right-color: var(--gold-3); } 50% { color: var(--gold-1); border-right-color: var(--gold-1); } 100% { color: var(--gold-2); border-right-color: var(--gold-2); } }
-        .main-content { margin-right: 260px; padding: 60px 20px; text-align: center; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
-        .hero-title { font-size: 4rem; color: var(--gold-1); text-transform: uppercase; letter-spacing: 4px; margin-bottom: 0; text-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
-        .btn-sovereign { background: linear-gradient(45deg, var(--gold-3), var(--gold-1)); color: black; padding: 22px 50px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 1.6rem; box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); transition: 0.4s; display: inline-block; margin-top: 50px; border: 2px solid white; }
     </style>
 </head>
-<body>
-    <div class="currency-bar">
-        <div class="ticker">🪙 القرماني كوين (ALX): 1.42$ ↑ (+12.5%) &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 🚀 تم تفعيل بروتوكول السيادة بنجاح &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 🔥 تم حرق 10,000 وحدة اليوم</div>
-    </div>
-    <div class="sidebar">
-        <a href="#">📜 ميثاق القرماني اكس</a>
-        <a href="#">🪙 عملة القرماني كوين</a>
-        <a href="#">📚 مدوناتنا</a>
+<body onclick="playWelcomeVoice()">
+
+    <div class="menu-btn" onclick="openNav()">☰ القائمة</div>
+    <div class="audio-status" id="audioStat">🔊 اضغط هنا لتفعيل الصوت</div>
+
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">×</a>
+        <a href="#">📜 ميثاق القرماني</a>
+        <a href="#">🪙 القرماني كوين</a>
         <a href="#">💼 خدماتنا</a>
-        <a href="#">🛒 متجرنا</a>
-        <a href="#">🛠️ أدواتنا المجانية</a>
-        <a href="#">🔗 اختصار الروابط</a>
-        <a href="#">📢 أعلن لدينا</a>
-        <a href="#">📞 تواصل معنا</a>
+        <a href="https://www.effectivegatecpm.com/x0jg9narr?key=74b1754dfbe0f8a140cf8ad99f88a185" target="_blank">💰 ابدأ الربح الآن</a>
     </div>
+
     <div class="main-content">
+        <div class="ticker-wrap"><div class="ticker">🪙 ALX Coin: 1.42$ ↑ &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 🚀 أهلاً بك في عالم القرماني إكس.. السيادة لك</div></div>
+        
         <h1 class="hero-title">عالم القرماني اكس</h1>
-        <p style="font-size: 1.5rem; color: #888;">حيث تبدأ السيادة المالية والتقنية</p>
-        <a href="https://www.effectivegatecpm.com/x0jg9narr?key=74b1754dfbe0f8a140cf8ad99f88a185" target="_blank" class="btn-sovereign">انضم إلى عالمنا</a>
-        <footer style="margin-top: auto; color: #333; font-size: 0.9rem;">&copy; 2026 AL-KARMANI X WORLD</footer>
+        <p style="color: #aaa; font-size: 1.2rem;">حيث تصنع الثروة والتقنية معاً</p>
+
+        <a href="https://www.effectivegatecpm.com/x0jg9narr?key=74b1754dfbe0f8a140cf8ad99f88a185" target="_blank" class="btn-earn">انضم إلينا الآن</a>
+        
+        <div style="margin-top: 50px;">
+             <p style="color: var(--gold); font-weight: bold;">مرحباً بك يا بطل.. نحن بانتظارك</p>
+        </div>
     </div>
+
+    <script>
+        // دالة فتح وإغلاق القائمة
+        function openNav() { document.getElementById("mySidebar").style.width = "260px"; document.getElementById("mySidebar").style.borderLeft = "2px solid #d4af37"; }
+        function closeNav() { document.getElementById("mySidebar").style.width = "0"; document.getElementById("mySidebar").style.borderLeft = "0"; }
+
+        // دالة الصوت الترحيبي
+        let hasPlayed = false;
+        function playWelcomeVoice() {
+            if (!hasPlayed) {
+                const msg = new SpeechSynthesisUtterance();
+                msg.text = "مرحباً بكم في عالم القرماني إكس.. حيث تبدأ سيادتُكم الرقمية والمالية.. نحن سعداء بوجودك معنا يا بطل";
+                msg.lang = 'ar-SA'; // لغة عربية سعودية (الأقرب لصوت البنت)
+                msg.rate = 0.9; // سرعة الصوت
+                msg.pitch = 1.2; // درجة الصوت (لجعلها أنثوية أكثر)
+                window.speechSynthesis.speak(msg);
+                
+                hasPlayed = true;
+                document.getElementById("audioStat").innerHTML = "✅ تم تفعيل الترحيب";
+                setTimeout(() => { document.getElementById("audioStat").style.display = 'none'; }, 3000);
+            }
+        }
+    </script>
 </body>
 </html>
