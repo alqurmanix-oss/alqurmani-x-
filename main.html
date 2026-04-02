@@ -1,690 +1,156 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AlQurmanix — الواجهة الرئيسية</title>
-  <meta name="robots" content="noindex,nofollow" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Scheherazade+New:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
-  
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+"use client";
 
-    // ── Firebase Config ──
-    const firebaseConfig = {
-      apiKey: "AIzaSyCoM-Aqq7VwTDx5ZeHmIpHM4sm2XM0WdKw",
-      authDomain: "alqurmanix-15b92.firebaseapp.com",
-      projectId: "alqurmanix-15b92",
-      storageBucket: "alqurmanix-15b92.firebasestorage.app",
-      messagingSenderId: "477352026568",
-      appId: "1:477352026568:web:49f90cd3fc74b6948ba0fd",
-      measurementId: "G-VJF36N1MCD"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  FiMenu, FiX, FiHome, FiSettings, FiGlobe, 
+  FiShield, FiDatabase, FiLogOut, FiBarChart2 
+} from "react-icons/fi";
 
-    // ── Redirect to index ──
-    function redirectToIndex() {
-      sessionStorage.removeItem("aqx_auth_entry");
-      window.location.replace("./index.html");
-    }
+/**
+ * AlQurmanix Dashboard - Ultra Luxury Edition
+ * Professional, Full-Scale, Legendary Quality.
+ */
 
-    // ── History Guard — block back/forward manipulation ──
-    window.history.pushState(null, "", window.location.href);
-    window.addEventListener("popstate", () => {
-      if (!sessionStorage.getItem("aqx_auth_entry")) redirectToIndex();
-      else window.history.pushState(null, "", window.location.href);
-    });
+const AlQurmanixDashboard = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-    // ── Auth Guard (الدخول اللحظي الصارم) ──
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { redirectToIndex(); return; }
-      if (!user.emailVerified) { await signOut(auth); redirectToIndex(); return; }
+  // تحديث الساعة الملكية
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-      // 1. إظهار الواجهة فوراً للمستخدم (دخول سريع لحظي)
-      const loader = document.getElementById("loading-screen");
-      const dashboard = document.getElementById("dashboard");
+  const menuItems = [
+    { icon: <FiHome />, label: "الرئيسية", active: true },
+    { icon: <FiBarChart2 />, label: "الإحصائيات" },
+    { icon: <FiGlobe />, label: "المواقع الدولية" },
+    { icon: <FiDatabase />, label: "قاعدة البيانات" },
+    { icon: <FiShield />, label: "الأمن السيبراني" },
+    { icon: <FiSettings />, label: "الإعدادات" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-[#D4AF37] overflow-hidden font-['Scheherazade_New'] selection:bg-[#D4AF37] selection:text-black">
       
-      if(loader && dashboard) {
-        loader.style.opacity = "0";
-        setTimeout(() => {
-          loader.style.display = "none";
-          dashboard.style.display = "grid"; // تفعيل شبكة التصميم
-        }, 300);
-      }
-
-      // وضع اسم المستخدم في الواجهة
-      const userNameEl = document.getElementById("user-name");
-      if(userNameEl) userNameEl.textContent = user.displayName || user.email.split("@")[0];
-
-      // 2. تحديث القاعدة في الخلفية بصمت تام وبنفس الصرامة
-      try {
-        sessionStorage.setItem("aqx_auth_entry", "true");
-        const userRef = doc(db, "users", user.uid);
-        updateDoc(userRef, { lastActivity: serverTimestamp() }).catch(e => console.warn("Firestore Logic Executed"));
-      } catch (e) {
-        console.warn("DB Auth Handled");
-      }
-    });
-
-    // ── Make signOut available globally ──
-    window._aqxSignOut = async () => {
-      sessionStorage.removeItem("aqx_auth_entry");
-      await signOut(auth);
-      redirectToIndex();
-    };
-  </script>
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --gold: #d4af37; --gold2: #f0d060; --gold3: #c8961e;
-      --bg-deep: #050510; --bg-mid: #0a0a1f; --bg-card: #0f0f2a;
-      --bg-glass: rgba(212,175,55,0.04);
-      --border-gold: rgba(212,175,55,0.25);
-      --text-primary: #f5e6b8; --text-muted: rgba(245,230,184,0.55);
-      --neon-green: #00ff88;
-      --sidebar-w: 280px;
-      --radius: 14px;
-      --shadow-gold: 0 0 24px rgba(212,175,55,0.18), 0 4px 32px rgba(0,0,0,0.7);
-    }
-
-    html, body { height: 100%; background: var(--bg-deep); color: var(--text-primary); font-family: 'Scheherazade New', 'Playfair Display', serif; overflow-x: hidden; }
-
-    /* ─── Loading Screen ─── */
-    #loading-screen {
-      position: fixed; inset: 0; z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
-      background: radial-gradient(ellipse at 50% 30%, #1a1020 0%, var(--bg-deep) 70%);
-      transition: opacity 0.3s ease;
-    }
-    .spinner-ring {
-      width: 72px; height: 72px; border-radius: 50%;
-      border: 3px solid var(--border-gold); border-top-color: var(--gold);
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 1.1rem; color: var(--text-muted); letter-spacing: 0.06em; }
-
-    /* ─── Main Layout ─── */
-    #dashboard {
-      display: none;
-      grid-template-columns: var(--sidebar-w) 1fr;
-      min-height: 100vh;
-      background:
-        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(212,175,55,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 90% 100%, rgba(212,175,55,0.04) 0%, transparent 60%),
-        var(--bg-deep);
-      animation: fadeIn 0.5s ease both;
-    }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    /* ─── Sidebar ─── */
-    .sidebar {
-      background: linear-gradient(180deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 100%), var(--bg-card);
-      border-left: 1px solid var(--border-gold);
-      display: flex; flex-direction: column;
-      height: 100vh; position: sticky; top: 0; overflow-y: auto;
-      padding: 20px 12px;
-      scrollbar-width: thin; scrollbar-color: rgba(212,175,55,0.2) transparent;
-    }
-
-    /* Clock */
-    .clock-block {
-      background: linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.04) 100%);
-      border: 1px solid var(--border-gold); border-radius: var(--radius);
-      padding: 14px 16px; margin-bottom: 20px; text-align: center;
-      box-shadow: var(--shadow-gold);
-    }
-    .clock-time {
-      font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; color: var(--gold);
-      letter-spacing: 0.1em; text-shadow: 0 0 12px rgba(212,175,55,0.5);
-    }
-    .clock-date { font-size: 0.74rem; color: var(--text-muted); margin-top: 6px; line-height: 1.6; }
-
-    /* Nav */
-    .nav-list { display: flex; flex-direction: column; gap: 3px; flex: 1; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      border-radius: 10px; border: 1px solid transparent;
-      background: transparent; color: var(--text-primary); cursor: pointer;
-      font-family: inherit; font-size: 0.87rem;
-      transition: all 0.22s ease; text-align: right; text-decoration: none;
-      animation: fadeInRight 0.4s ease both;
-    }
-    @keyframes fadeInRight { from { opacity:0; transform:translateX(14px); } to { opacity:1; transform:none; } }
-    .nav-item:hover {
-      background: rgba(212,175,55,0.1); border-color: var(--border-gold); color: var(--gold2);
-      transform: translateX(-4px); box-shadow: 0 0 12px rgba(212,175,55,0.15);
-    }
-    .nav-emoji { font-size: 1.1rem; flex-shrink: 0; }
-    .nav-label { flex: 1; }
-    .nav-arrow { color: var(--gold3); font-size: 1.1rem; opacity: 0.6; }
-
-    /* Logout */
-    .logout-btn {
-      margin-top: 14px; padding: 11px 16px; border-radius: var(--radius);
-      border: 1px solid rgba(255,80,80,0.3); background: rgba(255,80,80,0.06);
-      color: #ff7070; cursor: pointer; font-family: inherit; font-size: 0.88rem;
-      transition: all 0.2s ease; width: 100%;
-    }
-    .logout-btn:hover { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.6); }
-
-    /* ─── Main Content ─── */
-    .main-content { padding: 28px 36px; display: flex; flex-direction: column; gap: 30px; overflow-y: auto; min-height: 100vh; }
-
-    /* Topbar */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-bottom: 20px; border-bottom: 1px solid var(--border-gold);
-      flex-wrap: wrap; gap: 12px;
-    }
-    .topbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-
-    /* Logo */
-    .logo-text {
-      font-family: 'Cinzel Decorative', serif; font-size: 1.7rem; font-weight: 900;
-      background: linear-gradient(135deg, #f0d060 0%, #d4af37 40%, #c8961e 70%, #f0d060 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      animation: shimmerGold 3s linear infinite;
-      letter-spacing: 0.08em;
-      filter: drop-shadow(0 0 14px rgba(212,175,55,0.45));
-    }
-    @keyframes shimmerGold { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-    .logo-wrap { display: flex; flex-direction: column; }
-    .logo-under {
-      height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      animation: pulseWidth 2s ease-in-out infinite; margin-top: 3px;
-    }
-    @keyframes pulseWidth { 0%,100%{opacity:.4;transform:scaleX(.7)} 50%{opacity:1;transform:scaleX(1)} }
-
-    /* Connection */
-    .connection-badge { display: flex; align-items: center; gap: 8px; }
-    .neon-bulb {
-      width: 10px; height: 10px; border-radius: 50%; background: var(--neon-green);
-      box-shadow: 0 0 6px var(--neon-green), 0 0 14px rgba(0,255,136,0.5);
-      animation: blinkNeon 2.5s ease-in-out infinite; flex-shrink: 0;
-    }
-    @keyframes blinkNeon { 0%,100%{opacity:1;box-shadow:0 0 6px var(--neon-green),0 0 18px rgba(0,255,136,.6)} 50%{opacity:.55;box-shadow:0 0 3px var(--neon-green)} }
-    .conn-label { font-size: 0.8rem; color: var(--neon-green); letter-spacing: 0.05em; }
-
-    /* Globe */
-    .globe-wrapper { position: relative; }
-    .globe-btn { cursor: pointer; user-select: none; }
-    .globe-orb {
-      width: 42px; height: 42px; position: relative;
-      animation: rotateGlobe 12s linear infinite; transition: transform .3s;
-    }
-    .globe-btn:hover .globe-orb { transform: scale(1.15); }
-    @keyframes rotateGlobe { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    .globe-svg { width: 100%; height: 100%; }
-    .globe-flag {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; animation: counterRotate 12s linear infinite;
-    }
-    @keyframes counterRotate { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
-    .lang-dropdown {
-      position: absolute; top: 52px; left: 0;
-      background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius);
-      padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
-      z-index: 1000; min-width: 220px; box-shadow: var(--shadow-gold);
-      animation: dropIn .18s ease;
-    }
-    @keyframes dropIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
-    .lang-item {
-      display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px;
-      background: transparent; border: 1px solid transparent; color: var(--text-primary);
-      cursor: pointer; font-size: 0.82rem; font-family: inherit; transition: all .15s ease;
-    }
-    .lang-item:hover, .lang-item.active-lang { background: rgba(212,175,55,.1); border-color: var(--border-gold); color: var(--gold2); }
-    .lang-flag { font-size: 1.2rem; }
-
-    /* User Chip */
-    .user-chip {
-      display: flex; align-items: center; gap: 8px; padding: 6px 14px;
-      border-radius: 50px; border: 1px solid var(--border-gold);
-      background: rgba(212,175,55,.06); color: var(--text-primary);
-    }
-    .user-name { font-size: 0.82rem; color: var(--gold2); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    /* Welcome */
-    .welcome-strip {
-      text-align: center; padding: 20px;
-      border: 1px solid var(--border-gold); border-radius: var(--radius);
-      background: linear-gradient(135deg, rgba(212,175,55,.08) 0%, rgba(212,175,55,.02) 100%);
-      box-shadow: var(--shadow-gold);
-      animation: fadeInUp .6s ease both;
-    }
-    .welcome-text { font-size: 1.4rem; color: var(--text-muted); }
-    .welcome-brand {
-      font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; font-weight: 900;
-      background: linear-gradient(90deg, #f0d060, #d4af37, #c8961e);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
-
-    /* Gates */
-    .section-title {
-      font-family: 'Cinzel Decorative', serif; font-size: 1rem; color: var(--gold);
-      letter-spacing: .15em; text-transform: uppercase; margin-bottom: 18px; text-align: center;
-    }
-    .gates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-    .gate-card {
-      position: relative; overflow: hidden; padding: 28px 20px; border-radius: var(--radius);
-      border: 1px solid var(--border-gold);
-      background: linear-gradient(135deg, rgba(212,175,55,.1) 0%, rgba(212,175,55,.03) 100%);
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
-      cursor: pointer; font-family: inherit; color: var(--text-primary);
-      transition: all .3s ease; box-shadow: var(--shadow-gold);
-      animation: fadeInUp .5s ease both; text-decoration: none;
-    }
-    .gate-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--gold);
-      box-shadow: 0 8px 40px rgba(212,175,55,.25), 0 0 0 1px rgba(212,175,55,.3);
-      background: linear-gradient(135deg, rgba(212,175,55,.18) 0%, rgba(212,175,55,.06) 100%);
-    }
-    .gate-icon { font-size: 2.4rem; filter: drop-shadow(0 0 8px rgba(212,175,55,.4)); }
-    .gate-label { font-size: .92rem; color: var(--gold2); text-align: center; font-weight: 600; }
-    .gate-shine { position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.05) 0%,transparent 50%); pointer-events:none; }
-
-    /* Holding Banner */
-    .holding-banner {
-      border: 1px solid var(--border-gold); border-radius: var(--radius);
-      padding: 20px 28px;
-      background: linear-gradient(90deg, rgba(212,175,55,.08) 0%, rgba(212,175,55,.03) 50%, rgba(212,175,55,.08) 100%);
-      animation: bannerFloat 3s ease-in-out infinite; box-shadow: var(--shadow-gold);
-      text-align: center;
-    }
-    @keyframes bannerFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-    .holding-inner { display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; }
-    .holding-diamond { color:var(--gold); font-size:.8rem; animation:rotateDiamond 4s linear infinite; }
-    @keyframes rotateDiamond { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    .holding-text {
-      font-family: 'Cinzel Decorative', serif; font-size: .88rem; color: var(--gold2);
-      letter-spacing: .08em;
-    }
-
-    /* Hand Pointer */
-    .hand-pointer {
-      display: flex; align-items: center; gap: 14px; padding: 20px 32px;
-      border-radius: var(--radius); border: 1px solid var(--border-gold);
-      background: linear-gradient(135deg, rgba(212,175,55,.1) 0%, transparent 100%);
-      cursor: pointer; font-family: inherit; color: var(--text-primary);
-      align-self: center; width: fit-content; margin: 0 auto;
-      animation: handBounce 1.8s ease-in-out infinite;
-      transition: all .2s ease; box-shadow: var(--shadow-gold);
-      text-decoration: none;
-    }
-    @keyframes handBounce { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-6px) scale(1.03)} }
-    .hand-pointer:hover { background:rgba(212,175,55,.18); border-color:var(--gold); box-shadow:0 0 24px rgba(212,175,55,.3); }
-    .hand-emoji { font-size: 2rem; animation: pointUp 1.2s ease-in-out infinite; }
-    @keyframes pointUp { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-    .hand-label { font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--gold2); letter-spacing:.08em; }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(212,175,55,.25); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,.45); }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      #dashboard { grid-template-columns: 1fr !important; }
-      .sidebar { position: fixed; bottom: 0; left: 0; right: 0; height: auto; max-height: 50vh; overflow-y: auto; z-index: 100; border-left: none; border-top: 1px solid var(--border-gold); flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 10px; }
-      .main-content { padding: 16px; padding-bottom: 240px; }
-      .gates-grid { grid-template-columns: 1fr 1fr; }
-      .clock-block { display: none; }
-    }
-  </style>
-</head>
-<body>
-
-  <div id="loading-screen">
-    <div class="spinner-ring"></div>
-    <p class="loading-text" id="loading-msg">جارٍ التحقق من الهوية...</p>
-  </div>
-
-  <div id="dashboard">
-
-    <aside class="sidebar">
-      <div class="clock-block">
-        <div class="clock-time" id="clock-time">--:--:--</div>
-        <div class="clock-date" id="clock-date">---</div>
+      {/* خلفية سينمائية ناعمة */}
+      <div className="fixed inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#D4AF37] rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-[#8B6E23] rounded-full blur-[130px]" />
       </div>
-      <nav class="nav-list" id="nav-list"></nav>
-      <button class="logout-btn" onclick="window._aqxSignOut()">🚪 <span id="lbl-logout">تسجيل الخروج</span></button>
-    </aside>
 
-    <main class="main-content">
+      {/* القائمة الجانبية - مغلقة افتراضياً */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.aside
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed right-0 top-0 h-full w-72 bg-[#0A0A0A] border-l border-[#D4AF37]/30 z-50 backdrop-blur-xl shadow-[0_0_50px_rgba(0,0,0,0.9)]"
+          >
+            <div className="p-8 flex flex-col h-full">
+              <div className="flex justify-between items-center mb-12">
+                <h2 className="text-2xl font-bold tracking-widest uppercase font-['Cinzel_Decorative']">AlQurmanix</h2>
+                <button onClick={() => setIsSidebarOpen(false)} className="text-2xl hover:rotate-90 transition-transform">
+                  <FiX />
+                </button>
+              </div>
+              
+              <nav className="flex-1">
+                {menuItems.map((item, idx) => (
+                  <div 
+                    key={idx}
+                    className={`flex items-center gap-4 p-4 mb-2 rounded-lg cursor-pointer transition-all duration-300 border border-transparent
+                      ${item.active ? 'bg-[#D4AF37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'hover:border-[#D4AF37]/50 hover:bg-white/5'}`}
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    <span className="text-lg font-medium">{item.label}</span>
+                  </div>
+                ))}
+              </nav>
 
-      <div class="topbar">
-        <div class="logo-wrap">
-          <span class="logo-text">AlQurmanix</span>
-          <div class="logo-under"></div>
-        </div>
-        <div class="topbar-right">
-          <div class="connection-badge">
-            <span class="neon-bulb"></span>
-            <span class="conn-label" id="lbl-connected">متصل</span>
-          </div>
-          <div class="globe-wrapper" id="globe-wrapper">
-            <div class="globe-btn" id="globe-btn">
-              <div class="globe-orb">
-                <svg class="globe-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <radialGradient id="gGrad" cx="40%" cy="35%">
-                      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.9"/>
-                      <stop offset="60%" stop-color="#1a1a2e" stop-opacity="0.95"/>
-                      <stop offset="100%" stop-color="#0d0d1a"/>
-                    </radialGradient>
-                  </defs>
-                  <circle cx="30" cy="30" r="28" fill="url(#gGrad)" stroke="#d4af37" stroke-width="0.8" stroke-opacity="0.6"/>
-                  <ellipse cx="30" cy="30" rx="14" ry="28" fill="none" stroke="#d4af37" stroke-width="0.5" stroke-opacity="0.4"/>
-                  <ellipse cx="30" cy="30" rx="28" ry="8" fill="none" stroke="#d4af37" stroke-width="0.5" stroke-opacity="0.4"/>
-                  <ellipse cx="30" cy="30" rx="28" ry="16" fill="none" stroke="#d4af37" stroke-width="0.3" stroke-opacity="0.3"/>
-                </svg>
-                <span class="globe-flag" id="globe-flag">🇸🇦</span>
+              <div className="mt-auto pt-8 border-t border-[#D4AF37]/20">
+                <button className="flex items-center gap-4 text-red-500 hover:text-red-400 transition-colors">
+                  <FiLogOut /> <span>تسجيل الخروج</span>
+                </button>
               </div>
             </div>
-            <div class="lang-dropdown" id="lang-dropdown" style="display:none;"></div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* الواجهة الرئيسية */}
+      <main className="relative z-10 p-6 md:p-12">
+        
+        {/* شريط الأدوات العلوي */}
+        <header className="flex justify-between items-center mb-16">
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-4 rounded-full border border-[#D4AF37]/30 bg-white/5 hover:bg-[#D4AF37] hover:text-black transition-all shadow-lg"
+          >
+            <FiMenu className="text-2xl" />
+          </button>
+
+          <div className="text-right">
+            <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tighter bg-gradient-to-l from-[#D4AF37] via-[#F9E498] to-[#D4AF37] bg-clip-text text-transparent">
+              مرحباً، أبو عبد الله
+            </h1>
+            <p className="text-[#8B6E23] font-['Cinzel_Decorative'] tracking-[0.2em] uppercase text-sm">
+              {currentTime.toLocaleTimeString('ar-EG')} | {currentTime.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
           </div>
-          <div class="user-chip">
-            <span>👤</span>
-            <span class="user-name" id="user-name">---</span>
+        </header>
+
+        {/* كروت الإحصائيات الفاخرة */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { label: "المشاهدات اليومية", value: "5,240+", icon: <FiBarChart2 /> },
+            { label: "الحماية النشطة", value: "100%", icon: <FiShield /> },
+            { label: "المقالات المنشورة", value: "1,208", icon: <FiDatabase /> }
+          ].map((stat, i) => (
+            <motion.div 
+              whileHover={{ y: -10 }}
+              key={i}
+              className="p-8 rounded-2xl bg-gradient-to-br from-[#0F0F0F] to-[#050505] border border-[#D4AF37]/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] relative overflow-hidden group"
+            >
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-6xl">
+                {stat.icon}
+              </div>
+              <p className="text-[#8B6E23] text-sm uppercase mb-2 tracking-widest">{stat.label}</p>
+              <h3 className="text-4xl font-bold text-white">{stat.value}</h3>
+              <div className="mt-4 h-1 w-12 bg-[#D4AF37] rounded-full group-hover:w-full transition-all duration-500" />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* مساحة المحتوى المركزي */}
+        <div className="mt-12 p-12 rounded-3xl border border-[#D4AF37]/10 bg-white/[0.02] backdrop-blur-md min-h-[400px] flex flex-col items-center justify-center text-center">
+          <div className="w-24 h-24 border-2 border-[#D4AF37] rounded-full flex items-center justify-center mb-6 animate-pulse shadow-[0_0_30px_rgba(212,175,55,0.2)]">
+             <span className="font-['Cinzel_Decorative'] text-3xl font-black">Q</span>
           </div>
+          <h2 className="text-3xl font-light italic mb-4 text-[#F9E498]">"التميز ليس خياراً، بل هو بروتوكول العمل"</h2>
+          <p className="max-w-2xl text-[#8B6E23]/80 leading-relaxed text-xl">
+            نحن الآن في وضع الاستعداد الكامل. الأنظمة تعمل بكفاءة، والقواعد البيانات مؤمنة تحت تشفير AlQurmanix الخاص. بضغطة زر واحدة، نطلق الهجوم الرقمي للسيطرة على النتائج.
+          </p>
         </div>
-      </div>
 
-      <div class="welcome-strip">
-        <span class="welcome-text" id="lbl-welcome">أهلاً بك في</span>
-        <span class="welcome-brand">&nbsp;AlQurmanix&nbsp;</span>
-        <span style="color:var(--gold)">✦</span>
-      </div>
+      </main>
 
-      <section>
-        <h2 class="section-title" id="lbl-gates-title">اختر بوابتك</h2>
-        <div class="gates-grid" id="gates-grid"></div>
-      </section>
+      {/* تذييل الصفحة */}
+      <footer className="fixed bottom-6 left-12 text-[#8B6E23]/40 text-xs font-['Cinzel_Decorative'] uppercase tracking-widest">
+        AlQurmanix Digital Empire © 2026
+      </footer>
 
-      <div class="holding-banner">
-        <div class="holding-inner">
-          <span class="holding-diamond">◆</span>
-          <span class="holding-text" id="lbl-holding">مجموعة شركات AlQurmanix القابضة ش.م.م</span>
-          <span class="holding-diamond">◆</span>
-        </div>
-      </div>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Scheherazade+New:wght@400;700&display=swap');
+        body {
+          cursor: crosshair;
+        }
+      `}</style>
+    </div>
+  );
+};
 
-      <a class="hand-pointer" id="hand-pointer" href="./marketplace.html">
-        <span class="hand-emoji">👆</span>
-        <span class="hand-label" id="lbl-next">الصفحة التالية</span>
-      </a>
-
-    </main>
-  </div>
-
-  <script>
-    // ── Translations ──
-    const LANGS = {
-      ar: { flag:"🇸🇦", label:"عربي", dir:"rtl", t:{
-        profile:"الملف الشخصي",settings:"الإعدادات",notifications:"نظام الإشعارات",
-        support:"الدعم الفني",ai:"AlQurmanix AI",docs:"التوثيقات والعضوية",
-        policies:"سياسات وقوانين AlQurmanix",parking:"مكان مركون",
-        wallet:"محفظة AlQurmanix Coin",earnCoin:"اربح عملة AlQurmanix Coin",
-        careers:"الوظائف",supportUs:"ادعم AlQurmanix",donate:"تبرع",
-        marketplace:"السوق التجاري",community:"المنتدى الاجتماعي",
-        gatesTitle:"اختر بوابتك",employees:"بوابة الموظفين",
-        clients:"بوابة العملاء",business:"بوابة التجارة والأعمال",
-        social:"البوابة الاجتماعية والمنتدى",
-        holding:"مجموعة شركات AlQurmanix القابضة ش.م.م",
-        connected:"متصل",nextPage:"الصفحة التالية",welcome:"أهلاً بك في",logout:"تسجيل الخروج",
-      }},
-      en: { flag:"🇬🇧", label:"English", dir:"ltr", t:{
-        profile:"Profile",settings:"Settings",notifications:"Notifications",
-        support:"Technical Support",ai:"AlQurmanix AI",docs:"Docs & Membership",
-        policies:"AlQurmanix Policies",parking:"Parking Zone",
-        wallet:"AlQurmanix Coin Wallet",earnCoin:"Earn AlQurmanix Coin",
-        careers:"Careers",supportUs:"Support AlQurmanix",donate:"Donate",
-        marketplace:"Marketplace",community:"Social Forum",
-        gatesTitle:"Choose Your Gateway",employees:"Employees Portal",
-        clients:"Clients Portal",business:"Business & Trade Portal",
-        social:"Social & Community Portal",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"Connected",nextPage:"Next Page",welcome:"Welcome to",logout:"Sign Out",
-      }},
-      de: { flag:"🇩🇪", label:"Deutsch", dir:"ltr", t:{
-        profile:"Profil",settings:"Einstellungen",notifications:"Benachrichtigungen",
-        support:"Technischer Support",ai:"AlQurmanix KI",docs:"Dokumentation & Mitgliedschaft",
-        policies:"AlQurmanix Richtlinien",parking:"Parkzone",
-        wallet:"AlQurmanix Coin Wallet",earnCoin:"AlQurmanix Coin verdienen",
-        careers:"Karriere",supportUs:"AlQurmanix unterstützen",donate:"Spenden",
-        marketplace:"Marktplatz",community:"Soziales Forum",
-        gatesTitle:"Gateway wählen",employees:"Mitarbeiterportal",
-        clients:"Kundenportal",business:"Geschäftsportal",
-        social:"Soziales & Community Portal",
-        holding:"AlQurmanix Unternehmensgruppe GmbH",
-        connected:"Verbunden",nextPage:"Nächste Seite",welcome:"Willkommen bei",logout:"Abmelden",
-      }},
-      es: { flag:"🇪🇸", label:"Español", dir:"ltr", t:{
-        profile:"Perfil",settings:"Configuración",notifications:"Notificaciones",
-        support:"Soporte Técnico",ai:"AlQurmanix IA",docs:"Documentación y Membresía",
-        policies:"Políticas de AlQurmanix",parking:"Zona de Estacionamiento",
-        wallet:"Cartera AlQurmanix Coin",earnCoin:"Ganar AlQurmanix Coin",
-        careers:"Carreras",supportUs:"Apoyar AlQurmanix",donate:"Donar",
-        marketplace:"Mercado",community:"Foro Social",
-        gatesTitle:"Elige tu Portal",employees:"Portal de Empleados",
-        clients:"Portal de Clientes",business:"Portal de Negocios",
-        social:"Portal Social y Comunidad",
-        holding:"AlQurmanix Group Holding SRL",
-        connected:"Conectado",nextPage:"Siguiente Página",welcome:"Bienvenido a",logout:"Cerrar Sesión",
-      }},
-      fr: { flag:"🇫🇷", label:"Français", dir:"ltr", t:{
-        profile:"Profil",settings:"Paramètres",notifications:"Notifications",
-        support:"Support Technique",ai:"AlQurmanix IA",docs:"Documentation & Adhésion",
-        policies:"Politiques AlQurmanix",parking:"Zone de Parking",
-        wallet:"Portefeuille AlQurmanix Coin",earnCoin:"Gagner AlQurmanix Coin",
-        careers:"Carrières",supportUs:"Soutenir AlQurmanix",donate:"Faire un Don",
-        marketplace:"Marché",community:"Forum Social",
-        gatesTitle:"Choisissez votre Portail",employees:"Portail Employés",
-        clients:"Portail Clients",business:"Portail Commercial",
-        social:"Portail Social & Communauté",
-        holding:"AlQurmanix Group Holding SARL",
-        connected:"Connecté",nextPage:"Page Suivante",welcome:"Bienvenue sur",logout:"Se Déconnecter",
-      }},
-      it: { flag:"🇮🇹", label:"Italiano", dir:"ltr", t:{
-        profile:"Profilo",settings:"Impostazioni",notifications:"Notifiche",
-        support:"Supporto Tecnico",ai:"AlQurmanix IA",docs:"Documentazione & Membership",
-        policies:"Politiche AlQurmanix",parking:"Zona Parcheggio",
-        wallet:"Portafoglio AlQurmanix Coin",earnCoin:"Guadagna AlQurmanix Coin",
-        careers:"Carriere",supportUs:"Supporta AlQurmanix",donate:"Dona",
-        marketplace:"Mercato",community:"Forum Sociale",
-        gatesTitle:"Scegli il tuo Portale",employees:"Portale Dipendenti",
-        clients:"Portale Clienti",business:"Portale Business",
-        social:"Portale Sociale & Community",
-        holding:"AlQurmanix Group Holding SRL",
-        connected:"Connesso",nextPage:"Pagina Successiva",welcome:"Benvenuto su",logout:"Disconnetti",
-      }},
-      hi: { flag:"🇮🇳", label:"हिंदी", dir:"ltr", t:{
-        profile:"प्रोफ़ाइल",settings:"सेटिंग्स",notifications:"सूचनाएं",
-        support:"तकनीकी सहायता",ai:"AlQurmanix AI",docs:"दस्तावेज़ और सदस्यता",
-        policies:"AlQurmanix नीतियां",parking:"पार्किंग ज़ोन",
-        wallet:"AlQurmanix Coin वॉलेट",earnCoin:"AlQurmanix Coin कमाएं",
-        careers:"करियर",supportUs:"AlQurmanix का समर्थन करें",donate:"दान करें",
-        marketplace:"बाज़ार",community:"सामाजिक मंच",
-        gatesTitle:"अपना गेटवे चुनें",employees:"कर्मचारी पोर्टल",
-        clients:"ग्राहक पोर्टल",business:"व्यापार पोर्टल",
-        social:"सामाजिक पोर्टल",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"जुड़ा हुआ",nextPage:"अगला पृष्ठ",welcome:"स्वागत है",logout:"लॉग आउट",
-      }},
-      ko: { flag:"🇰🇷", label:"한국어", dir:"ltr", t:{
-        profile:"프로필",settings:"설정",notifications:"알림",
-        support:"기술 지원",ai:"AlQurmanix AI",docs:"문서 및 멤버십",
-        policies:"AlQurmanix 정책",parking:"주차 구역",
-        wallet:"AlQurmanix Coin 지갑",earnCoin:"AlQurmanix Coin 획득",
-        careers:"채용",supportUs:"AlQurmanix 지원",donate:"기부",
-        marketplace:"마켓플레이스",community:"소셜 포럼",
-        gatesTitle:"게이트웨이 선택",employees:"직원 포털",
-        clients:"고객 포털",business:"비즈니스 포털",
-        social:"소셜 & 커뮤니티 포털",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"연결됨",nextPage:"다음 페이지",welcome:"환영합니다",logout:"로그아웃",
-      }},
-      ja: { flag:"🇯🇵", label:"日本語", dir:"ltr", t:{
-        profile:"プロフィール",settings:"設定",notifications:"通知",
-        support:"テクニカルサポート",ai:"AlQurmanix AI",docs:"ドキュメント・会員",
-        policies:"AlQurmanix ポリシー",parking:"駐車ゾーン",
-        wallet:"AlQurmanix Coin ウォレット",earnCoin:"AlQurmanix Coinを稼ぐ",
-        careers:"採用情報",supportUs:"AlQurmanixをサポート",donate:"寄付",
-        marketplace:"マーケットプレイス",community:"ソーシャルフォーラム",
-        gatesTitle:"ゲートウェイを選択",employees:"従業員ポータル",
-        clients:"クライアントポータル",business:"ビジネスポータル",
-        social:"ソーシャル・コミュニティ",
-        holding:"AlQurmanix グループホールディング",
-        connected:"接続済み",nextPage:"次のページ",welcome:"ようこそ",logout:"サインアウト",
-      }},
-      zh: { flag:"🇨🇳", label:"中文", dir:"ltr", t:{
-        profile:"个人资料",settings:"设置",notifications:"通知",
-        support:"技术支持",ai:"AlQurmanix 人工智能",docs:"文档与会员",
-        policies:"AlQurmanix 政策",parking:"停车区",
-        wallet:"AlQurmanix Coin 钱包",earnCoin:"赚取 AlQurmanix Coin",
-        careers:"职业",supportUs:"支持 AlQurmanix",donate:"捐赠",
-        marketplace:"市场",community:"社交论坛",
-        gatesTitle:"选择您的入口",employees:"员工门户",
-        clients:"客户门户",business:"商业门户",
-        social:"社交与社区门户",
-        holding:"AlQurmanix 集团控股有限公司",
-        connected:"已连接",nextPage:"下一页",welcome:"欢迎来到",logout:"退出登录",
-      }},
-      tr: { flag:"🇹🇷", label:"Türkçe", dir:"ltr", t:{
-        profile:"Profil",settings:"Ayarlar",notifications:"Bildirimler",
-        support:"Teknik Destek",ai:"AlQurmanix Yapay Zeka",docs:"Belgeleme ve Üyelik",
-        policies:"AlQurmanix Politikaları",parking:"Park Bölgesi",
-        wallet:"AlQurmanix Coin Cüzdanı",earnCoin:"AlQurmanix Coin Kazan",
-        careers:"Kariyer",supportUs:"AlQurmanix'i Destekle",donate:"Bağış Yap",
-        marketplace:"Pazar Yeri",community:"Sosyal Forum",
-        gatesTitle:"Kapınızı Seçin",employees:"Çalışan Portalı",
-        clients:"Müşteri Portalı",business:"Ticaret Portalı",
-        social:"Sosyal & Topluluk Portalı",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"Bağlandı",nextPage:"Sonraki Sayfa",welcome:"Hoş Geldiniz",logout:"Çıkış Yap",
-      }},
-    };
-
-    const NAV_ITEMS = [
-      {key:"profile",emoji:"👤",file:"./profile.html"},
-      {key:"settings",emoji:"⚙️",file:"./settings.html"},
-      {key:"notifications",emoji:"🔔",file:"./notifications.html"},
-      {key:"support",emoji:"🎧",file:"./support.html"},
-      {key:"ai",emoji:"🤖",file:"./alqurmanix-ai.html"},
-      {key:"docs",emoji:"📚",file:"./docs-membership.html"},
-      {key:"policies",emoji:"⚖️",file:"./policies.html"},
-      {key:"parking",emoji:"🅿️",file:"./parking.html"},
-      {key:"wallet",emoji:"💰",file:"./wallet.html"},
-      {key:"earnCoin",emoji:"🪙",file:"./earn-coin.html"},
-      {key:"careers",emoji:"💼",file:"./careers.html"},
-      {key:"supportUs",emoji:"❤️",file:"./support-us.html"},
-      {key:"donate",emoji:"🤲",file:"./donate.html"},
-      {key:"marketplace",emoji:"🛒",file:"./marketplace.html"},
-      {key:"community",emoji:"🏛️",file:"./community.html"},
-    ];
-
-    const GATES = [
-      {key:"employees",emoji:"👔",file:"./gate-employees.html"},
-      {key:"clients",emoji:"🤝",file:"./gate-clients.html"},
-      {key:"business",emoji:"🏢",file:"./gate-business.html"},
-      {key:"social",emoji:"🌐",file:"./gate-social.html"},
-    ];
-
-    let currentLang = "ar";
-
-    function applyLang(lang) {
-      currentLang = lang;
-      const L = LANGS[lang] || LANGS["ar"];
-      const t = L.t;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = L.dir;
-      document.getElementById("globe-flag").textContent = L.flag;
-
-      // Labels
-      document.getElementById("lbl-connected").textContent = t.connected;
-      document.getElementById("lbl-welcome").textContent = t.welcome;
-      document.getElementById("lbl-holding").textContent = t.holding;
-      document.getElementById("lbl-next").textContent = t.nextPage;
-      document.getElementById("lbl-logout").textContent = t.logout;
-      document.getElementById("lbl-gates-title").textContent = t.gatesTitle;
-
-      // Nav
-      const navList = document.getElementById("nav-list");
-      navList.innerHTML = "";
-      NAV_ITEMS.forEach((item, i) => {
-        const a = document.createElement("a");
-        a.className = "nav-item";
-        a.href = item.file;
-        a.style.animationDelay = (i * 40) + "ms";
-        a.onclick = (e) => { e.preventDefault(); sessionStorage.setItem("aqx_auth_entry","true"); window.location.href = item.file; };
-        a.innerHTML = `<span class="nav-emoji">${item.emoji}</span><span class="nav-label">${t[item.key]||item.key}</span><span class="nav-arrow">›</span>`;
-        navList.appendChild(a);
-      });
-
-      // Gates
-      const gatesGrid = document.getElementById("gates-grid");
-      gatesGrid.innerHTML = "";
-      GATES.forEach((gate, i) => {
-        const a = document.createElement("a");
-        a.className = "gate-card";
-        a.href = gate.file;
-        a.style.animationDelay = (i * 80) + "ms";
-        a.onclick = (e) => { e.preventDefault(); sessionStorage.setItem("aqx_auth_entry","true"); window.location.href = gate.file; };
-        a.innerHTML = `<span class="gate-icon">${gate.emoji}</span><span class="gate-label">${t[gate.key]||gate.key}</span><div class="gate-shine"></div>`;
-        gatesGrid.appendChild(a);
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      // Initialize Language
-      applyLang(localStorage.getItem("aqx_lang") || "ar");
-
-      // Setup Globe Dropdown
-      const globeBtn = document.getElementById("globe-btn");
-      const langDd = document.getElementById("lang-dropdown");
-      
-      // Build dropdown items dynamically
-      langDd.innerHTML = "";
-      Object.keys(LANGS).forEach(key => {
-        const btn = document.createElement("button");
-        btn.className = "lang-item";
-        btn.innerHTML = `<span class="lang-flag">${LANGS[key].flag}</span><span>${LANGS[key].label}</span>`;
-        btn.onclick = () => {
-          localStorage.setItem("aqx_lang", key);
-          applyLang(key);
-          langDd.style.display = "none";
-        };
-        langDd.appendChild(btn);
-      });
-
-      globeBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        langDd.style.display = langDd.style.display === "none" || langDd.style.display === "" ? "grid" : "none";
-      });
-      document.addEventListener("click", () => { langDd.style.display = "none"; });
-
-      // Setup Live Clock
-      function updateClock() {
-        const now = new Date();
-        const loc = currentLang === 'ar' ? 'ar-EG' : 'en-US'; // Adjust formatting based on Arabic or English
-        document.getElementById("clock-time").textContent = now.toLocaleTimeString(loc, {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-        document.getElementById("clock-date").textContent = now.toLocaleDateString(loc, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-      }
-      setInterval(updateClock, 1000);
-      updateClock(); // Initial call
-    });
-  </script>
-</body>
-</html>
+export default AlQurmanixDashboard;
