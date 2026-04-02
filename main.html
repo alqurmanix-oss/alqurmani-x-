@@ -1,696 +1,1009 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AlQurmanix — الواجهة الرئيسية</title>
-  <meta name="robots" content="noindex,nofollow" />
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Scheherazade+New:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+"use client";
+/**
+ * dashboard.tsx
+ * الواجهة الرئيسية لـ AlQurmanix — محمية بالكامل بـ Firebase Auth
+ * لا يمكن الوصول إليها إلا من خلال index.tsx (صفحة تسجيل الدخول)
+ */
 
-    // ── Firebase Config ──
-    const firebaseConfig = {
-      apiKey: "AIzaSyCoM-Aqq7VwTDx5ZeHmIpHM4sm2XM0WdKw",
-      authDomain: "alqurmanix-15b92.firebaseapp.com",
-      projectId: "alqurmanix-15b92",
-      storageBucket: "alqurmanix-15b92.firebasestorage.app",
-      messagingSenderId: "477352026568",
-      appId: "1:477352026568:web:49f90cd3fc74b6948ba0fd",
-      measurementId: "G-VJF36N1MCD"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { initializeApp, getApps } from "firebase/app";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  User,
+} from "firebase/auth";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
-    // ── Redirect to index ──
-    function redirectToIndex() {
-      sessionStorage.removeItem("aqx_auth_entry");
-      window.location.replace("./index.html");
+// ─────────────────────────────────────────────
+// 🔥 Firebase Init
+// ─────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyCoM-Aqq7VwTDx5ZeHmIpHM4sm2XM0WdKw",
+  authDomain: "alqurmanix-15b92.firebaseapp.com",
+  projectId: "alqurmanix-15b92",
+  storageBucket: "alqurmanix-15b92.firebasestorage.app",
+  messagingSenderId: "477352026568",
+  appId: "1:477352026568:web:49f90cd3fc74b6948ba0fd",
+  measurementId: "G-VJF36N1MCD",
+};
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ─────────────────────────────────────────────
+// 🌍 Translations
+// ─────────────────────────────────────────────
+type LangKey = "ar" | "en" | "de" | "es" | "fr" | "it" | "hi" | "ko" | "ja" | "zh" | "tr";
+
+const LANGS: Record<LangKey, { flag: string; label: string; dir: "rtl" | "ltr"; t: Record<string, any> }> = {
+  ar: {
+    flag: "🇸🇦", label: "عربي", dir: "rtl",
+    t: {
+      profile: "الملف الشخصي", settings: "الإعدادات", notifications: "نظام الإشعارات",
+      support: "الدعم الفني", ai: "AlQurmanix AI", docs: "التوثيقات والعضوية",
+      policies: "سياسات وقوانين AlQurmanix", parking: "مكان مركون",
+      wallet: "محفظة AlQurmanix Coin", earnCoin: "اربح عملة AlQurmanix Coin",
+      careers: "الوظائف", supportUs: "ادعم AlQurmanix", donate: "تبرع",
+      marketplace: "السوق التجاري", community: "المنتدى الاجتماعي",
+      gatesTitle: "اختر بوابتك", employees: "بوابة الموظفين",
+      clients: "بوابة العملاء", business: "بوابة التجارة والأعمال",
+      social: "البوابة الاجتماعية والمنتدى", holding: "مجموعة شركات AlQurmanix القابضة ش.م.م",
+      connected: "متصل", nextPage: "الصفحة التالية", welcome: "أهلاً بك في",
+      loading: "جارٍ التحقق من الهوية...", logout: "تسجيل الخروج",
+      unauthorized: "غير مصرح بالدخول", redirecting: "جارٍ التحويل...",
     }
+  },
+  en: {
+    flag: "🇬🇧", label: "English", dir: "ltr",
+    t: {
+      profile: "Profile", settings: "Settings", notifications: "Notifications",
+      support: "Technical Support", ai: "AlQurmanix AI", docs: "Docs & Membership",
+      policies: "AlQurmanix Policies", parking: "Parking Zone",
+      wallet: "AlQurmanix Coin Wallet", earnCoin: "Earn AlQurmanix Coin",
+      careers: "Careers", supportUs: "Support AlQurmanix", donate: "Donate",
+      marketplace: "Marketplace", community: "Social Forum",
+      gatesTitle: "Choose Your Gateway", employees: "Employees Portal",
+      clients: "Clients Portal", business: "Business & Trade Portal",
+      social: "Social & Community Portal", holding: "AlQurmanix Group Holding LLC",
+      connected: "Connected", nextPage: "Next Page", welcome: "Welcome to",
+      loading: "Verifying identity...", logout: "Sign Out",
+      unauthorized: "Unauthorized Access", redirecting: "Redirecting...",
+    }
+  },
+  de: {
+    flag: "🇩🇪", label: "Deutsch", dir: "ltr",
+    t: {
+      profile: "Profil", settings: "Einstellungen", notifications: "Benachrichtigungen",
+      support: "Technischer Support", ai: "AlQurmanix KI", docs: "Dokumentation & Mitgliedschaft",
+      policies: "AlQurmanix Richtlinien", parking: "Parkzone",
+      wallet: "AlQurmanix Coin Wallet", earnCoin: "AlQurmanix Coin verdienen",
+      careers: "Karriere", supportUs: "AlQurmanix unterstützen", donate: "Spenden",
+      marketplace: "Marktplatz", community: "Soziales Forum",
+      gatesTitle: "Gateway wählen", employees: "Mitarbeiterportal",
+      clients: "Kundenportal", business: "Geschäftsportal",
+      social: "Soziales & Community Portal", holding: "AlQurmanix Unternehmensgruppe GmbH",
+      connected: "Verbunden", nextPage: "Nächste Seite", welcome: "Willkommen bei",
+      loading: "Identität wird überprüft...", logout: "Abmelden",
+      unauthorized: "Nicht autorisierter Zugriff", redirecting: "Weiterleitung...",
+    }
+  },
+  es: {
+    flag: "🇪🇸", label: "Español", dir: "ltr",
+    t: {
+      profile: "Perfil", settings: "Configuración", notifications: "Notificaciones",
+      support: "Soporte Técnico", ai: "AlQurmanix IA", docs: "Documentación y Membresía",
+      policies: "Políticas de AlQurmanix", parking: "Zona de Estacionamiento",
+      wallet: "Cartera AlQurmanix Coin", earnCoin: "Ganar AlQurmanix Coin",
+      careers: "Carreras", supportUs: "Apoyar AlQurmanix", donate: "Donar",
+      marketplace: "Mercado", community: "Foro Social",
+      gatesTitle: "Elige tu Portal", employees: "Portal de Empleados",
+      clients: "Portal de Clientes", business: "Portal de Negocios",
+      social: "Portal Social y Comunidad", holding: "AlQurmanix Group Holding SRL",
+      connected: "Conectado", nextPage: "Siguiente Página", welcome: "Bienvenido a",
+      loading: "Verificando identidad...", logout: "Cerrar Sesión",
+      unauthorized: "Acceso No Autorizado", redirecting: "Redirigiendo...",
+    }
+  },
+  fr: {
+    flag: "🇫🇷", label: "Français", dir: "ltr",
+    t: {
+      profile: "Profil", settings: "Paramètres", notifications: "Notifications",
+      support: "Support Technique", ai: "AlQurmanix IA", docs: "Documentation & Adhésion",
+      policies: "Politiques AlQurmanix", parking: "Zone de Parking",
+      wallet: "Portefeuille AlQurmanix Coin", earnCoin: "Gagner AlQurmanix Coin",
+      careers: "Carrières", supportUs: "Soutenir AlQurmanix", donate: "Faire un Don",
+      marketplace: "Marché", community: "Forum Social",
+      gatesTitle: "Choisissez votre Portail", employees: "Portail Employés",
+      clients: "Portail Clients", business: "Portail Commercial",
+      social: "Portail Social & Communauté", holding: "AlQurmanix Group Holding SARL",
+      connected: "Connecté", nextPage: "Page Suivante", welcome: "Bienvenue sur",
+      loading: "Vérification de l'identité...", logout: "Se Déconnecter",
+      unauthorized: "Accès Non Autorisé", redirecting: "Redirection...",
+    }
+  },
+  it: {
+    flag: "🇮🇹", label: "Italiano", dir: "ltr",
+    t: {
+      profile: "Profilo", settings: "Impostazioni", notifications: "Notifiche",
+      support: "Supporto Tecnico", ai: "AlQurmanix IA", docs: "Documentazione & Membership",
+      policies: "Politiche AlQurmanix", parking: "Zona Parcheggio",
+      wallet: "Portafoglio AlQurmanix Coin", earnCoin: "Guadagna AlQurmanix Coin",
+      careers: "Carriere", supportUs: "Supporta AlQurmanix", donate: "Dona",
+      marketplace: "Mercato", community: "Forum Sociale",
+      gatesTitle: "Scegli il tuo Portale", employees: "Portale Dipendenti",
+      clients: "Portale Clienti", business: "Portale Business",
+      social: "Portale Sociale & Community", holding: "AlQurmanix Group Holding SRL",
+      connected: "Connesso", nextPage: "Pagina Successiva", welcome: "Benvenuto su",
+      loading: "Verifica identità...", logout: "Disconnetti",
+      unauthorized: "Accesso Non Autorizzato", redirecting: "Reindirizzamento...",
+    }
+  },
+  hi: {
+    flag: "🇮🇳", label: "हिंदी", dir: "ltr",
+    t: {
+      profile: "प्रोफ़ाइल", settings: "सेटिंग्स", notifications: "सूचनाएं",
+      support: "तकनीकी सहायता", ai: "AlQurmanix AI", docs: "दस्तावेज़ और सदस्यता",
+      policies: "AlQurmanix नीतियां", parking: "पार्किंग ज़ोन",
+      wallet: "AlQurmanix Coin वॉलेट", earnCoin: "AlQurmanix Coin कमाएं",
+      careers: "करियर", supportUs: "AlQurmanix का समर्थन करें", donate: "दान करें",
+      marketplace: "बाज़ार", community: "सामाजिक मंच",
+      gatesTitle: "अपना गेटवे चुनें", employees: "कर्मचारी पोर्टल",
+      clients: "ग्राहक पोर्टल", business: "व्यापार पोर्टल",
+      social: "सामाजिक पोर्टल", holding: "AlQurmanix Group Holding LLC",
+      connected: "जुड़ा हुआ", nextPage: "अगला पृष्ठ", welcome: "स्वागत है",
+      loading: "पहचान सत्यापित हो रही है...", logout: "लॉग आउट",
+      unauthorized: "अनधिकृत पहुँच", redirecting: "पुनर्निर्देशित हो रहा है...",
+    }
+  },
+  ko: {
+    flag: "🇰🇷", label: "한국어", dir: "ltr",
+    t: {
+      profile: "프로필", settings: "설정", notifications: "알림",
+      support: "기술 지원", ai: "AlQurmanix AI", docs: "문서 및 멤버십",
+      policies: "AlQurmanix 정책", parking: "주차 구역",
+      wallet: "AlQurmanix Coin 지갑", earnCoin: "AlQurmanix Coin 획득",
+      careers: "채용", supportUs: "AlQurmanix 지원", donate: "기부",
+      marketplace: "마켓플레이스", community: "소셜 포럼",
+      gatesTitle: "게이트웨이 선택", employees: "직원 포털",
+      clients: "고객 포털", business: "비즈니스 포털",
+      social: "소셜 & 커뮤니티 포털", holding: "AlQurmanix Group Holding LLC",
+      connected: "연결됨", nextPage: "다음 페이지", welcome: "환영합니다",
+      loading: "신원 확인 중...", logout: "로그아웃",
+      unauthorized: "무단 접근", redirecting: "리디렉션 중...",
+    }
+  },
+  ja: {
+    flag: "🇯🇵", label: "日本語", dir: "ltr",
+    t: {
+      profile: "プロフィール", settings: "設定", notifications: "通知",
+      support: "テクニカルサポート", ai: "AlQurmanix AI", docs: "ドキュメント・会員",
+      policies: "AlQurmanix ポリシー", parking: "駐車ゾーン",
+      wallet: "AlQurmanix Coin ウォレット", earnCoin: "AlQurmanix Coinを稼ぐ",
+      careers: "採用情報", supportUs: "AlQurmanixをサポート", donate: "寄付",
+      marketplace: "マーケットプレイス", community: "ソーシャルフォーラム",
+      gatesTitle: "ゲートウェイを選択", employees: "従業員ポータル",
+      clients: "クライアントポータル", business: "ビジネスポータル",
+      social: "ソーシャル・コミュニティ", holding: "AlQurmanix グループホールディング",
+      connected: "接続済み", nextPage: "次のページ", welcome: "ようこそ",
+      loading: "身元確認中...", logout: "サインアウト",
+      unauthorized: "不正アクセス", redirecting: "リダイレクト中...",
+    }
+  },
+  zh: {
+    flag: "🇨🇳", label: "中文", dir: "ltr",
+    t: {
+      profile: "个人资料", settings: "设置", notifications: "通知",
+      support: "技术支持", ai: "AlQurmanix 人工智能", docs: "文档与会员",
+      policies: "AlQurmanix 政策", parking: "停车区",
+      wallet: "AlQurmanix Coin 钱包", earnCoin: "赚取 AlQurmanix Coin",
+      careers: "职业", supportUs: "支持 AlQurmanix", donate: "捐赠",
+      marketplace: "市场", community: "社交论坛",
+      gatesTitle: "选择您的入口", employees: "员工门户",
+      clients: "客户门户", business: "商业门户",
+      social: "社交与社区门户", holding: "AlQurmanix 集团控股有限公司",
+      connected: "已连接", nextPage: "下一页", welcome: "欢迎来到",
+      loading: "正在验证身份...", logout: "退出登录",
+      unauthorized: "未经授权的访问", redirecting: "正在重定向...",
+    }
+  },
+  tr: {
+    flag: "🇹🇷", label: "Türkçe", dir: "ltr",
+    t: {
+      profile: "Profil", settings: "Ayarlar", notifications: "Bildirimler",
+      support: "Teknik Destek", ai: "AlQurmanix Yapay Zeka", docs: "Belgeleme ve Üyelik",
+      policies: "AlQurmanix Politikaları", parking: "Park Bölgesi",
+      wallet: "AlQurmanix Coin Cüzdanı", earnCoin: "AlQurmanix Coin Kazan",
+      careers: "Kariyer", supportUs: "AlQurmanix'i Destekle", donate: "Bağış Yap",
+      marketplace: "Pazar Yeri", community: "Sosyal Forum",
+      gatesTitle: "Kapınızı Seçin", employees: "Çalışan Portalı",
+      clients: "Müşteri Portalı", business: "Ticaret Portalı",
+      social: "Sosyal & Topluluk Portalı", holding: "AlQurmanix Group Holding LLC",
+      connected: "Bağlandı", nextPage: "Sonraki Sayfa", welcome: "Hoş Geldiniz",
+      loading: "Kimlik doğrulanıyor...", logout: "Çıkış Yap",
+      unauthorized: "Yetkisiz Erişim", redirecting: "Yönlendiriliyor...",
+    }
+  },
+};
 
-    // ── History Guard — block back/forward manipulation ──
-    window.history.pushState(null, "", window.location.href);
-    window.addEventListener("popstate", () => {
-      if (!sessionStorage.getItem("aqx_auth_entry")) redirectToIndex();
-      else window.history.pushState(null, "", window.location.href);
-    });
+// ─────────────────────────────────────────────
+// 🔐 Auth Guard Hook
+// ─────────────────────────────────────────────
+function useAuthGuard() {
+  const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<any>(null);
+  const [status, setStatus] = useState<"loading" | "authorized" | "unauthorized">("loading");
 
-    // ── Auth Guard ──
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { redirectToIndex(); return; }
-      if (!user.emailVerified) { await signOut(auth); redirectToIndex(); return; }
+  useEffect(() => {
+    // Block direct URL access — check referrer & sessionStorage flag
+    const allowedEntry = sessionStorage.getItem("aqx_auth_entry");
+    const fromIndex =
+      document.referrer.includes("index") ||
+      document.referrer === "" ||
+      allowedEntry === "true";
 
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
+        setStatus("unauthorized");
+        sessionStorage.removeItem("aqx_auth_entry");
+        redirectToIndex();
+        return;
+      }
+
+      // Must have verified email
+      if (!firebaseUser.emailVerified) {
+        setStatus("unauthorized");
+        await signOut(auth);
+        redirectToIndex();
+        return;
+      }
+
+      // Fetch Firestore user doc
       try {
-        const userRef = doc(db, "users", user.uid);
+        const userRef = doc(db, "users", firebaseUser.uid);
         const snap = await getDoc(userRef);
-        if (!snap.exists()) { await signOut(auth); redirectToIndex(); return; }
-        const data = snap.data();
-        if (data.status !== "active" || data.inactivityStatus !== "active") {
-          await signOut(auth); redirectToIndex(); return;
+
+        if (!snap.exists()) {
+          setStatus("unauthorized");
+          await signOut(auth);
+          redirectToIndex();
+          return;
         }
-        // Update lastActivity
+
+        const data = snap.data();
+
+        // Check account status per security rules
+        if (data.status !== "active" || data.inactivityStatus !== "active") {
+          setStatus("unauthorized");
+          await signOut(auth);
+          redirectToIndex();
+          return;
+        }
+
+        // Update last activity
         await updateDoc(userRef, { lastActivity: serverTimestamp() });
-        // Set session flag
+
+        setUser(firebaseUser);
+        setUserData(data);
+        setStatus("authorized");
         sessionStorage.setItem("aqx_auth_entry", "true");
-        // Render dashboard
-        renderDashboard(user, data);
-      } catch (e) {
+      } catch (err) {
+        setStatus("unauthorized");
         redirectToIndex();
       }
     });
 
-    // ── Make signOut available globally ──
-    window._aqxSignOut = async () => {
-      sessionStorage.removeItem("aqx_auth_entry");
-      await signOut(auth);
-      redirectToIndex();
+    return () => unsubscribe();
+  }, []);
+
+  return { user, userData, status };
+}
+
+function redirectToIndex() {
+  window.location.replace("./index.html");
+}
+
+// ─────────────────────────────────────────────
+// 🕐 Live Clock
+// ─────────────────────────────────────────────
+function useLiveClock(lang: LangKey) {
+  const [time, setTime] = useState("");
+  const [date, setDate] = useState("");
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const locale = lang === "ar" ? "ar-SA" : lang === "zh" ? "zh-CN" : lang === "ko" ? "ko-KR" : lang === "ja" ? "ja-JP" : lang === "hi" ? "hi-IN" : "en-US";
+      setTime(now.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+      setDate(now.toLocaleDateString(locale, { weekday: "long", year: "numeric", month: "long", day: "numeric" }));
     };
-  </script>
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [lang]);
 
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  return { time, date };
+}
 
-    :root {
-      --gold: #d4af37; --gold2: #f0d060; --gold3: #c8961e;
-      --bg-deep: #050510; --bg-mid: #0a0a1f; --bg-card: #0f0f2a;
-      --bg-glass: rgba(212,175,55,0.04);
-      --border-gold: rgba(212,175,55,0.25);
-      --text-primary: #f5e6b8; --text-muted: rgba(245,230,184,0.55);
-      --neon-green: #00ff88;
-      --sidebar-w: 280px;
-      --radius: 14px;
-      --shadow-gold: 0 0 24px rgba(212,175,55,0.18), 0 4px 32px rgba(0,0,0,0.7);
-    }
+// ─────────────────────────────────────────────
+// 🌍 Globe Language Selector
+// ─────────────────────────────────────────────
+function GlobeSelector({ lang, setLang }: { lang: LangKey; setLang: (l: LangKey) => void }) {
+  const [open, setOpen] = useState(false);
+  const langKeys = Object.keys(LANGS) as LangKey[];
 
-    html, body { height: 100%; background: var(--bg-deep); color: var(--text-primary); font-family: 'Scheherazade New', 'Playfair Display', serif; overflow-x: hidden; }
-
-    /* ─── Loading Screen ─── */
-    #loading-screen {
-      position: fixed; inset: 0; z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
-      background: radial-gradient(ellipse at 50% 30%, #1a1020 0%, var(--bg-deep) 70%);
-    }
-    .spinner-ring {
-      width: 72px; height: 72px; border-radius: 50%;
-      border: 3px solid var(--border-gold); border-top-color: var(--gold);
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 1.1rem; color: var(--text-muted); letter-spacing: 0.06em; }
-
-    /* ─── Main Layout ─── */
-    #dashboard {
-      display: none;
-      grid-template-columns: var(--sidebar-w) 1fr;
-      min-height: 100vh;
-      background:
-        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(212,175,55,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 90% 100%, rgba(212,175,55,0.04) 0%, transparent 60%),
-        var(--bg-deep);
-    }
-
-    /* ─── Sidebar ─── */
-    .sidebar {
-      background: linear-gradient(180deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 100%), var(--bg-card);
-      border-left: 1px solid var(--border-gold);
-      display: flex; flex-direction: column;
-      height: 100vh; position: sticky; top: 0; overflow-y: auto;
-      padding: 20px 12px;
-      scrollbar-width: thin; scrollbar-color: rgba(212,175,55,0.2) transparent;
-    }
-
-    /* Clock */
-    .clock-block {
-      background: linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.04) 100%);
-      border: 1px solid var(--border-gold); border-radius: var(--radius);
-      padding: 14px 16px; margin-bottom: 20px; text-align: center;
-      box-shadow: var(--shadow-gold);
-    }
-    .clock-time {
-      font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; color: var(--gold);
-      letter-spacing: 0.1em; text-shadow: 0 0 12px rgba(212,175,55,0.5);
-    }
-    .clock-date { font-size: 0.74rem; color: var(--text-muted); margin-top: 6px; line-height: 1.6; }
-
-    /* Nav */
-    .nav-list { display: flex; flex-direction: column; gap: 3px; flex: 1; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      border-radius: 10px; border: 1px solid transparent;
-      background: transparent; color: var(--text-primary); cursor: pointer;
-      font-family: inherit; font-size: 0.87rem;
-      transition: all 0.22s ease; text-align: right; text-decoration: none;
-      animation: fadeInRight 0.4s ease both;
-    }
-    @keyframes fadeInRight { from { opacity:0; transform:translateX(14px); } to { opacity:1; transform:none; } }
-    .nav-item:hover {
-      background: rgba(212,175,55,0.1); border-color: var(--border-gold); color: var(--gold2);
-      transform: translateX(-4px); box-shadow: 0 0 12px rgba(212,175,55,0.15);
-    }
-    .nav-emoji { font-size: 1.1rem; flex-shrink: 0; }
-    .nav-label { flex: 1; }
-    .nav-arrow { color: var(--gold3); font-size: 1.1rem; opacity: 0.6; }
-
-    /* Logout */
-    .logout-btn {
-      margin-top: 14px; padding: 11px 16px; border-radius: var(--radius);
-      border: 1px solid rgba(255,80,80,0.3); background: rgba(255,80,80,0.06);
-      color: #ff7070; cursor: pointer; font-family: inherit; font-size: 0.88rem;
-      transition: all 0.2s ease; width: 100%;
-    }
-    .logout-btn:hover { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.6); }
-
-    /* ─── Main Content ─── */
-    .main-content { padding: 28px 36px; display: flex; flex-direction: column; gap: 30px; overflow-y: auto; min-height: 100vh; }
-
-    /* Topbar */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-bottom: 20px; border-bottom: 1px solid var(--border-gold);
-      flex-wrap: wrap; gap: 12px;
-    }
-    .topbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-
-    /* Logo */
-    .logo-text {
-      font-family: 'Cinzel Decorative', serif; font-size: 1.7rem; font-weight: 900;
-      background: linear-gradient(135deg, #f0d060 0%, #d4af37 40%, #c8961e 70%, #f0d060 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      animation: shimmerGold 3s linear infinite;
-      letter-spacing: 0.08em;
-      filter: drop-shadow(0 0 14px rgba(212,175,55,0.45));
-    }
-    @keyframes shimmerGold { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-    .logo-wrap { display: flex; flex-direction: column; }
-    .logo-under {
-      height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      animation: pulseWidth 2s ease-in-out infinite; margin-top: 3px;
-    }
-    @keyframes pulseWidth { 0%,100%{opacity:.4;transform:scaleX(.7)} 50%{opacity:1;transform:scaleX(1)} }
-
-    /* Connection */
-    .connection-badge { display: flex; align-items: center; gap: 8px; }
-    .neon-bulb {
-      width: 10px; height: 10px; border-radius: 50%; background: var(--neon-green);
-      box-shadow: 0 0 6px var(--neon-green), 0 0 14px rgba(0,255,136,0.5);
-      animation: blinkNeon 2.5s ease-in-out infinite; flex-shrink: 0;
-    }
-    @keyframes blinkNeon { 0%,100%{opacity:1;box-shadow:0 0 6px var(--neon-green),0 0 18px rgba(0,255,136,.6)} 50%{opacity:.55;box-shadow:0 0 3px var(--neon-green)} }
-    .conn-label { font-size: 0.8rem; color: var(--neon-green); letter-spacing: 0.05em; }
-
-    /* Globe */
-    .globe-wrapper { position: relative; }
-    .globe-btn { cursor: pointer; user-select: none; }
-    .globe-orb {
-      width: 42px; height: 42px; position: relative;
-      animation: rotateGlobe 12s linear infinite; transition: transform .3s;
-    }
-    .globe-btn:hover .globe-orb { transform: scale(1.15); }
-    @keyframes rotateGlobe { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    .globe-svg { width: 100%; height: 100%; }
-    .globe-flag {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; animation: counterRotate 12s linear infinite;
-    }
-    @keyframes counterRotate { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
-    .lang-dropdown {
-      position: absolute; top: 52px; left: 0;
-      background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius);
-      padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
-      z-index: 1000; min-width: 220px; box-shadow: var(--shadow-gold);
-      animation: dropIn .18s ease;
-    }
-    @keyframes dropIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
-    .lang-item {
-      display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px;
-      background: transparent; border: 1px solid transparent; color: var(--text-primary);
-      cursor: pointer; font-size: 0.82rem; font-family: inherit; transition: all .15s ease;
-    }
-    .lang-item:hover, .lang-item.active-lang { background: rgba(212,175,55,.1); border-color: var(--border-gold); color: var(--gold2); }
-    .lang-flag { font-size: 1.2rem; }
-
-    /* User Chip */
-    .user-chip {
-      display: flex; align-items: center; gap: 8px; padding: 6px 14px;
-      border-radius: 50px; border: 1px solid var(--border-gold);
-      background: rgba(212,175,55,.06); color: var(--text-primary);
-    }
-    .user-name { font-size: 0.82rem; color: var(--gold2); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    /* Welcome */
-    .welcome-strip {
-      text-align: center; padding: 20px;
-      border: 1px solid var(--border-gold); border-radius: var(--radius);
-      background: linear-gradient(135deg, rgba(212,175,55,.08) 0%, rgba(212,175,55,.02) 100%);
-      box-shadow: var(--shadow-gold);
-      animation: fadeInUp .6s ease both;
-    }
-    .welcome-text { font-size: 1.4rem; color: var(--text-muted); }
-    .welcome-brand {
-      font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; font-weight: 900;
-      background: linear-gradient(90deg, #f0d060, #d4af37, #c8961e);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
-
-    /* Gates */
-    .section-title {
-      font-family: 'Cinzel Decorative', serif; font-size: 1rem; color: var(--gold);
-      letter-spacing: .15em; text-transform: uppercase; margin-bottom: 18px; text-align: center;
-    }
-    .gates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-    .gate-card {
-      position: relative; overflow: hidden; padding: 28px 20px; border-radius: var(--radius);
-      border: 1px solid var(--border-gold);
-      background: linear-gradient(135deg, rgba(212,175,55,.1) 0%, rgba(212,175,55,.03) 100%);
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
-      cursor: pointer; font-family: inherit; color: var(--text-primary);
-      transition: all .3s ease; box-shadow: var(--shadow-gold);
-      animation: fadeInUp .5s ease both; text-decoration: none;
-    }
-    .gate-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--gold);
-      box-shadow: 0 8px 40px rgba(212,175,55,.25), 0 0 0 1px rgba(212,175,55,.3);
-      background: linear-gradient(135deg, rgba(212,175,55,.18) 0%, rgba(212,175,55,.06) 100%);
-    }
-    .gate-icon { font-size: 2.4rem; filter: drop-shadow(0 0 8px rgba(212,175,55,.4)); }
-    .gate-label { font-size: .92rem; color: var(--gold2); text-align: center; font-weight: 600; }
-    .gate-shine { position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.05) 0%,transparent 50%); pointer-events:none; }
-
-    /* Holding Banner */
-    .holding-banner {
-      border: 1px solid var(--border-gold); border-radius: var(--radius);
-      padding: 20px 28px;
-      background: linear-gradient(90deg, rgba(212,175,55,.08) 0%, rgba(212,175,55,.03) 50%, rgba(212,175,55,.08) 100%);
-      animation: bannerFloat 3s ease-in-out infinite; box-shadow: var(--shadow-gold);
-      text-align: center;
-    }
-    @keyframes bannerFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-    .holding-inner { display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; }
-    .holding-diamond { color:var(--gold); font-size:.8rem; animation:rotateDiamond 4s linear infinite; }
-    @keyframes rotateDiamond { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    .holding-text {
-      font-family: 'Cinzel Decorative', serif; font-size: .88rem; color: var(--gold2);
-      letter-spacing: .08em;
-    }
-
-    /* Hand Pointer */
-    .hand-pointer {
-      display: flex; align-items: center; gap: 14px; padding: 20px 32px;
-      border-radius: var(--radius); border: 1px solid var(--border-gold);
-      background: linear-gradient(135deg, rgba(212,175,55,.1) 0%, transparent 100%);
-      cursor: pointer; font-family: inherit; color: var(--text-primary);
-      align-self: center; width: fit-content; margin: 0 auto;
-      animation: handBounce 1.8s ease-in-out infinite;
-      transition: all .2s ease; box-shadow: var(--shadow-gold);
-      text-decoration: none;
-    }
-    @keyframes handBounce { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-6px) scale(1.03)} }
-    .hand-pointer:hover { background:rgba(212,175,55,.18); border-color:var(--gold); box-shadow:0 0 24px rgba(212,175,55,.3); }
-    .hand-emoji { font-size: 2rem; animation: pointUp 1.2s ease-in-out infinite; }
-    @keyframes pointUp { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-    .hand-label { font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--gold2); letter-spacing:.08em; }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(212,175,55,.25); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,.45); }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      #dashboard { grid-template-columns: 1fr !important; }
-      .sidebar { position: fixed; bottom: 0; left: 0; right: 0; height: auto; max-height: 50vh; overflow-y: auto; z-index: 100; border-left: none; border-top: 1px solid var(--border-gold); flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 10px; }
-      .main-content { padding: 16px; padding-bottom: 240px; }
-      .gates-grid { grid-template-columns: 1fr 1fr; }
-      .clock-block { display: none; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="spinner-ring"></div>
-    <p class="loading-text" id="loading-msg">جارٍ التحقق من الهوية...</p>
-  </div>
-
-  <!-- Dashboard (hidden until auth passes) -->
-  <div id="dashboard">
-
-    <!-- ── Sidebar ── -->
-    <aside class="sidebar">
-      <div class="clock-block">
-        <div class="clock-time" id="clock-time">--:--:--</div>
-        <div class="clock-date" id="clock-date">---</div>
-      </div>
-      <nav class="nav-list" id="nav-list"></nav>
-      <button class="logout-btn" onclick="window._aqxSignOut()">🚪 <span id="lbl-logout">تسجيل الخروج</span></button>
-    </aside>
-
-    <!-- ── Main Content ── -->
-    <main class="main-content">
-
-      <!-- Topbar -->
-      <div class="topbar">
-        <div class="logo-wrap">
-          <span class="logo-text">AlQurmanix</span>
-          <div class="logo-under"></div>
+  return (
+    <div className="globe-wrapper">
+      <div className="globe-btn" onClick={() => setOpen(!open)} title="Select Language">
+        <div className="globe-orb">
+          <svg viewBox="0 0 60 60" className="globe-svg">
+            <defs>
+              <radialGradient id="globeGrad" cx="40%" cy="35%">
+                <stop offset="0%" stopColor="#d4af37" stopOpacity="0.9" />
+                <stop offset="60%" stopColor="#1a1a2e" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#0d0d1a" />
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#globeGrad)" stroke="#d4af37" strokeWidth="0.8" strokeOpacity="0.6" />
+            <ellipse cx="30" cy="30" rx="14" ry="28" fill="none" stroke="#d4af37" strokeWidth="0.5" strokeOpacity="0.4" />
+            <ellipse cx="30" cy="30" rx="28" ry="8" fill="none" stroke="#d4af37" strokeWidth="0.5" strokeOpacity="0.4" />
+            <ellipse cx="30" cy="30" rx="28" ry="16" fill="none" stroke="#d4af37" strokeWidth="0.3" strokeOpacity="0.3" />
+            <circle cx="30" cy="30" r="28" fill="none" stroke="#d4af37" strokeWidth="0.5" strokeOpacity="0.4" />
+          </svg>
+          <span className="globe-current-flag">{LANGS[lang].flag}</span>
         </div>
-        <div class="topbar-right">
-          <!-- Connection -->
-          <div class="connection-badge">
-            <span class="neon-bulb"></span>
-            <span class="conn-label" id="lbl-connected">متصل</span>
+      </div>
+      {open && (
+        <div className="lang-dropdown">
+          {langKeys.map((k) => (
+            <button
+              key={k}
+              className={`lang-item ${k === lang ? "active" : ""}`}
+              onClick={() => { setLang(k); setOpen(false); }}
+            >
+              <span className="lang-flag">{LANGS[k].flag}</span>
+              <span className="lang-label">{LANGS[k].label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 💡 Neon Connection Indicator
+// ─────────────────────────────────────────────
+function ConnectionBadge({ label }: { label: string }) {
+  return (
+    <div className="connection-badge">
+      <span className="neon-bulb" />
+      <span className="conn-label">{label}</span>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 🏷️ Animated Logo
+// ─────────────────────────────────────────────
+function AnimatedLogo() {
+  return (
+    <div className="logo-wrap">
+      <span className="logo-text">AlQurmanix</span>
+      <div className="logo-underline" />
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 🏛️ Gate Card
+// ─────────────────────────────────────────────
+const GATE_ICONS: Record<string, string> = {
+  employees: "👔",
+  clients: "🤝",
+  business: "🏢",
+  social: "🌐",
+};
+const GATE_FILES: Record<string, string> = {
+  employees: "./gate-employees.html",
+  clients: "./gate-clients.html",
+  business: "./gate-business.html",
+  social: "./gate-social.html",
+};
+
+function GateCard({ gateKey, label, delay }: { gateKey: string; label: string; delay: number }) {
+  return (
+    <button
+      className="gate-card"
+      style={{ animationDelay: `${delay}ms` }}
+      onClick={() => {
+        sessionStorage.setItem("aqx_auth_entry", "true");
+        window.location.href = GATE_FILES[gateKey];
+      }}
+    >
+      <span className="gate-icon">{GATE_ICONS[gateKey]}</span>
+      <span className="gate-label">{label}</span>
+      <div className="gate-shine" />
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 🏢 Holding Banner
+// ─────────────────────────────────────────────
+function HoldingBanner({ text }: { text: string }) {
+  return (
+    <div className="holding-banner">
+      <div className="holding-inner">
+        <span className="holding-diamond">◆</span>
+        <span className="holding-text">{text}</span>
+        <span className="holding-diamond">◆</span>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 👆 Hand Pointer — Next Page
+// ─────────────────────────────────────────────
+function HandPointer({ label, file }: { label: string; file: string }) {
+  return (
+    <button className="hand-pointer" onClick={() => { sessionStorage.setItem("aqx_auth_entry", "true"); window.location.href = file; }}>
+      <span className="hand-emoji">👆</span>
+      <span className="hand-label">{label}</span>
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 📋 Sidebar Nav Item
+// ─────────────────────────────────────────────
+const NAV_ITEMS = [
+  { key: "profile", emoji: "👤", file: "./profile.html" },
+  { key: "settings", emoji: "⚙️", file: "./settings.html" },
+  { key: "notifications", emoji: "🔔", file: "./notifications.html" },
+  { key: "support", emoji: "🎧", file: "./support.html" },
+  { key: "ai", emoji: "🤖", file: "./alqurmanix-ai.html" },
+  { key: "docs", emoji: "📚", file: "./docs-membership.html" },
+  { key: "policies", emoji: "⚖️", file: "./policies.html" },
+  { key: "parking", emoji: "🅿️", file: "./parking.html" },
+  { key: "wallet", emoji: "💰", file: "./wallet.html" },
+  { key: "earnCoin", emoji: "🪙", file: "./earn-coin.html" },
+  { key: "careers", emoji: "💼", file: "./careers.html" },
+  { key: "supportUs", emoji: "❤️", file: "./support-us.html" },
+  { key: "donate", emoji: "🤲", file: "./donate.html" },
+  { key: "marketplace", emoji: "🛒", file: "./marketplace.html" },
+  { key: "community", emoji: "🏛️", file: "./community.html" },
+];
+
+function NavItem({ emoji, label, file, delay }: { emoji: string; label: string; file: string; delay: number }) {
+  return (
+    <button
+      className="nav-item"
+      style={{ animationDelay: `${delay}ms` }}
+      onClick={() => { sessionStorage.setItem("aqx_auth_entry", "true"); window.location.href = file; }}
+    >
+      <span className="nav-emoji">{emoji}</span>
+      <span className="nav-label">{label}</span>
+      <span className="nav-arrow">›</span>
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 🏠 Main Dashboard
+// ─────────────────────────────────────────────
+export default function Dashboard() {
+  const { user, userData, status } = useAuthGuard();
+  const [lang, setLang] = useState<LangKey>("ar");
+  const { time, date } = useLiveClock(lang);
+  const t = LANGS[lang].t;
+  const dir = LANGS[lang].dir;
+
+  // Redirect on any unauthorized state
+  useEffect(() => {
+    if (status === "unauthorized") {
+      setTimeout(() => redirectToIndex(), 1200);
+    }
+  }, [status]);
+
+  // Intercept back/forward & history manipulation
+  useEffect(() => {
+    const guard = () => {
+      if (!sessionStorage.getItem("aqx_auth_entry")) {
+        redirectToIndex();
+      }
+    };
+    window.addEventListener("popstate", guard);
+    window.history.pushState(null, "", window.location.href);
+    return () => window.removeEventListener("popstate", guard);
+  }, []);
+
+  if (status === "loading") {
+    return (
+      <div className="screen-center">
+        <div className="spinner-ring" />
+        <p className="loading-text">{t.loading}</p>
+      </div>
+    );
+  }
+
+  if (status === "unauthorized") {
+    return (
+      <div className="screen-center">
+        <div className="unauthorized-icon">🔒</div>
+        <p className="loading-text">{t.unauthorized}</p>
+        <p className="redirect-text">{t.redirecting}</p>
+      </div>
+    );
+  }
+
+  const displayName = userData?.displayName || user?.displayName || user?.email?.split("@")[0] || "—";
+
+  return (
+    <>
+      <style>{CSS}</style>
+      <div className="dashboard-root" dir={dir}>
+
+        {/* ── Sidebar ── */}
+        <aside className="sidebar">
+
+          {/* Clock Block */}
+          <div className="clock-block">
+            <div className="clock-time">{time}</div>
+            <div className="clock-date">{date}</div>
           </div>
-          <!-- Globe -->
-          <div class="globe-wrapper" id="globe-wrapper">
-            <div class="globe-btn" id="globe-btn">
-              <div class="globe-orb">
-                <svg class="globe-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <radialGradient id="gGrad" cx="40%" cy="35%">
-                      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.9"/>
-                      <stop offset="60%" stop-color="#1a1a2e" stop-opacity="0.95"/>
-                      <stop offset="100%" stop-color="#0d0d1a"/>
-                    </radialGradient>
-                  </defs>
-                  <circle cx="30" cy="30" r="28" fill="url(#gGrad)" stroke="#d4af37" stroke-width="0.8" stroke-opacity="0.6"/>
-                  <ellipse cx="30" cy="30" rx="14" ry="28" fill="none" stroke="#d4af37" stroke-width="0.5" stroke-opacity="0.4"/>
-                  <ellipse cx="30" cy="30" rx="28" ry="8" fill="none" stroke="#d4af37" stroke-width="0.5" stroke-opacity="0.4"/>
-                  <ellipse cx="30" cy="30" rx="28" ry="16" fill="none" stroke="#d4af37" stroke-width="0.3" stroke-opacity="0.3"/>
-                </svg>
-                <span class="globe-flag" id="globe-flag">🇸🇦</span>
+
+          {/* Nav Items */}
+          <nav className="nav-list">
+            {NAV_ITEMS.map((item, i) => (
+              <NavItem
+                key={item.key}
+                emoji={item.emoji}
+                label={t[item.key] || item.key}
+                file={item.file}
+                delay={i * 40}
+              />
+            ))}
+          </nav>
+
+          {/* Logout */}
+          <button
+            className="logout-btn"
+            onClick={async () => {
+              sessionStorage.removeItem("aqx_auth_entry");
+              await signOut(auth);
+              redirectToIndex();
+            }}
+          >
+            🚪 {t.logout}
+          </button>
+        </aside>
+
+        {/* ── Main Content ── */}
+        <main className="main-content">
+
+          {/* Top Bar */}
+          <div className="topbar">
+            <AnimatedLogo />
+            <div className="topbar-right">
+              <ConnectionBadge label={t.connected} />
+              <GlobeSelector lang={lang} setLang={setLang} />
+              <div className="user-chip">
+                <span className="user-avatar">👤</span>
+                <span className="user-name">{displayName}</span>
               </div>
             </div>
-            <div class="lang-dropdown" id="lang-dropdown" style="display:none;"></div>
           </div>
-          <!-- User -->
-          <div class="user-chip">
-            <span>👤</span>
-            <span class="user-name" id="user-name">---</span>
+
+          {/* Welcome Strip */}
+          <div className="welcome-strip">
+            <span className="welcome-text">{t.welcome}</span>
+            <span className="welcome-brand">&nbsp;AlQurmanix</span>
+            <span className="welcome-sub">&nbsp;✦</span>
           </div>
-        </div>
+
+          {/* Gates Section */}
+          <section className="gates-section">
+            <h2 className="section-title">{t.gatesTitle}</h2>
+            <div className="gates-grid">
+              <GateCard gateKey="employees" label={t.employees} delay={0} />
+              <GateCard gateKey="clients" label={t.clients} delay={80} />
+              <GateCard gateKey="business" label={t.business} delay={160} />
+              <GateCard gateKey="social" label={t.social} delay={240} />
+            </div>
+          </section>
+
+          {/* Holding Banner */}
+          <HoldingBanner text={t.holding} />
+
+          {/* Hand Pointer */}
+          <HandPointer label={t.nextPage} file="./marketplace.html" />
+
+        </main>
       </div>
+    </>
+  );
+}
 
-      <!-- Welcome -->
-      <div class="welcome-strip">
-        <span class="welcome-text" id="lbl-welcome">أهلاً بك في</span>
-        <span class="welcome-brand">&nbsp;AlQurmanix&nbsp;</span>
-        <span style="color:var(--gold)">✦</span>
-      </div>
+// ─────────────────────────────────────────────
+// 🎨 CSS — Ultra Luxury Gold & Midnight
+// ─────────────────────────────────────────────
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Scheherazade+New:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');
 
-      <!-- Gates -->
-      <section>
-        <h2 class="section-title" id="lbl-gates-title">اختر بوابتك</h2>
-        <div class="gates-grid" id="gates-grid"></div>
-      </section>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      <!-- Holding Banner -->
-      <div class="holding-banner">
-        <div class="holding-inner">
-          <span class="holding-diamond">◆</span>
-          <span class="holding-text" id="lbl-holding">مجموعة شركات AlQurmanix القابضة ش.م.م</span>
-          <span class="holding-diamond">◆</span>
-        </div>
-      </div>
+  :root {
+    --gold: #d4af37;
+    --gold2: #f0d060;
+    --gold3: #c8961e;
+    --bg-deep: #050510;
+    --bg-mid: #0a0a1f;
+    --bg-card: #0f0f2a;
+    --bg-glass: rgba(212,175,55,0.04);
+    --border-gold: rgba(212,175,55,0.25);
+    --text-primary: #f5e6b8;
+    --text-muted: rgba(245,230,184,0.55);
+    --neon-green: #00ff88;
+    --sidebar-w: 280px;
+    --radius: 14px;
+    --shadow-gold: 0 0 24px rgba(212,175,55,0.18), 0 4px 32px rgba(0,0,0,0.7);
+  }
 
-      <!-- Hand Pointer -->
-      <a class="hand-pointer" id="hand-pointer" href="./marketplace.html">
-        <span class="hand-emoji">👆</span>
-        <span class="hand-label" id="lbl-next">الصفحة التالية</span>
-      </a>
+  html, body, #root { height: 100%; background: var(--bg-deep); }
 
-    </main>
-  </div>
+  /* ── Loading / Unauthorized Screens ── */
+  .screen-center {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 30%, #1a1020 0%, var(--bg-deep) 70%);
+    gap: 24px; z-index: 9999;
+  }
+  .spinner-ring {
+    width: 72px; height: 72px; border-radius: 50%;
+    border: 3px solid var(--border-gold);
+    border-top-color: var(--gold);
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Scheherazade New', serif; color: var(--text-muted); font-size: 1.1rem; letter-spacing: 0.05em; }
+  .unauthorized-icon { font-size: 3.5rem; animation: pulseGlow 1.5s ease-in-out infinite; }
+  .redirect-text { color: var(--gold3); font-size: 0.85rem; }
+  @keyframes pulseGlow {
+    0%,100% { filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); }
+    50% { filter: drop-shadow(0 0 20px rgba(212,175,55,0.9)); }
+  }
 
-  <script>
-    // ── Translations ──
-    const LANGS = {
-      ar: { flag:"🇸🇦", label:"عربي", dir:"rtl", t:{
-        profile:"الملف الشخصي",settings:"الإعدادات",notifications:"نظام الإشعارات",
-        support:"الدعم الفني",ai:"AlQurmanix AI",docs:"التوثيقات والعضوية",
-        policies:"سياسات وقوانين AlQurmanix",parking:"مكان مركون",
-        wallet:"محفظة AlQurmanix Coin",earnCoin:"اربح عملة AlQurmanix Coin",
-        careers:"الوظائف",supportUs:"ادعم AlQurmanix",donate:"تبرع",
-        marketplace:"السوق التجاري",community:"المنتدى الاجتماعي",
-        gatesTitle:"اختر بوابتك",employees:"بوابة الموظفين",
-        clients:"بوابة العملاء",business:"بوابة التجارة والأعمال",
-        social:"البوابة الاجتماعية والمنتدى",
-        holding:"مجموعة شركات AlQurmanix القابضة ش.م.م",
-        connected:"متصل",nextPage:"الصفحة التالية",welcome:"أهلاً بك في",logout:"تسجيل الخروج",
-      }},
-      en: { flag:"🇬🇧", label:"English", dir:"ltr", t:{
-        profile:"Profile",settings:"Settings",notifications:"Notifications",
-        support:"Technical Support",ai:"AlQurmanix AI",docs:"Docs & Membership",
-        policies:"AlQurmanix Policies",parking:"Parking Zone",
-        wallet:"AlQurmanix Coin Wallet",earnCoin:"Earn AlQurmanix Coin",
-        careers:"Careers",supportUs:"Support AlQurmanix",donate:"Donate",
-        marketplace:"Marketplace",community:"Social Forum",
-        gatesTitle:"Choose Your Gateway",employees:"Employees Portal",
-        clients:"Clients Portal",business:"Business & Trade Portal",
-        social:"Social & Community Portal",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"Connected",nextPage:"Next Page",welcome:"Welcome to",logout:"Sign Out",
-      }},
-      de: { flag:"🇩🇪", label:"Deutsch", dir:"ltr", t:{
-        profile:"Profil",settings:"Einstellungen",notifications:"Benachrichtigungen",
-        support:"Technischer Support",ai:"AlQurmanix KI",docs:"Dokumentation & Mitgliedschaft",
-        policies:"AlQurmanix Richtlinien",parking:"Parkzone",
-        wallet:"AlQurmanix Coin Wallet",earnCoin:"AlQurmanix Coin verdienen",
-        careers:"Karriere",supportUs:"AlQurmanix unterstützen",donate:"Spenden",
-        marketplace:"Marktplatz",community:"Soziales Forum",
-        gatesTitle:"Gateway wählen",employees:"Mitarbeiterportal",
-        clients:"Kundenportal",business:"Geschäftsportal",
-        social:"Soziales & Community Portal",
-        holding:"AlQurmanix Unternehmensgruppe GmbH",
-        connected:"Verbunden",nextPage:"Nächste Seite",welcome:"Willkommen bei",logout:"Abmelden",
-      }},
-      es: { flag:"🇪🇸", label:"Español", dir:"ltr", t:{
-        profile:"Perfil",settings:"Configuración",notifications:"Notificaciones",
-        support:"Soporte Técnico",ai:"AlQurmanix IA",docs:"Documentación y Membresía",
-        policies:"Políticas de AlQurmanix",parking:"Zona de Estacionamiento",
-        wallet:"Cartera AlQurmanix Coin",earnCoin:"Ganar AlQurmanix Coin",
-        careers:"Carreras",supportUs:"Apoyar AlQurmanix",donate:"Donar",
-        marketplace:"Mercado",community:"Foro Social",
-        gatesTitle:"Elige tu Portal",employees:"Portal de Empleados",
-        clients:"Portal de Clientes",business:"Portal de Negocios",
-        social:"Portal Social y Comunidad",
-        holding:"AlQurmanix Group Holding SRL",
-        connected:"Conectado",nextPage:"Siguiente Página",welcome:"Bienvenido a",logout:"Cerrar Sesión",
-      }},
-      fr: { flag:"🇫🇷", label:"Français", dir:"ltr", t:{
-        profile:"Profil",settings:"Paramètres",notifications:"Notifications",
-        support:"Support Technique",ai:"AlQurmanix IA",docs:"Documentation & Adhésion",
-        policies:"Politiques AlQurmanix",parking:"Zone de Parking",
-        wallet:"Portefeuille AlQurmanix Coin",earnCoin:"Gagner AlQurmanix Coin",
-        careers:"Carrières",supportUs:"Soutenir AlQurmanix",donate:"Faire un Don",
-        marketplace:"Marché",community:"Forum Social",
-        gatesTitle:"Choisissez votre Portail",employees:"Portail Employés",
-        clients:"Portail Clients",business:"Portail Commercial",
-        social:"Portail Social & Communauté",
-        holding:"AlQurmanix Group Holding SARL",
-        connected:"Connecté",nextPage:"Page Suivante",welcome:"Bienvenue sur",logout:"Se Déconnecter",
-      }},
-      it: { flag:"🇮🇹", label:"Italiano", dir:"ltr", t:{
-        profile:"Profilo",settings:"Impostazioni",notifications:"Notifiche",
-        support:"Supporto Tecnico",ai:"AlQurmanix IA",docs:"Documentazione & Membership",
-        policies:"Politiche AlQurmanix",parking:"Zona Parcheggio",
-        wallet:"Portafoglio AlQurmanix Coin",earnCoin:"Guadagna AlQurmanix Coin",
-        careers:"Carriere",supportUs:"Supporta AlQurmanix",donate:"Dona",
-        marketplace:"Mercato",community:"Forum Sociale",
-        gatesTitle:"Scegli il tuo Portale",employees:"Portale Dipendenti",
-        clients:"Portale Clienti",business:"Portale Business",
-        social:"Portale Sociale & Community",
-        holding:"AlQurmanix Group Holding SRL",
-        connected:"Connesso",nextPage:"Pagina Successiva",welcome:"Benvenuto su",logout:"Disconnetti",
-      }},
-      hi: { flag:"🇮🇳", label:"हिंदी", dir:"ltr", t:{
-        profile:"प्रोफ़ाइल",settings:"सेटिंग्स",notifications:"सूचनाएं",
-        support:"तकनीकी सहायता",ai:"AlQurmanix AI",docs:"दस्तावेज़ और सदस्यता",
-        policies:"AlQurmanix नीतियां",parking:"पार्किंग ज़ोन",
-        wallet:"AlQurmanix Coin वॉलेट",earnCoin:"AlQurmanix Coin कमाएं",
-        careers:"करियर",supportUs:"AlQurmanix का समर्थन करें",donate:"दान करें",
-        marketplace:"बाज़ार",community:"सामाजिक मंच",
-        gatesTitle:"अपना गेटवे चुनें",employees:"कर्मचारी पोर्टल",
-        clients:"ग्राहक पोर्टल",business:"व्यापार पोर्टल",
-        social:"सामाजिक पोर्टल",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"जुड़ा हुआ",nextPage:"अगला पृष्ठ",welcome:"स्वागत है",logout:"लॉग आउट",
-      }},
-      ko: { flag:"🇰🇷", label:"한국어", dir:"ltr", t:{
-        profile:"프로필",settings:"설정",notifications:"알림",
-        support:"기술 지원",ai:"AlQurmanix AI",docs:"문서 및 멤버십",
-        policies:"AlQurmanix 정책",parking:"주차 구역",
-        wallet:"AlQurmanix Coin 지갑",earnCoin:"AlQurmanix Coin 획득",
-        careers:"채용",supportUs:"AlQurmanix 지원",donate:"기부",
-        marketplace:"마켓플레이스",community:"소셜 포럼",
-        gatesTitle:"게이트웨이 선택",employees:"직원 포털",
-        clients:"고객 포털",business:"비즈니스 포털",
-        social:"소셜 & 커뮤니티 포털",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"연결됨",nextPage:"다음 페이지",welcome:"환영합니다",logout:"로그아웃",
-      }},
-      ja: { flag:"🇯🇵", label:"日本語", dir:"ltr", t:{
-        profile:"プロフィール",settings:"設定",notifications:"通知",
-        support:"テクニカルサポート",ai:"AlQurmanix AI",docs:"ドキュメント・会員",
-        policies:"AlQurmanix ポリシー",parking:"駐車ゾーン",
-        wallet:"AlQurmanix Coin ウォレット",earnCoin:"AlQurmanix Coinを稼ぐ",
-        careers:"採用情報",supportUs:"AlQurmanixをサポート",donate:"寄付",
-        marketplace:"マーケットプレイス",community:"ソーシャルフォーラム",
-        gatesTitle:"ゲートウェイを選択",employees:"従業員ポータル",
-        clients:"クライアントポータル",business:"ビジネスポータル",
-        social:"ソーシャル・コミュニティ",
-        holding:"AlQurmanix グループホールディング",
-        connected:"接続済み",nextPage:"次のページ",welcome:"ようこそ",logout:"サインアウト",
-      }},
-      zh: { flag:"🇨🇳", label:"中文", dir:"ltr", t:{
-        profile:"个人资料",settings:"设置",notifications:"通知",
-        support:"技术支持",ai:"AlQurmanix 人工智能",docs:"文档与会员",
-        policies:"AlQurmanix 政策",parking:"停车区",
-        wallet:"AlQurmanix Coin 钱包",earnCoin:"赚取 AlQurmanix Coin",
-        careers:"职业",supportUs:"支持 AlQurmanix",donate:"捐赠",
-        marketplace:"市场",community:"社交论坛",
-        gatesTitle:"选择您的入口",employees:"员工门户",
-        clients:"客户门户",business:"商业门户",
-        social:"社交与社区门户",
-        holding:"AlQurmanix 集团控股有限公司",
-        connected:"已连接",nextPage:"下一页",welcome:"欢迎来到",logout:"退出登录",
-      }},
-      tr: { flag:"🇹🇷", label:"Türkçe", dir:"ltr", t:{
-        profile:"Profil",settings:"Ayarlar",notifications:"Bildirimler",
-        support:"Teknik Destek",ai:"AlQurmanix Yapay Zeka",docs:"Belgeleme ve Üyelik",
-        policies:"AlQurmanix Politikaları",parking:"Park Bölgesi",
-        wallet:"AlQurmanix Coin Cüzdanı",earnCoin:"AlQurmanix Coin Kazan",
-        careers:"Kariyer",supportUs:"AlQurmanix'i Destekle",donate:"Bağış Yap",
-        marketplace:"Pazar Yeri",community:"Sosyal Forum",
-        gatesTitle:"Kapınızı Seçin",employees:"Çalışan Portalı",
-        clients:"Müşteri Portalı",business:"Ticaret Portalı",
-        social:"Sosyal & Topluluk Portalı",
-        holding:"AlQurmanix Group Holding LLC",
-        connected:"Bağlandı",nextPage:"Sonraki Sayfa",welcome:"Hoş Geldiniz",logout:"Çıkış Yap",
-      }},
-    };
+  /* ── Root Layout ── */
+  .dashboard-root {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(212,175,55,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 90% 100%, rgba(212,175,55,0.04) 0%, transparent 60%),
+      var(--bg-deep);
+    font-family: 'Scheherazade New', 'Playfair Display', serif;
+  }
+  [dir="rtl"] .dashboard-root { grid-template-columns: 1fr var(--sidebar-w); }
 
-    const NAV_ITEMS = [
-      {key:"profile",emoji:"👤",file:"./profile.html"},
-      {key:"settings",emoji:"⚙️",file:"./settings.html"},
-      {key:"notifications",emoji:"🔔",file:"./notifications.html"},
-      {key:"support",emoji:"🎧",file:"./support.html"},
-      {key:"ai",emoji:"🤖",file:"./alqurmanix-ai.html"},
-      {key:"docs",emoji:"📚",file:"./docs-membership.html"},
-      {key:"policies",emoji:"⚖️",file:"./policies.html"},
-      {key:"parking",emoji:"🅿️",file:"./parking.html"},
-      {key:"wallet",emoji:"💰",file:"./wallet.html"},
-      {key:"earnCoin",emoji:"🪙",file:"./earn-coin.html"},
-      {key:"careers",emoji:"💼",file:"./careers.html"},
-      {key:"supportUs",emoji:"❤️",file:"./support-us.html"},
-      {key:"donate",emoji:"🤲",file:"./donate.html"},
-      {key:"marketplace",emoji:"🛒",file:"./marketplace.html"},
-      {key:"community",emoji:"🏛️",file:"./community.html"},
-    ];
+  /* ── Sidebar ── */
+  .sidebar {
+    background:
+      linear-gradient(180deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 100%),
+      var(--bg-card);
+    border-right: 1px solid var(--border-gold);
+    display: flex; flex-direction: column;
+    height: 100vh; position: sticky; top: 0;
+    overflow-y: auto; padding: 20px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212,175,55,0.2) transparent;
+  }
+  [dir="rtl"] .sidebar { border-right: none; border-left: 1px solid var(--border-gold); }
 
-    const GATES = [
-      {key:"employees",emoji:"👔",file:"./gate-employees.html"},
-      {key:"clients",emoji:"🤝",file:"./gate-clients.html"},
-      {key:"business",emoji:"🏢",file:"./gate-business.html"},
-      {key:"social",emoji:"🌐",file:"./gate-social.html"},
-    ];
+  /* Clock Block */
+  .clock-block {
+    background: linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.04) 100%);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-gold);
+  }
+  .clock-time {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.35rem; color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 12px rgba(212,175,55,0.5);
+  }
+  .clock-date {
+    font-size: 0.75rem; color: var(--text-muted);
+    margin-top: 4px; line-height: 1.5;
+  }
 
-    let currentLang = "ar";
+  /* Nav List */
+  .nav-list { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent; color: var(--text-primary);
+    cursor: pointer; font-family: inherit; font-size: 0.88rem;
+    transition: all 0.22s ease;
+    animation: fadeInLeft 0.4s ease both;
+    text-align: start;
+  }
+  @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+  [dir="rtl"] @keyframes fadeInLeft { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+  .nav-item:hover {
+    background: rgba(212,175,55,0.1);
+    border-color: var(--border-gold);
+    color: var(--gold2);
+    transform: translateX(4px);
+    box-shadow: 0 0 12px rgba(212,175,55,0.15);
+  }
+  [dir="rtl"] .nav-item:hover { transform: translateX(-4px); }
+  .nav-emoji { font-size: 1.1rem; flex-shrink: 0; }
+  .nav-label { flex: 1; }
+  .nav-arrow { color: var(--gold3); font-size: 1.1rem; opacity: 0.6; }
 
-    function applyLang(lang) {
-      currentLang = lang;
-      const L = LANGS[lang];
-      const t = L.t;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = L.dir;
-      document.getElementById("globe-flag").textContent = L.flag;
+  /* Logout */
+  .logout-btn {
+    margin-top: 16px; padding: 11px 16px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,80,80,0.3);
+    background: rgba(255,80,80,0.06);
+    color: #ff7070; cursor: pointer;
+    font-family: inherit; font-size: 0.88rem;
+    transition: all 0.2s ease;
+  }
+  .logout-btn:hover { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.6); }
 
-      // Labels
-      document.getElementById("lbl-connected").textContent = t.connected;
-      document.getElementById("lbl-welcome").textContent = t.welcome;
-      document.getElementById("lbl-holding").textContent = t.holding;
-      document.getElementById("lbl-next").textContent = t.nextPage;
-      document.getElementById("lbl-logout").textContent = t.logout;
-      document.getElementById("lbl-gates-title").textContent = t.gatesTitle;
+  /* ── Main Content ── */
+  .main-content {
+    padding: 28px 36px;
+    display: flex; flex-direction: column; gap: 32px;
+    overflow-y: auto; min-height: 100vh;
+  }
 
-      // Nav
-      const navList = document.getElementById("nav-list");
-      navList.innerHTML = "";
-      NAV_ITEMS.forEach((item, i) => {
-        const a = document.createElement("a");
-        a.className = "nav-item";
-        a.href = item.file;
-        a.style.animationDelay = (i * 40) + "ms";
-        a.onclick = (e) => { e.preventDefault(); sessionStorage.setItem("aqx_auth_entry","true"); window.location.href = item.file; };
-        a.innerHTML = `<span class="nav-emoji">${item.emoji}</span><span class="nav-label">${t[item.key]||item.key}</span><span class="nav-arrow">›</span>`;
-        navList.appendChild(a);
-      });
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-gold);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
 
-      // Gates
-      const gatesGrid = document.getElementById("gates-grid");
-      gatesGrid.innerHTML = "";
-      GATES.forEach((gate, i) => {
-        const a = document.createElement("a");
-        a.className = "gate-card";
-        a.href = gate.file;
-        a.style.animationDelay = (i * 80) + "ms";
-        a.onclick = (e) => { e.preventDefault(); sessionStorage.setItem("aqx_auth_entry","true"); window.location.href = gate.file; };
-        a.innerHTML = `<span class="gate-icon">${gate.emoji}</span><span class="gate-label">${t[gate.key]||gate.key}</span><div class="gate-shine"></div>`;
-        gatesGrid.appendChild(a);
-      });
+  /* Animated Logo */
+  .logo-wrap { position: relative; display: inline-block; }
+  .logo-text {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.7rem; font-weight: 900;
+    background: linear-gradient(135deg, #f0d060 0%, #d4af37 40%, #c8961e 70%, #f0d060 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmerGold 3s linear infinite;
+    letter-spacing: 0.08em;
+    text-shadow: none;
+    filter: drop-shadow(0 0 14px rgba(212,175,55,0.45));
+  }
+  @keyframes shimmerGold {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .logo-underline {
+    height: 2px; margin-top: 4px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: pulseWidth 2s ease-in-out infinite;
+  }
+  @keyframes pulseWidth {
+    0%,100% { opacity: 0.4; transform: scaleX(0.7); }
+    50% { opacity: 1; transform: scaleX(1); }
+  }
 
-      // Lang dropdown
-      const dd = document.getElementById("lang-dropdown");
-      dd.innerHTML = "";
-      Object.entries(LANGS).forEach(([k, v]) => {
-        const btn = document.createElement("button");
-        btn.className = "lang-item" + (k === lang ? " active-lang" : "");
-        btn.innerHTML = `<span class="lang-flag">${v.flag}</span><span>${v.label}</span>`;
-        btn.onclick = () => { applyLang(k); dd.style.display = "none"; };
-        dd.appendChild(btn);
-      });
-    }
+  /* Connection Badge */
+  .connection-badge { display: flex; align-items: center; gap: 8px; }
+  .neon-bulb {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--neon-green);
+    box-shadow: 0 0 6px var(--neon-green), 0 0 14px rgba(0,255,136,0.5);
+    animation: blinkNeon 2.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes blinkNeon {
+    0%,100% { opacity: 1; box-shadow: 0 0 6px var(--neon-green), 0 0 18px rgba(0,255,136,0.6); }
+    50% { opacity: 0.55; box-shadow: 0 0 3px var(--neon-green); }
+  }
+  .conn-label { font-size: 0.8rem; color: var(--neon-green); letter-spacing: 0.05em; }
 
-    // Globe toggle
-    document.getElementById("globe-btn").addEventListener("click", () => {
-      const dd = document.getElementById("lang-dropdown");
-      dd.style.display = dd.style.display === "none" ? "grid" : "none";
-    });
-    document.addEventListener("click", (e) => {
-      if (!document.getElementById("globe-wrapper").contains(e.target)) {
-        document.getElementById("lang-dropdown").style.display = "none";
-      }
-    });
+  /* Globe */
+  .globe-wrapper { position: relative; }
+  .globe-btn { cursor: pointer; }
+  .globe-orb {
+    width: 42px; height: 42px; position: relative;
+    animation: rotateGlobe 12s linear infinite;
+    transition: transform 0.3s;
+  }
+  .globe-orb:hover { transform: scale(1.15); }
+  @keyframes rotateGlobe { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .globe-svg { width: 100%; height: 100%; }
+  .globe-current-flag {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; animation: counterRotate 12s linear infinite;
+  }
+  @keyframes counterRotate { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+  .lang-dropdown {
+    position: absolute; top: 52px; right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius);
+    padding: 8px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4px; z-index: 1000; min-width: 220px;
+    box-shadow: var(--shadow-gold);
+    animation: dropIn 0.18s ease;
+  }
+  [dir="rtl"] .lang-dropdown { right: auto; left: 0; }
+  @keyframes dropIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  .lang-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: 8px;
+    background: transparent; border: 1px solid transparent;
+    color: var(--text-primary); cursor: pointer;
+    font-size: 0.82rem; font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  .lang-item:hover, .lang-item.active {
+    background: rgba(212,175,55,0.1); border-color: var(--border-gold); color: var(--gold2);
+  }
+  .lang-flag { font-size: 1.2rem; }
+  .lang-label { font-size: 0.82rem; }
 
-    // Clock
-    function tickClock() {
-      const now = new Date();
-      const lang = currentLang;
-      const locale = lang==="ar"?"ar-SA":lang==="zh"?"zh-CN":lang==="ko"?"ko-KR":lang==="ja"?"ja-JP":lang==="hi"?"hi-IN":"en-US";
-      document.getElementById("clock-time").textContent = now.toLocaleTimeString(locale, {hour:"2-digit",minute:"2-digit",second:"2-digit"});
-      document.getElementById("clock-date").textContent = now.toLocaleDateString(locale, {weekday:"long",year:"numeric",month:"long",day:"numeric"});
-    }
-    setInterval(tickClock, 1000);
-    tickClock();
+  /* User Chip */
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 50px;
+    border: 1px solid var(--border-gold);
+    background: rgba(212,175,55,0.06);
+    color: var(--text-primary);
+  }
+  .user-avatar { font-size: 1rem; }
+  .user-name { font-size: 0.82rem; color: var(--gold2); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    // renderDashboard called from Firebase module
-    window.renderDashboard = function(user, userData) {
-      const name = userData.displayName || user.displayName || user.email.split("@")[0];
-      document.getElementById("user-name").textContent = name;
-      applyLang("ar");
-      document.getElementById("loading-screen").style.display = "none";
-      document.getElementById("dashboard").style.display = "grid";
-    };
-  </script>
-</body>
-</html>
+  /* Welcome Strip */
+  .welcome-strip {
+    text-align: center;
+    padding: 18px;
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 100%);
+    box-shadow: var(--shadow-gold);
+  }
+  .welcome-text { font-size: 1.4rem; color: var(--text-muted); }
+  .welcome-brand {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.6rem; font-weight: 900;
+    background: linear-gradient(90deg, #f0d060, #d4af37, #c8961e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .welcome-sub { color: var(--gold); font-size: 1.2rem; }
+
+  /* Gates Section */
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem; color: var(--gold);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .gates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .gate-card {
+    position: relative; overflow: hidden;
+    padding: 28px 20px; border-radius: var(--radius);
+    border: 1px solid var(--border-gold);
+    background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.03) 100%);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    cursor: pointer; font-family: inherit; color: var(--text-primary);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease both;
+    box-shadow: var(--shadow-gold);
+  }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+  .gate-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--gold);
+    box-shadow: 0 8px 40px rgba(212,175,55,0.25), 0 0 0 1px rgba(212,175,55,0.3);
+    background: linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.06) 100%);
+  }
+  .gate-icon { font-size: 2.4rem; filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); }
+  .gate-label { font-size: 0.92rem; color: var(--gold2); text-align: center; font-weight: 600; }
+  .gate-shine {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* Holding Banner */
+  .holding-banner {
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius);
+    padding: 18px 24px;
+    background: linear-gradient(90deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.03) 50%, rgba(212,175,55,0.08) 100%);
+    animation: bannerFloat 3s ease-in-out infinite;
+    box-shadow: var(--shadow-gold);
+  }
+  @keyframes bannerFloat {
+    0%,100% { transform: translateY(0); box-shadow: var(--shadow-gold); }
+    50% { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(212,175,55,0.22), 0 4px 32px rgba(0,0,0,0.7); }
+  }
+  .holding-inner { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .holding-diamond { color: var(--gold); font-size: 0.8rem; animation: rotateDiamond 4s linear infinite; }
+  @keyframes rotateDiamond { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .holding-text {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.9rem; color: var(--gold2);
+    letter-spacing: 0.08em; text-align: center;
+  }
+
+  /* Hand Pointer */
+  .hand-pointer {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px 28px; border-radius: var(--radius);
+    border: 1px solid var(--border-gold);
+    background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, transparent 100%);
+    cursor: pointer; font-family: inherit; color: var(--text-primary);
+    align-self: center;
+    animation: handBounce 1.8s ease-in-out infinite;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-gold);
+  }
+  @keyframes handBounce {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-6px) scale(1.03); }
+  }
+  .hand-pointer:hover {
+    background: rgba(212,175,55,0.18);
+    border-color: var(--gold);
+    box-shadow: 0 0 24px rgba(212,175,55,0.3);
+  }
+  .hand-emoji { font-size: 2rem; animation: pointUp 1.2s ease-in-out infinite; }
+  @keyframes pointUp {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  .hand-label {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem; color: var(--gold2);
+    letter-spacing: 0.08em;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.25); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.45); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dashboard-root { grid-template-columns: 1fr; }
+    [dir="rtl"] .dashboard-root { grid-template-columns: 1fr; }
+    .sidebar { position: fixed; bottom: 0; left: 0; right: 0; height: auto; max-height: 50vh; overflow-y: auto; z-index: 100; border-right: none; border-top: 1px solid var(--border-gold); flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 12px; }
+    .main-content { padding: 16px; padding-bottom: 220px; }
+    .topbar { flex-wrap: wrap; gap: 12px; }
+    .gates-grid { grid-template-columns: 1fr 1fr; }
+  }
+`;
