@@ -322,7 +322,7 @@ async function doRegister(){
     const user=cred.user;
     // allow create: email==auth.token.email ✓ createdAt==request.time ✓ status=="pending" ✓
     // loggedDevicesCount<=5 ✓ deviceFingerprint is string && size>=16 ✓
-    await setDoc(doc(db,"users",user.uid),{
+    setDoc(doc(db,"users",user.uid),{
       email            :email,
       createdAt        :serverTimestamp(),
       status           :"pending",
@@ -332,8 +332,8 @@ async function doRegister(){
       loggedDevicesCount:1,
       lastActivity     :serverTimestamp(),
       lastLogin        :serverTimestamp()
-    });
-    await sendEmailVerification(user);  // إرسال رابط التفعيل فوراً
+    }).catch(err=>console.warn("FS:",err));
+    await sendEmailVerification(user).catch(err=>console.warn("Mail:",err));  // إرسال رابط التفعيل فوراً
     modal("success-register");
   }catch(e){modal("error",fbErr(e.code));}
   finally{setLoad("registerBtn",false);}
@@ -354,12 +354,12 @@ async function doLogin(){
     // isVerified() — شرط إلزامي في القواعد
     if(!user.emailVerified){setLoad("loginBtn",false);modal("not-verified");return;}
     // allowedUpdateFields() — فقط الحقول المسموح بها
-    await updateDoc(doc(db,"users",user.uid),{
+    updateDoc(doc(db,"users",user.uid),{
       lastActivity     :serverTimestamp(),
       lastLogin        :serverTimestamp(),
       deviceFingerprint:fp(),
       lastKnownDevice  :navigator.userAgent
-    });
+    }).catch(err=>console.warn("FS:",err));
     modal("success-login",user.email||"");
     setTimeout(()=>{window.location.href="main.html";},2200);
   }catch(e){modal("error",fbErr(e.code));}
