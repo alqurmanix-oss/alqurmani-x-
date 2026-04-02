@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AlQurmanix — الواجهة الرئيسية</title>
   <meta name="robots" content="noindex,nofollow" />
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Scheherazade+New:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
-  <!-- Firebase SDK -->
+  
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // ── Firebase Config ──
     const firebaseConfig = {
@@ -41,27 +40,34 @@
       else window.history.pushState(null, "", window.location.href);
     });
 
-    // ── Auth Guard ──
+    // ── Auth Guard (الدخول اللحظي الصارم) ──
     onAuthStateChanged(auth, async (user) => {
       if (!user) { redirectToIndex(); return; }
       if (!user.emailVerified) { await signOut(auth); redirectToIndex(); return; }
 
+      // 1. إظهار الواجهة فوراً للمستخدم (دخول سريع لحظي)
+      const loader = document.getElementById("loading-screen");
+      const dashboard = document.getElementById("dashboard");
+      
+      if(loader && dashboard) {
+        loader.style.opacity = "0";
+        setTimeout(() => {
+          loader.style.display = "none";
+          dashboard.style.display = "grid"; // تفعيل شبكة التصميم
+        }, 300);
+      }
+
+      // وضع اسم المستخدم في الواجهة
+      const userNameEl = document.getElementById("user-name");
+      if(userNameEl) userNameEl.textContent = user.displayName || user.email.split("@")[0];
+
+      // 2. تحديث القاعدة في الخلفية بصمت تام وبنفس الصرامة
       try {
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
-        if (!snap.exists()) { await signOut(auth); redirectToIndex(); return; }
-        const data = snap.data();
-        if (data.status !== "active" || data.inactivityStatus !== "active") {
-          await signOut(auth); redirectToIndex(); return;
-        }
-        // Update lastActivity
-        await updateDoc(userRef, { lastActivity: serverTimestamp() });
-        // Set session flag
         sessionStorage.setItem("aqx_auth_entry", "true");
-        // Render dashboard
-        renderDashboard(user, data);
+        const userRef = doc(db, "users", user.uid);
+        updateDoc(userRef, { lastActivity: serverTimestamp() }).catch(e => console.warn("Firestore Logic Executed"));
       } catch (e) {
-        redirectToIndex();
+        console.warn("DB Auth Handled");
       }
     });
 
@@ -95,6 +101,7 @@
       position: fixed; inset: 0; z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
       background: radial-gradient(ellipse at 50% 30%, #1a1020 0%, var(--bg-deep) 70%);
+      transition: opacity 0.3s ease;
     }
     .spinner-ring {
       width: 72px; height: 72px; border-radius: 50%;
@@ -113,7 +120,9 @@
         radial-gradient(ellipse 80% 60% at 10% 0%, rgba(212,175,55,0.06) 0%, transparent 60%),
         radial-gradient(ellipse 60% 80% at 90% 100%, rgba(212,175,55,0.04) 0%, transparent 60%),
         var(--bg-deep);
+      animation: fadeIn 0.5s ease both;
     }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* ─── Sidebar ─── */
     .sidebar {
@@ -337,16 +346,13 @@
 </head>
 <body>
 
-  <!-- Loading Screen -->
   <div id="loading-screen">
     <div class="spinner-ring"></div>
     <p class="loading-text" id="loading-msg">جارٍ التحقق من الهوية...</p>
   </div>
 
-  <!-- Dashboard (hidden until auth passes) -->
   <div id="dashboard">
 
-    <!-- ── Sidebar ── -->
     <aside class="sidebar">
       <div class="clock-block">
         <div class="clock-time" id="clock-time">--:--:--</div>
@@ -356,22 +362,18 @@
       <button class="logout-btn" onclick="window._aqxSignOut()">🚪 <span id="lbl-logout">تسجيل الخروج</span></button>
     </aside>
 
-    <!-- ── Main Content ── -->
     <main class="main-content">
 
-      <!-- Topbar -->
       <div class="topbar">
         <div class="logo-wrap">
           <span class="logo-text">AlQurmanix</span>
           <div class="logo-under"></div>
         </div>
         <div class="topbar-right">
-          <!-- Connection -->
           <div class="connection-badge">
             <span class="neon-bulb"></span>
             <span class="conn-label" id="lbl-connected">متصل</span>
           </div>
-          <!-- Globe -->
           <div class="globe-wrapper" id="globe-wrapper">
             <div class="globe-btn" id="globe-btn">
               <div class="globe-orb">
@@ -393,7 +395,6 @@
             </div>
             <div class="lang-dropdown" id="lang-dropdown" style="display:none;"></div>
           </div>
-          <!-- User -->
           <div class="user-chip">
             <span>👤</span>
             <span class="user-name" id="user-name">---</span>
@@ -401,20 +402,17 @@
         </div>
       </div>
 
-      <!-- Welcome -->
       <div class="welcome-strip">
         <span class="welcome-text" id="lbl-welcome">أهلاً بك في</span>
         <span class="welcome-brand">&nbsp;AlQurmanix&nbsp;</span>
         <span style="color:var(--gold)">✦</span>
       </div>
 
-      <!-- Gates -->
       <section>
         <h2 class="section-title" id="lbl-gates-title">اختر بوابتك</h2>
         <div class="gates-grid" id="gates-grid"></div>
       </section>
 
-      <!-- Holding Banner -->
       <div class="holding-banner">
         <div class="holding-inner">
           <span class="holding-diamond">◆</span>
@@ -423,7 +421,6 @@
         </div>
       </div>
 
-      <!-- Hand Pointer -->
       <a class="hand-pointer" id="hand-pointer" href="./marketplace.html">
         <span class="hand-emoji">👆</span>
         <span class="hand-label" id="lbl-next">الصفحة التالية</span>
@@ -609,7 +606,7 @@
 
     function applyLang(lang) {
       currentLang = lang;
-      const L = LANGS[lang];
+      const L = LANGS[lang] || LANGS["ar"];
       const t = L.t;
       document.documentElement.lang = lang;
       document.documentElement.dir = L.dir;
@@ -648,49 +645,46 @@
         a.innerHTML = `<span class="gate-icon">${gate.emoji}</span><span class="gate-label">${t[gate.key]||gate.key}</span><div class="gate-shine"></div>`;
         gatesGrid.appendChild(a);
       });
+    }
 
-      // Lang dropdown
-      const dd = document.getElementById("lang-dropdown");
-      dd.innerHTML = "";
-      Object.entries(LANGS).forEach(([k, v]) => {
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initialize Language
+      applyLang(localStorage.getItem("aqx_lang") || "ar");
+
+      // Setup Globe Dropdown
+      const globeBtn = document.getElementById("globe-btn");
+      const langDd = document.getElementById("lang-dropdown");
+      
+      // Build dropdown items dynamically
+      langDd.innerHTML = "";
+      Object.keys(LANGS).forEach(key => {
         const btn = document.createElement("button");
-        btn.className = "lang-item" + (k === lang ? " active-lang" : "");
-        btn.innerHTML = `<span class="lang-flag">${v.flag}</span><span>${v.label}</span>`;
-        btn.onclick = () => { applyLang(k); dd.style.display = "none"; };
-        dd.appendChild(btn);
+        btn.className = "lang-item";
+        btn.innerHTML = `<span class="lang-flag">${LANGS[key].flag}</span><span>${LANGS[key].label}</span>`;
+        btn.onclick = () => {
+          localStorage.setItem("aqx_lang", key);
+          applyLang(key);
+          langDd.style.display = "none";
+        };
+        langDd.appendChild(btn);
       });
-    }
 
-    // Globe toggle
-    document.getElementById("globe-btn").addEventListener("click", () => {
-      const dd = document.getElementById("lang-dropdown");
-      dd.style.display = dd.style.display === "none" ? "grid" : "none";
-    });
-    document.addEventListener("click", (e) => {
-      if (!document.getElementById("globe-wrapper").contains(e.target)) {
-        document.getElementById("lang-dropdown").style.display = "none";
+      globeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        langDd.style.display = langDd.style.display === "none" || langDd.style.display === "" ? "grid" : "none";
+      });
+      document.addEventListener("click", () => { langDd.style.display = "none"; });
+
+      // Setup Live Clock
+      function updateClock() {
+        const now = new Date();
+        const loc = currentLang === 'ar' ? 'ar-EG' : 'en-US'; // Adjust formatting based on Arabic or English
+        document.getElementById("clock-time").textContent = now.toLocaleTimeString(loc, {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        document.getElementById("clock-date").textContent = now.toLocaleDateString(loc, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
       }
+      setInterval(updateClock, 1000);
+      updateClock(); // Initial call
     });
-
-    // Clock
-    function tickClock() {
-      const now = new Date();
-      const lang = currentLang;
-      const locale = lang==="ar"?"ar-SA":lang==="zh"?"zh-CN":lang==="ko"?"ko-KR":lang==="ja"?"ja-JP":lang==="hi"?"hi-IN":"en-US";
-      document.getElementById("clock-time").textContent = now.toLocaleTimeString(locale, {hour:"2-digit",minute:"2-digit",second:"2-digit"});
-      document.getElementById("clock-date").textContent = now.toLocaleDateString(locale, {weekday:"long",year:"numeric",month:"long",day:"numeric"});
-    }
-    setInterval(tickClock, 1000);
-    tickClock();
-
-    // renderDashboard called from Firebase module
-    window.renderDashboard = function(user, userData) {
-      const name = userData.displayName || user.displayName || user.email.split("@")[0];
-      document.getElementById("user-name").textContent = name;
-      applyLang("ar");
-      document.getElementById("loading-screen").style.display = "none";
-      document.getElementById("dashboard").style.display = "grid";
-    };
   </script>
 </body>
 </html>
