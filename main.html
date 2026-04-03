@@ -1,685 +1,601 @@
-"use client";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlQurmanix — الواجهة الرئيسية</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet" />
 
-/**
- * 👑 PROJECT: ALQURMANIX SUPREME EMPIRE
- * 🛡️ SECURITY LEVEL: PROTOCOL 77 - CLASSIFIED
- * 🏗️ ARCHITECTURE: MONOLITHIC HYBRID (UI + LOGIC + DATABASE)
- * 📏 SPECIFICATION: 1500+ LINES LOGIC EQUIVALENT (FULL SCALE)
- * ⚠️ WARNING: DO NOT MODIFY WITHOUT SUPREME ADMIN ACCESS.
- */
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-import React, { 
-  useEffect, 
-  useState, 
-  useRef, 
-  useMemo, 
-  useCallback 
-} from "react";
-
-// --- [ 1. DATABASE & AUTH ENGINE ] ---
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  signOut, 
-  User, 
-  setPersistence, 
-  browserLocalPersistence 
-} from "firebase/auth";
-import { 
-  getFirestore, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  onSnapshot, 
-  collection, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  serverTimestamp,
-  increment,
-  arrayUnion,
-  Firestore
-} from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-// --- [ 2. UX & ANIMATION ENGINE ] ---
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { 
-  FiMenu, FiX, FiHome, FiSettings, FiGlobe, 
-  FiShield, FiDatabase, FiLogOut, FiBarChart2, 
-  FiUser, FiLayers, FiActivity, FiSearch, 
-  FiBell, FiCpu, FiLock, FiTerminal, FiExternalLink,
-  FiEdit3, FiEye, FiTrash2, FiShare2, FiZap, FiWifi
-} from "react-icons/fi";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 🔥 [CORE CONFIGURATION]
-// ─────────────────────────────────────────────────────────────────────────────
-
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCoM-Aqq7VwTDx5ZeHmIpHM4sm2XM0WdKw",
-  authDomain: "alqurmanix-15b92.firebaseapp.com",
-  projectId: "alqurmanix-15b92",
-  storageBucket: "alqurmanix-15b92.firebasestorage.app",
-  messagingSenderId: "477352026568",
-  appId: "1:477352026568:web:49f90cd3fc74b6948ba0fd",
-  measurementId: "G-VJF36N1MCD",
-};
-
-// Singleton Initialization
-const APP: FirebaseApp = getApps().length ? getApps()[0] : initializeApp(FIREBASE_CONFIG);
-const AUTH = getAuth(APP);
-const DB: Firestore = getFirestore(APP);
-const STORAGE = getStorage(APP);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 🧬 [TYPE DEFINITIONS] - TO ENSURE PROFESSIONAL QUALITY
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface UserProfile {
-  uid: string;
-  displayName: string;
-  email: string;
-  role: "Supreme Admin" | "Editor" | "Analyst";
-  status: "online" | "offline" | "busy";
-  empireLevel: number;
-  lastLogin: any;
-  avatar?: string;
-  stats: {
-    articlesPublished: number;
-    securityThreatsBlocked: number;
-    totalReach: string;
-  };
-}
-
-interface EmpireStat {
-  label: string;
-  value: string | number;
-  trend: number;
-  icon: JSX.Element;
-  color: string;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 🔱 [THE SUPREME COMPONENT]
-// ─────────────────────────────────────────────────────────────────────────────
-
-export default function AlQurmanixSupremeMonolith() {
-  // 1. Auth & Data States
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState<string | null>(null);
-
-  // 2. UI Control States
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("DASHBOARD");
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [systemLog, setSystemLog] = useState<string[]>([]);
-
-  // 3. System States
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [networkStatus, setNetworkStatus] = useState<"online" | "offline">("online");
-  const sidebarRef = useRef<HTMLDivElement>(null);
-
-  // --- [ A. BOOTING SEQUENCE ] ---
-  useEffect(() => {
-    const bootSystem = async () => {
-      try {
-        await setPersistence(AUTH, browserLocalPersistence);
-        addToLog("System Booting... Protocol 77 Initialized.");
-      } catch (err) {
-        setAuthError("CRITICAL_BOOT_FAILURE");
-      }
-    };
-    bootSystem();
-  }, []);
-
-  // --- [ B. REAL-TIME CLOCK ] ---
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // --- [ C. AUTH LISTENER & DATA SYNC ] ---
-  useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(AUTH, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        syncEmpireData(currentUser.uid);
-        listenToNotifications();
-      } else {
-        window.location.href = "/login"; // Redirect to login
-      }
-    });
-
-    const handleOnline = () => setNetworkStatus("online");
-    const handleOffline = () => setNetworkStatus("offline");
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      unsubscribeAuth();
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
-  // --- [ D. DATA SYNC LOGIC ] ---
-  const syncEmpireData = async (uid: string) => {
-    addToLog(`Synchronizing Data for UID: ${uid.substring(0, 8)}...`);
-    const docRef = doc(DB, "users", uid);
-    
-    // Listen for Real-time Profile Updates
-    onSnapshot(docRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setProfile(snapshot.data() as UserProfile);
-        addToLog("Profile Synced Successfully.");
-      } else {
-        // Create Master Profile if not exists
-        const defaultProfile: UserProfile = {
-          uid,
-          displayName: "أبو عبد الله - القائد الأعلى",
-          email: "admin@alqurmanix.com",
-          role: "Supreme Admin",
-          status: "online",
-          empireLevel: 100,
-          lastLogin: serverTimestamp(),
-          stats: { articlesPublished: 1200, securityThreatsBlocked: 450, totalReach: "2.4M" }
-        };
-        setDoc(docRef, defaultProfile);
-        setProfile(defaultProfile);
-      }
-      setLoading(false);
-    });
-  };
-
-  const listenToNotifications = () => {
-    const q = query(collection(DB, "alerts"), orderBy("timestamp", "desc"), limit(10));
-    onSnapshot(q, (snapshot) => {
-      const logs: any[] = [];
-      snapshot.forEach((doc) => logs.push({ id: doc.id, ...doc.data() }));
-      setNotifications(logs);
-    });
-  };
-
-  // --- [ E. SYSTEM ACTIONS ] ---
-  const addToLog = (msg: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setSystemLog(prev => [`[${timestamp}] ${msg}`, ...prev].slice(0, 50));
-  };
-
-  const handleLogout = async () => {
-    if (user) {
-      await updateDoc(doc(DB, "users", user.uid), { status: "offline" });
-      await signOut(AUTH);
+    :root {
+      --gold: #d4af37; --gold2: #f0d060; --gold3: #c8961e;
+      --bg-deep: #050510; --bg-card: #0c0c22;
+      --border-gold: rgba(212,175,55,0.22);
+      --text-primary: #f5e6b8; --text-muted: rgba(245,230,184,0.52);
+      --neon-green: #00ff88;
+      --sidebar-w: 272px;
+      --radius: 13px;
+      --shadow-gold: 0 0 22px rgba(212,175,55,0.15), 0 4px 28px rgba(0,0,0,0.65);
     }
-  };
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // 🎨 [REUSABLE COMPONENTS - UI BLOCKS]
-  // ─────────────────────────────────────────────────────────────────────────────
+    html, body { height: 100%; background: var(--bg-deep); color: var(--text-primary); font-family: 'Scheherazade New', serif; overflow-x: hidden; }
 
-  // 1. Loading Screen (The Gateway)
-  if (loading) {
-    return (
-      <div className="h-screen w-full bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#D4AF3715_0%,_transparent_70%)]" />
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-          className="w-32 h-32 border-2 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full relative"
-        >
-          <div className="absolute inset-2 border border-[#D4AF37]/10 rounded-full animate-pulse" />
-        </motion.div>
-        <div className="mt-12 text-center z-10">
-          <h2 className="text-4xl font-black text-[#D4AF37] tracking-[0.5em] font-['Cinzel_Decorative'] mb-4">ALQURMANIX</h2>
-          <p className="text-[#8B6E23] font-mono text-sm tracking-widest animate-bounce">AUTHORIZING SUPREME COMMANDER...</p>
+    /* ═══ LOADING SCREEN ═══ */
+    #loading-screen {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+      background: radial-gradient(ellipse at 50% 30%, #110820 0%, var(--bg-deep) 70%);
+      transition: opacity 0.32s ease;
+    }
+    #loading-screen.hide { opacity: 0; pointer-events: none; }
+    .aq-logo-load {
+      font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; font-weight: 900;
+      background: linear-gradient(135deg, #f0d060 0%, #d4af37 50%, #c8961e 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      letter-spacing: 0.1em; filter: drop-shadow(0 0 12px rgba(212,175,55,0.5));
+      animation: breathe 1.8s ease-in-out infinite;
+    }
+    @keyframes breathe { 0%,100%{opacity:.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.04)} }
+    .gold-bar {
+      width: 160px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 2px; overflow: hidden; position: relative;
+    }
+    .gold-bar::after {
+      content: ''; position: absolute; inset-block: 0; width: 60px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: barSweep 1.2s ease-in-out infinite;
+    }
+    @keyframes barSweep { from{transform:translateX(-60px)} to{transform:translateX(220px)} }
+    .load-txt { font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.08em; }
+
+    /* ═══ MAIN LAYOUT ═══ */
+    #dashboard {
+      display: none;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 55% at 8% 0%, rgba(212,175,55,0.07) 0%, transparent 58%),
+        radial-gradient(ellipse 55% 75% at 92% 100%, rgba(212,175,55,0.05) 0%, transparent 58%),
+        var(--bg-deep);
+    }
+    #dashboard.show { display: grid; animation: dashIn .38s ease; }
+    @keyframes dashIn { from{opacity:0;transform:scale(.99)} to{opacity:1;transform:none} }
+    [dir="ltr"] #dashboard { grid-template-columns: 1fr var(--sidebar-w); }
+
+    /* ═══ SIDEBAR ═══ */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.015) 100%), var(--bg-card);
+      border-left: 1px solid var(--border-gold);
+      display: flex; flex-direction: column;
+      height: 100vh; position: sticky; top: 0; overflow-y: auto;
+      padding: 18px 11px;
+      scrollbar-width: thin; scrollbar-color: rgba(212,175,55,0.18) transparent;
+      order: 2;
+    }
+    [dir="ltr"] .sidebar { border-left: none; border-right: 1px solid var(--border-gold); order: 1; }
+
+    /* Clock */
+    .clock-block {
+      background: linear-gradient(135deg, rgba(212,175,55,0.13) 0%, rgba(212,175,55,0.04) 100%);
+      border: 1px solid var(--border-gold); border-radius: var(--radius);
+      padding: 13px 14px; margin-bottom: 18px; text-align: center;
+      box-shadow: var(--shadow-gold);
+    }
+    .clock-time {
+      font-family: 'Cinzel Decorative', serif; font-size: 1.22rem; color: var(--gold);
+      letter-spacing: 0.1em; text-shadow: 0 0 10px rgba(212,175,55,0.45);
+    }
+    .clock-date { font-size: 0.72rem; color: var(--text-muted); margin-top: 5px; line-height: 1.65; }
+
+    /* Nav */
+    .nav-list { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 9px 11px;
+      border-radius: 9px; border: 1px solid transparent;
+      background: transparent; color: var(--text-primary); cursor: pointer;
+      font-family: inherit; font-size: 0.86rem; text-decoration: none;
+      transition: all 0.2s ease; text-align: right;
+      animation: fadeInSlide 0.36s ease both;
+    }
+    @keyframes fadeInSlide { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:none} }
+    [dir="ltr"] .nav-item { text-align: left; }
+    [dir="ltr"] .nav-item { animation-name: fadeInSlideL; }
+    @keyframes fadeInSlideL { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:none} }
+    .nav-item:hover {
+      background: rgba(212,175,55,0.09); border-color: var(--border-gold); color: var(--gold2);
+      transform: translateX(-3px); box-shadow: 0 0 10px rgba(212,175,55,0.12);
+    }
+    [dir="ltr"] .nav-item:hover { transform: translateX(3px); }
+    .nav-emoji { font-size: 1.05rem; flex-shrink: 0; }
+    .nav-label { flex: 1; }
+    .nav-arrow { color: var(--gold3); font-size: 1rem; opacity: 0.55; }
+
+    /* Logout */
+    .logout-btn {
+      margin-top: 12px; padding: 10px 14px; border-radius: var(--radius);
+      border: 1px solid rgba(255,80,80,0.28); background: rgba(255,80,80,0.05);
+      color: #ff7575; cursor: pointer; font-family: inherit; font-size: 0.86rem;
+      transition: all 0.2s ease; width: 100%;
+    }
+    .logout-btn:hover { background: rgba(255,80,80,0.13); border-color: rgba(255,80,80,0.55); }
+
+    /* ═══ MAIN CONTENT ═══ */
+    .main-content {
+      padding: 26px 34px; display: flex; flex-direction: column; gap: 28px;
+      overflow-y: auto; min-height: 100vh; order: 1;
+    }
+    [dir="ltr"] .main-content { order: 2; }
+
+    /* Topbar */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 18px; border-bottom: 1px solid var(--border-gold);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+    /* Logo */
+    .logo-wrap { display: flex; flex-direction: column; }
+    .logo-text {
+      font-family: 'Cinzel Decorative', serif; font-size: 1.65rem; font-weight: 900;
+      background: linear-gradient(135deg, #f0d060 0%, #d4af37 40%, #c8961e 65%, #f0d060 100%);
+      background-size: 220% 220%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmerGold 3.5s linear infinite; letter-spacing: 0.08em;
+      filter: drop-shadow(0 0 12px rgba(212,175,55,0.4));
+    }
+    @keyframes shimmerGold { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .logo-under {
+      height: 2px; margin-top: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      animation: pulseWidth 2.2s ease-in-out infinite;
+    }
+    @keyframes pulseWidth { 0%,100%{opacity:.35;transform:scaleX(.65)} 50%{opacity:1;transform:scaleX(1)} }
+
+    /* Connection */
+    .connection-badge { display: flex; align-items: center; gap: 7px; }
+    .neon-bulb {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--neon-green); flex-shrink: 0;
+      box-shadow: 0 0 5px var(--neon-green), 0 0 12px rgba(0,255,136,0.45);
+      animation: blinkNeon 2.6s ease-in-out infinite;
+    }
+    @keyframes blinkNeon { 0%,100%{opacity:1;box-shadow:0 0 5px var(--neon-green),0 0 16px rgba(0,255,136,.55)} 50%{opacity:.5;box-shadow:0 0 3px var(--neon-green)} }
+    .conn-label { font-size: 0.78rem; color: var(--neon-green); letter-spacing: 0.05em; }
+
+    /* Globe */
+    .globe-wrapper { position: relative; }
+    .globe-btn { cursor: pointer; user-select: none; width: 42px; height: 42px; position: relative; display: block; }
+    .globe-orb { width: 42px; height: 42px; position: relative; animation: rotateGlobe 14s linear infinite; }
+    .globe-btn:hover .globe-orb { filter: drop-shadow(0 0 8px rgba(212,175,55,0.5)); }
+    @keyframes rotateGlobe { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .globe-svg { width: 100%; height: 100%; display: block; }
+    .globe-flag {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem; animation: counterRotate 14s linear infinite; pointer-events: none;
+    }
+    @keyframes counterRotate { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+    .lang-dropdown {
+      position: absolute; top: 50px; right: 0;
+      background: linear-gradient(160deg, #12122a 0%, var(--bg-card) 100%);
+      border: 1px solid var(--border-gold); border-radius: var(--radius);
+      padding: 8px; display: none; grid-template-columns: 1fr 1fr; gap: 3px;
+      z-index: 1000; min-width: 218px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 0 20px rgba(212,175,55,0.1);
+    }
+    .lang-dropdown.open { display: grid; animation: dropIn .16s ease; }
+    [dir="ltr"] .lang-dropdown { right: auto; left: 0; }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+    .lang-item {
+      display: flex; align-items: center; gap: 7px; padding: 7px 9px; border-radius: 8px;
+      background: transparent; border: 1px solid transparent; color: var(--text-primary);
+      cursor: pointer; font-size: 0.8rem; font-family: inherit; transition: all .14s ease;
+    }
+    .lang-item:hover,.lang-item.active-lang { background:rgba(212,175,55,.1); border-color:var(--border-gold); color:var(--gold2); }
+    .lang-flag { font-size: 1.15rem; }
+
+    /* User Chip */
+    .user-chip {
+      display: flex; align-items: center; gap: 8px; padding: 5px 12px;
+      border-radius: 50px; border: 1px solid var(--border-gold);
+      background: rgba(212,175,55,.05);
+    }
+    .user-name { font-size: 0.8rem; color: var(--gold2); max-width: 115px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Welcome */
+    .welcome-strip {
+      text-align: center; padding: 20px 24px;
+      border: 1px solid var(--border-gold); border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(212,175,55,.09) 0%, rgba(212,175,55,.02) 100%);
+      box-shadow: var(--shadow-gold);
+      animation: fadeInUp .5s ease both;
+    }
+    .welcome-text { font-size: 1.35rem; color: var(--text-muted); }
+    .welcome-brand {
+      font-family: 'Cinzel Decorative', serif; font-size: 1.55rem; font-weight: 900;
+      background: linear-gradient(90deg, #f0d060, #d4af37, #c8961e);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+
+    /* Gates */
+    .section-title {
+      font-family: 'Cinzel Decorative', serif; font-size: .9rem; color: var(--gold);
+      letter-spacing: .15em; text-transform: uppercase; margin-bottom: 16px; text-align: center;
+    }
+    .gates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+    .gate-card {
+      position: relative; overflow: hidden; padding: 26px 18px; border-radius: var(--radius);
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(135deg, rgba(212,175,55,.09) 0%, rgba(212,175,55,.025) 100%);
+      display: flex; flex-direction: column; align-items: center; gap: 11px;
+      cursor: pointer; font-family: inherit; color: var(--text-primary);
+      transition: all .28s ease; box-shadow: var(--shadow-gold); text-decoration: none;
+      animation: fadeInUp .45s ease both;
+    }
+    .gate-card:hover {
+      transform: translateY(-5px); border-color: var(--gold);
+      box-shadow: 0 8px 38px rgba(212,175,55,.22), 0 0 0 1px rgba(212,175,55,.28);
+      background: linear-gradient(135deg, rgba(212,175,55,.17) 0%, rgba(212,175,55,.055) 100%);
+    }
+    .gate-icon { font-size: 2.2rem; filter: drop-shadow(0 0 7px rgba(212,175,55,.38)); }
+    .gate-label { font-size: .88rem; color: var(--gold2); text-align: center; font-weight: 600; line-height: 1.4; }
+    .gate-shine { position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 50%); pointer-events:none; }
+
+    /* Holding Banner */
+    .holding-banner {
+      border: 1px solid var(--border-gold); border-radius: var(--radius);
+      padding: 18px 26px;
+      background: linear-gradient(90deg, rgba(212,175,55,.08) 0%, rgba(212,175,55,.025) 50%, rgba(212,175,55,.08) 100%);
+      animation: bannerFloat 3.2s ease-in-out infinite; box-shadow: var(--shadow-gold);
+    }
+    @keyframes bannerFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+    .holding-inner { display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; }
+    .holding-diamond { color:var(--gold); font-size:.75rem; animation:rotateDiamond 5s linear infinite; }
+    @keyframes rotateDiamond { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .holding-text {
+      font-family: 'Cinzel Decorative', serif; font-size: .82rem; color: var(--gold2);
+      letter-spacing: .07em; text-align: center;
+    }
+
+    /* ═══ HAND POINTER ═══ */
+    .hand-pointer-wrap { display: flex; justify-content: center; padding-bottom: 10px; }
+    .hand-pointer {
+      display: inline-flex; align-items: center; gap: 13px; padding: 18px 30px;
+      border-radius: var(--radius); border: 1px solid var(--border-gold);
+      background: linear-gradient(135deg, rgba(212,175,55,.1) 0%, transparent 100%);
+      cursor: pointer; font-family: inherit; color: var(--text-primary); text-decoration: none;
+      animation: handBounce 1.9s ease-in-out infinite;
+      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+      box-shadow: var(--shadow-gold);
+    }
+    .hand-pointer:hover { background:rgba(212,175,55,.17); border-color:var(--gold); box-shadow:0 0 22px rgba(212,175,55,.28); }
+    @keyframes handBounce { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-5px) scale(1.025)} }
+
+    /* RTL → hand points LEFT (👈), LTR → hand points RIGHT (👉) */
+    .hand-rtl { font-size:1.9rem; animation:swayRTL 1.3s ease-in-out infinite; }
+    .hand-ltr { font-size:1.9rem; animation:swayLTR 1.3s ease-in-out infinite; }
+    @keyframes swayRTL { 0%,100%{transform:translateX(0)} 50%{transform:translateX(-6px)} }
+    @keyframes swayLTR { 0%,100%{transform:translateX(0)} 50%{transform:translateX(6px)} }
+
+    /* show correct hand based on dir */
+    [dir="rtl"] .hand-rtl { display:inline-block; }
+    [dir="rtl"] .hand-ltr { display:none; }
+    [dir="ltr"] .hand-ltr { display:inline-block; }
+    [dir="ltr"] .hand-rtl { display:none; }
+
+    .hand-label { font-family:'Cinzel Decorative',serif; font-size:.95rem; color:var(--gold2); letter-spacing:.07em; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(212,175,55,.22); border-radius: 3px; }
+
+    /* Responsive */
+    @media (max-width: 780px) {
+      #dashboard.show { grid-template-columns: 1fr !important; }
+      .sidebar {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        height: auto; max-height: 48vh; overflow-y: auto;
+        z-index: 100; border-left: none; border-top: 1px solid var(--border-gold);
+        flex-direction: row; flex-wrap: wrap; justify-content: center;
+        padding: 10px; order: 99 !important;
+      }
+      .main-content { padding: 14px; padding-bottom: 230px; order: 1 !important; }
+      .clock-block { display: none; }
+      .gates-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADING -->
+  <div id="loading-screen">
+    <div class="aq-logo-load">AlQurmanix</div>
+    <div class="gold-bar"></div>
+    <p class="load-txt" id="loading-msg">جارٍ التحقق من هويتك...</p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <aside class="sidebar">
+      <div class="clock-block">
+        <div class="clock-time" id="clock-time">--:--:--</div>
+        <div class="clock-date" id="clock-date">---</div>
+      </div>
+      <nav class="nav-list" id="nav-list"></nav>
+      <button class="logout-btn" onclick="window._aqxSignOut()">🚪 <span id="lbl-logout">تسجيل الخروج</span></button>
+    </aside>
+
+    <main class="main-content">
+      <div class="topbar">
+        <div class="logo-wrap">
+          <span class="logo-text">AlQurmanix</span>
+          <div class="logo-under"></div>
+        </div>
+        <div class="topbar-right">
+          <div class="connection-badge">
+            <span class="neon-bulb"></span>
+            <span class="conn-label" id="lbl-connected">متصل</span>
+          </div>
+          <div class="globe-wrapper" id="globe-wrapper">
+            <div class="globe-btn" id="globe-btn" title="اختر اللغة">
+              <div class="globe-orb">
+                <svg class="globe-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <radialGradient id="gGrad" cx="40%" cy="35%">
+                      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.85"/>
+                      <stop offset="55%" stop-color="#1a1a2e" stop-opacity="0.95"/>
+                      <stop offset="100%" stop-color="#0d0d1a"/>
+                    </radialGradient>
+                  </defs>
+                  <circle cx="30" cy="30" r="28" fill="url(#gGrad)" stroke="#d4af37" stroke-width="0.8" stroke-opacity="0.55"/>
+                  <ellipse cx="30" cy="30" rx="14" ry="28" fill="none" stroke="#d4af37" stroke-width="0.5" stroke-opacity="0.38"/>
+                  <ellipse cx="30" cy="30" rx="28" ry="8"  fill="none" stroke="#d4af37" stroke-width="0.45" stroke-opacity="0.38"/>
+                  <ellipse cx="30" cy="30" rx="28" ry="17" fill="none" stroke="#d4af37" stroke-width="0.28" stroke-opacity="0.28"/>
+                </svg>
+                <span class="globe-flag" id="globe-flag">🇸🇦</span>
+              </div>
+            </div>
+            <div class="lang-dropdown" id="lang-dropdown"></div>
+          </div>
+          <div class="user-chip">
+            <span>👤</span>
+            <span class="user-name" id="user-name">---</span>
+          </div>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-[#050505] text-[#D4AF37] font-['Scheherazade_New'] selection:bg-[#D4AF37] selection:text-black">
-      
-      {/* BACKGROUND ARCHITECTURE */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30" />
-        <div className="absolute top-[-10%] right-[-10%] w-[1000px] h-[1000px] bg-[#D4AF37]/5 rounded-full blur-[200px]" />
+      <div class="welcome-strip">
+        <span class="welcome-text" id="lbl-welcome">أهلاً بك في</span>
+        <span class="welcome-brand">&nbsp;AlQurmanix&nbsp;</span>
+        <span style="color:var(--gold);font-size:1.1rem">✦</span>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          🔱 [THE ROYAL SIDEBAR - CLOSED BY DEFAULT]
-          ───────────────────────────────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60]"
-              onClick={() => setIsSidebarOpen(false)}
-            />
-            <motion.aside
-              ref={sidebarRef}
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              className="fixed right-0 top-0 h-full w-[350px] bg-[#0A0A0A] border-l border-[#D4AF37]/30 z-[70] shadow-[0_0_100px_rgba(0,0,0,1)] flex flex-col"
-            >
-              <div className="p-10 flex-1 overflow-y-auto custom-scrollbar">
-                <div className="flex justify-between items-center mb-16">
-                  <div>
-                    <h2 className="text-3xl font-black font-['Cinzel_Decorative'] text-white">EMPIRE</h2>
-                    <p className="text-[10px] tracking-[0.5em] text-[#D4AF37] uppercase">Protocol 77</p>
-                  </div>
-                  <button 
-                    onClick={() => setIsSidebarOpen(false)}
-                    className="w-12 h-12 flex items-center justify-center rounded-full border border-[#D4AF37]/20 hover:bg-[#D4AF37] hover:text-black transition-all"
-                  >
-                    <FiX size={24} />
-                  </button>
-                </div>
+      <section>
+        <h2 class="section-title" id="lbl-gates-title">اختر بوابتك</h2>
+        <div class="gates-grid" id="gates-grid"></div>
+      </section>
 
-                <nav className="space-y-6">
-                  <SidebarItem icon={<FiHome />} label="لوحة التحكم" active={activeTab === "DASHBOARD"} onClick={() => setActiveTab("DASHBOARD")} />
-                  <SidebarItem icon={<FiLayers />} label="إدارة المقالات" active={activeTab === "CONTENT"} onClick={() => setActiveTab("CONTENT")} />
-                  <SidebarItem icon={<FiGlobe />} label="المواقع واللغات" active={activeTab === "LANGS"} onClick={() => setActiveTab("LANGS")} />
-                  <SidebarItem icon={<FiBarChart2 />} label="الإحصائيات" active={activeTab === "STATS"} onClick={() => setActiveTab("STATS")} />
-                  <SidebarItem icon={<FiShield />} label="الأمن والحماية" active={activeTab === "SECURITY"} onClick={() => setActiveTab("SECURITY")} />
-                  <SidebarItem icon={<FiDatabase />} label="قاعدة البيانات" active={activeTab === "DB"} onClick={() => setActiveTab("DB")} />
-                  <SidebarItem icon={<FiSettings />} label="الإعدادات السيادية" active={activeTab === "SETTINGS"} onClick={() => setActiveTab("SETTINGS")} />
-                </nav>
-
-                <div className="mt-20 p-6 rounded-2xl bg-gradient-to-br from-[#D4AF37]/10 to-transparent border border-[#D4AF37]/10">
-                  <h4 className="text-white font-bold mb-2 flex items-center gap-2"><FiZap className="text-[#D4AF37]" /> حالة النظام</h4>
-                  <p className="text-xs text-[#8B6E23] leading-relaxed mb-4">جميع المواقع تعمل بكفاءة 100%. تم حظر 12 محاولة دخول غير مصرح بها اليوم.</p>
-                  <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                    <motion.div animate={{ width: "100%" }} className="h-full bg-[#D4AF37]" transition={{ duration: 2 }} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-8 border-t border-[#D4AF37]/10">
-                <button 
-                  onClick={handleLogout}
-                  className="w-full py-4 flex items-center justify-center gap-3 bg-red-950/20 text-red-500 border border-red-500/20 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-500 font-bold"
-                >
-                  <FiLogOut /> إنهاء الجلسة السيادية
-                </button>
-              </div>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          🏛️ [MAIN INTERFACE - THE THRONE ROOM]
-          ───────────────────────────────────────────────────────────────────────────── */}
-      <main className="relative z-10 p-6 lg:p-16 max-w-[1800px] mx-auto">
-        
-        {/* TOP COMMAND BAR */}
-        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 mb-20">
-          <div className="flex items-center gap-8">
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsSidebarOpen(true)}
-              className="p-6 rounded-3xl bg-[#0A0A0A] border border-[#D4AF37]/30 shadow-[0_0_30px_rgba(212,175,55,0.1)] hover:border-[#D4AF37] transition-all group"
-            >
-              <FiMenu className="text-3xl text-[#D4AF37] group-hover:rotate-180 transition-transform duration-500" />
-            </motion.button>
-            
-            <div>
-              <div className="flex items-center gap-4 mb-2">
-                <h1 className="text-5xl lg:text-7xl font-black bg-gradient-to-l from-[#D4AF37] via-[#F9E498] to-[#D4AF37] bg-clip-text text-transparent drop-shadow-2xl uppercase font-['Cinzel_Decorative']">
-                  ALQURMANIX
-                </h1>
-                <span className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/20 rounded-lg text-xs font-mono animate-pulse uppercase tracking-widest">
-                  Active
-                </span>
-              </div>
-              <div className="flex items-center gap-4 text-[#8B6E23]">
-                <p className="text-xl font-light italic">مرحباً بك يا {profile?.displayName || "أبو عبد الله"}</p>
-                <span className="w-12 h-[1px] bg-[#8B6E23]/30" />
-                <p className="text-xs uppercase tracking-[0.3em] font-['Cinzel_Decorative']">{profile?.role}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6">
-            {/* Search Protocol */}
-            <div className="hidden xl:flex items-center bg-[#0A0A0A] border border-[#D4AF37]/20 rounded-2xl px-6 py-4 w-96 group focus-within:border-[#D4AF37] transition-all shadow-inner">
-              <FiSearch className="text-[#8B6E23] group-focus-within:text-[#D4AF37]" />
-              <input 
-                type="text" 
-                placeholder="ابحث في الإمبراطورية..." 
-                className="bg-transparent border-none outline-none px-4 w-full text-[#D4AF37] placeholder-[#8B6E23]/50 text-lg"
-              />
-            </div>
-
-            {/* Notifications Dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsNotifOpen(!isNotifOpen)}
-                className="p-5 rounded-2xl bg-[#0A0A0A] border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all relative"
-              >
-                <FiBell className="text-2xl" />
-                <span className="absolute top-4 right-4 w-3 h-3 bg-[#D4AF37] rounded-full border-2 border-[#0A0A0A] shadow-[0_0_10px_#D4AF37]" />
-              </button>
-              
-              <AnimatePresence>
-                {isNotifOpen && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-                    className="absolute left-0 mt-6 w-96 bg-[#0F0F0F] border border-[#D4AF37]/30 rounded-3xl p-6 z-[80] shadow-[0_20px_50px_rgba(0,0,0,1)]"
-                  >
-                    <h3 className="text-xl font-bold mb-6 flex justify-between">تنبيهات النظام <FiActivity /></h3>
-                    <div className="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                      {notifications.length > 0 ? notifications.map((n, i) => (
-                        <div key={i} className="p-4 bg-white/5 rounded-xl border-r-4 border-[#D4AF37] hover:bg-white/10 transition-colors cursor-default">
-                          <p className="text-sm font-bold text-white">{n.title || "تنبيه جديد"}</p>
-                          <p className="text-xs text-[#8B6E23] mt-1">{n.message}</p>
-                          <span className="text-[10px] text-[#D4AF37]/50 mt-2 block font-mono">{n.timestamp?.toDate().toLocaleString('ar-EG')}</span>
-                        </div>
-                      )) : (
-                        <p className="text-center text-[#8B6E23] py-10 italic">لا توجد تهديدات حالية</p>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Time & Date Display */}
-            <div className="bg-[#0A0A0A]/90 backdrop-blur-xl border border-[#D4AF37]/20 p-6 rounded-3xl flex flex-col items-end min-w-[280px] shadow-2xl relative overflow-hidden group">
-               <div className="absolute inset-0 bg-[#D4AF37]/5 translate-x-full group-hover:translate-x-0 transition-transform duration-700" />
-               <div className="text-4xl font-black text-white font-mono tracking-widest relative z-10">
-                  {currentTime.toLocaleTimeString('ar-EG', { hour12: true })}
-               </div>
-               <div className="text-sm text-[#D4AF37] mt-1 font-['Cinzel_Decorative'] font-bold relative z-10 uppercase tracking-widest">
-                  {currentTime.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' })}
-               </div>
-            </div>
-          </div>
-        </header>
-
-        {/* ─────────────────────────────────────────────────────────────────────────────
-            📊 [DYNAMIC CONTENT LAYOUT]
-            ───────────────────────────────────────────────────────────────────────────── */}
-        
-        {activeTab === "DASHBOARD" && (
-          <div className="space-y-12">
-            {/* GRID 1: CORE STATS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-              <StatCard 
-                label="الزيارات الكلية" 
-                value={profile?.stats.totalReach || "0"} 
-                trend={15.2} 
-                icon={<FiEye />} 
-                color="#D4AF37" 
-              />
-              <StatCard 
-                label="المقالات الحية" 
-                value={profile?.stats.articlesPublished || "0"} 
-                trend={4.5} 
-                icon={<FiEdit3 />} 
-                color="#3B82F6" 
-              />
-              <StatCard 
-                label="التهديدات المحجوبة" 
-                value={profile?.stats.securityThreatsBlocked || "0"} 
-                trend={-100} 
-                icon={<FiShield />} 
-                color="#10B981" 
-              />
-              <StatCard 
-                label="أداء الخوادم" 
-                value="99.9%" 
-                trend={0.1} 
-                icon={<FiCpu />} 
-                color="#8B5CF6" 
-              />
-            </div>
-
-            {/* GRID 2: CENTRAL OPERATIONS */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              
-              {/* OPERATION CONTROL */}
-              <div className="xl:col-span-2 space-y-8">
-                <div className="bg-[#0A0A0A] border border-[#D4AF37]/10 rounded-[40px] p-12 shadow-2xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full blur-[100px]" />
-                  
-                  <div className="flex justify-between items-center mb-12 relative z-10">
-                    <div>
-                      <h3 className="text-3xl font-bold text-white mb-2">مركز العمليات المركزية</h3>
-                      <p className="text-[#8B6E23] italic">تحكم في كامل محتوى الإمبراطورية بضغطة زر</p>
-                    </div>
-                    <FiZap className="text-5xl text-[#D4AF37] animate-pulse" />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                    <ActionBox 
-                      title="النشر الجماعي (Mass Publish)" 
-                      desc="نشر 50 مقال ذكي متوافق مع SEO فوراً" 
-                      icon={<FiLayers className="text-blue-400" />} 
-                    />
-                    <ActionBox 
-                      title="تحليل المنافسين" 
-                      desc="فحص الكلمات المفتاحية الأكثر ربحاً" 
-                      icon={<FiBarChart2 className="text-green-400" />} 
-                    />
-                    <ActionBox 
-                      title="بروتوكول الحماية" 
-                      desc="تشفير قاعدة البيانات وتعزيز الجدار الناري" 
-                      icon={<FiLock className="text-red-400" />} 
-                    />
-                    <ActionBox 
-                      title="الترجمة العالمية" 
-                      desc="تحويل المحتوى لـ 15 لغة عالمية" 
-                      icon={<FiGlobe className="text-yellow-400" />} 
-                    />
-                  </div>
-                </div>
-
-                {/* SYSTEM LOGS TERMINAL */}
-                <div className="bg-black border border-white/5 rounded-[40px] p-8 shadow-inner font-mono overflow-hidden h-[400px] flex flex-col">
-                  <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
-                    <FiTerminal className="text-green-500" />
-                    <span className="text-xs text-white/40 uppercase tracking-widest">AlQurmanix Terminal v7.0.2</span>
-                    <div className="flex gap-1 ml-auto">
-                      <div className="w-2 h-2 rounded-full bg-red-500/20" />
-                      <div className="w-2 h-2 rounded-full bg-yellow-500/20" />
-                      <div className="w-2 h-2 rounded-full bg-green-500/20" />
-                    </div>
-                  </div>
-                  <div className="flex-1 overflow-y-auto space-y-2 pr-4 custom-scrollbar text-sm">
-                    {systemLog.map((log, i) => (
-                      <motion.div 
-                        initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                        key={i} 
-                        className={`py-1 ${log.includes("FAILURE") ? "text-red-500" : log.includes("Booting") ? "text-[#D4AF37]" : "text-green-500/70"}`}
-                      >
-                        <span className="opacity-30 mr-2">{">"}</span> {log}
-                      </motion.div>
-                    ))}
-                    {systemLog.length === 0 && <p className="text-white/20 italic">No logs detected. System quiet.</p>}
-                  </div>
-                </div>
-              </div>
-
-              {/* SIDEBAR ASSETS: USER & NETWORK */}
-              <div className="space-y-8">
-                {/* Profile Card */}
-                <div className="bg-[#0A0A0A] border border-[#D4AF37]/20 rounded-[40px] p-10 flex flex-col items-center text-center group">
-                  <div className="relative mb-8">
-                    <div className="w-40 h-40 rounded-full border-2 border-[#D4AF37] p-2 group-hover:rotate-180 transition-transform duration-1000">
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-[#111] to-[#000] flex items-center justify-center relative overflow-hidden">
-                        <FiUser className="text-6xl text-[#D4AF37]" />
-                      </div>
-                    </div>
-                    <div className={`absolute bottom-2 right-2 w-10 h-10 border-4 border-[#0A0A0A] rounded-full shadow-lg ${networkStatus === "online" ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
-                  </div>
-                  <h4 className="text-3xl font-black text-white mb-2">{profile?.displayName}</h4>
-                  <p className="text-[#8B6E23] text-sm uppercase tracking-[0.4em] font-['Cinzel_Decorative'] mb-8">Supreme Architect</p>
-                  
-                  <div className="w-full space-y-4 pt-8 border-t border-white/5">
-                    <ProfileStat label="مستوى السيطرة" value={`${profile?.empireLevel}%`} icon={<FiZap />} />
-                    <ProfileStat label="قوة الاتصال" value={networkStatus === "online" ? "عالية جداً" : "منقطعة"} icon={<FiWifi />} />
-                    <ProfileStat label="المواقع المربوطة" value="22" icon={<FiGlobe />} />
-                  </div>
-                </div>
-
-                {/* Quick Shortcuts */}
-                <div className="bg-[#0A0A0A] border border-[#D4AF37]/10 rounded-[40px] p-8">
-                  <h5 className="text-lg font-bold text-white mb-6 flex items-center gap-3"><FiExternalLink /> اختصارات سريعة</h5>
-                  <div className="grid grid-cols-2 gap-4">
-                    <ShortcutBtn label="Blogger" icon="B" color="#ff8000" />
-                    <ShortcutBtn label="Analytics" icon="GA" color="#f9ab00" />
-                    <ShortcutBtn label="AdSense" icon="AS" color="#4285f4" />
-                    <ShortcutBtn label="Search Console" icon="SC" color="#db4437" />
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* --- [ ADDITIONAL TABS PLACEHOLDERS ] --- */}
-        {activeTab !== "DASHBOARD" && (
-          <div className="h-[600px] w-full flex flex-col items-center justify-center border-2 border-dashed border-[#D4AF37]/10 rounded-[50px] bg-white/[0.01]">
-            <div className="w-24 h-24 rounded-full bg-[#D4AF37]/10 flex items-center justify-center mb-8">
-               <FiTerminal className="text-4xl text-[#D4AF37]" />
-            </div>
-            <h2 className="text-4xl font-bold text-white mb-4">قسم {activeTab} قيد التجهيز الملكي</h2>
-            <p className="text-[#8B6E23] text-xl font-light">يتم الآن ربط البروتوكولات البرمجية لضمان "فخامة الفخامة".</p>
-            <button onClick={() => setActiveTab("DASHBOARD")} className="mt-10 px-8 py-4 bg-[#D4AF37] text-black font-bold rounded-2xl hover:scale-105 transition-transform">العودة للعرش</button>
-          </div>
-        )}
-
-      </main>
-
-      {/* FOOTER: SYSTEM INTEGRITY */}
-      <footer className="p-8 border-t border-[#D4AF37]/10 text-center relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 px-12 opacity-40 hover:opacity-100 transition-opacity duration-1000">
-          <p className="text-xs font-mono uppercase tracking-[0.5em]">ALQURMANIX DIGITAL EMPIRE — ALL RIGHTS RESERVED © 2026</p>
-          <div className="flex items-center gap-6 font-['Cinzel_Decorative'] text-[10px] tracking-widest font-bold">
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#D4AF37]" /> ENC: AES-256</span>
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#D4AF37]" /> DB: FIREBASE RE-SYNC</span>
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500" /> SEC: PROTOCOL 77</span>
-          </div>
-        </div>
-      </footer>
-
-      {/* GLOBAL STYLES & OVERRIDES */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Scheherazade+New:wght@400;700&display=swap');
-        
-        body { 
-          margin: 0; padding: 0; background: #050505; 
-          -webkit-font-smoothing: antialiased;
-          overflow-x: hidden;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #D4AF3722; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
-
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus {
-          -webkit-text-fill-color: #D4AF37;
-          -webkit-box-shadow: 0 0 0px 1000px #0A0A0A inset;
-          transition: background-color 5000s ease-in-out 0s;
-        }
-      `}</style>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 🧩 [SUB-COMPONENTS - THE ATOMIC DESIGN]
-// ─────────────────────────────────────────────────────────────────────────────
-
-function SidebarItem({ icon, label, active, onClick }: any) {
-  return (
-    <motion.div 
-      whileHover={{ x: -10 }}
-      onClick={onClick}
-      className={`flex items-center gap-6 p-5 rounded-2xl cursor-pointer transition-all duration-500 border ${active ? 'bg-[#D4AF37] text-black border-[#D4AF37] shadow-[0_10px_30px_rgba(212,175,55,0.3)]' : 'bg-transparent text-[#8B6E23] border-transparent hover:bg-white/5 hover:border-[#D4AF37]/30 hover:text-[#D4AF37]'}`}
-    >
-      <span className="text-2xl">{icon}</span>
-      <span className="text-xl font-bold font-['Scheherazade_New']">{label}</span>
-      {active && <motion.div layoutId="activeDot" className="ml-auto w-2 h-2 bg-black rounded-full" />}
-    </motion.div>
-  );
-}
-
-function StatCard({ label, value, trend, icon, color }: EmpireStat) {
-  return (
-    <motion.div 
-      whileHover={{ y: -10, scale: 1.02 }}
-      className="bg-[#0A0A0A] border border-[#D4AF37]/10 rounded-[35px] p-10 relative overflow-hidden group transition-all shadow-2xl"
-    >
-      <div className="absolute top-0 right-0 p-8 text-7xl opacity-[0.03] group-hover:opacity-[0.1] transition-all" style={{ color }}>
-        {icon}
-      </div>
-      <div className="flex items-center gap-4 mb-6">
-        <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl shadow-inner" style={{ color }}>{icon}</div>
-        <h4 className="text-sm font-bold text-[#8B6E23] uppercase tracking-widest">{label}</h4>
-      </div>
-      <div className="flex items-end justify-between">
-        <h2 className="text-5xl font-black text-white font-mono">{value}</h2>
-        <div className={`flex items-center gap-2 text-xs font-bold ${trend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-          {trend >= 0 ? `+${trend}%` : `${trend}%`}
-          <FiZap className={trend >= 0 ? 'animate-bounce' : 'rotate-180'} />
+      <div class="holding-banner">
+        <div class="holding-inner">
+          <span class="holding-diamond">◆</span>
+          <span class="holding-text" id="lbl-holding">مجموعة شركات AlQurmanix القابضة ش.م.م</span>
+          <span class="holding-diamond">◆</span>
         </div>
       </div>
-      <div className="mt-8 h-[2px] bg-white/5 rounded-full overflow-hidden">
-        <motion.div initial={{ width: 0 }} animate={{ width: "70%" }} className="h-full" style={{ backgroundColor: color }} />
+
+      <div class="hand-pointer-wrap">
+        <a class="hand-pointer" id="hand-pointer" href="./marketplace.html"
+           onclick="event.preventDefault(); navTo('./marketplace.html')">
+          <span class="hand-rtl">👈</span>
+          <span class="hand-ltr">👉</span>
+          <span class="hand-label" id="lbl-next">الصفحة التالية</span>
+        </a>
       </div>
-    </motion.div>
-  );
-}
+    </main>
+  </div>
 
-function ActionBox({ title, desc, icon }: any) {
-  return (
-    <div className="p-8 rounded-[30px] bg-white/[0.02] border border-white/5 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37]/30 transition-all cursor-pointer group relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-1 h-full bg-[#D4AF37] opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="text-4xl mb-6 group-hover:scale-125 transition-transform duration-500">{icon}</div>
-      <h5 className="text-xl font-bold text-white mb-2 group-hover:text-[#D4AF37]">{title}</h5>
-      <p className="text-sm text-[#8B6E23] leading-relaxed italic">{desc}</p>
-    </div>
-  );
-}
+  <!-- ══ UI Scripts (plain JS — no module needed) ══ -->
+  <script>
+    const NAV_ITEMS = [
+      {key:"profile",      emoji:"👤", file:"./profile.html"},
+      {key:"settings",     emoji:"⚙️", file:"./settings.html"},
+      {key:"notifications",emoji:"🔔", file:"./notifications.html"},
+      {key:"support",      emoji:"🎧", file:"./support.html"},
+      {key:"ai",           emoji:"🤖", file:"./alqurmanix-ai.html"},
+      {key:"docs",         emoji:"📚", file:"./docs-membership.html"},
+      {key:"policies",     emoji:"⚖️", file:"./policies.html"},
+      {key:"parking",      emoji:"🅿️", file:"./parking.html"},
+      {key:"wallet",       emoji:"💰", file:"./wallet.html"},
+      {key:"earnCoin",     emoji:"🪙", file:"./earn-coin.html"},
+      {key:"careers",      emoji:"💼", file:"./careers.html"},
+      {key:"supportUs",    emoji:"❤️", file:"./support-us.html"},
+      {key:"donate",       emoji:"🤲", file:"./donate.html"},
+      {key:"marketplace",  emoji:"🛒", file:"./marketplace.html"},
+      {key:"community",    emoji:"🏛️", file:"./community.html"},
+    ];
+    const GATES = [
+      {key:"employees",emoji:"👔",file:"./gate-employees.html"},
+      {key:"clients",  emoji:"🤝",file:"./gate-clients.html"},
+      {key:"business", emoji:"🏢",file:"./gate-business.html"},
+      {key:"social",   emoji:"🌐",file:"./gate-social.html"},
+    ];
+    const LANGS = {
+      ar:{flag:"🇸🇦",label:"عربي",dir:"rtl",t:{profile:"الملف الشخصي",settings:"الإعدادات",notifications:"نظام الإشعارات",support:"الدعم الفني",ai:"AlQurmanix AI",docs:"التوثيقات والعضوية",policies:"سياسات وقوانين AlQurmanix",parking:"مكان مركون",wallet:"محفظة AlQurmanix Coin",earnCoin:"اربح عملة AlQurmanix Coin",careers:"الوظائف",supportUs:"ادعم AlQurmanix",donate:"تبرع",marketplace:"السوق التجاري",community:"المنتدى الاجتماعي",gatesTitle:"اختر بوابتك",employees:"بوابة الموظفين",clients:"بوابة العملاء",business:"بوابة التجارة والأعمال",social:"البوابة الاجتماعية والمنتدى",holding:"مجموعة شركات AlQurmanix القابضة ش.م.م",connected:"متصل",nextPage:"الصفحة التالية",welcome:"أهلاً بك في",logout:"تسجيل الخروج"}},
+      en:{flag:"🇬🇧",label:"English",dir:"ltr",t:{profile:"Profile",settings:"Settings",notifications:"Notifications",support:"Technical Support",ai:"AlQurmanix AI",docs:"Docs & Membership",policies:"AlQurmanix Policies",parking:"Parking Zone",wallet:"AlQurmanix Coin Wallet",earnCoin:"Earn AlQurmanix Coin",careers:"Careers",supportUs:"Support AlQurmanix",donate:"Donate",marketplace:"Marketplace",community:"Social Forum",gatesTitle:"Choose Your Gateway",employees:"Employees Portal",clients:"Clients Portal",business:"Business & Trade Portal",social:"Social & Community Portal",holding:"AlQurmanix Group Holding LLC",connected:"Connected",nextPage:"Next Page",welcome:"Welcome to",logout:"Sign Out"}},
+      de:{flag:"🇩🇪",label:"Deutsch",dir:"ltr",t:{profile:"Profil",settings:"Einstellungen",notifications:"Benachrichtigungen",support:"Technischer Support",ai:"AlQurmanix KI",docs:"Dokumentation & Mitgliedschaft",policies:"AlQurmanix Richtlinien",parking:"Parkzone",wallet:"AlQurmanix Coin Wallet",earnCoin:"AlQurmanix Coin verdienen",careers:"Karriere",supportUs:"AlQurmanix unterstützen",donate:"Spenden",marketplace:"Marktplatz",community:"Soziales Forum",gatesTitle:"Gateway wählen",employees:"Mitarbeiterportal",clients:"Kundenportal",business:"Geschäftsportal",social:"Soziales & Community Portal",holding:"AlQurmanix Unternehmensgruppe GmbH",connected:"Verbunden",nextPage:"Nächste Seite",welcome:"Willkommen bei",logout:"Abmelden"}},
+      es:{flag:"🇪🇸",label:"Español",dir:"ltr",t:{profile:"Perfil",settings:"Configuración",notifications:"Notificaciones",support:"Soporte Técnico",ai:"AlQurmanix IA",docs:"Documentación y Membresía",policies:"Políticas de AlQurmanix",parking:"Zona de Estacionamiento",wallet:"Cartera AlQurmanix Coin",earnCoin:"Ganar AlQurmanix Coin",careers:"Carreras",supportUs:"Apoyar AlQurmanix",donate:"Donar",marketplace:"Mercado",community:"Foro Social",gatesTitle:"Elige tu Portal",employees:"Portal de Empleados",clients:"Portal de Clientes",business:"Portal de Negocios",social:"Portal Social y Comunidad",holding:"AlQurmanix Group Holding SRL",connected:"Conectado",nextPage:"Siguiente Página",welcome:"Bienvenido a",logout:"Cerrar Sesión"}},
+      fr:{flag:"🇫🇷",label:"Français",dir:"ltr",t:{profile:"Profil",settings:"Paramètres",notifications:"Notifications",support:"Support Technique",ai:"AlQurmanix IA",docs:"Documentation & Adhésion",policies:"Politiques AlQurmanix",parking:"Zone de Parking",wallet:"Portefeuille AlQurmanix Coin",earnCoin:"Gagner AlQurmanix Coin",careers:"Carrières",supportUs:"Soutenir AlQurmanix",donate:"Faire un Don",marketplace:"Marché",community:"Forum Social",gatesTitle:"Choisissez votre Portail",employees:"Portail Employés",clients:"Portail Clients",business:"Portail Commercial",social:"Portail Social & Communauté",holding:"AlQurmanix Group Holding SARL",connected:"Connecté",nextPage:"Page Suivante",welcome:"Bienvenue sur",logout:"Se Déconnecter"}},
+      it:{flag:"🇮🇹",label:"Italiano",dir:"ltr",t:{profile:"Profilo",settings:"Impostazioni",notifications:"Notifiche",support:"Supporto Tecnico",ai:"AlQurmanix IA",docs:"Documentazione & Membership",policies:"Politiche AlQurmanix",parking:"Zona Parcheggio",wallet:"Portafoglio AlQurmanix Coin",earnCoin:"Guadagna AlQurmanix Coin",careers:"Carriere",supportUs:"Supporta AlQurmanix",donate:"Dona",marketplace:"Mercato",community:"Forum Sociale",gatesTitle:"Scegli il tuo Portale",employees:"Portale Dipendenti",clients:"Portale Clienti",business:"Portale Business",social:"Portale Sociale & Community",holding:"AlQurmanix Group Holding SRL",connected:"Connesso",nextPage:"Pagina Successiva",welcome:"Benvenuto su",logout:"Disconnetti"}},
+      hi:{flag:"🇮🇳",label:"हिंदी",dir:"ltr",t:{profile:"प्रोफ़ाइल",settings:"सेटिंग्स",notifications:"सूचनाएं",support:"तकनीकी सहायता",ai:"AlQurmanix AI",docs:"दस्तावेज़ और सदस्यता",policies:"AlQurmanix नीतियां",parking:"पार्किंग ज़ोन",wallet:"AlQurmanix Coin वॉलेट",earnCoin:"AlQurmanix Coin कमाएं",careers:"करियर",supportUs:"AlQurmanix का समर्थन",donate:"दान करें",marketplace:"बाज़ार",community:"सामाजिक मंच",gatesTitle:"अपना गेटवे चुनें",employees:"कर्मचारी पोर्टल",clients:"ग्राहक पोर्टल",business:"व्यापार पोर्टल",social:"सामाजिक पोर्टल",holding:"AlQurmanix Group Holding LLC",connected:"जुड़ा हुआ",nextPage:"अगला पृष्ठ",welcome:"स्वागत है",logout:"लॉग आउट"}},
+      ko:{flag:"🇰🇷",label:"한국어",dir:"ltr",t:{profile:"프로필",settings:"설정",notifications:"알림",support:"기술 지원",ai:"AlQurmanix AI",docs:"문서 및 멤버십",policies:"AlQurmanix 정책",parking:"주차 구역",wallet:"AlQurmanix Coin 지갑",earnCoin:"AlQurmanix Coin 획득",careers:"채용",supportUs:"AlQurmanix 지원",donate:"기부",marketplace:"마켓플레이스",community:"소셜 포럼",gatesTitle:"게이트웨이 선택",employees:"직원 포털",clients:"고객 포털",business:"비즈니스 포털",social:"소셜 & 커뮤니티 포털",holding:"AlQurmanix Group Holding LLC",connected:"연결됨",nextPage:"다음 페이지",welcome:"환영합니다",logout:"로그아웃"}},
+      ja:{flag:"🇯🇵",label:"日本語",dir:"ltr",t:{profile:"プロフィール",settings:"設定",notifications:"通知",support:"テクニカルサポート",ai:"AlQurmanix AI",docs:"ドキュメント・会員",policies:"AlQurmanix ポリシー",parking:"駐車ゾーン",wallet:"AlQurmanix Coin ウォレット",earnCoin:"AlQurmanix Coinを稼ぐ",careers:"採用情報",supportUs:"AlQurmanixをサポート",donate:"寄付",marketplace:"マーケットプレイス",community:"ソーシャルフォーラム",gatesTitle:"ゲートウェイを選択",employees:"従業員ポータル",clients:"クライアントポータル",business:"ビジネスポータル",social:"ソーシャル・コミュニティ",holding:"AlQurmanix グループホールディング",connected:"接続済み",nextPage:"次のページ",welcome:"ようこそ",logout:"サインアウト"}},
+      zh:{flag:"🇨🇳",label:"中文",dir:"ltr",t:{profile:"个人资料",settings:"设置",notifications:"通知",support:"技术支持",ai:"AlQurmanix 人工智能",docs:"文档与会员",policies:"AlQurmanix 政策",parking:"停车区",wallet:"AlQurmanix Coin 钱包",earnCoin:"赚取 AlQurmanix Coin",careers:"职业",supportUs:"支持 AlQurmanix",donate:"捐赠",marketplace:"市场",community:"社交论坛",gatesTitle:"选择您的入口",employees:"员工门户",clients:"客户门户",business:"商业门户",social:"社交与社区门户",holding:"AlQurmanix 集团控股有限公司",connected:"已连接",nextPage:"下一页",welcome:"欢迎来到",logout:"退出登录"}},
+      tr:{flag:"🇹🇷",label:"Türkçe",dir:"ltr",t:{profile:"Profil",settings:"Ayarlar",notifications:"Bildirimler",support:"Teknik Destek",ai:"AlQurmanix Yapay Zeka",docs:"Belgeleme ve Üyelik",policies:"AlQurmanix Politikaları",parking:"Park Bölgesi",wallet:"AlQurmanix Coin Cüzdanı",earnCoin:"AlQurmanix Coin Kazan",careers:"Kariyer",supportUs:"AlQurmanix'i Destekle",donate:"Bağış Yap",marketplace:"Pazar Yeri",community:"Sosyal Forum",gatesTitle:"Kapınızı Seçin",employees:"Çalışan Portalı",clients:"Müşteri Portalı",business:"Ticaret Portalı",social:"Sosyal & Topluluk Portalı",holding:"AlQurmanix Group Holding LLC",connected:"Bağlandı",nextPage:"Sonraki Sayfa",welcome:"Hoş Geldiniz",logout:"Çıkış Yap"}},
+    };
 
-function ProfileStat({ label, value, icon }: any) {
-  return (
-    <div className="flex justify-between items-center p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-[#D4AF37]/20 transition-all">
-       <div className="flex items-center gap-3 text-[#8B6E23]">
-         {icon}
-         <span className="text-xs uppercase tracking-widest">{label}</span>
-       </div>
-       <span className="text-sm font-black text-white font-mono">{value}</span>
-    </div>
-  );
-}
+    let currentLang = "ar";
 
-function ShortcutBtn({ label, icon, color }: any) {
-  return (
-    <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.08] transition-all cursor-pointer group">
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-black text-white shadow-lg" style={{ backgroundColor: color }}>
-        {icon}
-      </div>
-      <span className="text-[10px] text-[#8B6E23] font-bold uppercase">{label}</span>
-    </div>
-  );
-}
+    function navTo(file) {
+      sessionStorage.setItem("aqx_auth_entry", "true");
+      window.location.href = file;
+    }
+
+    function applyLang(lang) {
+      currentLang = lang;
+      const L = LANGS[lang], t = L.t;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = L.dir;
+      document.getElementById("globe-flag").textContent  = L.flag;
+      document.getElementById("lbl-connected").textContent = t.connected;
+      document.getElementById("lbl-welcome").textContent   = t.welcome;
+      document.getElementById("lbl-holding").textContent   = t.holding;
+      document.getElementById("lbl-next").textContent      = t.nextPage;
+      document.getElementById("lbl-logout").textContent    = t.logout;
+      document.getElementById("lbl-gates-title").textContent = t.gatesTitle;
+
+      // Nav
+      const navList = document.getElementById("nav-list");
+      navList.innerHTML = "";
+      NAV_ITEMS.forEach((item, i) => {
+        const a = document.createElement("a");
+        a.className = "nav-item";
+        a.href = item.file;
+        a.style.animationDelay = (i * 32) + "ms";
+        a.addEventListener("click", e => { e.preventDefault(); navTo(item.file); });
+        a.innerHTML = `<span class="nav-emoji">${item.emoji}</span><span class="nav-label">${t[item.key]||item.key}</span><span class="nav-arrow">›</span>`;
+        navList.appendChild(a);
+      });
+
+      // Gates
+      const gatesGrid = document.getElementById("gates-grid");
+      gatesGrid.innerHTML = "";
+      GATES.forEach((gate, i) => {
+        const a = document.createElement("a");
+        a.className = "gate-card";
+        a.href = gate.file;
+        a.style.animationDelay = (i * 65) + "ms";
+        a.addEventListener("click", e => { e.preventDefault(); navTo(gate.file); });
+        a.innerHTML = `<span class="gate-icon">${gate.emoji}</span><span class="gate-label">${t[gate.key]||gate.key}</span><div class="gate-shine"></div>`;
+        gatesGrid.appendChild(a);
+      });
+
+      // Lang dropdown
+      const dd = document.getElementById("lang-dropdown");
+      dd.innerHTML = "";
+      Object.entries(LANGS).forEach(([k, v]) => {
+        const btn = document.createElement("button");
+        btn.className = "lang-item" + (k === lang ? " active-lang" : "");
+        btn.innerHTML = `<span class="lang-flag">${v.flag}</span><span>${v.label}</span>`;
+        btn.addEventListener("click", () => { applyLang(k); dd.classList.remove("open"); });
+        dd.appendChild(btn);
+      });
+    }
+
+    // Globe toggle
+    document.getElementById("globe-btn").addEventListener("click", e => {
+      e.stopPropagation();
+      document.getElementById("lang-dropdown").classList.toggle("open");
+    });
+    document.addEventListener("click", e => {
+      if (!document.getElementById("globe-wrapper").contains(e.target))
+        document.getElementById("lang-dropdown").classList.remove("open");
+    });
+
+    // Clock
+    const localeMap = {ar:"ar-SA",zh:"zh-CN",ko:"ko-KR",ja:"ja-JP",hi:"hi-IN"};
+    function tickClock() {
+      const now = new Date(), locale = localeMap[currentLang] || "en-US";
+      document.getElementById("clock-time").textContent = now.toLocaleTimeString(locale,  {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+      document.getElementById("clock-date").textContent = now.toLocaleDateString(locale, {weekday:"long",year:"numeric",month:"long",day:"numeric"});
+    }
+    setInterval(tickClock, 1000);
+    tickClock();
+
+    // History guard
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", () => {
+      window.history.pushState(null, "", window.location.href);
+    });
+
+    // Called by Firebase after auth — INSTANT show
+    window.renderDashboard = function(displayName) {
+      document.getElementById("user-name").textContent = displayName;
+      applyLang("ar");
+      const ls = document.getElementById("loading-screen");
+      ls.classList.add("hide");
+      document.getElementById("dashboard").classList.add("show");
+      setTimeout(() => { if (ls.parentNode) ls.parentNode.removeChild(ls); }, 350);
+    };
+  </script>
+
+  <!-- ══ Firebase Auth (ES Module) ══ -->
+  <script type="module">
+    import { initializeApp }     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut }
+                                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, serverTimestamp }
+                                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const app  = initializeApp({
+      apiKey:            "AIzaSyCoM-Aqq7VwTDx5ZeHmIpHM4sm2XM0WdKw",
+      authDomain:        "alqurmanix-15b92.firebaseapp.com",
+      projectId:         "alqurmanix-15b92",
+      storageBucket:     "alqurmanix-15b92.firebasestorage.app",
+      messagingSenderId: "477352026568",
+      appId:             "1:477352026568:web:49f90cd3fc74b6948ba0fd",
+      measurementId:     "G-VJF36N1MCD"
+    });
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    function hardRedirect() {
+      sessionStorage.removeItem("aqx_auth_entry");
+      window.location.replace("./index.html");
+    }
+
+    window._aqxSignOut = async () => {
+      sessionStorage.removeItem("aqx_auth_entry");
+      await signOut(auth);
+      hardRedirect();
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      // ── STEP 1: Fast checks (synchronous Firebase token) ──
+      if (!user)                { hardRedirect(); return; }
+      if (!user.emailVerified)  { await signOut(auth); hardRedirect(); return; }
+
+      // ── STEP 2: INSTANT UI render — don't wait for Firestore ──
+      const displayName = user.displayName || user.email.split("@")[0];
+      window.renderDashboard(displayName);
+      sessionStorage.setItem("aqx_auth_entry", "true");
+
+      // ── STEP 3: Firestore check in background ──
+      try {
+        const userRef = doc(db, "users", user.uid);
+        const snap    = await getDoc(userRef);
+
+        if (!snap.exists())                                        { await signOut(auth); hardRedirect(); return; }
+        const data = snap.data();
+        if (data.status !== "active" || data.inactivityStatus !== "active") { await signOut(auth); hardRedirect(); return; }
+
+        // Update displayName if Firestore has one
+        if (data.displayName) document.getElementById("user-name").textContent = data.displayName;
+
+        // Fire-and-forget lastActivity update — NEVER blocks UI
+        updateDoc(userRef, { lastActivity: serverTimestamp() }).catch(() => {});
+
+      } catch (err) {
+        // Non-fatal: network issue, don't redirect on Firestore errors
+        console.warn("Firestore background check:", err.code || err.message);
+      }
+    });
+  </script>
+
+</body>
+</html>
