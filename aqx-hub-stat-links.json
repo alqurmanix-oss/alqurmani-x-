@@ -1,1 +1,38 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAwBK7OOAmMjaDYxQHGEfcEmo6n9pVp53U",
+  authDomain: "aqx-link-hub.firebaseapp.com",
+  projectId: "aqx-link-hub",
+  storageBucket: "aqx-link-hub.firebasestorage.app",
+  messagingSenderId: "480230521310",
+  appId: "1:480230521310:web:f57e4b15ee88bb49d9454f",
+  measurementId: "G-JCG85P74K4"
+};
+
+// Initialize Firebase and Firestore
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/**
+ * دالة لجلب الإجمالي الفعلي والدقيق لعدد الروابط من مجموعة الروابط في قاعدة البيانات
+ * @returns {Promise<number>} العدد الإجمالي الفعلي للروابط
+ */
+export async function fetchExactLinksCount() {
+  try {
+    // حدد اسم المجموعة (Collection) الخاصة بالروابط في قاعدة البيانات لديك (تأكد من مطابقة الاسم، وغالباً يكون 'links')
+    const linksCollectionRef = collection(db, "links");
+
+    // تنفيذ طلب العدد الفعلي من الخادم مباشرة بأعلى كفاءة وبدون أخطاء استهلاك الذاكرة
+    const snapshot = await getCountFromServer(linksCollectionRef);
+    const exactCount = snapshot.data().count;
+
+    return exactCount;
+  } catch (error) {
+    console.error("تعذر جلب عدد الروابط الإجمالي:", error);
+    return 0;
+  }
+}
