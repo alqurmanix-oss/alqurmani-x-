@@ -15,7 +15,7 @@
 <meta name="theme-color" content="#eef1fb">
 
 <!-- سياسة أمان المحتوى -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://script.google.com https://script.googleusercontent.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com; form-action 'none'; base-uri 'none'">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%231b2a6b'/%3E%3Cstop offset='1' stop-color='%237a5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M32 12l18 40h-8l-3-8H25l-3 8h-8z' fill='%23f3d98b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -229,7 +229,7 @@ canvas#fx{position:fixed;inset:0;z-index:60;pointer-events:none}
 
         <button type="button" class="btn" id="go"><span class="spin"></span><span id="goTxt">تسجيل الدخول</span></button>
 
-        <div class="secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>اتصال محمي ومشفّر</div>
+        <div class="secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>اتصال مباشر وآمن بمشروع فايربيس</div>
       </div>
       <div class="foot">AQX القرماني إكس</div>
     </section>
@@ -240,10 +240,10 @@ canvas#fx{position:fixed;inset:0;z-index:60;pointer-events:none}
 <div class="veil" id="veil"><div class="modal"><div class="mbody" id="mbody"></div></div></div>
 <canvas id="fx"></canvas>
 
-<!-- استيراد مكتبات فايربيس وتشغيل النظام -->
+<!-- الاتصال المباشر بـ Firebase Authentication وإدارة الجلسة -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAwBK7OOAmMjaDYxQHGEfcEmo6n9pVp53U",
@@ -258,14 +258,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// الـ UID الإداري الخاص بك والمطابق لقواعد الأمان في فايربيس
+const ADMIN_UID = 'eOevRQU9EPMiQ1RtTvVKDYSND9N2';
+
 (function(){
 'use strict';
 
-// تم تحديث رابط المحرك الجديد هنا
-const ENGINE   = 'https://script.google.com/macros/s/AKfycbxKoB_uEmipRpBs2rv1lTD9LdTJnfDJgFBRpQmhnWSLlgPMF_nsg7YbMa6UfY7mX028/exec';
 const DASHBOARD = 'aqx-command-center.html';
 const WELCOME_NAME = 'أبو عبد الله';
-const MAX_TRIES = 5, LOCK_SECONDS = 120, TIMEOUT_MS = 25000;
+const MAX_TRIES = 5, LOCK_SECONDS = 120;
 
 if (window.top !== window.self) { try{ window.top.location = window.self.location; }catch(e){ document.documentElement.innerHTML=''; } }
 document.addEventListener('contextmenu', e=>e.preventDefault());
@@ -326,17 +327,6 @@ function applyLock(){
 }
 applyLock();
 
-async function callEngine(payload){
-  const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),TIMEOUT_MS);
-  try{
-    const r=await fetch(ENGINE,{method:'POST',body:JSON.stringify(payload),signal:ctrl.signal,redirect:'follow',credentials:'omit',referrerPolicy:'no-referrer'});
-    const txt=await r.text(); let d;
-    try{ d=JSON.parse(txt); }catch(e){ throw new Error('bad-response'); }
-    return d;
-  } finally { clearTimeout(t); }
-}
-const isOk = d => d && (d.success===true || d.ok===true || d.status==='success' || d.status==='ok' || d.result==='success');
-
 async function login(){
   if(go.disabled) return;
   if($('website').value) return;
@@ -350,32 +340,36 @@ async function login(){
   }
   go.disabled=true; go.classList.add('load'); goTxt.textContent='جارٍ المصادقة';
   try {
+    // 1. تسجيل الدخول مباشرة عبر Firebase Auth SDK
     const userCredential = await signInWithEmailAndPassword(auth, em, pw);
     const user = userCredential.user;
     const idToken = await user.getIdToken();
 
-    goTxt.textContent='جارٍ التحقق الأمني';
+    goTxt.textContent='التحقق من الصلاحيات';
 
-    const d = await callEngine({ idToken: idToken });
-    
-    if(isOk(d)){
-      saveLock({n:0});
-      try{ sessionStorage.setItem('aqx_session',JSON.stringify({token:idToken,email:em,name:WELCOME_NAME,t:Date.now()})); }catch(e){}
-      pass.value='';
-      veil.dataset.lock='1';
-      modal({tone:'ok',icon:'ok',title:'تم تسجيل الدخول بنجاح',name:'أهلًا بك يا '+WELCOME_NAME,
-        text:'يسعدنا عودتك إلى AQX القرماني إكس. جارٍ فتح لوحة التحكم.',
-        extra:'<div class="bar go" id="bar"><i></i></div>'});
-      confetti();
-      setTimeout(()=>{ location.replace(DASHBOARD); },2900);
+    // 2. التحقق الفوري من مطابقة الـ UID الخاص بالمشرف الحقيقي
+    if (user.uid !== ADMIN_UID) {
+      await signOut(auth);
+      fail('حساب غير مصرح له بالوصول إلى لوحة الإدارة.');
       return;
     }
-    fail(d && d.message);
+
+    // 3. نجاح التحقق بالكامل
+    saveLock({n:0});
+    try{ sessionStorage.setItem('aqx_session',JSON.stringify({token:idToken,uid:user.uid,email:em,name:WELCOME_NAME,t:Date.now()})); }catch(e){}
+    pass.value='';
+    veil.dataset.lock='1';
+    modal({tone:'ok',icon:'ok',title:'تم تسجيل الدخول بنجاح',name:'أهلًا بك يا '+WELCOME_NAME,
+      text:'يسعدنا عودتك إلى AQX القرماني إكس. جارٍ فتح لوحة التحكم.',
+      extra:'<div class="bar go" id="bar"><i></i></div>'});
+    confetti();
+    setTimeout(()=>{ location.replace(DASHBOARD); },2900);
+
   } catch(err) {
-    if(err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+    if(err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-email') {
       fail('البريد الإلكتروني أو الرقم السري غير صحيح.');
-    } else if(err.name==='AbortError') {
-      netErr('انتهت مهلة الاتصال بالمحرك. تحقق من الإنترنت وحاول مرة أخرى.');
+    } else if(err.code === 'auth/too-many-requests') {
+      fail('تم حظر المحاولات مؤقتًا بسبب كثرة الطلبات الخاطئة.');
     } else {
       fail(err.message || 'تعذّر إتمام المصادقة.');
     }
@@ -395,7 +389,6 @@ function fail(msg){
     actions:[{label:'إعادة المحاولة',fn:()=>{closeModal();pass.focus();}}]});
   pass.value=''; applyLock();
 }
-function netErr(t){ modal({tone:'err',icon:'err',title:'لا يوجد اتصال بالمحرك',text:t,actions:[{label:'إغلاق',ghost:true,fn:closeModal},{label:'إعادة المحاولة',fn:()=>{closeModal();login();}}]}); }
 
 go.onclick=login;
 [email,pass].forEach(i=>i.addEventListener('keydown',e=>{ if(e.key==='Enter') login(); }));
