@@ -261,7 +261,8 @@ const auth = getAuth(app);
 (function(){
 'use strict';
 
-const ENGINE   = 'https://script.google.com/macros/s/AKfycbwpib9coND0wJLEcg-wo1GBJC7UwwgCButCEQDSozNbmtG62TrlZ13L9OxWM94SZJi3/exec';
+// تم تحديث رابط المحرك الجديد هنا
+const ENGINE   = 'https://script.google.com/macros/s/AKfycbxKoB_uEmipRpBs2rv1lTD9LdTJnfDJgFBRpQmhnWSLlgPMF_nsg7YbMa6UfY7mX028/exec';
 const DASHBOARD = 'aqx-command-center.html';
 const WELCOME_NAME = 'أبو عبد الله';
 const MAX_TRIES = 5, LOCK_SECONDS = 120, TIMEOUT_MS = 25000;
@@ -349,14 +350,12 @@ async function login(){
   }
   go.disabled=true; go.classList.add('load'); goTxt.textContent='جارٍ المصادقة';
   try {
-    // 1. تسجيل الدخول عبر فايربيس مباشرة للحصول على الجلسة والـ Token
     const userCredential = await signInWithEmailAndPassword(auth, em, pw);
     const user = userCredential.user;
     const idToken = await user.getIdToken();
 
     goTxt.textContent='جارٍ التحقق الأمني';
 
-    // 2. إرسال الـ Token إلى محرك Apps Script للتحقق من الـ UID والصلاحيات
     const d = await callEngine({ idToken: idToken });
     
     if(isOk(d)){
