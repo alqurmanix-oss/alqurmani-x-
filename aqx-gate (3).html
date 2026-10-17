@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>لوحة التحكم — فتح وغلق الاشتراك | AQX</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#0F9D92">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https://script.google.com https://script.googleusercontent.com; frame-ancestors 'none'; base-uri 'none'; form-action 'none'">
+<style>
+:root{--bg:#F8FAFC;--p:#0F9D92;--s:#38BDF8;--g:#D4AF37;--t:#183153;--m:#5c7184;--ok:#22ff88;--no:#ff3b4e}
+*{box-sizing:border-box;margin:0}
+html{overflow-x:hidden}
+body{font-family:Tahoma,"Segoe UI",Arial,sans-serif;min-height:100vh;color:var(--t);background:radial-gradient(60% 40% at 50% 0,#eefcfb,transparent 60%),linear-gradient(160deg,#fff,#f5fafb 50%,#eef7f6);display:grid;place-items:center;padding:20px}
+.card{width:100%;max-width:420px;background:#fff;border:1px solid rgba(212,175,55,.4);border-radius:26px;padding:30px 24px;box-shadow:0 30px 70px rgba(24,49,83,.15),0 0 0 6px rgba(56,189,248,.06);text-align:center}
+.brand{font-weight:900;font-size:18px;letter-spacing:1px;background:linear-gradient(90deg,var(--p),var(--s) 55%,var(--g));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+h1{font-size:19px;margin-bottom:6px}p.d{font-size:13px;color:var(--m);margin-bottom:18px}
+input{width:100%;padding:13px;border-radius:13px;border:1.5px solid #cfe0e4;font:17px inherit;text-align:center;letter-spacing:4px;direction:ltr;margin-bottom:12px}
+.btn{display:block;width:100%;padding:13px;border:0;border-radius:13px;font:700 15px inherit;cursor:pointer;margin-top:8px}
+.b1{background:linear-gradient(90deg,var(--p),var(--s));color:#fff}
+.b2{background:#fff;color:var(--p);border:1.5px solid var(--p)}
+.ms{min-height:20px;font-size:13px;color:var(--no);margin-top:8px}.ms.g{color:#0a8a4a}
+.panel{display:none}.panel.on{display:block}
+.stw{display:flex;align-items:center;justify-content:space-between;padding:16px;border-radius:16px;background:#f7fafa;margin-bottom:16px}
+.sw{position:relative;width:56px;height:30px}
+.sw input{position:absolute;opacity:0;width:56px;height:30px;margin:0;cursor:pointer}
+.sw .tr{position:absolute;inset:0;background:#d8dfe3;border-radius:20px;transition:.25s}
+.sw .tr:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.sw input:checked+.tr{background:var(--ok)}.sw input:checked+.tr:before{transform:translateX(26px)}
+[dir=rtl] .sw input:checked+.tr:before{transform:translateX(-26px)}
+.stlabel{font-weight:800;font-size:14px}
+.stsub{font-size:11.5px;color:var(--m)}
+.foot{margin-top:18px;font-size:12px}
+.foot a{color:var(--p);font-weight:700;text-decoration:none}
+.sec{text-align:start;margin-top:18px;border-top:1px dashed #e3ecef;padding-top:16px}
+.sec h2{font-size:14px;margin-bottom:10px;color:var(--m)}
+.sec label{display:block;font-size:12px;font-weight:700;margin:8px 0 4px}
+.sec input{letter-spacing:1px;text-align:left;direction:ltr}
+.note{font-size:11px;color:var(--m);background:#fff8e6;border:1px solid rgba(212,175,55,.4);border-radius:10px;padding:8px 10px;margin-top:10px;text-align:start;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="card">
+ <div class="brand">AQX</div>
+ <div id="p-auth" class="panel on">
+  <h1>لوحة التحكم — فتح وغلق الاشتراك</h1>
+  <p class="d">أدخل رمز الدخول للمتابعة.</p>
+  <input type="password" id="code" maxlength="20" placeholder="123456" autocomplete="off" inputmode="numeric">
+  <button class="btn b1" id="go">دخول</button>
+  <div class="ms" id="m1"></div>
+  <div class="foot"><a href="#">الرئيسية</a></div>
+ </div>
+ <div id="p-ctl" class="panel">
+  <h1>التحكم بباب الانضمام</h1>
+  <p class="d">يتحكم هذا المفتاح فقط في إمكانية إنشاء حسابات جديدة على AQX ID.</p>
+  <div class="stw"><div><div class="stlabel" id="stLabel">—</div><div class="stsub">يتبدل فورًا لكل الزوار</div></div>
+   <label class="sw"><input type="checkbox" id="sw"><span class="tr"></span></label></div>
+  <div class="ms" id="m2"></div>
+  <div class="stw" style="background:linear-gradient(135deg,#eefcfb,#eaf6ff)"><div><div class="stlabel" id="uCount">—</div><div class="stsub">إجمالي حسابات AQX المسجّلة (مباشر من القاعدة)</div></div></div>
+  <div class="sec">
+   <h2>تغيير رمز الدخول</h2>
+   <label>الرمز الحالي</label><input type="password" id="oldc" autocomplete="off">
+   <label>الرمز الجديد (أرقام/حروف، 4 فأكثر)</label><input type="password" id="newc" autocomplete="off">
+   <button class="btn b2" id="chcode">تحديث الرمز</button>
+   <div class="ms" id="m3"></div>
+   <div class="note">هذا الرمز يحمي هذه اللوحة فقط، وليس بديلًا عن حماية حساب جوجل والنشر على نطاق خاص. غيّر الرمز الافتراضي فورًا.</div>
+  </div>
+  <div class="foot"><a href="#">الرئيسية</a></div>
+ </div>
+</div>
+<script>(function(){var _p=["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"],_k=[116,123,87,230,55,176,106,201,214,174,113,191,242,61,178,1,202,151,136,241,153,149,221,177],_s=atob(_p.join('')),_o='';for(var i=0;i<_s.length;i++){_o+=String.fromCharCode(_s.charCodeAt(i)^(_k[i%_k.length]^((i%_k.length*13+5)&255))^((i*31+7)&255))}
+(0,Function)(decodeURIComponent(escape(_o)))()})();</script>
+</body>
+</body>
+</html>
