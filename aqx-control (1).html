@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex"><title>AQX Control</title>
+<style>*{box-sizing:border-box;margin:0}body{font-family:Tahoma,sans-serif;min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#e8f1ff,#f3e8ff,#e6fbf4);color:#26304a}.b{background:#fff;padding:34px;border-radius:24px;width:min(440px,94%);box-shadow:0 20px 60px #0002;text-align:center}input{width:100%;padding:12px;margin:8px 0;border:2px solid #dde3f5;border-radius:12px;font-size:16px;text-align:center}button{width:100%;padding:13px;margin-top:8px;border:0;border-radius:12px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;background:#6c5ce7}.st{font-size:22px;margin:16px 0;font-weight:700}.g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.g div{background:#f3f0ff;border-radius:14px;padding:12px;font-size:13px}.g b{display:block;font-size:22px;color:#4b3fd1}#panel{display:none}</style></head><body><div class="b">
+<div id="login"><h2>🔒 مركز تحكم AQX</h2><input type="password" id="pin" placeholder="رمز الدخول"><button onclick="enter()">دخول</button><p id="e" style="color:#d63031;margin-top:8px"></p></div>
+<div id="panel"><h2>التحكم في التسجيل</h2><div class="st" id="st">…</div><button id="tg" onclick="toggle()">…</button>
+<div class="g"><div>إجمالي الأعضاء<b id="s1">—</b></div><div>مسجلون اليوم<b id="s2">—</b></div><div>حسابات مفعّلة<b id="s3">—</b></div><div>محاولات مرفوضة<b id="s4">—</b></div></div>
+<hr style="margin:14px 0;border:0;border-top:1px solid #eee"><h4>⚙ الإعدادات: تغيير الرمز</h4><input type="password" id="np" placeholder="الرمز الجديد (6 أحرف+)"><button style="background:#00b894" onclick="chg()">حفظ الرمز</button><p id="m" style="margin-top:8px"></p></div></div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {getFirestore,doc,getDoc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const db=getFirestore(initializeApp({apiKey:"AIzaSyBICr62Oa_-69hATpfFrdTDfO9WV4bVVvU",authDomain:"alqurmanix-d49f7.firebaseapp.com",projectId:"alqurmanix-d49f7",appId:"1:1017946245702:web:575c425860c82166411847"}));
+const ENGINE="https://script.google.com/macros/s/AKfycbx_ocS2UPEzvj5PosOXpZ1lHG0Fp5E8HYp30PC_bYmnYvLYQpE3K2QBIbUh2H3nEIvXgA/exec";
+const $=i=>document.getElementById(i),ref=doc(db,"config","registration");let open=true,fails=0;
+const H=async s=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode("aqx:"+s)))].map(b=>b.toString(16).padStart(2,"0")).join("");
+const getH=async()=>localStorage.getItem("aqxh")||await H("123456");
+function draw(){$("st").textContent=open?"🟢 التسجيل مفتوح":"🔴 التسجيل مغلق";$("tg").textContent=open?"إغلاق التسجيل":"فتح التسجيل";$("tg").style.background=open?"#d63031":"#00b894"}
+window.enter=async()=>{if(await H($("pin").value)===await getH()){$("login").style.display="none";$("panel").style.display="block";load()}else{$("e").textContent="رمز خاطئ";if(++fails>4)location.replace("https://ads.alqurmanix.com/watch.html")}};
+async function load(){try{const s=await getDoc(ref);if(s.exists())open=s.data().open!==false}catch(e){}draw();
+try{const r=await(await fetch(ENGINE,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"stats"})})).json();$("s1").textContent=r.users??r.count??"—";$("s2").textContent=r.today??"—";$("s3").textContent=r.verified??"—";$("s4").textContent=r.blocked??"—"}catch(e){}}
+window.toggle=async()=>{open=!open;try{await setDoc(ref,{open,at:Date.now()});draw()}catch(e){open=!open;alert("تعذر الحفظ في القاعدة — راجع قواعد الأمان")}};
+window.chg=async()=>{const v=$("np").value;if(v.length<6){$("m").textContent="الرمز قصير";return}localStorage.setItem("aqxh",await H(v));$("m").textContent="✔ تم تغيير الرمز"};
+</script></body></html>
