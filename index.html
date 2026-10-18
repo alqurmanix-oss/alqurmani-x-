@@ -8,23 +8,25 @@
 .q{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:20px;color:#fff;text-decoration:none;animation:spin 5s linear infinite,hue 6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes hue{0%{background:#6c5ce7}25%{background:#00b894}50%{background:#e17055}75%{background:#0984e3}100%{background:#6c5ce7}}
 .lamp{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2bff88;box-shadow:0 0 12px #2bff88;animation:bl 1.4s infinite;margin-inline:6px}@keyframes bl{50%{opacity:.2;box-shadow:none}}
-#gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle,#fff,#dfe9ff 60%,#e9ddff);transition:opacity 1s,visibility 1s;text-align:center}
+#gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle,#fff,#dfe9ff 60%,#e9ddff);transition:opacity 1s,visibility 1s;text-align:center;padding:16px}
 #gate.off{opacity:0;visibility:hidden}
-.ring{position:absolute;border-radius:50%;border:3px solid transparent;border-top-color:#6c5ce7;border-bottom-color:#00cec9;animation:spin 6s linear infinite;box-shadow:0 0 40px #6c5ce755}
-.r1{width:300px;height:300px}.r2{width:400px;height:400px;animation-duration:9s;animation-direction:reverse;border-top-color:#fd79a8}.r3{width:500px;height:500px;animation-duration:14s;border-top-color:#fdcb6e}
-#gate h1{font-size:92px;font-weight:900;letter-spacing:8px;background:linear-gradient(90deg,#6c5ce7,#00b8d4,#e84393);-webkit-background-clip:text;color:transparent;animation:emerge 2.4s cubic-bezier(.2,.8,.2,1) both;position:relative}
+.ring{position:absolute;border-radius:50%;border:3px solid transparent;border-top-color:#6c5ce7;border-bottom-color:#00cec9;animation:spin 6s linear infinite;box-shadow:0 0 40px #6c5ce755;width:clamp(180px,55vw,300px);height:clamp(180px,55vw,300px)}
+.r2{width:clamp(240px,70vw,400px);height:clamp(240px,70vw,400px);animation-duration:9s;animation-direction:reverse;border-top-color:#fd79a8}.r3{width:clamp(300px,85vw,500px);height:clamp(300px,85vw,500px);animation-duration:14s;border-top-color:#fdcb6e}
+#gate h1{font-size:clamp(44px,13vw,92px);font-weight:900;letter-spacing:6px;background:linear-gradient(90deg,#6c5ce7,#00b8d4,#e84393);-webkit-background-clip:text;color:transparent;animation:emerge 2.4s cubic-bezier(.2,.8,.2,1) both;position:relative}
 @keyframes emerge{from{transform:scale(.1);filter:blur(30px);opacity:0}}
-#gate p{position:relative;font-size:20px;font-weight:700;animation:emerge 2.4s .8s both;max-width:340px;margin-top:6px}
-main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding:90px 16px 140px}
-.logo{font-size:30px;font-weight:900;color:#4b3fd1}
-.orbs{display:flex;gap:34px;flex-wrap:wrap;justify-content:center}
-.orb{width:150px;text-align:center;cursor:pointer;opacity:0;transform:scale(.2);transition:.3s}.orb.in{opacity:1;transform:none;transition:1s cubic-bezier(.2,1.4,.3,1)}
+#gate p{position:relative;font-size:clamp(15px,4vw,20px);font-weight:700;animation:emerge 2.4s .8s both;max-width:320px;margin:6px auto 0}
+main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,5vw,34px);padding:clamp(70px,14vw,90px) 16px 160px}
+.logo{font-size:clamp(20px,5vw,30px);font-weight:900;color:#4b3fd1;text-align:center}
+.orbs{display:flex;gap:clamp(16px,4vw,34px);flex-wrap:wrap;justify-content:center}
+.orb{width:clamp(118px,30vw,150px);text-align:center;cursor:pointer;opacity:0;transform:scale(.2);transition:.3s}.orb.in{opacity:1;transform:none;transition:1s cubic-bezier(.2,1.4,.3,1)}
 .orb:hover{transform:translateY(-10px) scale(1.06)}
-.orb i{display:grid;place-items:center;width:110px;height:110px;margin:0 auto 10px;border-radius:50%;font-size:46px;font-style:normal;color:#fff;box-shadow:0 14px 40px #0003,inset 0 0 20px #fff6;animation:float 4s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-8px)}}
-.o1 i{background:linear-gradient(135deg,#6c5ce7,#a29bfe)}.o2 i{background:linear-gradient(135deg,#00b894,#55efc4)}.o3 i{background:linear-gradient(135deg,#e17055,#fdcb6e)}
-.orb b{font-size:17px}
-#users{font-size:15px;background:#fff9;padding:8px 20px;border-radius:20px;backdrop-filter:blur(8px)}
+.orb .shape{position:relative;width:clamp(84px,22vw,112px);height:clamp(84px,22vw,112px);margin:0 auto 12px;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 14px 26px #0002)}
+.orb .shape svg{width:100%;height:100%;overflow:visible}
+.orb .shape .ico{animation:pulseIco 2.8s ease-in-out infinite}
+@keyframes pulseIco{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}
+.orb b{font-size:clamp(14px,3.6vw,17px)}
+#users{font-size:14px;background:#fff9;padding:8px 20px;border-radius:20px;backdrop-filter:blur(8px);text-align:center}
 .panel{position:fixed;top:0;bottom:0;width:min(440px,100%);background:#fff;z-index:40;padding:34px 28px;overflow:auto;transition:transform .7s cubic-bezier(.2,.9,.2,1);box-shadow:0 0 60px #0004}
 .pR{right:0;transform:translateX(110%)}.pL{left:0;transform:translateX(-110%)}.pB{right:0;transform:translateY(110%)}
 .panel.open{transform:none}.panel h2{margin-bottom:6px;color:#4b3fd1}.panel .x{position:absolute;top:12px;left:16px;border:0;background:#eef;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:18px}
@@ -46,21 +48,29 @@ input[type=email],input[type=password],input[type=text]{width:100%;padding:13px 
 .card *{position:relative;z-index:1}.card .id{font:900 26px monospace;letter-spacing:3px;margin:14px 0 8px;direction:ltr;text-align:center}.card small{opacity:.9;direction:ltr;display:block}
 #laser{position:fixed;left:0;right:0;height:4px;z-index:90;display:none;background:linear-gradient(90deg,transparent,#2bff88,#fff,#2bff88,transparent);box-shadow:0 0 30px 8px #2bff88}
 #laser.go{display:block;animation:ls 1.2s ease-in-out 3 alternate}@keyframes ls{from{top:0}to{top:100%}}
-footer{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:12px;padding:12px;z-index:10;flex-wrap:wrap}
-footer a{padding:9px 20px;border-radius:20px;background:#fffc;text-decoration:none;color:#26304a;font-weight:700;font-size:14px;box-shadow:0 4px 14px #0002;transition:.3s}footer a:hover{transform:translateY(-4px)}
+footer{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:10px;padding:10px 8px;z-index:10;flex-wrap:nowrap;height:58px;background:linear-gradient(0deg,#ffffffee,#ffffff00)}
+footer a{padding:9px 16px;border-radius:20px;background:#fffc;text-decoration:none;color:#26304a;font-weight:700;font-size:13px;box-shadow:0 4px 14px #0002;transition:.3s;white-space:nowrap;flex:0 1 auto}footer a:hover{transform:translateY(-4px)}
 .sup{animation:supc 5s linear infinite;color:#fff!important}@keyframes supc{0%{background:#e84393}25%{background:#0984e3}50%{background:#00b894}75%{background:#f39c12}100%{background:#e84393}}
 #ast{position:fixed;bottom:70px;left:18px;z-index:60}
 #astb{border:0;padding:12px 20px;border-radius:30px;color:#fff;font:900 15px Tajawal;cursor:pointer;animation:supc 6s linear infinite;box-shadow:0 10px 30px #0003}
-#astm{display:none;position:absolute;bottom:56px;left:0;width:280px;background:#fff;border-radius:18px;padding:12px;box-shadow:0 20px 50px #0003}#astm.show{display:block}
+#astm{display:none;position:absolute;bottom:56px;left:0;width:min(280px,78vw);background:#fff;border-radius:18px;padding:12px;box-shadow:0 20px 50px #0003;max-height:60vh;overflow:auto}#astm.show{display:block}
+@media (max-width:520px){footer{gap:5px;padding:8px 4px}footer a{padding:8px 10px;font-size:11px;border-radius:14px}#ast{bottom:66px;left:8px}#astb{padding:10px 14px;font-size:13px}}
+@media (max-width:360px){footer a span.lbl{display:none}}
 #astm button{display:block;width:100%;text-align:right;border:0;background:#f3f0ff;margin:5px 0;padding:10px;border-radius:10px;font:700 14px Tajawal;cursor:pointer}#astm button:hover{background:#e0d9ff}
 #alarm{position:fixed;inset:0;z-index:999;display:none;place-items:center;text-align:center;color:#fff;padding:20px;animation:red 1.2s infinite alternate}
 @keyframes red{0%{background:#ff1a1a}33%{background:#b00010}66%{background:#ff3d00}100%{background:#7a0000}}
 #alarm.show{display:grid}#alarm h1{font-size:clamp(30px,7vw,64px);text-shadow:0 0 30px #fff}#alarm p{max-width:680px;margin:14px auto;line-height:2;font-size:18px}#alarm .tri{font-size:90px;animation:bl .5s infinite}
+@media (max-width:480px){.panel{padding:26px 18px;width:100%}.mbox{padding:24px 18px}.mbox h3{font-size:21px}.card{padding:16px}.card .id{font-size:20px}#top{padding:10px 12px}.lang{padding:6px 12px;font-size:12px}}
+@media (min-width:1200px){main{padding-bottom:110px}.orbs{gap:60px}}
 </style></head><body>
 <div id="top"><button class="lang" id="lg" onclick="setLang()">English</button><div><span class="lamp"></span><a class="q" href="help.html" target="_blank">؟</a></div></div>
 <div id="gate"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div><h1>AQX</h1><p data-t="gate">بوابتك إلى عالمٍ رقميّ آمن، يبدأ بهوية واحدة</p></div></div>
 <main><div class="logo">AQX ID · القرماني إكس</div>
-<div class="orbs"><div class="orb o1" onclick="openP('pReg')"><i>✦</i><b data-t="reg">انضم إلى عالمي</b></div><div class="orb o2" onclick="openP('pLog')"><i>⚿</i><b data-t="log">ادخل عالمي</b></div><div class="orb o3" onclick="openP('pRec')"><i>↻</i><b data-t="rec">استعِد عالمي</b></div></div>
+<div class="orbs">
+<div class="orb o1" onclick="openP('pReg')"><div class="shape"><svg viewBox="0 0 100 100"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6c5ce7"/><stop offset="1" stop-color="#00cec9"/></linearGradient></defs><path fill="url(#g1)" d="M50 2c23 0 44 12 47 33 3 22-11 38-29 47-18 9-39 7-50-10S3 35 17 18C27 6 38 2 50 2Z"/><g class="ico" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 30v28M36 44h28"/><circle cx="50" cy="44" r="24"/></g></svg></div><b data-t="reg">انضم إلى عالمي</b></div>
+<div class="orb o2" onclick="openP('pLog')"><div class="shape"><svg viewBox="0 0 100 100"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00b894"/><stop offset="1" stop-color="#00cec9"/></linearGradient></defs><path fill="url(#g2)" d="M50 3c25 0 46 14 47 36 1 21-13 34-28 44-16 10-41 11-52-6S2 40 14 22C24 8 36 3 50 3Z"/><g class="ico" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M42 50h26m0 0-8-8m8 8-8 8"/><rect x="24" y="34" width="16" height="32" rx="6"/></g></svg></div><b data-t="log">ادخل عالمي</b></div>
+<div class="orb o3" onclick="openP('pRec')"><div class="shape"><svg viewBox="0 0 100 100"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e17055"/><stop offset="1" stop-color="#fdcb6e"/></linearGradient></defs><path fill="url(#g3)" d="M50 4c22-2 44 9 48 31 4 21-7 38-24 48-18 10-41 9-53-8S5 37 17 20C27 7 38 6 50 4Z"/><g class="ico" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M34 42a18 18 0 1 1 3 22"/><path d="M34 30v14h14"/></g></svg></div><b data-t="rec">استعِد عالمي</b></div>
+</div>
 <div id="users">—</div></main>
 
 <section class="panel pR" id="pReg"><button class="x" onclick="closeP()">✕</button><h2 data-t="reg">انضم إلى عالمي</h2>
@@ -81,7 +91,7 @@ footer a{padding:9px 20px;border-radius:20px;background:#fffc;text-decoration:no
 
 <div class="modal" id="md"><div class="mbox" id="mb"></div></div><div id="laser"></div>
 <div id="alarm"><div><div class="tri">⚠</div><h1>تم رصد نشاط غير مصرح به</h1><p>تحذير أمني: تم تسجيل عنوان الاتصال وبصمة الجهاز وتوقيت المحاولة في سجلات الإدارة العامة للأمن السيبراني AQX. محاولات الاختراق والعبث والتسجيل الآلي والدخول غير المشروع جرائم يعاقب عليها القانون، وتُتخذ بحقها الإجراءات القانونية اللازمة.</p><p><b>جارٍ إخراجك من النظام فوراً…</b></p></div></div>
-<footer><a href="security.html" target="_blank">🛡 تنبيهات الأمان</a><a class="sup" href="support.html" target="_blank">💬 الدعم الفني</a><a href="about.html" target="_blank">ℹ من نحن</a></footer>
+<footer><a href="security.html" target="_blank">🛡 <span class="lbl">تنبيهات الأمان</span></a><a class="sup" href="support.html" target="_blank">💬 <span class="lbl">الدعم الفني</span></a><a href="about.html" target="_blank">ℹ <span class="lbl">من نحن</span></a></footer>
 <div id="ast"><div id="astm"><button onclick="ask('📝','أنشئ حسابك من زر «انضم إلى عالمي»، أدخل بريدك وكلمة سر قوية ووافق على الشروط.','pReg')">📝 كيف أنشئ حسابًا؟</button><button onclick="ask('🔐','تأكد من صحة البريد وكلمة السر، أو استعد حسابك من «استعِد عالمي».','pRec')">🔐 لا أستطيع تسجيل الدخول</button><button onclick="ask('📧','يمكنك طلب إعادة إرسال رابط التفعيل من بوابة الاستعادة.','pRec')">📧 لم يصلني بريد التفعيل</button><button onclick="ask('🔑','اطلب رابط الاستعادة من «نسيت كلمة السر».','pRec')">🔑 نسيت كلمة المرور</button><button onclick="ask('🛡','تُحمى بياناتك وفق سياسة الخصوصية لدى AQX.','security.html')">🛡 سؤال عن الأمان والخصوصية</button><button onclick="ask('💬','فريق الدعم الفني بانتظارك.','support.html')">💬 تواصل مع الدعم الفني</button><button onclick="ask('ℹ','تعرّف على القرماني إكس.','about.html')">ℹ من نحن</button></div><button id="astb" onclick="astm.classList.toggle('show')">✦ مساعد AQX</button></div>
 
 <script type="module">
