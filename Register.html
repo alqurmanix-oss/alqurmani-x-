@@ -5,8 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>إنشاء حساب AQX Auth</title>
-  
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <style>
     :root {
@@ -127,12 +125,6 @@
       color: var(--text-muted);
       margin-top: 4px;
       line-height: 1.5;
-    }
-
-    .captcha-wrap {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
     }
 
     .terms {
@@ -310,12 +302,6 @@
         </div>
       </div>
 
-      <div class="captcha-wrap">
-        <!-- تم وضع مفتاح الموقع الخاص بك هنا -->
-        <div class="g-recaptcha"
-             data-sitekey="6LdEB_otAAAAAGw21FHgyiloCGaaqFsUdI8n_rmX"></div>
-      </div>
-
       <div class="terms">
         <input id="terms" name="terms" type="checkbox" required>
         <label for="terms">
@@ -370,12 +356,6 @@
         return;
       }
 
-      const captchaResponse = typeof grecaptcha !== "undefined" ? grecaptcha.getResponse() : "";
-      if (!captchaResponse) {
-        showMessage("أكمل اختبار التحقق من أنك لست روبوتًا أولًا.", false);
-        return;
-      }
-
       const payload = {
         displayName: document.getElementById("displayName").value.trim(),
         username: document.getElementById("username").value.trim(),
@@ -384,7 +364,7 @@
         country: document.getElementById("country").value,
         region: document.getElementById("region").value.trim(),
         deviceId: getDeviceId(),
-        captchaToken: captchaResponse
+        captchaToken: "BYPASSED_NO_CAPTCHA"
       };
 
       button.disabled = true;
@@ -400,26 +380,17 @@
           if (result && result.ok) {
             showMessage(result.message, true);
             form.reset();
-            if (typeof grecaptcha !== "undefined") {
-              grecaptcha.reset();
-            }
           } else {
             showMessage(
               result && result.message ? result.message : "تعذر إتمام التسجيل.",
               false
             );
-            if (typeof grecaptcha !== "undefined") {
-              grecaptcha.reset();
-            }
           }
         })
         .withFailureHandler(function() {
           button.disabled = false;
           button.textContent = "إنشاء الحساب";
           showMessage("حدث خطأ في الاتصال بالسيرفر. حاول مرة أخرى.", false);
-          if (typeof grecaptcha !== "undefined") {
-            grecaptcha.reset();
-          }
         })
         .registerAccount(payload);
     });
