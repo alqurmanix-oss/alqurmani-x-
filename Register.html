@@ -185,7 +185,7 @@
   </div>
 
   <script>
-    // رابط المحرك المباشر الخاص بك
+    // رابط المحرك النشط الخاص بك
     const ENGINE_URL = "https://script.google.com/macros/s/AKfycbx0MTO76Yn9EzlXrXhlFG8m8ahUZf_RNjR9tM5C0oiFlh3ck2oKFmUDjqVTR3FhTPUf/exec";
 
     function getDeviceId() {
@@ -242,13 +242,20 @@
       try {
         const response = await fetch(ENGINE_URL, {
           method: "POST",
+          redirect: "follow",
           headers: {
             "Content-Type": "text/plain;charset=utf-8"
           },
           body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
+        const textResponse = await response.text();
+        let result;
+        try {
+          result = JSON.parse(textResponse);
+        } catch (e) {
+          throw new Error("استجابة غير صالحة من الخادم.");
+        }
 
         if (result.success) {
           showAlert(result.message || "تم إنشاء الحساب بنجاح!", "success");
@@ -258,7 +265,7 @@
         }
 
       } catch (error) {
-        showAlert("تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً.", "error");
+        showAlert("تعذر الاتصال بالخادم، تأكد من تحديث الإصدار (New Version) في Apps Script.", "error");
       } finally {
         submitBtn.disabled = false;
         btnSpinner.style.display = "none";
