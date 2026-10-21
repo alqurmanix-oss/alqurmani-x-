@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3X+PqqAMnNzmg/13UAAsfYkeFxrh+EFo5FnJD2G48os='; style-src 'sha256-/NwcIeVBCaLJpk4uUWdipDAAY4WMttmYx9CxX++YNao='; img-src 'self' data:; connect-src 'self' https://*.supabase.co https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>الحساب الموحد AQX القرمانى إكس | AQX Unified Account (AQX-UA)</title>
 <meta name="description" content="الحساب الموحد AQX القرمانى إكس (AQX-UA): بوابتك لتسجيل الدخول وإنشاء الحساب والاشتراكات والوصول إلى جميع خدمات AQX. One Account. Infinite Possibilities.">
@@ -20,78 +20,271 @@
 <meta property="og:title" content="AQX-UA | الحساب الموحد القرمانى إكس">
 <meta property="og:description" content="One Account. Infinite Possibilities. حساب واحد. عالم كامل.">
 <meta property="og:url" content="https://YOUR-DOMAIN/">
-<meta property="og:image" content="https://YOUR-DOMAIN/assets/og.png">
+<meta property="og:image" content="https://YOUR-DOMAIN/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<!-- بعد التسجيل في أدوات المحركات، ضع أكواد التحقق هنا -->
 <!-- <meta name="google-site-verification" content="..."> -->
 <!-- <meta name="msvalidate.01" content="..."> -->
 <!-- <meta name="yandex-verification" content="..."> -->
-<script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[
-{"@type":"Organization","@id":"https://YOUR-DOMAIN/#org","name":"AQX","alternateName":["القرمانى إكس","القرماني إكس","AQX Unified Account","AQX-UA","alqurmani x","alqurmanix"],"url":"https://YOUR-DOMAIN/"},
-{"@type":"WebSite","@id":"https://YOUR-DOMAIN/#site","url":"https://YOUR-DOMAIN/","name":"الحساب الموحد AQX القرمانى إكس","alternateName":["AQX Unified Account","AQX-UA","alqurmanix"],"inLanguage":["ar","en"],"publisher":{"@id":"https://YOUR-DOMAIN/#org"}}
-]}
-</script>
-<link rel="stylesheet" href="assets/style.css">
-<script src="assets/app.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://YOUR-DOMAIN/#org","name":"AQX","alternateName":["القرمانى إكس","القرماني إكس","AQX Unified Account","AQX-UA","alqurmani x","alqurmanix"],"url":"https://YOUR-DOMAIN/"},{"@type":"WebSite","@id":"https://YOUR-DOMAIN/#site","url":"https://YOUR-DOMAIN/","name":"الحساب الموحد AQX القرمانى إكس","alternateName":["AQX Unified Account","AQX-UA","alqurmanix"],"inLanguage":["ar","en"],"publisher":{"@id":"https://YOUR-DOMAIN/#org"}}]}</script>
+<style>:root{--void:#05040d;--cy:#25e8ff;--vi:#7b4dff;--ice:#eaf4ff;--mut:#8fa3c7;--ok:#39ff88;--warn:#ffb020;--bad:#ff4d5e}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%}
+body{background:radial-gradient(ellipse at 50% 40%,#0d0a24 0,var(--void) 70%);color:var(--ice);font-family:"Segoe UI","Trebuchet MS",Tahoma,system-ui,sans-serif;overflow-x:hidden;min-height:100svh;display:flex;flex-direction:column}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--cy);outline-offset:3px}
+#intro{display:none;position:fixed;inset:0;z-index:20;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+body.intro-on #intro{display:flex}
+body.intro-on .top,body.intro-on main,body.intro-on .foot{opacity:0;pointer-events:none}
+.logo{opacity:0;transform:scale(.92);filter:blur(12px);transition:all 1.6s cubic-bezier(.2,.7,.2,1)}
+[data-ph=logo] .logo,[data-ph=msg] .logo{opacity:1;transform:none;filter:none}
+[data-ph=ring] .logo,[data-ph=open] .logo{opacity:0;transform:scale(.4);filter:blur(14px);transition-duration:1.3s}
+.mark{font-size:clamp(3rem,15vw,7.5rem);letter-spacing:.14em;font-weight:800;direction:ltr;background:linear-gradient(180deg,#fff,#b9c7e6 60%,#7f93bf);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(37,232,255,.7)) drop-shadow(0 0 40px rgba(123,77,255,.5))}
+.tag{direction:ltr;margin-top:10px;font-size:clamp(.65rem,2.6vw,1rem);letter-spacing:.38em;color:var(--cy)}
+.full{direction:ltr;margin-top:8px;font-size:clamp(.8rem,3vw,1.1rem);color:var(--mut);letter-spacing:.2em}
+.msg{margin-top:34px;min-height:2.4em;font-size:clamp(1.4rem,6vw,2.6rem);font-weight:700;color:#fff;text-shadow:0 0 22px rgba(37,232,255,.8);opacity:0;transition:opacity .6s}
+.msg-en{margin-top:6px;direction:ltr;color:var(--mut);letter-spacing:.12em;font-size:clamp(.7rem,2.6vw,.95rem);opacity:0;transition:opacity 1.2s .8s}
+[data-ph=msg] .msg,[data-ph=msg] .msg-en{opacity:1}
+[data-ph=ring] .msg,[data-ph=ring] .msg-en,[data-ph=open] .msg,[data-ph=open] .msg-en{opacity:0}
+.intro-tools{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));display:flex;gap:10px}
+.intro-tools button,.pill{font:inherit;font-size:.85rem;color:var(--ice);background:rgba(255,255,255,.06);border:1px solid rgba(37,232,255,.35);border-radius:99px;padding:9px 18px;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s,box-shadow .2s}
+.intro-tools button:hover,.pill:hover{background:rgba(37,232,255,.16);box-shadow:0 0 18px rgba(37,232,255,.4)}
+#intro.flash{animation:flash 1.4s ease-in forwards}
+@keyframes flash{0%{background:rgba(37,232,255,0)}60%{background:radial-gradient(circle,#fff 0,rgba(37,232,255,.7) 30%,transparent 70%)}100%{background:rgba(5,4,13,0);opacity:0}}
+.top{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:max(16px,env(safe-area-inset-top)) clamp(16px,4vw,48px) 16px;transition:opacity 1.2s}
+.brand{display:flex;align-items:center;gap:12px;direction:ltr;letter-spacing:.18em}
+.brand .ring{width:26px;height:26px;border-radius:50%;border:3px solid var(--cy);box-shadow:0 0 14px var(--cy),inset 0 0 10px var(--vi);position:relative}
+.brand .ring:after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--vi);box-shadow:0 0 10px var(--vi)}
+.top-end{display:flex;align-items:center;gap:14px}
+.status{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--mut)}
+.lamp{--c:#6b7690;width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+.status[data-s=up] .lamp{--c:var(--ok);animation:blink 1.3s ease-in-out infinite;box-shadow:0 0 10px var(--c),0 0 24px var(--c)}
+.status[data-s=degraded] .lamp{--c:var(--warn);animation:blink 1.3s ease-in-out infinite}
+.status[data-s=down] .lamp{--c:var(--bad);animation:blink .8s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+main{position:relative;z-index:5;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px clamp(16px,4vw,48px);text-align:center;transition:opacity 1.4s}
+body.revealed main{animation:rise 1.4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{transform:scale(.94);filter:blur(10px)}to{transform:none;filter:none}}
+.view{display:none;flex-direction:column;align-items:center;width:100%}
+.view.on{display:flex;animation:in .6s both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+h1{font-size:clamp(2rem,7vw,4.2rem);line-height:1.15;font-weight:800;background:linear-gradient(180deg,#fff,#a9bcea);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(37,232,255,.35))}
+.lead{margin-top:14px;font-size:clamp(1rem,3vw,1.3rem);color:var(--mut)}
+.slogan{margin-top:10px;color:var(--cy);letter-spacing:.06em}
+.gates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;width:min(1000px,100%);margin-top:44px}
+.gate{--mx:50%;--my:50%;position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:34px 20px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(143,163,199,.25);backdrop-filter:blur(14px);overflow:hidden;transition:transform .35s,border-color .35s,box-shadow .35s}
+.gate:before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx) var(--my),rgba(37,232,255,.22),transparent 60%);opacity:0;transition:opacity .3s}
+.gate:hover,.gate:focus-visible{transform:translateY(-6px);border-color:var(--cy);box-shadow:0 18px 50px rgba(37,232,255,.18)}
+.gate:hover:before{opacity:1}
+.gate>*{position:relative}
+.gate.primary{border-color:transparent;background:linear-gradient(160deg,rgba(37,232,255,.2),rgba(123,77,255,.22));box-shadow:0 0 40px rgba(37,232,255,.25),inset 0 0 0 1px rgba(37,232,255,.55)}
+.g-ico{font-size:1.9rem;color:var(--cy);text-shadow:0 0 16px var(--cy)}
+.gate strong{font-size:1.25rem}.gate small{color:var(--mut);font-size:.95rem}
+.note{margin-top:22px;max-width:560px;font-size:.88rem;color:var(--mut)}
+.about{margin-top:46px;max-width:620px;color:#6f82a8;font-size:.82rem;line-height:1.8}
+.about h2{font-size:.85rem;font-weight:600;letter-spacing:.08em;color:var(--mut);margin-bottom:6px;direction:ltr}
+.foot{position:relative;z-index:5;text-align:center;padding:18px;color:#5c6d90;font-size:.78rem}
+.back{align-self:flex-start;color:var(--cy);font-size:.9rem;margin-bottom:14px}
+.panel{width:min(440px,100%);display:flex;flex-direction:column;gap:14px;text-align:start;padding:34px clamp(20px,5vw,34px);border-radius:24px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(37,232,255,.3);backdrop-filter:blur(18px);box-shadow:0 0 60px rgba(123,77,255,.2)}
+.panel h1{font-size:2rem}.panel .lead{margin:-6px 0 6px;font-size:1rem}
+label{display:flex;flex-direction:column;gap:6px;font-size:.88rem;color:var(--mut)}
+input[type=text],input[type=email],input[type=password]{font:inherit;color:var(--ice);background:rgba(5,4,13,.6);border:1px solid rgba(143,163,199,.3);border-radius:12px;padding:13px 14px;transition:border-color .2s,box-shadow .2s}
+input:focus{outline:none;border-color:var(--cy);box-shadow:0 0 0 3px rgba(37,232,255,.2)}
+.chk{flex-direction:row;align-items:center;gap:10px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.meter{height:4px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:-6px}
+.meter i{display:block;height:100%;width:0;background:var(--bad);transition:width .3s,background .3s}
+.cta{font:inherit;font-weight:700;font-size:1.05rem;color:#04121a;background:linear-gradient(90deg,var(--cy),#8d7bff);border:0;border-radius:14px;padding:14px;cursor:pointer;box-shadow:0 0 28px rgba(37,232,255,.45);transition:transform .2s,box-shadow .2s}
+.cta:hover{transform:translateY(-2px);box-shadow:0 0 42px rgba(37,232,255,.7)}
+.cta:disabled{opacity:.5;cursor:wait}
+.fmsg{min-height:1.3em;font-size:.88rem;color:var(--bad)}.fmsg[data-ok="1"]{color:var(--ok)}
+.alt{font-size:.88rem;color:var(--mut);text-align:center}.alt a{color:var(--cy)}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;width:min(1000px,100%);margin-top:36px}
+.plan{display:flex;flex-direction:column;gap:12px;text-align:start;padding:30px 24px;border-radius:22px;background:rgba(255,255,255,.04);border:1px solid rgba(143,163,199,.25);backdrop-filter:blur(14px)}
+.plan.ft{border-color:var(--cy);box-shadow:0 0 40px rgba(37,232,255,.25)}
+.plan h3{font-size:1.4rem}.plan p{color:var(--mut);font-size:.92rem}.plan .pr{color:var(--cy);font-weight:700}
+.plan ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;font-size:.92rem;flex:1}
+.plan li:before{content:"✦ ";color:var(--cy)}
+.plan .cta{text-align:center}
+@media(max-width:760px){.gates,.plans{grid-template-columns:1fr}#stTxt{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
 <canvas id="fx" aria-hidden="true"></canvas>
 
 <div id="intro" aria-hidden="true">
-  <div class="logo">
-    <h2 class="mark">AQX-UA</h2>
-    <p class="tag">ONE ACCOUNT. INFINITE POSSIBILITIES.</p>
-    <p class="full">AQX Unified Account</p>
-  </div>
+  <div class="logo"><h2 class="mark">AQX-UA</h2><p class="tag">ONE ACCOUNT. INFINITE POSSIBILITIES.</p><p class="full">AQX Unified Account</p></div>
   <p class="msg" id="msg"></p>
-  <p class="msg-en" id="msgEn">One Identity. A Universe of Possibilities.</p>
-  <div class="intro-tools">
-    <button type="button" id="snd" data-i18n="sndOff">الصوت: متوقف</button>
-    <button type="button" id="skip" data-i18n="skip">تخطي المقدمة</button>
-  </div>
+  <p class="msg-en">One Identity. A Universe of Possibilities.</p>
+  <div class="intro-tools"><button type="button" id="snd"></button><button type="button" id="skip" data-i="skip"></button></div>
 </div>
 
 <header class="top">
-  <a class="brand" href="./" aria-label="AQX-UA"><span class="ring"></span><b>AQX-UA</b></a>
+  <a class="brand" href="#/home" aria-label="AQX-UA"><span class="ring"></span><b>AQX-UA</b></a>
   <div class="top-end">
-    <span class="status" id="status" data-s="unknown" role="status"><i class="lamp"></i><span id="statusTxt" data-i18n="stUnknown">جارٍ التحقق من الحالة</span></span>
-    <button type="button" id="lang" class="pill" aria-label="Language">English</button>
+    <span class="status" id="status" data-s="unknown" role="status"><i class="lamp"></i><span id="stTxt"></span></span>
+    <button type="button" id="lang" class="pill" aria-label="Language"></button>
   </div>
 </header>
 
 <main id="main">
-  <section class="hero">
-    <h1 data-i18n="h1">مرحبًا بك في عالم AQX</h1>
-    <p class="lead" data-i18n="lead">هويتك الموحدة للوصول إلى خدمات AQX.</p>
-    <p class="slogan" data-i18n="slogan">حساب واحد. عالم كامل.</p>
+  <section class="view on" id="v-home">
+    <h1 data-i="h1">مرحبًا بك في عالم AQX</h1>
+    <p class="lead" data-i="lead"></p><p class="slogan" data-i="slogan"></p>
+    <nav class="gates" aria-label="AQX">
+      <a class="gate primary" href="#/signup"><span class="g-ico" aria-hidden="true">✦</span><strong data-i="c1t"></strong><small data-i="c1d"></small></a>
+      <a class="gate" href="#/login"><span class="g-ico" aria-hidden="true">◉</span><strong data-i="c2t"></strong><small data-i="c2d"></small></a>
+      <a class="gate" href="#/plans"><span class="g-ico" aria-hidden="true">❖</span><strong data-i="c3t"></strong><small data-i="c3d"></small></a>
+    </nav>
+    <p class="note" data-i="note"></p>
+    <div class="about"><h2>AQX Unified Account · القرمانى إكس · alqurmanix</h2><p data-i="about"></p></div>
   </section>
 
-  <nav class="gates" aria-label="AQX">
-    <a class="gate primary" href="signup.html">
-      <span class="g-ico" aria-hidden="true">✦</span>
-      <strong data-i18n="c1t">إنشاء حساب جديد</strong>
-      <small data-i18n="c1d">ابدأ رحلتك مع AQX.</small>
-    </a>
-    <a class="gate" href="login.html">
-      <span class="g-ico" aria-hidden="true">◉</span>
-      <strong data-i18n="c2t">تسجيل الدخول</strong>
-      <small data-i18n="c2d">تابع من حيث توقفت.</small>
-    </a>
-    <a class="gate" href="plans.html">
-      <span class="g-ico" aria-hidden="true">❖</span>
-      <strong data-i18n="c3t">الاشتراكات والباقات</strong>
-      <small data-i18n="c3d">اكتشف الخدمات والباقات المتاحة.</small>
-    </a>
-  </nav>
-  <p class="note" data-i18n="note">الاشتراك منفصل عن إنشاء الحساب: الحساب هو هويتك، والاشتراك هو ما تختاره من خدمات.</p>
+  <section class="view" id="v-signup">
+    <form class="panel" id="f-signup" novalidate autocomplete="on">
+      <a class="back" href="#/home" data-i="back"></a>
+      <h1 data-i="c1t"></h1><p class="lead" data-i="c1d"></p>
+      <label><span data-i="fName"></span><input name="name" type="text" maxlength="60" autocomplete="name" required></label>
+      <label><span data-i="fEmail"></span><input name="email" type="email" maxlength="120" autocomplete="email" inputmode="email" dir="ltr" required></label>
+      <label><span data-i="fPass"></span><input name="pass" type="password" maxlength="128" autocomplete="new-password" dir="ltr" required></label>
+      <div class="meter" aria-hidden="true"><i></i></div>
+      <label><span data-i="fPass2"></span><input name="pass2" type="password" maxlength="128" autocomplete="new-password" dir="ltr" required></label>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="chk"><input name="terms" type="checkbox"><span data-i="terms"></span></label>
+      <button class="cta" type="submit" data-i="c1t"></button>
+      <p class="fmsg" role="alert"></p>
+      <p class="alt"><span data-i="have"></span> <a href="#/login" data-i="c2t"></a></p>
+    </form>
+  </section>
 
-  <section class="about">
-    <h2>AQX Unified Account · القرمانى إكس</h2>
-    <p data-i18n="about">الحساب الموحد AQX (AQX-UA) هو البوابة الرسمية لمنظومة AQX: حساب واحد لتسجيل الدخول وإدارة الاشتراكات والوصول إلى كل الخدمات. Also searched as alqurmani x or alqurmanix.</p>
+  <section class="view" id="v-login">
+    <form class="panel" id="f-login" novalidate autocomplete="on">
+      <a class="back" href="#/home" data-i="back"></a>
+      <h1 data-i="c2t"></h1><p class="lead" data-i="c2d"></p>
+      <label><span data-i="fEmail"></span><input name="email" type="email" maxlength="120" autocomplete="username" inputmode="email" dir="ltr" required></label>
+      <label><span data-i="fPass"></span><input name="pass" type="password" maxlength="128" autocomplete="current-password" dir="ltr" required></label>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="cta" type="submit" data-i="c2t"></button>
+      <p class="fmsg" role="alert"></p>
+      <p class="alt"><span data-i="noAcc"></span> <a href="#/signup" data-i="c1t"></a></p>
+    </form>
+  </section>
+
+  <section class="view" id="v-plans">
+    <a class="back" href="#/home" data-i="back"></a>
+    <h1 data-i="c3t"></h1><p class="lead" data-i="c3d"></p>
+    <div class="plans" id="plans"></div>
+    <p class="note" data-i="note"></p>
   </section>
 </main>
-
-<footer class="foot"><span>© AQX · القرمانى إكس</span></footer>
+<footer class="foot">© AQX · القرمانى إكس</footer>
+<script>'use strict';
+if(top!==self){try{top.location=self.location}catch(e){document.documentElement.style.display='none'}}
+/* ===== إعدادات: اربط خدمة المصادقة هنا (Supabase/Firebase/API خاص). إن تُرك فارغًا لا يُنشأ أي حساب فعلي ===== */
+const CFG={api:{signup:'',login:''},status:'status.json',
+plans:[
+{n:{ar:'أساسية',en:'Starter'},d:{ar:'للبدء مع خدمات AQX.',en:'Get started with AQX.'},f:{ar:['حساب موحد','الخدمات الأساسية'],en:['Unified account','Core services']}},
+{n:{ar:'متقدمة',en:'Plus'},d:{ar:'للمستخدم الأكثر نشاطًا.',en:'For active users.'},f:{ar:['كل مزايا الأساسية','خدمات متقدمة','أولوية في الدعم'],en:['Everything in Starter','Advanced services','Priority support']},ft:1},
+{n:{ar:'احترافية',en:'Pro'},d:{ar:'للفرق والاستخدام الكامل.',en:'For teams and full access.'},f:{ar:['كل مزايا المتقدمة','وصول كامل للمنظومة','دعم مخصص'],en:['Everything in Plus','Full ecosystem access','Dedicated support']}}]};
+const D={
+ar:{h1:'مرحبًا بك في عالم AQX',lead:'هويتك الموحدة للوصول إلى خدمات AQX.',slogan:'حساب واحد. عالم كامل.',c1t:'إنشاء حساب جديد',c1d:'ابدأ رحلتك مع AQX.',c2t:'تسجيل الدخول',c2d:'تابع من حيث توقفت.',c3t:'الاشتراكات والباقات',c3d:'اكتشف الخدمات والباقات المتاحة.',note:'الاشتراك منفصل عن إنشاء الحساب: الحساب هو هويتك، والاشتراك هو ما تختاره من خدمات.',about:'الحساب الموحد AQX (AQX-UA) هو البوابة الرسمية لمنظومة AQX القرمانى إكس: حساب واحد لتسجيل الدخول وإدارة الاشتراكات والوصول إلى كل الخدمات.',skip:'تخطي المقدمة',sndOff:'الصوت: متوقف',sndOn:'الصوت: يعمل',stU:'جارٍ التحقق من الحالة',stUp:'جميع الخدمات تعمل',stDeg:'أداء جزئي',stDown:'الخدمات متوقفة',stErr:'تعذر التحقق من الحالة',msg:'عالمك يبدأ من هنا.',btn:'English',back:'رجوع',fName:'الاسم',fEmail:'البريد الإلكتروني',fPass:'كلمة المرور',fPass2:'تأكيد كلمة المرور',terms:'أوافق على شروط الاستخدام وسياسة الخصوصية',have:'لديك حساب؟',noAcc:'ليس لديك حساب؟',soon:'قريبًا',choose:'ابدأ بحساب',eName:'أدخل اسمك.',eMail:'البريد الإلكتروني غير صالح.',ePass:'كلمة المرور يجب ألا تقل عن 10 أحرف وتجمع حروفًا وأرقامًا.',eMatch:'كلمتا المرور غير متطابقتين.',eTerms:'يجب الموافقة على الشروط.',eApi:'خدمة المصادقة غير مربوطة بعد. اربطها من إعدادات CFG في الملف.',eLock:'محاولات كثيرة. انتظر دقيقة ثم أعد المحاولة.',eNet:'تعذر الاتصال. حاول لاحقًا.',eBad:'تعذر إكمال الطلب. راجع بياناتك.',ok:'تم بنجاح.'},
+en:{h1:'Welcome to the AQX universe',lead:'Your unified identity for every AQX service.',slogan:'One Account. Infinite Possibilities.',c1t:'Create account',c1d:'Start your journey with AQX.',c2t:'Sign in',c2d:'Pick up where you left off.',c3t:'Plans & subscriptions',c3d:'Explore available services and plans.',note:'A subscription is separate from an account: the account is your identity, the subscription is the services you choose.',about:'AQX Unified Account (AQX-UA) is the official gateway to the AQX (Alqurmani X, alqurmanix) ecosystem: one account to sign in, manage subscriptions and reach every service.',skip:'Skip intro',sndOff:'Sound: off',sndOn:'Sound: on',stU:'Checking status',stUp:'All services operational',stDeg:'Partial degradation',stDown:'Services down',stErr:'Status unavailable',msg:'Your world starts here.',btn:'العربية',back:'Back',fName:'Name',fEmail:'Email',fPass:'Password',fPass2:'Confirm password',terms:'I accept the terms of use and privacy policy',have:'Have an account?',noAcc:'No account yet?',soon:'Soon',choose:'Start with an account',eName:'Enter your name.',eMail:'Invalid email address.',ePass:'Password needs 10+ characters with letters and numbers.',eMatch:'Passwords do not match.',eTerms:'You must accept the terms.',eApi:'No auth service is connected yet. Set it in CFG inside the file.',eLock:'Too many attempts. Wait a minute and retry.',eNet:'Connection failed. Try again later.',eBad:'Request failed. Check your details.',ok:'Done.'}};
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s),B=document.body,H=document.documentElement;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lang='ar',stKey='stU',soundOn=false,ac;
+try{const s=localStorage.getItem('aqx-lang');lang=s||((navigator.language||'').startsWith('en')?'en':'ar')}catch(e){}
+const t=k=>D[lang][k]||k;
+function render(){
+ H.lang=lang;H.dir=lang==='ar'?'rtl':'ltr';
+ $$('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
+ $('#lang').textContent=t('btn');$('#snd').textContent=t(soundOn?'sndOn':'sndOff');$('#stTxt').textContent=t(stKey);
+ $('#plans').replaceChildren(...CFG.plans.map(p=>{
+  const d=document.createElement('div');d.className='plan'+(p.ft?' ft':'');
+  const h=document.createElement('h3');h.textContent=p.n[lang];
+  const q=document.createElement('p');q.textContent=p.d[lang];
+  const pr=document.createElement('p');pr.className='pr';pr.textContent=t('soon');
+  const u=document.createElement('ul');p.f[lang].forEach(x=>{const li=document.createElement('li');li.textContent=x;u.append(li)});
+  const a=document.createElement('a');a.className='cta';a.href='#/signup';a.textContent=t('choose');
+  d.append(h,q,pr,u,a);return d}));
+}
+$('#lang').onclick=()=>{lang=lang==='ar'?'en':'ar';try{localStorage.setItem('aqx-lang',lang)}catch(e){}render()};
+/* router */
+const V=['home','signup','login','plans'];
+function route(){const k=location.hash.replace('#/','');const v=V.includes(k)?k:'home';V.forEach(x=>$('#v-'+x).classList.toggle('on',x===v));scrollTo(0,0)}
+addEventListener('hashchange',route);
+/* sound (opt-in, synthesized) */
+function tone(f1,f2,d,ty,v){if(!soundOn||!ac)return;const n=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.setValueAtTime(f1,n);o.frequency.exponentialRampToValueAtTime(f2,n+d);g.gain.setValueAtTime(.0001,n);g.gain.linearRampToValueAtTime(v,n+.06);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g).connect(ac.destination);o.start(n);o.stop(n+d)}
+$('#snd').onclick=()=>{try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){return}soundOn=!soundOn;render();if(soundOn)tone(120,360,2,'sine',.08)};
+/* galaxy canvas */
+const cv=$('#fx'),c=cv.getContext('2d');let W,Hh,dpr,mode='galaxy',grow=0,glow=0,tilt=.5,ringA=0;
+function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.width=innerWidth*dpr;Hh=cv.height=innerHeight*dpr}
+size();addEventListener('resize',size);
+const N=innerWidth<700?650:1300;
+const P=Array.from({length:N},()=>{const r=Math.pow(Math.random(),.65);return{a:((Math.random()*3)|0)*2.094+r*5+(Math.random()-.5)*.55,r0:r,cr:0,s:.3+Math.random()*.9,z:Math.random(),h:Math.random()<.6?188:262,j:Math.random()}});
+const S=Array.from({length:160},()=>({x:Math.random(),y:Math.random(),z:Math.random(),p:Math.random()*6}));
+function target(p){switch(mode){case'galaxy':return p.r0*grow;case'logo':case'msg':return p.r0*.55+.05;case'ring':return .62+p.j*.015;case'open':return 2.2+p.r0*2;default:return p.r0*1.1+.05}}
+function frame(tm){
+ c.globalCompositeOperation='source-over';c.clearRect(0,0,W,Hh);
+ const cx=W/2,cy=Hh/2,R=Math.min(W,Hh)*.44,ring=mode==='ring'||mode==='open',amb=mode==='ambient';
+ for(const s of S){c.fillStyle=`rgba(190,215,255,${(.25+.35*Math.sin(tm/700+s.p))*s.z})`;c.fillRect(s.x*W,s.y*Hh,s.z*1.6*dpr,s.z*1.6*dpr)}
+ c.globalCompositeOperation='lighter';
+ grow+=((mode==='open'?0:1)-grow)*.02;
+ glow+=((({ring:1.2,open:2.4,logo:.7,msg:.7,ambient:.18})[mode]??.6)-glow)*.03;
+ tilt+=((ring?1:.5)-tilt)*.03;ringA+=((mode==='ring'?1:0)-ringA)*.04;
+ const g=c.createRadialGradient(cx,cy,0,cx,cy,R*(.35+glow*.25));g.addColorStop(0,`rgba(255,255,255,${Math.min(.9,.5*glow)})`);g.addColorStop(.25,`rgba(37,232,255,${.35*glow})`);g.addColorStop(1,'rgba(123,77,255,0)');
+ c.fillStyle=g;c.fillRect(0,0,W,Hh);
+ for(const p of P){
+  p.cr+=(target(p)-p.cr)*(mode==='open'?.05:.035);
+  p.a+=(.0015+.004*(1-p.r0*.6))*p.s*(mode==='ring'?2.5:1);
+  const al=(amb?.45:.9)*(.35+p.z*.65)*(mode==='open'?Math.max(0,1-(p.cr-.8)/1.6):1);
+  c.fillStyle=`hsla(${p.h},100%,${60+p.z*25}%,${al})`;const z=(.6+p.z*1.8)*dpr;
+  c.fillRect(cx+Math.cos(p.a)*p.cr*R,cy+Math.sin(p.a)*p.cr*R*tilt,z,z)}
+ if(ringA>.02){const gr=c.createLinearGradient(cx-R,cy,cx+R,cy);[0,.5,1].forEach((o,i)=>gr.addColorStop(o,i==1?`rgba(37,232,255,${ringA})`:`rgba(123,77,255,${ringA})`));
+  c.lineWidth=5*dpr;c.strokeStyle=gr;c.shadowColor='#25e8ff';c.shadowBlur=30*dpr;c.beginPath();c.ellipse(cx,cy,R*.62,R*.62*tilt,0,0,6.283);c.stroke();c.shadowBlur=0}
+ if(!reduce)requestAnimationFrame(frame);
+}
+/* intro timeline */
+let ids=[],done=false;
+function ph(n,ms){ids.push(setTimeout(()=>{B.dataset.ph=n;mode=n;if(n==='logo')tone(300,900,.5,'triangle',.09);if(n==='ring')tone(90,700,1.8,'sawtooth',.04);if(n==='msg')typeMsg()},ms))}
+function typeMsg(){const el=$('#msg'),x=t('msg');let i=0;const k=setInterval(()=>{el.textContent=x.slice(0,++i);if(i>=x.length)clearInterval(k)},90)}
+function finish(){if(done)return;done=true;ids.forEach(clearTimeout);mode='ambient';delete B.dataset.ph;$('#intro').classList.remove('flash');B.classList.remove('intro-on');B.classList.add('revealed')}
+render();route();
+if(reduce){mode='ambient';P.forEach(p=>p.cr=target(p));frame(0)}
+else{B.classList.add('intro-on');requestAnimationFrame(frame);
+ ph('galaxy',0);ph('logo',3200);ph('msg',6400);ph('ring',9200);
+ ids.push(setTimeout(()=>{B.dataset.ph='open';mode='open';tone(200,1400,1.4,'sine',.07);$('#intro').classList.add('flash')},11000));
+ ids.push(setTimeout(finish,12300));
+ $('#skip').onclick=finish;addEventListener('keydown',e=>{if(e.key==='Escape')finish()})}
+$$('.gate').forEach(g=>g.addEventListener('pointermove',e=>{const r=g.getBoundingClientRect();g.style.setProperty('--mx',e.clientX-r.left+'px');g.style.setProperty('--my',e.clientY-r.top+'px')}));
+/* forms */
+const MAIL=/^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/;let fails=0,lock=0;
+function strength(v){let s=0;if(v.length>=10)s++;if(v.length>=14)s++;if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^\w\s]/.test(v))s++;return s}
+const sp=$('#f-signup [name=pass]');sp.addEventListener('input',()=>{const s=strength(sp.value),m=$('#f-signup .meter i');m.style.width=s*20+'%';m.style.background=s<3?'var(--bad)':s<4?'var(--warn)':'var(--ok)'});
+async function submit(kind,f,e){
+ e.preventDefault();const m=f.querySelector('.fmsg'),b=f.querySelector('.cta'),d=Object.fromEntries(new FormData(f));
+ const say=(k,ok)=>{m.textContent=t(k);m.dataset.ok=ok?1:0};
+ if(d.website)return;
+ if(Date.now()<lock)return say('eLock');
+ if(kind==='signup'&&!d.name.trim())return say('eName');
+ if(!MAIL.test(d.email.trim()))return say('eMail');
+ if(kind==='signup'){if(strength(d.pass)<2||!/\d/.test(d.pass)||!/[A-Za-z]/.test(d.pass)||d.pass.length<10)return say('ePass');if(d.pass!==d.pass2)return say('eMatch');if(!d.terms)return say('eTerms')}
+ else if(!d.pass)return say('ePass');
+ const url=CFG.api[kind];if(!url)return say('eApi');
+ b.disabled=true;
+ try{const r=await fetch(url,{method:'POST',credentials:'omit',referrerPolicy:'no-referrer',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:d.name,email:d.email.trim(),password:d.pass})});
+  if(r.ok){fails=0;say('ok',1)}else{if(++fails>=5)lock=Date.now()+60000;say('eBad')}}
+ catch(x){say('eNet')}
+ b.disabled=false;
+}
+$('#f-signup').addEventListener('submit',e=>submit('signup',e.currentTarget,e));
+$('#f-login').addEventListener('submit',e=>submit('login',e.currentTarget,e));
+/* حالة الخدمات من status.json (فحص حقيقي) */
+async function check(){const el=$('#status');
+ try{const r=await fetch(CFG.status,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();const s=j.status==='operational'?'up':j.status==='degraded'?'degraded':'down';el.dataset.s=s;stKey={up:'stUp',degraded:'stDeg',down:'stDown'}[s]}
+ catch(e){el.dataset.s='unknown';stKey='stErr'}
+ $('#stTxt').textContent=t(stKey)}
+check();setInterval(check,60000);
+</script>
 </body>
 </html>
