@@ -1,154 +1,97 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>AQX ID</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0}body{font-family:Tajawal,sans-serif;min-height:100vh;overflow-x:hidden;color:#26304a;background:linear-gradient(135deg,#e8f1ff,#f3e8ff,#e6fbf4,#fff1e6);background-size:400% 400%;animation:bg 18s ease infinite}
-@keyframes bg{50%{background-position:100% 50%}}
-#top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;z-index:20}
-.lang{border:0;padding:8px 16px;border-radius:20px;background:#fff;font:700 14px Tajawal;cursor:pointer;box-shadow:0 4px 14px #0001}
-.q{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:20px;color:#fff;text-decoration:none;animation:spin 5s linear infinite,hue 6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}@keyframes hue{0%{background:#6c5ce7}25%{background:#00b894}50%{background:#e17055}75%{background:#0984e3}100%{background:#6c5ce7}}
-.lamp{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2bff88;box-shadow:0 0 12px #2bff88;animation:bl 1.4s infinite;margin-inline:6px}@keyframes bl{50%{opacity:.2;box-shadow:none}}
-#gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle,#fff,#dfe9ff 60%,#e9ddff);transition:opacity 1s,visibility 1s;text-align:center;padding:16px}
-#gate.off{opacity:0;visibility:hidden}
-.ring{position:absolute;border-radius:50%;border:3px solid transparent;border-top-color:#6c5ce7;border-bottom-color:#00cec9;animation:spin 6s linear infinite;box-shadow:0 0 40px #6c5ce755;width:clamp(180px,55vw,300px);height:clamp(180px,55vw,300px)}
-.r2{width:clamp(240px,70vw,400px);height:clamp(240px,70vw,400px);animation-duration:9s;animation-direction:reverse;border-top-color:#fd79a8}.r3{width:clamp(300px,85vw,500px);height:clamp(300px,85vw,500px);animation-duration:14s;border-top-color:#fdcb6e}
-#gate h1{font-size:clamp(44px,13vw,92px);font-weight:900;letter-spacing:6px;background:linear-gradient(90deg,#6c5ce7,#00b8d4,#e84393);-webkit-background-clip:text;color:transparent;animation:emerge 2.4s cubic-bezier(.2,.8,.2,1) both;position:relative}
-@keyframes emerge{from{transform:scale(.1);filter:blur(30px);opacity:0}}
-#gate p{position:relative;font-size:clamp(15px,4vw,20px);font-weight:700;animation:emerge 2.4s .8s both;max-width:320px;margin:6px auto 0}
-main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,5vw,34px);padding:clamp(70px,14vw,90px) 16px 160px}
-.logo{font-size:clamp(20px,5vw,30px);font-weight:900;color:#4b3fd1;text-align:center}
-.orbs{display:flex;gap:clamp(16px,4vw,34px);flex-wrap:wrap;justify-content:center}
-.orb{width:clamp(118px,30vw,150px);text-align:center;cursor:pointer;opacity:0;transform:scale(.2);transition:.3s}.orb.in{opacity:1;transform:none;transition:1s cubic-bezier(.2,1.4,.3,1)}
-.orb:hover{transform:translateY(-10px) scale(1.06)}
-.orb .shape{position:relative;width:clamp(84px,22vw,112px);height:clamp(84px,22vw,112px);margin:0 auto 12px;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 14px 26px #0002)}
-.orb .shape svg{width:100%;height:100%;overflow:visible}
-.orb .shape .ico{animation:pulseIco 2.8s ease-in-out infinite}
-@keyframes pulseIco{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
-@keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}
-.orb b{font-size:clamp(14px,3.6vw,17px)}
-#users{font-size:14px;background:#fff9;padding:8px 20px;border-radius:20px;backdrop-filter:blur(8px);text-align:center}
-.panel{position:fixed;top:0;bottom:0;width:min(440px,100%);background:#fff;z-index:40;padding:34px 28px;overflow:auto;transition:transform .7s cubic-bezier(.2,.9,.2,1);box-shadow:0 0 60px #0004}
-.pR{right:0;transform:translateX(110%)}.pL{left:0;transform:translateX(-110%)}.pB{right:0;transform:translateY(110%)}
-.panel.open{transform:none}.panel h2{margin-bottom:6px;color:#4b3fd1}.panel .x{position:absolute;top:12px;left:16px;border:0;background:#eef;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:18px}
-input[type=email],input[type=password],input[type=text]{width:100%;padding:13px 14px;margin:6px 0;border:2px solid #dde3f5;border-radius:12px;font:16px Tajawal;outline:0}input:focus{border-color:#6c5ce7;box-shadow:0 0 0 4px #6c5ce722}
-.pw{position:relative}.eye{position:absolute;left:10px;top:14px;border:0;background:0;font-size:20px;cursor:pointer}
-.bar{height:8px;border-radius:6px;background:#e5e8f3;overflow:hidden;margin:6px 0}.bar span{display:block;height:100%;width:0;transition:.4s}
-.rules{list-style:none;padding:0;font-size:14px}.rules li{padding:3px 0;color:#99a}.rules li.ok{color:#0a9c5b;text-shadow:0 0 8px #2bff88;font-weight:700}.rules li:before{content:"○ "}.rules li.ok:before{content:"● "}
-.btn{width:100%;padding:14px;margin-top:12px;border:0;border-radius:14px;color:#fff;font:900 17px Tajawal;cursor:pointer;background:linear-gradient(90deg,#6c5ce7,#00b8d4);box-shadow:0 10px 24px #6c5ce755}.btn:disabled{opacity:.5}
-.chk{display:flex;gap:8px;font-size:14px;margin:8px 0;align-items:center}.chk a{color:#6c5ce7;cursor:pointer;font-weight:700}
-.msg{font-size:14px;min-height:20px;font-weight:700}.lnk{display:block;margin-top:10px;color:#6c5ce7;cursor:pointer;font-size:14px;background:0;border:0;font-family:inherit}
-.hp{position:absolute;left:-9999px;opacity:0}
-.modal{position:fixed;inset:0;z-index:80;display:none;place-items:center;background:#2a2f5588;backdrop-filter:blur(10px)}.modal.show{display:grid}
-.mbox{background:linear-gradient(160deg,#fff,#efe9ff);border-radius:28px;padding:36px;width:min(500px,92%);text-align:center;box-shadow:0 30px 90px #0005;animation:pop .7s cubic-bezier(.2,1.4,.3,1);max-height:92vh;overflow:auto}
-@keyframes pop{from{transform:scale(.3) rotate(-8deg);opacity:0}}
-.mbox h3{font-size:26px;color:#4b3fd1;margin-bottom:10px}.mbox .big{font-size:64px}
-.card{margin:18px auto;width:100%;max-width:400px;aspect-ratio:1.6;border-radius:22px;padding:22px;color:#fff;text-align:right;position:relative;overflow:hidden;background:radial-gradient(circle at 20% 20%,#ff8bd6,transparent 40%),radial-gradient(circle at 80% 80%,#2fd3ff,transparent 45%),conic-gradient(from 0deg,#4b3fd1,#a45ee9,#1ea0ff,#4b3fd1);animation:galaxy 1.8s cubic-bezier(.2,.9,.2,1) both;box-shadow:0 20px 60px #4b3fd188}
-@keyframes galaxy{from{transform:translateY(160px) scale(.2) rotate(540deg);opacity:0;filter:blur(20px)}}
-.card:after{content:"";position:absolute;inset:0;background:radial-gradient(#fff 1px,transparent 1.5px) 0 0/22px 22px;opacity:.35;animation:tw 3s infinite alternate}@keyframes tw{to{opacity:.1}}
-.card *{position:relative;z-index:1}.card .id{font:900 26px monospace;letter-spacing:3px;margin:14px 0 8px;direction:ltr;text-align:center}.card small{opacity:.9;direction:ltr;display:block}
-#laser{position:fixed;left:0;right:0;height:4px;z-index:90;display:none;background:linear-gradient(90deg,transparent,#2bff88,#fff,#2bff88,transparent);box-shadow:0 0 30px 8px #2bff88}
-#laser.go{display:block;animation:ls 1.2s ease-in-out 3 alternate}@keyframes ls{from{top:0}to{top:100%}}
-footer{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:10px;padding:10px 8px;z-index:10;flex-wrap:nowrap;height:58px;background:linear-gradient(0deg,#ffffffee,#ffffff00)}
-footer a{padding:9px 16px;border-radius:20px;background:#fffc;text-decoration:none;color:#26304a;font-weight:700;font-size:13px;box-shadow:0 4px 14px #0002;transition:.3s;white-space:nowrap;flex:0 1 auto}footer a:hover{transform:translateY(-4px)}
-.sup{animation:supc 5s linear infinite;color:#fff!important}@keyframes supc{0%{background:#e84393}25%{background:#0984e3}50%{background:#00b894}75%{background:#f39c12}100%{background:#e84393}}
-#ast{position:fixed;bottom:70px;left:18px;z-index:60}
-#astb{border:0;padding:12px 20px;border-radius:30px;color:#fff;font:900 15px Tajawal;cursor:pointer;animation:supc 6s linear infinite;box-shadow:0 10px 30px #0003}
-#astm{display:none;position:absolute;bottom:56px;left:0;width:min(280px,78vw);background:#fff;border-radius:18px;padding:12px;box-shadow:0 20px 50px #0003;max-height:60vh;overflow:auto}#astm.show{display:block}
-@media (max-width:520px){footer{gap:5px;padding:8px 4px}footer a{padding:8px 10px;font-size:11px;border-radius:14px}#ast{bottom:66px;left:8px}#astb{padding:10px 14px;font-size:13px}}
-@media (max-width:360px){footer a span.lbl{display:none}}
-#astm button{display:block;width:100%;text-align:right;border:0;background:#f3f0ff;margin:5px 0;padding:10px;border-radius:10px;font:700 14px Tajawal;cursor:pointer}#astm button:hover{background:#e0d9ff}
-#alarm{position:fixed;inset:0;z-index:999;display:none;place-items:center;text-align:center;color:#fff;padding:20px;animation:red 1.2s infinite alternate}
-@keyframes red{0%{background:#ff1a1a}33%{background:#b00010}66%{background:#ff3d00}100%{background:#7a0000}}
-#alarm.show{display:grid}#alarm h1{font-size:clamp(30px,7vw,64px);text-shadow:0 0 30px #fff}#alarm p{max-width:680px;margin:14px auto;line-height:2;font-size:18px}#alarm .tri{font-size:90px;animation:bl .5s infinite}
-@media (max-width:480px){.panel{padding:26px 18px;width:100%}.mbox{padding:24px 18px}.mbox h3{font-size:21px}.card{padding:16px}.card .id{font-size:20px}#top{padding:10px 12px}.lang{padding:6px 12px;font-size:12px}}
-@media (min-width:1200px){main{padding-bottom:110px}.orbs{gap:60px}}
-</style></head><body>
-<div id="top"><button class="lang" id="lg" onclick="setLang()">English</button><div><span class="lamp"></span><a class="q" href="help.html" target="_blank">؟</a></div></div>
-<div id="gate"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div><h1>AQX</h1><p data-t="gate">بوابتك إلى عالمٍ رقميّ آمن، يبدأ بهوية واحدة</p></div></div>
-<main><div class="logo">AQX ID · القرماني إكس</div>
-<div class="orbs">
-<div class="orb o1" onclick="openP('pReg')"><div class="shape"><svg viewBox="0 0 100 100"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6c5ce7"/><stop offset="1" stop-color="#00cec9"/></linearGradient></defs><path fill="url(#g1)" d="M50 2c23 0 44 12 47 33 3 22-11 38-29 47-18 9-39 7-50-10S3 35 17 18C27 6 38 2 50 2Z"/><g class="ico" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 30v28M36 44h28"/><circle cx="50" cy="44" r="24"/></g></svg></div><b data-t="reg">انضم إلى عالمي</b></div>
-<div class="orb o2" onclick="openP('pLog')"><div class="shape"><svg viewBox="0 0 100 100"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00b894"/><stop offset="1" stop-color="#00cec9"/></linearGradient></defs><path fill="url(#g2)" d="M50 3c25 0 46 14 47 36 1 21-13 34-28 44-16 10-41 11-52-6S2 40 14 22C24 8 36 3 50 3Z"/><g class="ico" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M42 50h26m0 0-8-8m8 8-8 8"/><rect x="24" y="34" width="16" height="32" rx="6"/></g></svg></div><b data-t="log">ادخل عالمي</b></div>
-<div class="orb o3" onclick="openP('pRec')"><div class="shape"><svg viewBox="0 0 100 100"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e17055"/><stop offset="1" stop-color="#fdcb6e"/></linearGradient></defs><path fill="url(#g3)" d="M50 4c22-2 44 9 48 31 4 21-7 38-24 48-18 10-41 9-53-8S5 37 17 20C27 7 38 6 50 4Z"/><g class="ico" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M34 42a18 18 0 1 1 3 22"/><path d="M34 30v14h14"/></g></svg></div><b data-t="rec">استعِد عالمي</b></div>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>الحساب الموحد AQX القرمانى إكس | AQX Unified Account (AQX-UA)</title>
+<meta name="description" content="الحساب الموحد AQX القرمانى إكس (AQX-UA): بوابتك لتسجيل الدخول وإنشاء الحساب والاشتراكات والوصول إلى جميع خدمات AQX. One Account. Infinite Possibilities.">
+<meta name="keywords" content="القرمانى إكس, القرماني اكس, AQX, AQX-UA, AQX Unified Account, alqurmani x, alqurmanix, الحساب الموحد">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#05040d">
+<link rel="canonical" href="https://YOUR-DOMAIN/">
+<link rel="alternate" hreflang="ar" href="https://YOUR-DOMAIN/">
+<link rel="alternate" hreflang="en" href="https://YOUR-DOMAIN/">
+<link rel="alternate" hreflang="x-default" href="https://YOUR-DOMAIN/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%2325e8ff' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%237b4dff'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AQX Unified Account">
+<meta property="og:title" content="AQX-UA | الحساب الموحد القرمانى إكس">
+<meta property="og:description" content="One Account. Infinite Possibilities. حساب واحد. عالم كامل.">
+<meta property="og:url" content="https://YOUR-DOMAIN/">
+<meta property="og:image" content="https://YOUR-DOMAIN/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<!-- بعد التسجيل في أدوات المحركات، ضع أكواد التحقق هنا -->
+<!-- <meta name="google-site-verification" content="..."> -->
+<!-- <meta name="msvalidate.01" content="..."> -->
+<!-- <meta name="yandex-verification" content="..."> -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","@id":"https://YOUR-DOMAIN/#org","name":"AQX","alternateName":["القرمانى إكس","القرماني إكس","AQX Unified Account","AQX-UA","alqurmani x","alqurmanix"],"url":"https://YOUR-DOMAIN/"},
+{"@type":"WebSite","@id":"https://YOUR-DOMAIN/#site","url":"https://YOUR-DOMAIN/","name":"الحساب الموحد AQX القرمانى إكس","alternateName":["AQX Unified Account","AQX-UA","alqurmanix"],"inLanguage":["ar","en"],"publisher":{"@id":"https://YOUR-DOMAIN/#org"}}
+]}
+</script>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<div id="intro" aria-hidden="true">
+  <div class="logo">
+    <h2 class="mark">AQX-UA</h2>
+    <p class="tag">ONE ACCOUNT. INFINITE POSSIBILITIES.</p>
+    <p class="full">AQX Unified Account</p>
+  </div>
+  <p class="msg" id="msg"></p>
+  <p class="msg-en" id="msgEn">One Identity. A Universe of Possibilities.</p>
+  <div class="intro-tools">
+    <button type="button" id="snd" data-i18n="sndOff">الصوت: متوقف</button>
+    <button type="button" id="skip" data-i18n="skip">تخطي المقدمة</button>
+  </div>
 </div>
-<div id="users">—</div></main>
 
-<section class="panel pR" id="pReg"><button class="x" onclick="closeP()">✕</button><h2 data-t="reg">انضم إلى عالمي</h2>
-<div id="regForm"><input type="email" id="rE" placeholder="البريد الإلكتروني" autocomplete="off"><input class="hp" id="hp" tabindex="-1" autocomplete="off">
-<div class="pw"><input type="password" id="rP" placeholder="كلمة السر" oninput="chk()"><button class="eye" onclick="eye('rP')" type="button">👁</button></div>
-<div class="bar"><span id="bs"></span></div><ul class="rules" id="rl"><li data-r="len">٨ أحرف على الأقل</li><li data-r="up">حرف كبير (A-Z)</li><li data-r="lo">حرف صغير (a-z)</li><li data-r="nu">رقم</li><li data-r="sy">رمز خاص (!@#$…)</li></ul>
-<div class="pw"><input type="password" id="rC" placeholder="تأكيد كلمة السر" oninput="chk()"><button class="eye" onclick="eye('rC')" type="button">👁</button></div><div class="msg" id="cm"></div>
-<label class="chk"><input type="checkbox" id="t1">أوافق على <a onclick="terms()">شروط الاستخدام</a>.</label><label class="chk"><input type="checkbox" id="t2">اطلعت على <a onclick="terms()">سياسة الخصوصية</a>.</label>
-<button class="btn" id="rB" onclick="register()">إنشاء حساب AQX ID</button><div class="msg" id="rM"></div></div>
-<div id="regClosed" style="display:none;text-align:center;padding:40px 0"><div style="font-size:70px">⏳</div><h3 style="margin:10px 0">بوابة الانضمام في استراحة مؤقتة</h3><p style="line-height:2">تقوم الإدارة حالياً بترتيب العالم لاستقبالك على نحوٍ أفضل. التسجيل متوقف مؤقتاً، وسنفتح الأبواب قريباً — تابعنا.</p></div></section>
+<header class="top">
+  <a class="brand" href="./" aria-label="AQX-UA"><span class="ring"></span><b>AQX-UA</b></a>
+  <div class="top-end">
+    <span class="status" id="status" data-s="unknown" role="status"><i class="lamp"></i><span id="statusTxt" data-i18n="stUnknown">جارٍ التحقق من الحالة</span></span>
+    <button type="button" id="lang" class="pill" aria-label="Language">English</button>
+  </div>
+</header>
 
-<section class="panel pL" id="pLog"><button class="x" onclick="closeP()">✕</button><h2 data-t="log">ادخل عالمي</h2>
-<input type="email" id="lE" placeholder="البريد الإلكتروني"><div class="pw"><input type="password" id="lP" placeholder="كلمة السر"><button class="eye" onclick="eye('lP')" type="button">👁</button></div>
-<button class="btn" onclick="login()">دخول</button><div class="msg" id="lM"></div><button class="lnk" onclick="openP('pRec')">نسيت كلمة السر؟</button></section>
+<main id="main">
+  <section class="hero">
+    <h1 data-i18n="h1">مرحبًا بك في عالم AQX</h1>
+    <p class="lead" data-i18n="lead">هويتك الموحدة للوصول إلى خدمات AQX.</p>
+    <p class="slogan" data-i18n="slogan">حساب واحد. عالم كامل.</p>
+  </section>
 
-<section class="panel pB" id="pRec"><button class="x" onclick="closeP()">✕</button><h2 data-t="rec">استعِد عالمي</h2><p style="font-size:14px;margin:8px 0">أدخل بريدك ثم اختر الإجراء المناسب.</p>
-<input type="email" id="cE" placeholder="البريد الإلكتروني"><button class="btn" onclick="recov('forgot','تم إرسال رابط استعادة كلمة السر 🔑')">نسيت كلمة السر</button><button class="btn" style="background:linear-gradient(90deg,#00b894,#55efc4)" onclick="recov('resend','تم إعادة إرسال رابط التفعيل 📧')">إعادة إرسال رابط التفعيل</button><button class="btn" style="background:linear-gradient(90deg,#e17055,#fdcb6e)" onclick="recov('reactivate','تم تقديم طلب إعادة تنشيط الحساب ✅')">إعادة تنشيط الحساب</button><div class="msg" id="cM"></div></section>
+  <nav class="gates" aria-label="AQX">
+    <a class="gate primary" href="signup.html">
+      <span class="g-ico" aria-hidden="true">✦</span>
+      <strong data-i18n="c1t">إنشاء حساب جديد</strong>
+      <small data-i18n="c1d">ابدأ رحلتك مع AQX.</small>
+    </a>
+    <a class="gate" href="login.html">
+      <span class="g-ico" aria-hidden="true">◉</span>
+      <strong data-i18n="c2t">تسجيل الدخول</strong>
+      <small data-i18n="c2d">تابع من حيث توقفت.</small>
+    </a>
+    <a class="gate" href="plans.html">
+      <span class="g-ico" aria-hidden="true">❖</span>
+      <strong data-i18n="c3t">الاشتراكات والباقات</strong>
+      <small data-i18n="c3d">اكتشف الخدمات والباقات المتاحة.</small>
+    </a>
+  </nav>
+  <p class="note" data-i18n="note">الاشتراك منفصل عن إنشاء الحساب: الحساب هو هويتك، والاشتراك هو ما تختاره من خدمات.</p>
 
-<div class="modal" id="md"><div class="mbox" id="mb"></div></div><div id="laser"></div>
-<div id="alarm"><div><div class="tri">⚠</div><h1>تم رصد نشاط غير مصرح به</h1><p>تحذير أمني: تم تسجيل عنوان الاتصال وبصمة الجهاز وتوقيت المحاولة في سجلات الإدارة العامة للأمن السيبراني AQX. محاولات الاختراق والعبث والتسجيل الآلي والدخول غير المشروع جرائم يعاقب عليها القانون، وتُتخذ بحقها الإجراءات القانونية اللازمة.</p><p><b>جارٍ إخراجك من النظام فوراً…</b></p></div></div>
-<footer><a href="security.html" target="_blank">🛡 <span class="lbl">تنبيهات الأمان</span></a><a class="sup" href="support.html" target="_blank">💬 <span class="lbl">الدعم الفني</span></a><a href="about.html" target="_blank">ℹ <span class="lbl">من نحن</span></a></footer>
-<div id="ast"><div id="astm"><button onclick="ask('📝','أنشئ حسابك من زر «انضم إلى عالمي»، أدخل بريدك وكلمة سر قوية ووافق على الشروط.','pReg')">📝 كيف أنشئ حسابًا؟</button><button onclick="ask('🔐','تأكد من صحة البريد وكلمة السر، أو استعد حسابك من «استعِد عالمي».','pRec')">🔐 لا أستطيع تسجيل الدخول</button><button onclick="ask('📧','يمكنك طلب إعادة إرسال رابط التفعيل من بوابة الاستعادة.','pRec')">📧 لم يصلني بريد التفعيل</button><button onclick="ask('🔑','اطلب رابط الاستعادة من «نسيت كلمة السر».','pRec')">🔑 نسيت كلمة المرور</button><button onclick="ask('🛡','تُحمى بياناتك وفق سياسة الخصوصية لدى AQX.','security.html')">🛡 سؤال عن الأمان والخصوصية</button><button onclick="ask('💬','فريق الدعم الفني بانتظارك.','support.html')">💬 تواصل مع الدعم الفني</button><button onclick="ask('ℹ','تعرّف على القرماني إكس.','about.html')">ℹ من نحن</button></div><button id="astb" onclick="astm.classList.toggle('show')">✦ مساعد AQX</button></div>
+  <section class="about">
+    <h2>AQX Unified Account · القرمانى إكس</h2>
+    <p data-i18n="about">الحساب الموحد AQX (AQX-UA) هو البوابة الرسمية لمنظومة AQX: حساب واحد لتسجيل الدخول وإدارة الاشتراكات والوصول إلى كل الخدمات. Also searched as alqurmani x or alqurmanix.</p>
+  </section>
+</main>
 
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {getAnalytics} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-import {getFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const app=initializeApp({apiKey:"AIzaSyBICr62Oa_-69hATpfFrdTDfO9WV4bVVvU",authDomain:"alqurmanix-d49f7.firebaseapp.com",projectId:"alqurmanix-d49f7",storageBucket:"alqurmanix-d49f7.firebasestorage.app",messagingSenderId:"1017946245702",appId:"1:1017946245702:web:575c425860c82166411847",measurementId:"G-5XN1NMG997"});
-try{getAnalytics(app)}catch(e){}
-const db=getFirestore(app);
-const ENGINE="https://script.google.com/macros/s/AKfycbx_ocS2UPEzvj5PosOXpZ1lHG0Fp5E8HYp30PC_bYmnYvLYQpE3K2QBIbUh2H3nEIvXgA/exec";
-const OUT="https://ads.alqurmanix.com/watch.html";
-const $=id=>document.getElementById(id);let regOpen=true,t0=Date.now(),fails=0;
-async function api(action,d={}){const r=await fetch(ENGINE,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,...d})});return r.json()}
-/* ===== AQX Cyber Security Agent v4.2 ===== */
-async function sendAQXSecurityAlert(actionType,userEmail="غير محدد"){try{let ipData={};try{const r=await fetch("https://ipapi.co/json/");if(r.ok)ipData=await r.json()}catch(e){}
-const ua=navigator.userAgent;let os="غير محدد";if(/Win/.test(ua))os="Windows";else if(/Android/.test(ua))os="Android";else if(/like Mac/.test(ua))os="iOS";else if(/Mac/.test(ua))os="macOS";else if(/Linux/.test(ua))os="Linux";
-let browser="غير معروف";if(/Edg/.test(ua))browser="Microsoft Edge";else if(/Chrome/.test(ua))browser="Google Chrome";else if(/Firefox/.test(ua))browser="Mozilla Firefox";else if(/Safari/.test(ua))browser="Apple Safari";
-const isMobile=/Mobi|Android/i.test(ua),requestId="AQX-REQ-"+Math.floor(1e5+Math.random()*9e5);
-const payload={action:"securityAlert",requestId,event:actionType,status:"SUCCESS",email:userEmail,ip:ipData.ip||"",isp:ipData.org||ipData.asn||"",asn:ipData.asn||"",country:ipData.country_name||"",countryCode:ipData.country_code||"",city:ipData.city||"",latLong:(ipData.latitude&&ipData.longitude)?`${ipData.latitude}, ${ipData.longitude}`:"",timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,deviceType:isMobile?"Mobile":"Desktop",os,browser,userAgent:ua,screenRes:`${screen.width}x${screen.height} (${screen.colorDepth}-bit)`,lang:navigator.language,referer:document.referrer||location.href,time:new Date().toISOString()};
-fetch(ENGINE,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})}catch(e){console.error(e)}}
-/* ===== الطرد الأمني ===== */
-let sirenDone=0;function siren(){try{const a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.type="sawtooth";o.connect(g);g.connect(a.destination);g.gain.value=.5;const n=a.currentTime;for(let i=0;i<10;i++){o.frequency.setValueAtTime(600,n+i*.5);o.frequency.linearRampToValueAtTime(1200,n+i*.5+.25)}o.start();o.stop(n+5)}catch(e){}}
-function breach(reason,email){if(sirenDone)return;sirenDone=1;sendAQXSecurityAlert("⚠ "+reason,email||"");$("alarm").classList.add("show");siren();setTimeout(()=>location.replace(OUT),4500)}
-const DISP=/(mailinator|tempmail|10minutemail|guerrillamail|yopmail|trashmail|throwaway|sharklasers|getnada|maildrop|fakeinbox|dispostable)\./i;
-const sus=e=>DISP.test(e)||/^(test|asdf|fake|aaa+|xxx+|abc)\d*@/i.test(e);
-document.addEventListener("contextmenu",e=>e.preventDefault());
-document.addEventListener("keydown",e=>{const k=e.key.toLowerCase();if(e.key==="F12"||(e.ctrlKey&&e.shiftKey&&"ijc".includes(k))||(e.ctrlKey&&k==="u"))e.preventDefault(),breach("محاولة فتح أدوات المطور / الكود")});
-setInterval(()=>{if(outerWidth-innerWidth>200||outerHeight-innerHeight>200)breach("فتح أدوات المطور")},1500);
-/* ===== الواجهة ===== */
-const TX={ar:{gate:"بوابتك إلى عالمٍ رقميّ آمن، يبدأ بهوية واحدة",reg:"انضم إلى عالمي",log:"ادخل عالمي",rec:"استعِد عالمي"},en:{gate:"Your gateway to a secure digital world, starting with one identity",reg:"Join My World",log:"Enter My World",rec:"Restore My World"}};
-let lang="ar";window.setLang=()=>{lang=lang==="ar"?"en":"ar";document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";$("lg").textContent=lang==="ar"?"English":"العربية";document.querySelectorAll("[data-t]").forEach(e=>e.textContent=TX[lang][e.dataset.t])};
-setTimeout(()=>{$("gate").classList.add("off");document.querySelectorAll(".orb").forEach((o,i)=>setTimeout(()=>o.classList.add("in"),300+i*350))},4200);
-window.openP=id=>{closeP();setTimeout(()=>$(id).classList.add("open"),50);if(id==="pReg"){$("regForm").style.display=regOpen?"":"none";$("regClosed").style.display=regOpen?"none":"block"}};
-window.closeP=()=>document.querySelectorAll(".panel").forEach(p=>p.classList.remove("open"));
-window.eye=id=>{const i=$(id);i.type=i.type==="password"?"text":"password"};
-const R={len:p=>p.length>=8,up:p=>/[A-Z]/.test(p),lo:p=>/[a-z]/.test(p),nu:p=>/\d/.test(p),sy:p=>/[^A-Za-z0-9]/.test(p)};
-window.chk=()=>{const p=$("rP").value;let n=0;document.querySelectorAll("#rl li").forEach(l=>{const ok=R[l.dataset.r](p);l.classList.toggle("ok",ok);n+=ok});const b=$("bs");b.style.width=n*20+"%";b.style.background=["#e74c3c","#e74c3c","#f39c12","#f1c40f","#2ecc71","#00e676"][n];const c=$("rC").value;$("cm").textContent=c?(c===p?"✔ كلمتا السر متطابقتان":"✖ كلمتا السر مختلفتان"):"";$("cm").style.color=c===p?"#0a9c5b":"#d63031";return n===5&&c===p};
-function modal(h){$("mb").innerHTML=h+'<button class="btn" onclick="$m()">حسناً</button>';$("md").classList.add("show")}window.$m=()=>$("md").classList.remove("show");
-function laser(){const l=$("laser");l.classList.remove("go");void l.offsetWidth;l.classList.add("go");setTimeout(()=>l.classList.remove("go"),3700)}
-function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang="ar-SA";speechSynthesis.speak(u)}catch(e){}}
-window.terms=()=>{$("mb").innerHTML='<h3>شروط التسجيل واستخدام AQX ID</h3><iframe src="terms.html" style="width:100%;height:55vh;border:0;border-radius:12px;background:#fff"></iframe><button class="btn" onclick="$m()">إغلاق</button>';$("md").classList.add("show")};
-window.register=async()=>{const e=$("rE").value.trim().toLowerCase(),m=$("rM");
-if($("hp").value||Date.now()-t0<2500)return breach("بوت / تسجيل آلي",e);
-if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){m.textContent="أدخل بريداً إلكترونياً صحيحاً";return}
-if(sus(e))return breach("تسجيل ببريد وهمي",e);
-if(!chk()){m.textContent="أكمل شروط كلمة السر وتأكد من التطابق";return}
-if(!$("t1").checked||!$("t2").checked){m.textContent="يجب الموافقة على الشروط والاطلاع على سياسة الخصوصية";return}
-$("rB").disabled=true;m.textContent="جارٍ إنشاء هويتك…";
-try{const r=await api("register",{email:e,password:$("rP").value,terms:true,privacy:true});if(r.ok||r.success){sendAQXSecurityAlert("إنشاء حساب جديد",e);const id=r.memberId||r.memberNumber||r.id||"AQX-—";closeP();laser();say("تم إنشاء حسابك بنجاح. مرحباً بك في عالم القرماني إكس");
-modal(`<div class="big">🎉</div><h3>تم الاشتراك بنجاح</h3><p>أرسلنا رابط تفعيل إلى بريدك — يرجى تأكيد الايميل لتفعيل حسابك.</p><div class="card"><b>AQX ID · MEMBER</b><div class="id" id="mid">${id}</div><small>${e}</small><small>✔ REGISTRATION SUCCESSFUL</small></div><button class="btn" style="background:#00b894" onclick="navigator.clipboard.writeText('${id}');this.textContent='✔ تم النسخ'">📋 نسخ رقم العضوية</button>`)}
-else m.textContent=r.message||"تعذّر إتمام التسجيل"}catch(x){m.textContent="تعذر الاتصال بالإدارة، حاول لاحقاً"}$("rB").disabled=false};
-window.login=async()=>{const e=$("lE").value.trim().toLowerCase(),m=$("lM");if(!e||!$("lP").value){m.textContent="أكمل البيانات";return}m.textContent="جارٍ التحقق…";
-try{const r=await api("login",{email:e,password:$("lP").value});if(r.ok||r.success){sendAQXSecurityAlert("تسجيل دخول (Auth Login)",e);closeP();laser();say("أهلاً بعودتك");modal('<div class="big">👋</div><h3>أهلاً بعودتك إلى عالمك</h3><p>يسعدنا رؤيتك مجدداً. جارٍ تحويلك إلى الفحص الأمني…</p>');setTimeout(()=>location.href="scan.html",3500)}
-else{m.textContent=r.message||"بيانات الدخول غير صحيحة";if(++fails>=6)breach("محاولات دخول متكررة (إغراق)",e)}}catch(x){m.textContent="تعذر الاتصال بالإدارة"}};
-window.recov=async(a,t)=>{const e=$("cE").value.trim().toLowerCase();if(!e)return $("cM").textContent="أدخل بريدك";if(sus(e))return breach("بريد وهمي في الاستعادة",e);
-try{const r=await api(a,{email:e});if(r.ok||r.success){closeP();laser();modal(`<div class="big">✅</div><h3>${t}</h3>`)}else $("cM").textContent=r.message||"تعذر التنفيذ"}catch(x){$("cM").textContent="تعذر الاتصال بالإدارة"}};
-window.ask=(i,t,go)=>{say(t);modal(`<div class="big">${i}</div><h3>مساعد AQX</h3><p style="line-height:2">${t}</p><button class="btn" style="background:#00b894" onclick="$m();${go.endsWith('.html')?`window.open('${go}')`:`openP('${go}')`}">فتح الآن ←</button>`)};
-(async()=>{try{const s=await getDoc(doc(db,"config","registration"));if(s.exists())regOpen=s.data().open!==false}catch(e){}
-try{const r=await api("stats");$("users").innerHTML="👥 عدد أعضاء AQX: <b>"+(r.users??r.count??"—")+"</b>"}catch(e){$("users").textContent=""}})();
-</script></body></html>
+<footer class="foot"><span>© AQX · القرمانى إكس</span></footer>
+</body>
+</html>
