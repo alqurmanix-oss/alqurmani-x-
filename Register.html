@@ -1,399 +1,349 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إنشاء حساب AQX Auth</title>
-
-  <style>
-    :root {
-      --bg-color: #f3f5f9;
-      --card-bg: #ffffff;
-      --text-main: #172033;
-      --text-muted: #697386;
-      --border-color: #d8deea;
-      --focus-ring: #c9d8ff;
-      --primary-color: #172033;
-      --primary-hover: #2d3b55;
-      --error-bg: #fff0f0;
-      --error-text: #9a2222;
-      --success-bg: #e9f9ef;
-      --success-text: #176536;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101828">
+  <title>إنشاء حساب | AQX Auth</title>  <style>
+    * { box-sizing: border-box; }
 
     body {
-      font-family: Arial, Tahoma, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
+      margin: 0;
       min-height: 100vh;
+      padding: 20px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      line-height: 1.6;
-    }
-
-    .header-brand {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .header-brand h1 {
-      font-size: 36px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: var(--text-main);
-    }
-
-    .header-brand p {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-top: 4px;
+      background: #0b1020;
+      color: #f2f5ff;
+      font-family: Tahoma, Arial, sans-serif;
     }
 
     .card {
       width: 100%;
-      max-width: 520px;
-      background: var(--card-bg);
-      padding: 32px;
-      border-radius: 18px;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+      max-width: 420px;
+      padding: 28px 23px;
+      border: 1px solid #293751;
+      border-radius: 20px;
+      background: #111a2e;
+      box-shadow: 0 20px 60px #0004;
     }
 
-    .card h2 {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-
-    .card p.intro {
-      font-size: 14px;
-      color: var(--text-muted);
-      text-align: center;
-      margin-bottom: 24px;
-      line-height: 1.6;
-    }
-
-    .grid {
+    .logo {
+      width: 65px;
+      height: 65px;
+      margin: 0 auto 15px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      place-items: center;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #6d7cff, #a05bff);
+      font-size: 23px;
+      font-weight: bold;
     }
 
-    .field {
-      display: flex;
-      flex-direction: column;
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 25px;
     }
 
-    .field.full {
-      grid-column: span 2;
+    .subtitle {
+      margin: 12px 0 26px;
+      text-align: center;
+      color: #aab6cc;
+      font-size: 13px;
+      line-height: 1.9;
     }
+
+    .field { margin-bottom: 17px; }
 
     label {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border-color);
-      border-radius: 9px;
-      font-size: 14px;
-      background: var(--card-bg);
-      color: var(--text-main);
-      transition: border-color 0.2s, outline 0.2s;
-    }
-
-    input:focus, select:focus {
-      outline: 2px solid var(--focus-ring);
-      border-color: #5579dc;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      line-height: 1.5;
-    }
-
-    .terms {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 20px 0;
+      display: block;
+      margin-bottom: 8px;
       font-size: 13px;
-      line-height: 1.6;
+      font-weight: bold;
     }
 
-    .terms input[type="checkbox"] {
-      width: auto;
-      margin-top: 3px;
-      cursor: pointer;
-    }
-
-    .terms label {
-      font-weight: 400;
-      margin-bottom: 0;
-      cursor: pointer;
-    }
-
-    button[type="submit"] {
+    input {
       width: 100%;
-      padding: 14px;
+      min-height: 49px;
+      padding: 13px;
+      border: 1px solid #293751;
+      border-radius: 11px;
+      outline: none;
+      background: #0b1325;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: #7d89ff;
+      box-shadow: 0 0 0 3px #6d7cff20;
+    }
+
+    input::placeholder { color: #71809a; }
+
+    .password-note {
+      margin-top: 7px;
+      color: #aab6cc;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    button {
+      width: 100%;
+      min-height: 49px;
+      margin-top: 5px;
       border: 0;
-      border-radius: 9px;
-      background: var(--primary-color);
-      color: #ffffff;
-      font-size: 16px;
-      font-weight: 700;
+      border-radius: 11px;
+      background: #6d7cff;
+      color: white;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background-color 0.2s;
     }
 
-    button[type="submit"]:hover {
-      background: var(--primary-hover);
-    }
-
-    button[type="submit"]:disabled {
-      opacity: 0.6;
+    button:disabled {
+      opacity: .65;
       cursor: wait;
     }
 
-    .message {
+    #message {
       display: none;
-      margin-bottom: 20px;
-      padding: 14px;
-      border-radius: 9px;
-      font-size: 14px;
-      line-height: 1.6;
+      margin-bottom: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.9;
       overflow-wrap: anywhere;
     }
 
-    .message.success {
-      display: block;
-      background: var(--success-bg);
-      color: var(--success-text);
-      border: 1px solid #b7e4c7;
+    #message.show { display: block; }
+
+    #message.error {
+      color: #ffaaaa;
+      background: #ff737315;
+      border: 1px solid #ff737355;
     }
 
-    .message.error {
-      display: block;
-      background: var(--error-bg);
-      color: var(--error-text);
-      border: 1px solid #f5c2c2;
+    #message.success {
+      color: #8af0c9;
+      background: #36d39915;
+      border: 1px solid #36d39955;
     }
 
     .footer {
-      margin-top: 24px;
+      margin-top: 20px;
       text-align: center;
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.6;
+      color: #aab6cc;
+      font-size: 12px;
     }
 
-    @media (max-width: 580px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-      .field.full {
-        grid-column: span 1;
-      }
-      .card {
-        padding: 24px;
-      }
+    @media (max-width: 360px) {
+      .card { padding: 23px 16px; }
     }
-  </style>
-</head>
-<body>
+  </style></head><body>
+  <main class="card">
+    <div class="logo">AQX</div><h1>إنشاء حساب جديد</h1>
 
-  <header class="header-brand">
-    <h1>AQX</h1>
-    <p>AQX Auth — حسابك الموحد للوصول إلى خدمات AQX</p>
-  </header>
+<p class="subtitle">
+  أنشئ حسابك الموحد للوصول إلى خدمات AQX.
+  ستحتاج إلى تفعيل بريدك الإلكتروني.
+</p>
 
-  <section class="card">
-    <h2>إنشاء حساب جديد</h2>
-    <p class="intro">
-      أدخل بياناتك بدقة. ستحتاج إلى التحقق من بريدك الإلكتروني لإكمال التسجيل.
-    </p>
+<div id="message" role="status" aria-live="polite"></div>
 
-    <div id="message" class="message" role="status" aria-live="polite"></div>
+<form id="registerForm">
+  <div class="field">
+    <label for="email">البريد الإلكتروني</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      maxlength="254"
+      dir="ltr"
+      placeholder="name@example.com"
+      required>
+  </div>
 
-    <form id="registerForm" novalidate>
-      <div class="grid">
-        <div class="field full">
-          <label for="displayName">الاسم الكامل</label>
-          <input id="displayName" name="displayName"
-                 type="text" autocomplete="name"
-                 maxlength="100" required
-                 placeholder="اكتب اسمك الكامل">
-        </div>
+  <div class="field">
+    <label for="password">كلمة المرور</label>
+    <input
+      id="password"
+      name="password"
+      type="password"
+      autocomplete="new-password"
+      minlength="12"
+      maxlength="128"
+      placeholder="12 حرفًا على الأقل"
+      required>
+    <div class="password-note">
+      استخدم كلمة مرور قوية لا تقل عن 12 حرفًا.
+    </div>
+  </div>
 
-        <div class="field full">
-          <label for="username">اسم المستخدم</label>
-          <input id="username" name="username"
-                 type="text" autocomplete="username"
-                 minlength="3" maxlength="30"
-                 pattern="[A-Za-z0-9_]+"
-                 autocapitalize="off" spellcheck="false"
-                 required placeholder="مثال: aqx_user">
-          <div class="hint">
-            استخدم الحروف الإنجليزية والأرقام والشرطة السفلية فقط.
-          </div>
-        </div>
+  <div class="field">
+    <label for="confirmPassword">تأكيد كلمة المرور</label>
+    <input
+      id="confirmPassword"
+      name="confirmPassword"
+      type="password"
+      autocomplete="new-password"
+      minlength="12"
+      maxlength="128"
+      placeholder="أعد كتابة كلمة المرور"
+      required>
+  </div>
 
-        <div class="field full">
-          <label for="email">البريد الإلكتروني</label>
-          <input id="email" name="email"
-                 type="email" autocomplete="email"
-                 maxlength="254" required
-                 placeholder="name@example.com"
-                 dir="ltr">
-        </div>
+  <button id="submitButton" type="submit">
+    إنشاء الحساب
+  </button>
+</form>
 
-        <div class="field">
-          <label for="password">كلمة المرور</label>
-          <input id="password" name="password"
-                 type="password" autocomplete="new-password"
-                 minlength="12" maxlength="128" required
-                 placeholder="12 حرفًا على الأقل">
-        </div>
+<div class="footer">AQX Auth — الحساب الموحد</div>
 
-        <div class="field">
-          <label for="confirmPassword">تأكيد كلمة المرور</label>
-          <input id="confirmPassword" name="confirmPassword"
-                 type="password" autocomplete="new-password"
-                 minlength="12" maxlength="128" required
-                 placeholder="أعد كتابة كلمة المرور">
-        </div>
+  </main>  <script>
+    'use strict';
 
-        <div class="field">
-          <label for="country">الدولة</label>
-          <select id="country" name="country" required>
-            <option value="Egypt" selected>مصر</option>
-            <option value="Saudi Arabia">السعودية</option>
-            <option value="United Arab Emirates">الإمارات</option>
-            <option value="Kuwait">الكويت</option>
-            <option value="Qatar">قطر</option>
-            <option value="Jordan">الأردن</option>
-            <option value="Morocco">المغرب</option>
-            <option value="Algeria">الجزائر</option>
-            <option value="Tunisia">تونس</option>
-            <option value="Other">دولة أخرى</option>
-          </select>
-        </div>
+    const form = document.getElementById('registerForm');
+    const button = document.getElementById('submitButton');
+    const message = document.getElementById('message');
 
-        <div class="field">
-          <label for="region">المحافظة أو المنطقة</label>
-          <input id="region" name="region"
-                 type="text" maxlength="100"
-                 placeholder="مثال: الإسكندرية" required>
-        </div>
-      </div>
+    let submitting = false;
 
-      <div class="terms">
-        <input id="terms" name="terms" type="checkbox" required>
-        <label for="terms">
-          أوافق على شروط الاستخدام وسياسة الخصوصية الخاصة بخدمة AQX Auth.
-        </label>
-      </div>
-
-      <button id="submitButton" type="submit">إنشاء الحساب</button>
-    </form>
-  </section>
-
-  <footer class="footer">
-    <strong>AQX Auth</strong><br>
-    نظام التسجيل المركزي لخدمات AQX
-  </footer>
-
-  <script>
-    const form = document.getElementById("registerForm");
-    const button = document.getElementById("submitButton");
-    const message = document.getElementById("message");
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = 'show ' + type;
+    }
 
     function getDeviceId() {
-      const key = "aqx_installation_id";
-      let id = localStorage.getItem(key);
-      if (!id) {
-        id = crypto.randomUUID();
-        localStorage.setItem(key, id);
+      const key = 'aqx_auth_device_id_v1';
+
+      try {
+        let id = localStorage.getItem(key);
+
+        if (!id) {
+          id = crypto.randomUUID
+            ? crypto.randomUUID()
+            : 'aqx-' + Date.now().toString(36) +
+              '-' + Math.random().toString(36).slice(2) +
+              Math.random().toString(36).slice(2);
+
+          localStorage.setItem(key, id);
+        }
+
+        return id;
+      } catch (error) {
+        return 'aqx-' + Date.now().toString(36) +
+          '-' + Math.random().toString(36).slice(2) +
+          Math.random().toString(36).slice(2);
       }
-      return id;
     }
 
-    function showMessage(text, isSuccess) {
-      message.textContent = text;
-      message.className = isSuccess ? "message success" : "message error";
+    function finishRequest() {
+      submitting = false;
+      button.disabled = false;
+      button.textContent = 'إنشاء الحساب';
     }
 
-    form.addEventListener("submit", function(event) {
+    form.addEventListener('submit', function(event) {
       event.preventDefault();
+
+      if (submitting) return;
 
       if (!form.reportValidity()) return;
 
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
+      const email = document.getElementById('email')
+        .value.trim().toLowerCase();
+
+      const password = document.getElementById('password').value;
+
+      const confirmPassword =
+        document.getElementById('confirmPassword').value;
 
       if (password !== confirmPassword) {
-        showMessage("كلمتا المرور غير متطابقتين.", false);
+        showMessage('كلمتا المرور غير متطابقتين.', 'error');
         return;
       }
 
-      if (!document.getElementById("terms").checked) {
-        showMessage("يجب الموافقة على شروط الاستخدام وسياسة الخصوصية.", false);
+      if (password.length < 12 || password.length > 128) {
+        showMessage(
+          'يجب أن تكون كلمة المرور بين 12 و128 حرفًا.',
+          'error'
+        );
         return;
       }
+
+      if (
+        typeof google === 'undefined' ||
+        !google.script ||
+        !google.script.run
+      ) {
+        showMessage(
+          'الواجهة ليست مفتوحة من محرك Google Apps Script. افتح رابط المحرك المنشور.',
+          'error'
+        );
+        return;
+      }
+
+      submitting = true;
+      button.disabled = true;
+      button.textContent = 'جارٍ إنشاء الحساب...';
+      message.className = '';
 
       const payload = {
-        displayName: document.getElementById("displayName").value.trim(),
-        username: document.getElementById("username").value.trim(),
-        email: document.getElementById("email").value.trim(),
+        email: email,
         password: password,
-        country: document.getElementById("country").value,
-        region: document.getElementById("region").value.trim(),
-        deviceId: getDeviceId(),
-        captchaToken: "BYPASSED_NO_CAPTCHA"
+        deviceId: getDeviceId()
       };
 
-      button.disabled = true;
-      button.textContent = "جارٍ إنشاء الحساب...";
-      message.className = "message";
-      message.textContent = "";
+      const timeoutId = setTimeout(function() {
+        if (submitting) {
+          finishRequest();
+          showMessage(
+            'استغرق الطلب وقتًا أطول من المتوقع. لا تحاول التسجيل مرارًا قبل التحقق مما إذا كان الحساب قد أُنشئ بالفعل.',
+            'error'
+          );
+        }
+      }, 45000);
 
       google.script.run
         .withSuccessHandler(function(result) {
-          button.disabled = false;
-          button.textContent = "إنشاء الحساب";
+          clearTimeout(timeoutId);
+          finishRequest();
 
-          if (result && result.ok) {
-            showMessage(result.message, true);
-            form.reset();
-          } else {
+          if (result && result.ok === true) {
             showMessage(
-              result && result.message ? result.message : "تعذر إتمام التسجيل.",
-              false
+              result.message ||
+              'تم إنشاء الحساب. راجع بريدك الإلكتروني لتفعيل الحساب.',
+              'success'
             );
+
+            form.reset();
+            return;
           }
+
+          showMessage(
+            result && result.message
+              ? result.message
+              : 'لم يكتمل التسجيل. حاول مرة أخرى بعد التحقق من حالة الحساب.',
+            'error'
+          );
         })
-        .withFailureHandler(function() {
-          button.disabled = false;
-          button.textContent = "إنشاء الحساب";
-          showMessage("حدث خطأ في الاتصال بالسيرفر. حاول مرة أخرى.", false);
+        .withFailureHandler(function(error) {
+          clearTimeout(timeoutId);
+          finishRequest();
+
+          showMessage(
+            error && error.message
+              ? 'تعذر إكمال الطلب: ' + error.message
+              : 'حدث خطأ أثناء الاتصال بالمحرك.',
+            'error'
+          );
         })
         .registerAccount(payload);
     });
-  </script>
-</body>
+  </script></body>
 </html>
