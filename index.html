@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3X+PqqAMnNzmg/13UAAsfYkeFxrh+EFo5FnJD2G48os='; style-src 'sha256-/NwcIeVBCaLJpk4uUWdipDAAY4WMttmYx9CxX++YNao='; img-src 'self' data:; connect-src 'self' https://*.supabase.co https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-4zwUcF4L/nLgEz49Hu10ccIKiXXEr+lC5ZztwoWxxpY='; style-src 'sha256-y6oObbZ11UF9p615zwBR9ZQ3oZmgFDxUWLJvz+8Txsg='; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="theme-color" content="#05040d">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>الحساب الموحد AQX القرمانى إكس | AQX Unified Account (AQX-UA)</title>
 <meta name="description" content="الحساب الموحد AQX القرمانى إكس (AQX-UA): بوابتك لتسجيل الدخول وإنشاء الحساب والاشتراكات والوصول إلى جميع خدمات AQX. One Account. Infinite Possibilities.">
@@ -108,6 +111,20 @@ input:focus{outline:none;border-color:var(--cy);box-shadow:0 0 0 3px rgba(37,232
 .plan .cta{text-align:center}
 @media(max-width:760px){.gates,.plans{grid-template-columns:1fr}#stTxt{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+html{background:#05040d;color-scheme:dark}
+.panel.show{align-items:center;text-align:center;width:min(560px,100%)}
+.panel.show .back{align-self:flex-start}
+.perks{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px;text-align:start;width:100%}
+.perks li{padding:12px 16px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(37,232,255,.18)}
+.perks li:before{content:"✦ ";color:var(--cy)}
+a.cta{display:block;text-align:center;width:100%}
+.plan .k{color:var(--cy);font-weight:700;font-size:.85rem}
+.hint{display:none;position:absolute;bottom:84px;color:var(--mut);font-size:.85rem;animation:blink 2s ease-in-out infinite}
+[data-snd=locked] #intro .hint{display:block}
+.warp:after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;background:radial-gradient(circle,rgba(37,232,255,.5),transparent 60%);animation:wf .7s ease-out forwards}
+@keyframes wf{from{opacity:1;transform:scale(.3)}to{opacity:0;transform:scale(2)}}
+.speaking .brand .ring{animation:pulse .9s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.25);box-shadow:0 0 26px var(--cy),inset 0 0 16px var(--vi)}}
 </style>
 </head>
 <body>
@@ -116,14 +133,16 @@ input:focus{outline:none;border-color:var(--cy);box-shadow:0 0 0 3px rgba(37,232
 <div id="intro" aria-hidden="true">
   <div class="logo"><h2 class="mark">AQX-UA</h2><p class="tag">ONE ACCOUNT. INFINITE POSSIBILITIES.</p><p class="full">AQX Unified Account</p></div>
   <p class="msg" id="msg"></p>
+  <p class="hint" data-i="hint"></p>
   <p class="msg-en">One Identity. A Universe of Possibilities.</p>
-  <div class="intro-tools"><button type="button" id="snd"></button><button type="button" id="skip" data-i="skip"></button></div>
+  <div class="intro-tools"><button type="button" class="snd"></button><button type="button" id="skip" data-i="skip"></button></div>
 </div>
 
 <header class="top">
   <a class="brand" href="#/home" aria-label="AQX-UA"><span class="ring"></span><b>AQX-UA</b></a>
   <div class="top-end">
     <span class="status" id="status" data-s="unknown" role="status"><i class="lamp"></i><span id="stTxt"></span></span>
+    <button type="button" class="pill snd"></button>
     <button type="button" id="lang" class="pill" aria-label="Language"></button>
   </div>
 </header>
@@ -142,38 +161,28 @@ input:focus{outline:none;border-color:var(--cy);box-shadow:0 0 0 3px rgba(37,232
   </section>
 
   <section class="view" id="v-signup">
-    <form class="panel" id="f-signup" novalidate autocomplete="on">
+    <div class="panel show">
       <a class="back" href="#/home" data-i="back"></a>
-      <h1 data-i="c1t"></h1><p class="lead" data-i="c1d"></p>
-      <label><span data-i="fName"></span><input name="name" type="text" maxlength="60" autocomplete="name" required></label>
-      <label><span data-i="fEmail"></span><input name="email" type="email" maxlength="120" autocomplete="email" inputmode="email" dir="ltr" required></label>
-      <label><span data-i="fPass"></span><input name="pass" type="password" maxlength="128" autocomplete="new-password" dir="ltr" required></label>
-      <div class="meter" aria-hidden="true"><i></i></div>
-      <label><span data-i="fPass2"></span><input name="pass2" type="password" maxlength="128" autocomplete="new-password" dir="ltr" required></label>
-      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <label class="chk"><input name="terms" type="checkbox"><span data-i="terms"></span></label>
-      <button class="cta" type="submit" data-i="c1t"></button>
-      <p class="fmsg" role="alert"></p>
-      <p class="alt"><span data-i="have"></span> <a href="#/login" data-i="c2t"></a></p>
-    </form>
+      <span class="g-ico" aria-hidden="true">✦</span>
+      <h1 data-i="s1h"></h1><p class="lead" data-i="s1p"></p>
+      <ul class="perks" id="perks1"></ul>
+      <a class="cta" href="signup.html" data-i="s1x"></a>
+    </div>
   </section>
 
   <section class="view" id="v-login">
-    <form class="panel" id="f-login" novalidate autocomplete="on">
+    <div class="panel show">
       <a class="back" href="#/home" data-i="back"></a>
-      <h1 data-i="c2t"></h1><p class="lead" data-i="c2d"></p>
-      <label><span data-i="fEmail"></span><input name="email" type="email" maxlength="120" autocomplete="username" inputmode="email" dir="ltr" required></label>
-      <label><span data-i="fPass"></span><input name="pass" type="password" maxlength="128" autocomplete="current-password" dir="ltr" required></label>
-      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <button class="cta" type="submit" data-i="c2t"></button>
-      <p class="fmsg" role="alert"></p>
-      <p class="alt"><span data-i="noAcc"></span> <a href="#/signup" data-i="c1t"></a></p>
-    </form>
+      <span class="g-ico" aria-hidden="true">◉</span>
+      <h1 data-i="s2h"></h1><p class="lead" data-i="s2p"></p>
+      <ul class="perks" id="perks2"></ul>
+      <a class="cta" href="login.html" data-i="s2x"></a>
+    </div>
   </section>
 
   <section class="view" id="v-plans">
     <a class="back" href="#/home" data-i="back"></a>
-    <h1 data-i="c3t"></h1><p class="lead" data-i="c3d"></p>
+    <h1 data-i="s3h"></h1><p class="lead" data-i="s3p"></p>
     <div class="plans" id="plans"></div>
     <p class="note" data-i="note"></p>
   </section>
@@ -181,42 +190,107 @@ input:focus{outline:none;border-color:var(--cy);box-shadow:0 0 0 3px rgba(37,232
 <footer class="foot">© AQX · القرمانى إكس</footer>
 <script>'use strict';
 if(top!==self){try{top.location=self.location}catch(e){document.documentElement.style.display='none'}}
-/* ===== إعدادات: اربط خدمة المصادقة هنا (Supabase/Firebase/API خاص). إن تُرك فارغًا لا يُنشأ أي حساب فعلي ===== */
-const CFG={api:{signup:'',login:''},status:'status.json',
+const CFG={status:'status.json',files:{plans:'plans.html'},
 plans:[
-{n:{ar:'أساسية',en:'Starter'},d:{ar:'للبدء مع خدمات AQX.',en:'Get started with AQX.'},f:{ar:['حساب موحد','الخدمات الأساسية'],en:['Unified account','Core services']}},
-{n:{ar:'متقدمة',en:'Plus'},d:{ar:'للمستخدم الأكثر نشاطًا.',en:'For active users.'},f:{ar:['كل مزايا الأساسية','خدمات متقدمة','أولوية في الدعم'],en:['Everything in Starter','Advanced services','Priority support']},ft:1},
-{n:{ar:'احترافية',en:'Pro'},d:{ar:'للفرق والاستخدام الكامل.',en:'For teams and full access.'},f:{ar:['كل مزايا المتقدمة','وصول كامل للمنظومة','دعم مخصص'],en:['Everything in Plus','Full ecosystem access','Dedicated support']}}]};
+{id:'starter',n:{ar:'أساسية',en:'Starter'},k:{ar:'انطلاقتك الأولى',en:'Your first launch'},d:{ar:'ادخل المنظومة بخطوة واحدة، واستكشف أساسيات AQX بسهولة.',en:'Enter the ecosystem in one step and explore the AQX essentials with ease.'},f:{ar:['حساب موحد','الخدمات الأساسية'],en:['Unified account','Core services']}},
+{id:'plus',n:{ar:'متقدمة',en:'Plus'},k:{ar:'الأكثر اختيارًا',en:'Most popular'},d:{ar:'قوة إضافية وخدمات متقدمة لمن يريد أكثر من البداية.',en:'Extra power and advanced services for those who want more than a start.'},f:{ar:['كل مزايا الأساسية','خدمات متقدمة','أولوية في الدعم'],en:['Everything in Starter','Advanced services','Priority support']},ft:1},
+{id:'pro',n:{ar:'احترافية',en:'Pro'},k:{ar:'الوصول الكامل',en:'Full access'},d:{ar:'تجربة AQX كاملة، مع دعم مخصص يرافقك في كل خطوة.',en:'The complete AQX experience, with dedicated support at every step.'},f:{ar:['كل مزايا المتقدمة','وصول كامل للمنظومة','دعم مخصص'],en:['Everything in Plus','Full ecosystem access','Dedicated support']}}]};
 const D={
-ar:{h1:'مرحبًا بك في عالم AQX',lead:'هويتك الموحدة للوصول إلى خدمات AQX.',slogan:'حساب واحد. عالم كامل.',c1t:'إنشاء حساب جديد',c1d:'ابدأ رحلتك مع AQX.',c2t:'تسجيل الدخول',c2d:'تابع من حيث توقفت.',c3t:'الاشتراكات والباقات',c3d:'اكتشف الخدمات والباقات المتاحة.',note:'الاشتراك منفصل عن إنشاء الحساب: الحساب هو هويتك، والاشتراك هو ما تختاره من خدمات.',about:'الحساب الموحد AQX (AQX-UA) هو البوابة الرسمية لمنظومة AQX القرمانى إكس: حساب واحد لتسجيل الدخول وإدارة الاشتراكات والوصول إلى كل الخدمات.',skip:'تخطي المقدمة',sndOff:'الصوت: متوقف',sndOn:'الصوت: يعمل',stU:'جارٍ التحقق من الحالة',stUp:'جميع الخدمات تعمل',stDeg:'أداء جزئي',stDown:'الخدمات متوقفة',stErr:'تعذر التحقق من الحالة',msg:'عالمك يبدأ من هنا.',btn:'English',back:'رجوع',fName:'الاسم',fEmail:'البريد الإلكتروني',fPass:'كلمة المرور',fPass2:'تأكيد كلمة المرور',terms:'أوافق على شروط الاستخدام وسياسة الخصوصية',have:'لديك حساب؟',noAcc:'ليس لديك حساب؟',soon:'قريبًا',choose:'ابدأ بحساب',eName:'أدخل اسمك.',eMail:'البريد الإلكتروني غير صالح.',ePass:'كلمة المرور يجب ألا تقل عن 10 أحرف وتجمع حروفًا وأرقامًا.',eMatch:'كلمتا المرور غير متطابقتين.',eTerms:'يجب الموافقة على الشروط.',eApi:'خدمة المصادقة غير مربوطة بعد. اربطها من إعدادات CFG في الملف.',eLock:'محاولات كثيرة. انتظر دقيقة ثم أعد المحاولة.',eNet:'تعذر الاتصال. حاول لاحقًا.',eBad:'تعذر إكمال الطلب. راجع بياناتك.',ok:'تم بنجاح.'},
-en:{h1:'Welcome to the AQX universe',lead:'Your unified identity for every AQX service.',slogan:'One Account. Infinite Possibilities.',c1t:'Create account',c1d:'Start your journey with AQX.',c2t:'Sign in',c2d:'Pick up where you left off.',c3t:'Plans & subscriptions',c3d:'Explore available services and plans.',note:'A subscription is separate from an account: the account is your identity, the subscription is the services you choose.',about:'AQX Unified Account (AQX-UA) is the official gateway to the AQX (Alqurmani X, alqurmanix) ecosystem: one account to sign in, manage subscriptions and reach every service.',skip:'Skip intro',sndOff:'Sound: off',sndOn:'Sound: on',stU:'Checking status',stUp:'All services operational',stDeg:'Partial degradation',stDown:'Services down',stErr:'Status unavailable',msg:'Your world starts here.',btn:'العربية',back:'Back',fName:'Name',fEmail:'Email',fPass:'Password',fPass2:'Confirm password',terms:'I accept the terms of use and privacy policy',have:'Have an account?',noAcc:'No account yet?',soon:'Soon',choose:'Start with an account',eName:'Enter your name.',eMail:'Invalid email address.',ePass:'Password needs 10+ characters with letters and numbers.',eMatch:'Passwords do not match.',eTerms:'You must accept the terms.',eApi:'No auth service is connected yet. Set it in CFG inside the file.',eLock:'Too many attempts. Wait a minute and retry.',eNet:'Connection failed. Try again later.',eBad:'Request failed. Check your details.',ok:'Done.'}};
+ar:{h1:'مرحبًا بك في عالم AQX',lead:'هويتك الموحدة للوصول إلى خدمات AQX.',slogan:'حساب واحد. عالم كامل.',c1t:'إنشاء حساب جديد',c1d:'ابدأ رحلتك مع AQX.',c2t:'تسجيل الدخول',c2d:'تابع من حيث توقفت.',c3t:'الاشتراكات والباقات',c3d:'اكتشف الخدمات والباقات المتاحة.',note:'الاشتراك منفصل عن إنشاء الحساب: الحساب هو هويتك، والاشتراك هو ما تختاره من خدمات.',about:'الحساب الموحد AQX (AQX-UA) هو البوابة الرسمية لمنظومة AQX القرمانى إكس: حساب واحد لتسجيل الدخول وإدارة الاشتراكات والوصول إلى كل الخدمات.',skip:'تخطي المقدمة',sndOff:'الصوت: متوقف',sndOn:'الصوت: يعمل',hint:'المس الشاشة لتفعيل الصوت',stU:'جارٍ التحقق من الحالة',stUp:'جميع الخدمات تعمل',stDeg:'أداء جزئي',stDown:'الخدمات متوقفة',stErr:'تعذر التحقق من الحالة',msg:'عالمك يبدأ من هنا.',btn:'English',back:'رجوع',
+s1h:'هويتك الجديدة في عالم AQX',s1p:'هوية واحدة تفتح لك كل أبواب AQX. أنشئ حسابك في دقائق، وانطلق إلى منظومة متكاملة من الخدمات بأمان وسلاسة.',s1x:'ابدأ رحلتك بحساب جديد',
+s2h:'عالمك بانتظارك',s2p:'ادخل بهويتك الموحدة وتابع من حيث توقفت: خدماتك واشتراكاتك في مكان واحد.',s2x:'ادخل إلى عالمك',
+s3h:'اختر باقتك وافتح المزيد',s3p:'باقات مصممة لتنمو معك: ابدأ بما يناسبك، وارتقِ عندما تكون مستعدًا للمزيد.',s3x:'اكتشف الباقة',
+p1:['هوية واحدة تفتح كل خدمات AQX','تفعيل سريع وتجربة سلسة من أول خطوة','حماية متقدمة لبياناتك وخصوصيتك'],p2:['دخول واحد لكل خدماتك','اتصال آمن وجلسات محمية','تابع فورًا من حيث توقفت']},
+en:{h1:'Welcome to the AQX universe',lead:'Your unified identity for every AQX service.',slogan:'One Account. Infinite Possibilities.',c1t:'Create account',c1d:'Start your journey with AQX.',c2t:'Sign in',c2d:'Pick up where you left off.',c3t:'Plans & subscriptions',c3d:'Explore available services and plans.',note:'A subscription is separate from an account: the account is your identity, the subscription is the services you choose.',about:'AQX Unified Account (AQX-UA) is the official gateway to the AQX (Alqurmani X, alqurmanix) ecosystem: one account to sign in, manage subscriptions and reach every service.',skip:'Skip intro',sndOff:'Sound: off',sndOn:'Sound: on',hint:'Tap the screen to enable sound',stU:'Checking status',stUp:'All services operational',stDeg:'Partial degradation',stDown:'Services down',stErr:'Status unavailable',msg:'Your world starts here.',btn:'العربية',back:'Back',
+s1h:'Your new identity in the AQX universe',s1p:'One identity that opens every AQX door. Create your account in minutes and step into a complete ecosystem of services, securely and seamlessly.',s1x:'Begin your journey: create account',
+s2h:'Your world is waiting',s2p:'Sign in with your unified identity and pick up where you left off: your services and subscriptions in one place.',s2x:'Enter your world',
+s3h:'Choose your plan. Unlock more.',s3p:'Plans built to grow with you: start with what fits, and step up when you are ready for more.',s3x:'Explore plan',
+p1:['One identity for every AQX service','Fast setup, seamless from the first step','Advanced protection for your data and privacy'],p2:['One sign-in for all your services','Secure connection, protected sessions','Pick up instantly where you left off']}};
+const SP={
+home:[['أهلًا بك في عالم AQX القرمانى إكس.','ar'],['Welcome to the world of AQX, Alqurmani X.','en']],
+signup:[['إنشاء حساب جديد. ابدأ رحلتك بهوية واحدة تفتح لك كل أبواب AQX.','ar'],['Create a new account. Begin your journey with one identity that opens every door.','en']],
+login:[['تسجيل الدخول. عالمك بانتظارك، تابع من حيث توقفت.','ar'],['Sign in. Your world is waiting. Pick up right where you left off.','en']],
+plans:[['الاشتراكات والباقات. اختر الباقة التي تناسب طموحك.','ar'],['Plans and subscriptions. Choose the plan that fits your ambition.','en']]};
+const TC={intro:'#05040d',home:'#0b0724',signup:'#06202e',login:'#150b33',plans:'#1d0b36'};
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s),B=document.body,H=document.documentElement;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let lang='ar',stKey='stU',soundOn=false,ac;
+let lang='ar',stKey='stU',soundOn=true,cur='home',first=true,speaking=false;
 try{const s=localStorage.getItem('aqx-lang');lang=s||((navigator.language||'').startsWith('en')?'en':'ar')}catch(e){}
-const t=k=>D[lang][k]||k;
+const t=k=>D[lang][k]??k;
+const theme=v=>{$('meta[name=theme-color]').content=TC[v]};
+const li=x=>{const e=document.createElement('li');e.textContent=x;return e};
 function render(){
  H.lang=lang;H.dir=lang==='ar'?'rtl':'ltr';
  $$('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
- $('#lang').textContent=t('btn');$('#snd').textContent=t(soundOn?'sndOn':'sndOff');$('#stTxt').textContent=t(stKey);
+ $$('.snd').forEach(b=>b.textContent=t(soundOn?'sndOn':'sndOff'));
+ $('#lang').textContent=t('btn');$('#stTxt').textContent=t(stKey);
+ $('#perks1').replaceChildren(...t('p1').map(li));$('#perks2').replaceChildren(...t('p2').map(li));
  $('#plans').replaceChildren(...CFG.plans.map(p=>{
   const d=document.createElement('div');d.className='plan'+(p.ft?' ft':'');
+  const k=document.createElement('p');k.className='k';k.textContent=p.k[lang];
   const h=document.createElement('h3');h.textContent=p.n[lang];
   const q=document.createElement('p');q.textContent=p.d[lang];
-  const pr=document.createElement('p');pr.className='pr';pr.textContent=t('soon');
-  const u=document.createElement('ul');p.f[lang].forEach(x=>{const li=document.createElement('li');li.textContent=x;u.append(li)});
-  const a=document.createElement('a');a.className='cta';a.href='#/signup';a.textContent=t('choose');
-  d.append(h,q,pr,u,a);return d}));
+  const u=document.createElement('ul');p.f[lang].forEach(x=>u.append(li(x)));
+  const a=document.createElement('a');a.className='cta';a.href=CFG.files.plans+'?plan='+p.id;a.textContent=t('s3x');
+  d.append(k,h,q,u,a);return d}));
 }
 $('#lang').onclick=()=>{lang=lang==='ar'?'en':'ar';try{localStorage.setItem('aqx-lang',lang)}catch(e){}render()};
-/* router */
+
+/* ===== الصوت: أجواء مجرة مولَّدة (همهمة كونية + حركة دوّارة + ومضات نجوم) ===== */
+let ac,master,fx,ready=false,base=.8,ducked=false,pend=null,touched=false;
+function audioInit(){
+ if(ac)return;try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return}
+ master=ac.createGain();master.gain.value=0;master.connect(ac.destination);
+ const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=320;lp.Q.value=5;
+ const dg=ac.createGain();dg.gain.value=.55;lp.connect(dg).connect(master);
+ [[55,'sawtooth',.16],[82.6,'sawtooth',.12],[110.4,'sine',.14],[165,'triangle',.08]].forEach(([f,ty,v])=>{const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;o.detune.value=(Math.random()-.5)*16;g.gain.value=v;o.connect(g).connect(lp);o.start()});
+ const lf=ac.createOscillator(),lg=ac.createGain();lf.frequency.value=.08;lg.gain.value=280;lf.connect(lg).connect(lp.frequency);lf.start();
+ const nb=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ const ns=ac.createBufferSource();ns.buffer=nb;ns.loop=true;
+ const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1100;bp.Q.value=7;
+ const ng=ac.createGain();ng.gain.value=.035;ns.connect(bp).connect(ng);
+ const pn=ac.createStereoPanner?ac.createStereoPanner():null;
+ if(pn){ng.connect(pn).connect(master);const l3=ac.createOscillator();l3.frequency.value=.12;l3.connect(pn.pan);l3.start()}else ng.connect(master);
+ const l2=ac.createOscillator(),l2g=ac.createGain();l2.frequency.value=.14;l2g.gain.value=800;l2.connect(l2g).connect(bp.frequency);l2.start();ns.start();
+ fx={bp,ng};
+}
+function vol(){if(master)master.gain.setTargetAtTime(soundOn?(ducked?.1:base):0,ac.currentTime,.5)}
+function ping(f,v){if(!ready||!soundOn)return;const n=ac.currentTime,o=ac.createOscillator(),g=ac.createGain(),p=ac.createStereoPanner?ac.createStereoPanner():null;o.frequency.value=f;g.gain.setValueAtTime(.0001,n);g.gain.linearRampToValueAtTime(v,n+.03);g.gain.exponentialRampToValueAtTime(.0001,n+1.8);o.connect(g);if(p){p.pan.value=Math.random()*2-1;g.connect(p).connect(master)}else g.connect(master);o.start(n);o.stop(n+1.9)}
+function sparkle(){ping([523,659,784,988,1175,1319][Math.random()*6|0]*(Math.random()<.3?2:1),.03+Math.random()*.03);setTimeout(sparkle,800+Math.random()*1800)}
+function boom(){if(!ready||!soundOn)return;const n=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(95,n);o.frequency.exponentialRampToValueAtTime(30,n+1.3);g.gain.setValueAtTime(.5,n);g.gain.exponentialRampToValueAtTime(.0001,n+1.4);o.connect(g).connect(master);o.start(n);o.stop(n+1.5)}
+function whoosh(d){if(!ready||!soundOn)return;const n=ac.currentTime;fx.bp.frequency.cancelScheduledValues(n);fx.bp.frequency.setValueAtTime(300,n);fx.bp.frequency.exponentialRampToValueAtTime(5000,n+d);fx.ng.gain.cancelScheduledValues(n);fx.ng.gain.setValueAtTime(.035,n);fx.ng.gain.linearRampToValueAtTime(.22,n+d*.8);fx.ng.gain.linearRampToValueAtTime(.035,n+d+.8)}
+function wake(){if(!soundOn)return;audioInit();if(!ac)return;ac.resume().then(()=>{if(ac.state==='running'&&!ready){ready=true;B.dataset.snd='on';vol();sparkle()}}).catch(()=>{})}
+$$('.snd').forEach(b=>b.onclick=()=>{soundOn=!soundOn;render();if(soundOn)wake();vol();if(!soundOn)speechSynthesis?.cancel()});
+B.dataset.snd='locked';
+['pointerup','keydown','click','touchend'].forEach(e=>addEventListener(e,()=>{touched=true;wake();if(pend&&soundOn){const p=pend;pend=null;say(p)}},{passive:true}));
+wake();
+
+/* ===== صوت بنت رقيق: عربي ثم إنجليزي (أصوات الجهاز) ===== */
+let voices=[];const loadV=()=>{voices=speechSynthesis.getVoices()};
+if('speechSynthesis' in window){loadV();speechSynthesis.onvoiceschanged=loadV}
+const FEM=/female|zira|hoda|salma|laila|maryam|mariam|zariyah|samantha|karen|moira|tessa|victoria|aria|jenny|sara|hedda|susan|catherine|fiona|serena|ava|allison|emma|libby|sonia|google (us|uk) english|google العربية/i;
+const pick=l=>{const v=voices.filter(x=>x.lang.toLowerCase().startsWith(l));return v.find(x=>FEM.test(x.name))||v[0]};
+function say(parts){
+ if(!soundOn||!('speechSynthesis' in window))return;
+ speechSynthesis.cancel();ducked=true;vol();speaking=true;B.classList.add('speaking');
+ const end=()=>{ducked=false;speaking=false;B.classList.remove('speaking');vol()};
+ parts.forEach(([x,l],i)=>{const u=new SpeechSynthesisUtterance(x);u.lang=l==='ar'?'ar-SA':'en-US';const v=pick(l);if(v)u.voice=v;u.pitch=1.2;u.rate=.92;if(i===parts.length-1)u.onend=u.onerror=end;speechSynthesis.speak(u)});
+}
+function want(p){if(touched||navigator.userActivation?.hasBeenActive)say(p);else pend=p}
+
+/* ===== التنقل بين البطاقات ===== */
 const V=['home','signup','login','plans'];
-function route(){const k=location.hash.replace('#/','');const v=V.includes(k)?k:'home';V.forEach(x=>$('#v-'+x).classList.toggle('on',x===v));scrollTo(0,0)}
+function route(){
+ const k=location.hash.replace('#/','');const v=V.includes(k)?k:'home';
+ V.forEach(x=>$('#v-'+x).classList.toggle('on',x===v));cur=v;
+ if(!B.classList.contains('intro-on'))theme(v);
+ scrollTo(0,0);
+ if(v!=='home'){B.classList.add('warp');setTimeout(()=>B.classList.remove('warp'),700);if(!first)say(SP[v])}else if(!first)speechSynthesis?.cancel();
+ first=false;
+}
 addEventListener('hashchange',route);
-/* sound (opt-in, synthesized) */
-function tone(f1,f2,d,ty,v){if(!soundOn||!ac)return;const n=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.setValueAtTime(f1,n);o.frequency.exponentialRampToValueAtTime(f2,n+d);g.gain.setValueAtTime(.0001,n);g.gain.linearRampToValueAtTime(v,n+.06);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g).connect(ac.destination);o.start(n);o.stop(n+d)}
-$('#snd').onclick=()=>{try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){return}soundOn=!soundOn;render();if(soundOn)tone(120,360,2,'sine',.08)};
-/* galaxy canvas */
+
+/* ===== مجرة الخلفية ===== */
 const cv=$('#fx'),c=cv.getContext('2d');let W,Hh,dpr,mode='galaxy',grow=0,glow=0,tilt=.5,ringA=0;
 function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.width=innerWidth*dpr;Hh=cv.height=innerHeight*dpr}
 size();addEventListener('resize',size);
@@ -230,13 +304,13 @@ function frame(tm){
  for(const s of S){c.fillStyle=`rgba(190,215,255,${(.25+.35*Math.sin(tm/700+s.p))*s.z})`;c.fillRect(s.x*W,s.y*Hh,s.z*1.6*dpr,s.z*1.6*dpr)}
  c.globalCompositeOperation='lighter';
  grow+=((mode==='open'?0:1)-grow)*.02;
- glow+=((({ring:1.2,open:2.4,logo:.7,msg:.7,ambient:.18})[mode]??.6)-glow)*.03;
+ glow+=((({ring:1.2,open:2.4,logo:.7,msg:.7,ambient:.18})[mode]??.6)+(speaking?.45:0)-glow)*.03;
  tilt+=((ring?1:.5)-tilt)*.03;ringA+=((mode==='ring'?1:0)-ringA)*.04;
  const g=c.createRadialGradient(cx,cy,0,cx,cy,R*(.35+glow*.25));g.addColorStop(0,`rgba(255,255,255,${Math.min(.9,.5*glow)})`);g.addColorStop(.25,`rgba(37,232,255,${.35*glow})`);g.addColorStop(1,'rgba(123,77,255,0)');
  c.fillStyle=g;c.fillRect(0,0,W,Hh);
  for(const p of P){
   p.cr+=(target(p)-p.cr)*(mode==='open'?.05:.035);
-  p.a+=(.0015+.004*(1-p.r0*.6))*p.s*(mode==='ring'?2.5:1);
+  p.a+=(.0015+.004*(1-p.r0*.6))*p.s*(mode==='ring'?2.5:1)*(speaking?1.8:1);
   const al=(amb?.45:.9)*(.35+p.z*.65)*(mode==='open'?Math.max(0,1-(p.cr-.8)/1.6):1);
   c.fillStyle=`hsla(${p.h},100%,${60+p.z*25}%,${al})`;const z=(.6+p.z*1.8)*dpr;
   c.fillRect(cx+Math.cos(p.a)*p.cr*R,cy+Math.sin(p.a)*p.cr*R*tilt,z,z)}
@@ -244,41 +318,23 @@ function frame(tm){
   c.lineWidth=5*dpr;c.strokeStyle=gr;c.shadowColor='#25e8ff';c.shadowBlur=30*dpr;c.beginPath();c.ellipse(cx,cy,R*.62,R*.62*tilt,0,0,6.283);c.stroke();c.shadowBlur=0}
  if(!reduce)requestAnimationFrame(frame);
 }
-/* intro timeline */
+
+/* ===== خط المقدمة الزمني ===== */
 let ids=[],done=false;
-function ph(n,ms){ids.push(setTimeout(()=>{B.dataset.ph=n;mode=n;if(n==='logo')tone(300,900,.5,'triangle',.09);if(n==='ring')tone(90,700,1.8,'sawtooth',.04);if(n==='msg')typeMsg()},ms))}
+function ph(n,ms){ids.push(setTimeout(()=>{B.dataset.ph=n;mode=n;
+ if(n==='logo'){boom();[784,988,1568].forEach((f,i)=>setTimeout(()=>ping(f,.06),i*220))}
+ if(n==='ring')whoosh(2.4);
+ if(n==='msg')typeMsg()},ms))}
 function typeMsg(){const el=$('#msg'),x=t('msg');let i=0;const k=setInterval(()=>{el.textContent=x.slice(0,++i);if(i>=x.length)clearInterval(k)},90)}
-function finish(){if(done)return;done=true;ids.forEach(clearTimeout);mode='ambient';delete B.dataset.ph;$('#intro').classList.remove('flash');B.classList.remove('intro-on');B.classList.add('revealed')}
+function finish(){if(done)return;done=true;ids.forEach(clearTimeout);mode='ambient';delete B.dataset.ph;$('#intro').classList.remove('flash');B.classList.remove('intro-on');B.classList.add('revealed');theme(cur);base=.3;vol();want(SP.home)}
 render();route();
-if(reduce){mode='ambient';P.forEach(p=>p.cr=target(p));frame(0)}
+if(reduce){mode='ambient';P.forEach(p=>p.cr=target(p));frame(0);theme(cur);base=.3;want(SP.home)}
 else{B.classList.add('intro-on');requestAnimationFrame(frame);
  ph('galaxy',0);ph('logo',3200);ph('msg',6400);ph('ring',9200);
- ids.push(setTimeout(()=>{B.dataset.ph='open';mode='open';tone(200,1400,1.4,'sine',.07);$('#intro').classList.add('flash')},11000));
+ ids.push(setTimeout(()=>{B.dataset.ph='open';mode='open';boom();whoosh(1.4);$('#intro').classList.add('flash')},11000));
  ids.push(setTimeout(finish,12300));
  $('#skip').onclick=finish;addEventListener('keydown',e=>{if(e.key==='Escape')finish()})}
 $$('.gate').forEach(g=>g.addEventListener('pointermove',e=>{const r=g.getBoundingClientRect();g.style.setProperty('--mx',e.clientX-r.left+'px');g.style.setProperty('--my',e.clientY-r.top+'px')}));
-/* forms */
-const MAIL=/^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/;let fails=0,lock=0;
-function strength(v){let s=0;if(v.length>=10)s++;if(v.length>=14)s++;if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^\w\s]/.test(v))s++;return s}
-const sp=$('#f-signup [name=pass]');sp.addEventListener('input',()=>{const s=strength(sp.value),m=$('#f-signup .meter i');m.style.width=s*20+'%';m.style.background=s<3?'var(--bad)':s<4?'var(--warn)':'var(--ok)'});
-async function submit(kind,f,e){
- e.preventDefault();const m=f.querySelector('.fmsg'),b=f.querySelector('.cta'),d=Object.fromEntries(new FormData(f));
- const say=(k,ok)=>{m.textContent=t(k);m.dataset.ok=ok?1:0};
- if(d.website)return;
- if(Date.now()<lock)return say('eLock');
- if(kind==='signup'&&!d.name.trim())return say('eName');
- if(!MAIL.test(d.email.trim()))return say('eMail');
- if(kind==='signup'){if(strength(d.pass)<2||!/\d/.test(d.pass)||!/[A-Za-z]/.test(d.pass)||d.pass.length<10)return say('ePass');if(d.pass!==d.pass2)return say('eMatch');if(!d.terms)return say('eTerms')}
- else if(!d.pass)return say('ePass');
- const url=CFG.api[kind];if(!url)return say('eApi');
- b.disabled=true;
- try{const r=await fetch(url,{method:'POST',credentials:'omit',referrerPolicy:'no-referrer',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:d.name,email:d.email.trim(),password:d.pass})});
-  if(r.ok){fails=0;say('ok',1)}else{if(++fails>=5)lock=Date.now()+60000;say('eBad')}}
- catch(x){say('eNet')}
- b.disabled=false;
-}
-$('#f-signup').addEventListener('submit',e=>submit('signup',e.currentTarget,e));
-$('#f-login').addEventListener('submit',e=>submit('login',e.currentTarget,e));
 /* حالة الخدمات من status.json (فحص حقيقي) */
 async function check(){const el=$('#status');
  try{const r=await fetch(CFG.status,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();const s=j.status==='operational'?'up':j.status==='degraded'?'degraded':'down';el.dataset.s=s;stKey={up:'stUp',degraded:'stDeg',down:'stDown'}[s]}
