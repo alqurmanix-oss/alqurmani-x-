@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إنشاء حساب جديد | AQX Auth</title>
+  <title>إنشاء حساب جديد | AQX Auth Core</title>
   <style>
     :root {
       --bg-color: #0d1117;
@@ -41,7 +41,7 @@
       padding: 32px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
     }
 
     .brand-header {
@@ -185,10 +185,10 @@
   </div>
 
   <script>
-    // رابط المحرك الجديد الخاص بك
-    const ENGINE_URL = "https://script.google.com/macros/s/AKfycbyj5FEeuAl1ZL3fr7xkW6qh1-samB-DH9-koXPqlJ8qLxFxwJt2pPzrHiKK05-ZHpzq/exec";
+    // رابط المحرك الجديد الذي أرسلته يا أبا عبد الله
+    const ENGINE_URL = "https://script.google.com/macros/s/AKfycbx0MTO76Yn9EzlXrXhlFG8m8ahUZf_RNjR9tM5C0oiFlh3ck2oKFmUDjqVTR3FhTPUf/exec";
 
-    // الحصول على معرف فريد للجهاز أو توليده وحفظه في LocalStorage
+    // الحصول على معرف فريد وثابت للجهاز وتخزينه محلياً لفحص قاعدة الـ 5 حسابات
     function getDeviceId() {
       let deviceId = localStorage.getItem("aqx_device_id");
       if (!deviceId) {
