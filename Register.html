@@ -1,1 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء حساب AQX Auth</title>
+  
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
+  <style>
+    :root {
+      --bg-color: #f3f5f9;
+      --card-bg: #ffffff;
+      --text-main: #172033;
+      --text-muted: #697386;
+      --border-color: #d8deea;
+      --focus-ring: #c9d8ff;
+      --primary-color: #172033;
+      --primary-hover: #2d3b55;
+      --error-bg: #fff0f0;
+      --error-text: #9a2222;
+      --success-bg: #e9f9ef;
+      --success-text: #176536;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Tahoma, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .header-brand {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header-brand h1 {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--text-main);
+    }
+
+    .header-brand p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .card p.intro {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field.full {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 9px;
+      font-size: 14px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      transition: border-color 0.2s, outline 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--focus-ring);
+      border-color: #5579dc;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .captcha-wrap {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .terms {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .terms input[type="checkbox"] {
+      width: auto;
+      margin-top: 3px;
+      cursor: pointer;
+    }
+
+    .terms label {
+      font-weight: 400;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background: var(--primary-hover);
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 20px;
+      padding: 14px;
+      border-radius: 9px;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message.success {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid #b7e4c7;
+    }
+
+    .message.error {
+      display: block;
+      background: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid #f5c2c2;
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 580px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .field.full {
+        grid-column: span 1;
+      }
+      .card {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header-brand">
+    <h1>AQX</h1>
+    <p>AQX Auth — حسابك الموحد للوصول إلى خدمات AQX</p>
+  </header>
+
+  <section class="card">
+    <h2>إنشاء حساب جديد</h2>
+    <p class="intro">
+      أدخل بياناتك بدقة. ستحتاج إلى التحقق من بريدك الإلكتروني لإكمال التسجيل.
+    </p>
+
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+
+    <form id="registerForm" novalidate>
+      <div class="grid">
+        <div class="field full">
+          <label for="displayName">الاسم الكامل</label>
+          <input id="displayName" name="displayName"
+                 type="text" autocomplete="name"
+                 maxlength="100" required
+                 placeholder="اكتب اسمك الكامل">
+        </div>
+
+        <div class="field full">
+          <label for="username">اسم المستخدم</label>
+          <input id="username" name="username"
+                 type="text" autocomplete="username"
+                 minlength="3" maxlength="30"
+                 pattern="[A-Za-z0-9_]+"
+                 autocapitalize="off" spellcheck="false"
+                 required placeholder="مثال: aqx_user">
+          <div class="hint">
+            استخدم الحروف الإنجليزية والأرقام والشرطة السفلية فقط.
+          </div>
+        </div>
+
+        <div class="field full">
+          <label for="email">البريد الإلكتروني</label>
+          <input id="email" name="email"
+                 type="email" autocomplete="email"
+                 maxlength="254" required
+                 placeholder="name@example.com"
+                 dir="ltr">
+        </div>
+
+        <div class="field">
+          <label for="password">كلمة المرور</label>
+          <input id="password" name="password"
+                 type="password" autocomplete="new-password"
+                 minlength="12" maxlength="128" required
+                 placeholder="12 حرفًا على الأقل">
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">تأكيد كلمة المرور</label>
+          <input id="confirmPassword" name="confirmPassword"
+                 type="password" autocomplete="new-password"
+                 minlength="12" maxlength="128" required
+                 placeholder="أعد كتابة كلمة المرور">
+        </div>
+
+        <div class="field">
+          <label for="country">الدولة</label>
+          <select id="country" name="country" required>
+            <option value="Egypt" selected>مصر</option>
+            <option value="Saudi Arabia">السعودية</option>
+            <option value="United Arab Emirates">الإمارات</option>
+            <option value="Kuwait">الكويت</option>
+            <option value="Qatar">قطر</option>
+            <option value="Jordan">الأردن</option>
+            <option value="Morocco">المغرب</option>
+            <option value="Algeria">الجزائر</option>
+            <option value="Tunisia">تونس</option>
+            <option value="Other">دولة أخرى</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="region">المحافظة أو المنطقة</label>
+          <input id="region" name="region"
+                 type="text" maxlength="100"
+                 placeholder="مثال: الإسكندرية" required>
+        </div>
+      </div>
+
+      <div class="captcha-wrap">
+        <div class="g-recaptcha"
+             data-sitekey="6LdEB_otAAAAAGw21FHgyiloCGaaqFsUdI8n_rmX"></div>
+      </div>
+
+      <div class="terms">
+        <input id="terms" name="terms" type="checkbox" required>
+        <label for="terms">
+          أوافق على شروط الاستخدام وسياسة الخصوصية الخاصة بخدمة AQX Auth.
+        </label>
+      </div>
+
+      <button id="submitButton" type="submit">إنشاء الحساب</button>
+    </form>
+  </section>
+
+  <footer class="footer">
+    <strong>AQX Auth</strong><br>
+    نظام التسجيل المركزي لخدمات AQX
+  </footer>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const button = document.getElementById("submitButton");
+    const message = document.getElementById("message");
+
+    function getDeviceId() {
+      const key = "aqx_installation_id";
+      let id = localStorage.getItem(key);
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem(key, id);
+      }
+      return id;
+    }
+
+    function showMessage(text, isSuccess) {
+      message.textContent = text;
+      message.className = isSuccess ? "message success" : "message error";
+    }
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      if (!form.reportValidity()) return;
+
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (password !== confirmPassword) {
+        showMessage("كلمتا المرور غير متطابقتين.", false);
+        return;
+      }
+
+      if (!document.getElementById("terms").checked) {
+        showMessage("يجب الموافقة على شروط الاستخدام وسياسة الخصوصية.", false);
+        return;
+      }
+
+      const captchaResponse = typeof grecaptcha !== "undefined" ? grecaptcha.getResponse() : "";
+      if (!captchaResponse) {
+        showMessage("أكمل اختبار التحقق من أنك لست روبوتًا أولًا.", false);
+        return;
+      }
+
+      const payload = {
+        displayName: document.getElementById("displayName").value.trim(),
+        username: document.getElementById("username").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        password: password,
+        country: document.getElementById("country").value,
+        region: document.getElementById("region").value.trim(),
+        deviceId: getDeviceId(),
+        captchaToken: captchaResponse
+      };
+
+      button.disabled = true;
+      button.textContent = "جارٍ إنشاء الحساب...";
+      message.className = "message";
+      message.textContent = "";
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          button.disabled = false;
+          button.textContent = "إنشاء الحساب";
+
+          if (result && result.ok) {
+            showMessage(result.message, true);
+            form.reset();
+            if (typeof grecaptcha !== "undefined") {
+              grecaptcha.reset();
+            }
+          } else {
+            showMessage(
+              result && result.message ? result.message : "تعذر إتمام التسجيل.",
+              false
+            );
+            if (typeof grecaptcha !== "undefined") {
+              grecaptcha.reset();
+            }
+          }
+        })
+        .withFailureHandler(function() {
+          button.disabled = false;
+          button.textContent = "إنشاء الحساب";
+          showMessage("حدث خطأ في الاتصال بالسيرفر. حاول مرة أخرى.", false);
+          if (typeof grecaptcha !== "undefined") {
+            grecaptcha.reset();
+          }
+        })
+        .registerAccount(payload);
+    });
+  </script>
+</body>
+</html>
