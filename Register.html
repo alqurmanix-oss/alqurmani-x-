@@ -1,349 +1,271 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101828">
-  <title>إنشاء حساب | AQX Auth</title>  <style>
-    * { box-sizing: border-box; }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل حساب جديد | AQX Auth</title>
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --border-color: #30363d;
+      --text-main: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent-color: #238636;
+      --accent-hover: #2ea043;
+      --error-color: #da3633;
+      --success-color: #238636;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
     body {
-      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
       padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #0b1020;
-      color: #f2f5ff;
-      font-family: Tahoma, Arial, sans-serif;
     }
 
-    .card {
+    .register-container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
       width: 100%;
       max-width: 420px;
-      padding: 28px 23px;
-      border: 1px solid #293751;
-      border-radius: 20px;
-      background: #111a2e;
-      box-shadow: 0 20px 60px #0004;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     }
 
-    .logo {
-      width: 65px;
-      height: 65px;
-      margin: 0 auto 15px;
-      display: grid;
-      place-items: center;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #6d7cff, #a05bff);
-      font-size: 23px;
-      font-weight: bold;
-    }
-
-    h1 {
-      margin: 0;
+    .brand-header {
       text-align: center;
-      font-size: 25px;
+      margin-bottom: 24px;
     }
 
-    .subtitle {
-      margin: 12px 0 26px;
-      text-align: center;
-      color: #aab6cc;
-      font-size: 13px;
-      line-height: 1.9;
-    }
-
-    .field { margin-bottom: 17px; }
-
-    label {
-      display: block;
+    .brand-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
       margin-bottom: 8px;
-      font-size: 13px;
-      font-weight: bold;
     }
 
-    input {
-      width: 100%;
-      min-height: 49px;
-      padding: 13px;
-      border: 1px solid #293751;
-      border-radius: 11px;
-      outline: none;
-      background: #0b1325;
-      color: #fff;
-      font-family: inherit;
+    .brand-header p {
       font-size: 14px;
+      color: var(--text-muted);
     }
 
-    input:focus {
-      border-color: #7d89ff;
-      box-shadow: 0 0 0 3px #6d7cff20;
+    .form-group {
+      margin-bottom: 20px;
     }
 
-    input::placeholder { color: #71809a; }
-
-    .password-note {
-      margin-top: 7px;
-      color: #aab6cc;
-      font-size: 11px;
-      line-height: 1.8;
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-main);
     }
 
-    button {
+    .form-control {
       width: 100%;
-      min-height: 49px;
-      margin-top: 5px;
-      border: 0;
-      border-radius: 11px;
-      background: #6d7cff;
-      color: white;
-      font-family: inherit;
+      padding: 12px 14px;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
       font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s ease;
     }
 
-    button:disabled {
-      opacity: .65;
-      cursor: wait;
+    .form-control:focus {
+      border-color: #58a6ff;
     }
 
-    #message {
-      display: none;
-      margin-bottom: 18px;
+    .submit-btn {
+      width: 100%;
       padding: 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      line-height: 1.9;
-      overflow-wrap: anywhere;
+      background-color: var(--accent-color);
+      border: none;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    #message.show { display: block; }
-
-    #message.error {
-      color: #ffaaaa;
-      background: #ff737315;
-      border: 1px solid #ff737355;
+    .submit-btn:hover {
+      background-color: var(--accent-hover);
     }
 
-    #message.success {
-      color: #8af0c9;
-      background: #36d39915;
-      border: 1px solid #36d39955;
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
-    .footer {
-      margin-top: 20px;
-      text-align: center;
-      color: #aab6cc;
-      font-size: 12px;
+    .alert {
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
     }
 
-    @media (max-width: 360px) {
-      .card { padding: 23px 16px; }
+    .alert-error {
+      background-color: rgba(218, 54, 51, 0.15);
+      border: 1px solid var(--error-color);
+      color: #f85149;
     }
-  </style></head><body>
-  <main class="card">
-    <div class="logo">AQX</div><h1>إنشاء حساب جديد</h1>
 
-<p class="subtitle">
-  أنشئ حسابك الموحد للوصول إلى خدمات AQX.
-  ستحتاج إلى تفعيل بريدك الإلكتروني.
-</p>
+    .alert-success {
+      background-color: rgba(35, 134, 54, 0.15);
+      border: 1px solid var(--success-color);
+      color: #3fb950;
+    }
 
-<div id="message" role="status" aria-live="polite"></div>
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #ffffff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 0.8s linear infinite;
+      display: none;
+      margin-left: 8px;
+    }
 
-<form id="registerForm">
-  <div class="field">
-    <label for="email">البريد الإلكتروني</label>
-    <input
-      id="email"
-      name="email"
-      type="email"
-      autocomplete="email"
-      maxlength="254"
-      dir="ltr"
-      placeholder="name@example.com"
-      required>
-  </div>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
 
-  <div class="field">
-    <label for="password">كلمة المرور</label>
-    <input
-      id="password"
-      name="password"
-      type="password"
-      autocomplete="new-password"
-      minlength="12"
-      maxlength="128"
-      placeholder="12 حرفًا على الأقل"
-      required>
-    <div class="password-note">
-      استخدم كلمة مرور قوية لا تقل عن 12 حرفًا.
+  <div class="register-container">
+    <div class="brand-header">
+      <h1>إنشاء حساب جديد</h1>
+      <p>منظومة AQX الأمنيّة المركزية</p>
     </div>
+
+    <div id="alertBox" class="alert"></div>
+
+    <form id="registerForm" onsubmit="handleRegistration(event)">
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني</label>
+        <input type="email" id="email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="password">كلمة السر</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+      </div>
+
+      <div class="form-group">
+        <label for="passwordConfirm">تأكيد كلمة السر</label>
+        <input type="password" id="passwordConfirm" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+      </div>
+
+      <button type="submit" id="submitBtn" class="submit-btn">
+        <span>تسجيل الحساب</span>
+        <div id="btnSpinner" class="spinner"></div>
+      </button>
+    </form>
   </div>
 
-  <div class="field">
-    <label for="confirmPassword">تأكيد كلمة المرور</label>
-    <input
-      id="confirmPassword"
-      name="confirmPassword"
-      type="password"
-      autocomplete="new-password"
-      minlength="12"
-      maxlength="128"
-      placeholder="أعد كتابة كلمة المرور"
-      required>
-  </div>
+  <script>
+    const ENGINE_URL = "https://script.google.com/macros/s/AKfycbxPylXz1VqE70rJr1y8qCl-7bPBxBVSjgCVeSV0yzcJP_NN99fVBOy7Hj0oXGGNsseQ/exec";
 
-  <button id="submitButton" type="submit">
-    إنشاء الحساب
-  </button>
-</form>
-
-<div class="footer">AQX Auth — الحساب الموحد</div>
-
-  </main>  <script>
-    'use strict';
-
-    const form = document.getElementById('registerForm');
-    const button = document.getElementById('submitButton');
-    const message = document.getElementById('message');
-
-    let submitting = false;
-
-    function showMessage(text, type) {
-      message.textContent = text;
-      message.className = 'show ' + type;
-    }
-
+    // الحصول على معرّف الجهاز (Device ID) أو توليده وحفظه في LocalStorage
     function getDeviceId() {
-      const key = 'aqx_auth_device_id_v1';
-
-      try {
-        let id = localStorage.getItem(key);
-
-        if (!id) {
-          id = crypto.randomUUID
-            ? crypto.randomUUID()
-            : 'aqx-' + Date.now().toString(36) +
-              '-' + Math.random().toString(36).slice(2) +
-              Math.random().toString(36).slice(2);
-
-          localStorage.setItem(key, id);
-        }
-
-        return id;
-      } catch (error) {
-        return 'aqx-' + Date.now().toString(36) +
-          '-' + Math.random().toString(36).slice(2) +
-          Math.random().toString(36).slice(2);
+      let deviceId = localStorage.getItem("aqx_device_id");
+      if (!deviceId) {
+        deviceId = "AQX-DEV-" + Math.random().toString(36).substring(2, 11) + "-" + Date.now();
+        localStorage.setItem("aqx_device_id", deviceId);
       }
+      return deviceId;
     }
 
-    function finishRequest() {
-      submitting = false;
-      button.disabled = false;
-      button.textContent = 'إنشاء الحساب';
+    function showAlert(message, type) {
+      const alertBox = document.getElementById("alertBox");
+      alertBox.textContent = message;
+      alertBox.className = "alert " + (type === "success" ? "alert-success" : "alert-error");
+      alertBox.style.display = "block";
     }
 
-    form.addEventListener('submit', function(event) {
+    function hideAlert() {
+      const alertBox = document.getElementById("alertBox");
+      alertBox.style.display = "none";
+    }
+
+    async function handleRegistration(event) {
       event.preventDefault();
+      hideAlert();
 
-      if (submitting) return;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const passwordConfirm = document.getElementById("passwordConfirm").value;
+      const submitBtn = document.getElementById("submitBtn");
+      const btnSpinner = document.getElementById("btnSpinner");
 
-      if (!form.reportValidity()) return;
-
-      const email = document.getElementById('email')
-        .value.trim().toLowerCase();
-
-      const password = document.getElementById('password').value;
-
-      const confirmPassword =
-        document.getElementById('confirmPassword').value;
-
-      if (password !== confirmPassword) {
-        showMessage('كلمتا المرور غير متطابقتين.', 'error');
+      // التحقق الأساسي في الواجهة
+      if (password !== passwordConfirm) {
+        showAlert("كلمة السر وتأكيد كلمة السر غير متطابقين.", "error");
         return;
       }
 
-      if (password.length < 12 || password.length > 128) {
-        showMessage(
-          'يجب أن تكون كلمة المرور بين 12 و128 حرفًا.',
-          'error'
-        );
+      if (password.length < 8) {
+        showAlert("كلمة السر يجب أن تكون 8 أحرف على الأقل.", "error");
         return;
       }
 
-      if (
-        typeof google === 'undefined' ||
-        !google.script ||
-        !google.script.run
-      ) {
-        showMessage(
-          'الواجهة ليست مفتوحة من محرك Google Apps Script. افتح رابط المحرك المنشور.',
-          'error'
-        );
-        return;
-      }
-
-      submitting = true;
-      button.disabled = true;
-      button.textContent = 'جارٍ إنشاء الحساب...';
-      message.className = '';
+      // تعطيل الزر وعرض حالة التحميل
+      submitBtn.disabled = true;
+      btnSpinner.style.display = "inline-block";
 
       const payload = {
         email: email,
         password: password,
-        deviceId: getDeviceId()
+        password_confirm: passwordConfirm,
+        device_id: getDeviceId()
       };
 
-      const timeoutId = setTimeout(function() {
-        if (submitting) {
-          finishRequest();
-          showMessage(
-            'استغرق الطلب وقتًا أطول من المتوقع. لا تحاول التسجيل مرارًا قبل التحقق مما إذا كان الحساب قد أُنشئ بالفعل.',
-            'error'
-          );
+      try {
+        const response = await fetch(ENGINE_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8" // لتفادي مشاكل CORS مع Google Apps Script
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showAlert(result.message || "تم إنشاء الحساب بنجاح!", "success");
+          document.getElementById("registerForm").reset();
+        } else {
+          showAlert(result.message || "حدث خطأ أثناء التسجيل.", "error");
         }
-      }, 45000);
 
-      google.script.run
-        .withSuccessHandler(function(result) {
-          clearTimeout(timeoutId);
-          finishRequest();
-
-          if (result && result.ok === true) {
-            showMessage(
-              result.message ||
-              'تم إنشاء الحساب. راجع بريدك الإلكتروني لتفعيل الحساب.',
-              'success'
-            );
-
-            form.reset();
-            return;
-          }
-
-          showMessage(
-            result && result.message
-              ? result.message
-              : 'لم يكتمل التسجيل. حاول مرة أخرى بعد التحقق من حالة الحساب.',
-            'error'
-          );
-        })
-        .withFailureHandler(function(error) {
-          clearTimeout(timeoutId);
-          finishRequest();
-
-          showMessage(
-            error && error.message
-              ? 'تعذر إكمال الطلب: ' + error.message
-              : 'حدث خطأ أثناء الاتصال بالمحرك.',
-            'error'
-          );
-        })
-        .registerAccount(payload);
-    });
-  </script></body>
+      } catch (error) {
+        showAlert("تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً.", "error");
+      } finally {
+        submitBtn.disabled = false;
+        btnSpinner.style.display = "none";
+      }
+    }
+  </script>
+</body>
 </html>
