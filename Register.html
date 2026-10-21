@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل حساب جديد | AQX Auth</title>
+  <title>إنشاء حساب جديد | AQX Auth</title>
   <style>
     :root {
       --bg-color: #0d1117;
@@ -185,9 +185,10 @@
   </div>
 
   <script>
-    const ENGINE_URL = "https://script.google.com/macros/s/AKfycbxPylXz1VqE70rJr1y8qCl-7bPBxBVSjgCVeSV0yzcJP_NN99fVBOy7Hj0oXGGNsseQ/exec";
+    // رابط المحرك الجديد الخاص بك
+    const ENGINE_URL = "https://script.google.com/macros/s/AKfycbyj5FEeuAl1ZL3fr7xkW6qh1-samB-DH9-koXPqlJ8qLxFxwJt2pPzrHiKK05-ZHpzq/exec";
 
-    // الحصول على معرّف الجهاز (Device ID) أو توليده وحفظه في LocalStorage
+    // الحصول على معرف فريد للجهاز أو توليده وحفظه في LocalStorage
     function getDeviceId() {
       let deviceId = localStorage.getItem("aqx_device_id");
       if (!deviceId) {
@@ -219,7 +220,6 @@
       const submitBtn = document.getElementById("submitBtn");
       const btnSpinner = document.getElementById("btnSpinner");
 
-      // التحقق الأساسي في الواجهة
       if (password !== passwordConfirm) {
         showAlert("كلمة السر وتأكيد كلمة السر غير متطابقين.", "error");
         return;
@@ -230,7 +230,6 @@
         return;
       }
 
-      // تعطيل الزر وعرض حالة التحميل
       submitBtn.disabled = true;
       btnSpinner.style.display = "inline-block";
 
@@ -245,7 +244,7 @@
         const response = await fetch(ENGINE_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "text/plain;charset=utf-8" // لتفادي مشاكل CORS مع Google Apps Script
+            "Content-Type": "text/plain;charset=utf-8"
           },
           body: JSON.stringify(payload)
         });
