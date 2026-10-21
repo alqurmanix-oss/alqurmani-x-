@@ -185,10 +185,9 @@
   </div>
 
   <script>
-    // رابط المحرك الجديد الذي أرسلته يا أبا عبد الله
+    // رابط المحرك المباشر الخاص بك
     const ENGINE_URL = "https://script.google.com/macros/s/AKfycbx0MTO76Yn9EzlXrXhlFG8m8ahUZf_RNjR9tM5C0oiFlh3ck2oKFmUDjqVTR3FhTPUf/exec";
 
-    // الحصول على معرف فريد وثابت للجهاز وتخزينه محلياً لفحص قاعدة الـ 5 حسابات
     function getDeviceId() {
       let deviceId = localStorage.getItem("aqx_device_id");
       if (!deviceId) {
