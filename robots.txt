@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /aqx-security-profile.html
-Disallow: /aqx-expel.html
-Sitemap: https://id.alqurmanix.com/sitemap.xml
