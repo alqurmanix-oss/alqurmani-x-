@@ -3,273 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إنشاء حساب جديد | AQX Auth Core</title>
+  <title>إنشاء حساب جديد | AQX Auth</title>
   <style>
-    :root {
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --border-color: #30363d;
-      --text-main: #c9d1d9;
-      --text-muted: #8b949e;
-      --accent-color: #238636;
-      --accent-hover: #2ea043;
-      --error-color: #da3633;
-      --success-color: #238636;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .register-container {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 32px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-    }
-
-    .brand-header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .brand-header h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
-
-    .brand-header p {
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text-main);
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 12px 14px;
-      background-color: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      color: var(--text-main);
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.2s ease;
-    }
-
-    .form-control:focus {
-      border-color: #58a6ff;
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 12px;
-      background-color: var(--accent-color);
-      border: none;
-      border-radius: 6px;
-      color: #ffffff;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .submit-btn:hover {
-      background-color: var(--accent-hover);
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .alert {
-      padding: 12px 14px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 20px;
-      display: none;
-    }
-
-    .alert-error {
-      background-color: rgba(218, 54, 51, 0.15);
-      border: 1px solid var(--error-color);
-      color: #f85149;
-    }
-
-    .alert-success {
-      background-color: rgba(35, 134, 54, 0.15);
-      border: 1px solid var(--success-color);
-      color: #3fb950;
-    }
-
-    .spinner {
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top: 3px solid #ffffff;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      animation: spin 0.8s linear infinite;
-      display: none;
-      margin-left: 8px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    body { background-color: #0d1117; color: #c9d1d9; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .card { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    h2 { text-align: center; color: #fff; margin-bottom: 20px; }
+    .group { margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; font-size: 14px; }
+    input { width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #238636; border: none; border-radius: 6px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #2ea043; }
+    .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; display: none; text-align: center; }
+    .error { background: rgba(218,54,51,0.2); border: 1px solid #da3633; color: #f85149; }
+    .success { background: rgba(35,134,54,0.2); border: 1px solid #238636; color: #3fb950; }
   </style>
 </head>
 <body>
 
-  <div class="register-container">
-    <div class="brand-header">
-      <h1>إنشاء حساب جديد</h1>
-      <p>منظومة AQX الأمنيّة المركزية</p>
-    </div>
+  <div class="card">
+    <h2>إنشاء حساب جديد</h2>
+    <div id="msgBox" class="msg"></div>
 
-    <div id="alertBox" class="alert"></div>
-
-    <form id="registerForm" onsubmit="handleRegistration(event)">
-      <div class="form-group">
-        <label for="email">البريد الإلكتروني</label>
-        <input type="email" id="email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+    <form id="regForm" action="https://script.google.com/macros/s/AKfycbwY1gTZS7rEvPfCCRvqD1E3pdOjB3hgCTDEx6eYMfyHkCzIqczfpaEunw2JBebVIE1WBw/exec" method="POST" onsubmit="return validateForm(event)">
+      <input type="hidden" name="device_id" id="deviceId">
+      
+      <div class="group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" name="email" id="email" required>
       </div>
 
-      <div class="form-group">
-        <label for="password">كلمة السر</label>
-        <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+      <div class="group">
+        <label>كلمة السر</label>
+        <input type="password" name="password" id="password" required>
       </div>
 
-      <div class="form-group">
-        <label for="passwordConfirm">تأكيد كلمة السر</label>
-        <input type="password" id="passwordConfirm" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+      <div class="group">
+        <label>تأكيد كلمة السر</label>
+        <input type="password" name="password_confirm" id="passwordConfirm" required>
       </div>
 
-      <button type="submit" id="submitBtn" class="submit-btn">
-        <span>تسجيل الحساب</span>
-        <div id="btnSpinner" class="spinner"></div>
-      </button>
+      <button type="submit" id="submitBtn">تسجيل الحساب</button>
     </form>
   </div>
 
   <script>
-    // ضع هنا رابط المحرك النشط الخاص بك على Google Apps Script
-    const ENGINE_URL = "https://script.google.com/macros/s/AKfycbx0MTO76Yn9EzlXrXhlFG8m8ahUZf_RNjR9tM5C0oiFlh3ck2oKFmUDjqVTR3FhTPUf/exec";
-
-    function getDeviceId() {
-      let deviceId = localStorage.getItem("aqx_device_id");
-      if (!deviceId) {
-        deviceId = "AQX-DEV-" + Math.random().toString(36).substring(2, 11) + "-" + Date.now();
-        localStorage.setItem("aqx_device_id", deviceId);
-      }
-      return deviceId;
+    let devId = localStorage.getItem("aqx_dev_id");
+    if (!devId) {
+      devId = "DEV-" + Math.random().toString(36).substring(2, 10) + "-" + Date.now();
+      localStorage.setItem("aqx_dev_id", devId);
     }
+    document.getElementById("deviceId").value = devId;
 
-    function showAlert(message, type) {
-      const alertBox = document.getElementById("alertBox");
-      alertBox.textContent = message;
-      alertBox.className = "alert " + (type === "success" ? "alert-success" : "alert-error");
-      alertBox.style.display = "block";
-    }
+    function validateForm(e) {
+      const p1 = document.getElementById("password").value;
+      const p2 = document.getElementById("passwordConfirm").value;
+      const msgBox = document.getElementById("msgBox");
 
-    function hideAlert() {
-      const alertBox = document.getElementById("alertBox");
-      alertBox.style.display = "none";
-    }
-
-    async function handleRegistration(event) {
-      event.preventDefault();
-      hideAlert();
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const passwordConfirm = document.getElementById("passwordConfirm").value;
-      const submitBtn = document.getElementById("submitBtn");
-      const btnSpinner = document.getElementById("btnSpinner");
-
-      if (password !== passwordConfirm) {
-        showAlert("كلمة السر وتأكيد كلمة السر غير متطابقين.", "error");
-        return;
+      if (p1 !== p2) {
+        e.preventDefault();
+        msgBox.textContent = "كلمة السر وتأكيد كلمة السر غير متطابقين.";
+        msgBox.className = "msg error";
+        msgBox.style.display = "block";
+        return false;
       }
 
-      if (password.length < 8) {
-        showAlert("كلمة السر يجب أن تكون 8 أحرف على الأقل.", "error");
-        return;
+      if (p1.length < 8) {
+        e.preventDefault();
+        msgBox.textContent = "كلمة السر يجب أن تكون 8 أحرف على الأقل.";
+        msgBox.className = "msg error";
+        msgBox.style.display = "block";
+        return false;
       }
 
-      submitBtn.disabled = true;
-      btnSpinner.style.display = "inline-block";
-
-      const payload = {
-        email: email,
-        password: password,
-        password_confirm: passwordConfirm,
-        device_id: getDeviceId()
-      };
-
-      try {
-        const response = await fetch(ENGINE_URL, {
-          method: "POST",
-          redirect: "follow",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const textResponse = await response.text();
-        let result;
-        try {
-          result = JSON.parse(textResponse);
-        } catch (e) {
-          throw new Error("استجابة غير صالحة من الخادم.");
-        }
-
-        if (result.success) {
-          showAlert(result.message || "تم إنشاء الحساب بنجاح!", "success");
-          document.getElementById("registerForm").reset();
-        } else {
-          showAlert(result.message || "حدث خطأ أثناء التسجيل.", "error");
-        }
-
-      } catch (error) {
-        showAlert("تعذر الاتصال بالخادم، تأكد من صحة الرابط وحالة النشر.", "error");
-      } finally {
-        submitBtn.disabled = false;
-        btnSpinner.style.display = "none";
-      }
+      document.getElementById("submitBtn").disabled = true;
+      document.getElementById("submitBtn").textContent = "جاري التسجيل...";
+      return true;
     }
   </script>
 </body>
