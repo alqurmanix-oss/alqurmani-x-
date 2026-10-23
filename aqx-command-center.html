@@ -1,517 +1,251 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="color-scheme" content="light">
-  <title>إنشاء حساب جديد — AQX</title>
-
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>إنشاء حساب جديد | AQX ID</title>
+  <meta name="description" content="أنشئ حساب AQX موحدًا للوصول إلى خدمات ومشاريع AQX.">
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: #111c30;
+      --border: #283750;
+      --text: #f4f7fb;
+      --muted: #9eacc2;
+      --accent: #68a5ff;
+      --danger: #ff8585;
+      --success: #72e0ad;
     }
-
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, Tahoma, sans-serif;
-      background: #f4f6f9;
-      color: #202938;
-      min-height: 100vh;
       margin: 0;
+      min-height: 100vh;
       padding: 24px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at top, #1b3154 0, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     }
-
-    .container {
-      background: #fff;
-      width: 100%;
-      max-width: 420px;
-      padding: 28px;
-      border: 1px solid #e6eaf0;
-      border-radius: 14px;
-      box-shadow: 0 8px 30px rgba(20, 35, 55, .08);
+    .container { width: 100%; max-width: 440px; }
+    .brand { text-align: center; margin-bottom: 24px; }
+    .logo {
+      width: 62px;
+      height: 62px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #6caaff, #5365df);
+      color: white;
+      font-size: 27px;
+      font-weight: 850;
+      letter-spacing: -2px;
     }
-
-    .brand {
-      text-align: center;
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #0866d8;
-      margin-bottom: 8px;
+    h1 { font-size: 27px; margin: 0 0 9px; }
+    .subtitle { color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .panel {
+      background: rgba(17, 28, 48, .96);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 25px 22px;
+      box-shadow: 0 24px 70px #0004;
     }
-
-    h1 {
-      font-size: 22px;
-      text-align: center;
-      margin: 0 0 10px;
-    }
-
-    .intro {
-      color: #687386;
-      text-align: center;
-      font-size: 14px;
-      line-height: 1.7;
-      margin: 0 0 24px;
-    }
-
-    .group {
-      margin-bottom: 17px;
-    }
-
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 7px;
-    }
-
+    .field { margin-bottom: 17px; }
+    label { display: block; margin-bottom: 8px; font-size: 14px; }
     input {
       display: block;
       width: 100%;
-      min-height: 46px;
-      padding: 11px 12px;
-      border: 1px solid #ccd4df;
-      border-radius: 8px;
-      background: #fff;
-      font-size: 15px;
-      color: #202938;
+      min-height: 48px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      background: #0b1425;
+      color: var(--text);
+      font: inherit;
       outline: none;
+      direction: ltr;
+      text-align: left;
     }
-
     input:focus {
-      border-color: #0866d8;
-      box-shadow: 0 0 0 3px rgba(8, 102, 216, .12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px #68a5ff20;
     }
-
-    .hint {
-      color: #687386;
-      font-size: 12px;
-      line-height: 1.7;
-      margin-top: 6px;
-    }
-
-    .turnstile {
-      margin: 18px 0;
-      min-height: 65px;
+    .hint { color: var(--muted); font-size: 12px; margin-top: 7px; }
+    .check {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 5px 0 18px;
     }
-
+    .check input {
+      width: 17px;
+      min-height: 17px;
+      margin-top: 4px;
+      flex: 0 0 auto;
+      accent-color: var(--accent);
+    }
+    .check a, .footer a { color: var(--accent); }
     button {
       width: 100%;
-      min-height: 48px;
+      min-height: 49px;
       border: 0;
-      border-radius: 8px;
-      background: #0866d8;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #081426;
+      font: inherit;
+      font-weight: 750;
       cursor: pointer;
-      transition: background .15s ease;
     }
-
-    button:hover:not(:disabled) {
-      background: #0755b4;
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: .65;
-    }
-
-    #msg {
+    button:disabled { opacity: .6; cursor: wait; }
+    #message {
       display: none;
-      margin-top: 17px;
       padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      line-height: 1.8;
+      border-radius: 10px;
+      margin: 0 0 16px;
+      font-size: 13px;
+      line-height: 1.7;
       overflow-wrap: anywhere;
     }
-
-    #msg.success {
-      display: block;
-      color: #17683a;
-      background: #eaf8ef;
-      border: 1px solid #bce7ca;
-    }
-
-    #msg.error {
-      display: block;
-      color: #a52230;
-      background: #fff0f1;
-      border: 1px solid #f2c4c8;
-    }
-
-    #msg.info {
-      display: block;
-      color: #174d8a;
-      background: #eef6ff;
-      border: 1px solid #c9e0ff;
-    }
-
+    #message.error { display: block; color: var(--danger); background: #ff858512; }
+    #message.success { display: block; color: var(--success); background: #72e0ad12; }
     .footer {
-      margin-top: 20px;
       text-align: center;
-      color: #7a8493;
-      font-size: 12px;
-      line-height: 1.7;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 20px;
+    }
+    .security {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 17px;
+      line-height: 1.8;
+    }
+    @media (max-width: 380px) {
+      .panel { padding: 21px 16px; }
+      h1 { font-size: 24px; }
     }
   </style>
 </head>
-
 <body>
   <main class="container">
-    <div class="brand">AQX</div>
-
-    <h1>إنشاء حساب جديد</h1>
-
-    <p class="intro">
-      أدخل بياناتك لإنشاء حسابك، ثم أكّد بريدك الإلكتروني لإكمال التسجيل.
-    </p>
-
-    <form id="regForm">
-      <div class="group">
-        <label for="email">البريد الإلكتروني</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autocomplete="email"
-          placeholder="name@example.com"
-          maxlength="254"
-          required
-        >
+    <header class="brand">
+      <div class="logo" aria-hidden="true">AQX</div>
+      <h1>إنشاء حساب جديد</h1>
+      <div class="subtitle">
+        أنشئ هويتك الموحدة للوصول إلى خدمات AQX.
       </div>
+    </header>
 
-      <div class="group">
-        <label for="password">كلمة المرور</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autocomplete="new-password"
-          placeholder="12 خانة على الأقل"
-          minlength="12"
-          maxlength="128"
-          required
-        >
-        <div class="hint">
-          يجب أن تحتوي على حرف إنجليزي كبير وحرف صغير ورقم واحد على الأقل.
+    <section class="panel">
+      <form id="registerForm">
+        <div id="message" role="status" aria-live="polite"></div>
+
+        <div class="field">
+          <label for="email">البريد الإلكتروني</label>
+          <input id="email" name="email" type="email"
+                 autocomplete="email" maxlength="254"
+                 placeholder="name@example.com" required>
         </div>
-      </div>
 
-      <div class="group">
-        <label for="confirmPassword">تأكيد كلمة المرور</label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          autocomplete="new-password"
-          placeholder="أعد كتابة كلمة المرور"
-          minlength="12"
-          maxlength="128"
-          required
-        >
-      </div>
+        <div class="field">
+          <label for="password">كلمة المرور</label>
+          <input id="password" name="password" type="password"
+                 autocomplete="new-password" minlength="8"
+                 maxlength="128" placeholder="8 أحرف على الأقل" required>
+          <div class="hint">استخدم كلمة مرور قوية لا تستخدمها في مواقع أخرى.</div>
+        </div>
 
-      <div class="turnstile">
-        <div
-          id="turnstileWidget"
-          class="cf-turnstile"
-          data-sitekey="0x4AAAAAAFh8zv9K_UZuq3Fm"
-          data-theme="light"
-          data-callback="onTurnstileSuccess"
-          data-expired-callback="onTurnstileExpired"
-          data-error-callback="onTurnstileError"
-        ></div>
-      </div>
+        <div class="field">
+          <label for="confirmPassword">تأكيد كلمة المرور</label>
+          <input id="confirmPassword" name="confirmPassword"
+                 type="password" autocomplete="new-password"
+                 minlength="8" maxlength="128"
+                 placeholder="أعد كتابة كلمة المرور" required>
+        </div>
 
-      <button type="submit" id="btn">إنشاء الحساب</button>
+        <label class="check">
+          <input id="terms" type="checkbox" required>
+          <span>أوافق على شروط الاستخدام وسياسة الخصوصية.</span>
+        </label>
 
-      <div id="msg" role="status" aria-live="polite"></div>
-    </form>
+        <button id="submitButton" type="submit">إنشاء الحساب</button>
+      </form>
+    </section>
 
     <div class="footer">
-      بعد التسجيل، افحص بريدك الإلكتروني للحصول على رابط التفعيل.
+      لديك حساب بالفعل؟ <a href="https://id.alqurmanix.com">تسجيل الدخول</a>
+    </div>
+
+    <div class="security">
+      حماية الحساب والتحقق من التسجيل عبر أنظمة AQX.
+      <br>لن يُطلب منك تحديد موقعك الجغرافي.
     </div>
   </main>
 
   <script>
     "use strict";
 
-    // استبدل هذا الرابط برابط HTTP Trigger الفعلي لمحرك AQX.
-    const PIPEDREAM_URL =
+    const REGISTER_ENDPOINT =
       "https://eopyvduj2s3rcj0.m.pipedream.net";
 
-    const form = document.getElementById("regForm");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const confirmInput = document.getElementById("confirmPassword");
-    const btn = document.getElementById("btn");
-    const msg = document.getElementById("msg");
+    const form = document.getElementById("registerForm");
+    const button = document.getElementById("submitButton");
+    const message = document.getElementById("message");
 
-    let turnstileToken = "";
-    let submitting = false;
-
-    window.onTurnstileSuccess = function (token) {
-      turnstileToken = token || "";
-    };
-
-    window.onTurnstileExpired = function () {
-      turnstileToken = "";
-      showMessage("انتهت صلاحية التحقق الأمني. أعد التحقق ثم حاول مجددًا.", "error");
-    };
-
-    window.onTurnstileError = function () {
-      turnstileToken = "";
-      showMessage("تعذر تحميل التحقق الأمني. تحقق من اتصالك بالإنترنت ثم أعد المحاولة.", "error");
-    };
-
-    function showMessage(text, type) {
-      msg.className = type;
-      msg.textContent = text;
-    }
-
-    function clearMessage() {
-      msg.className = "";
-      msg.textContent = "";
-    }
-
-    function setBusy(busy) {
-      submitting = busy;
-      btn.disabled = busy;
-      btn.textContent = busy ? "جارٍ إنشاء الحساب..." : "إنشاء الحساب";
-    }
-
+    // معرف عشوائي محلي للجهاز، وليس بصمة مادية موثوقة.
     function getDeviceId() {
-      const key = "aqx_registration_device_id_v1";
-
+      const key = "aqx_registration_device_id";
       try {
         let id = localStorage.getItem(key);
-
         if (!id) {
-          if (window.crypto && typeof crypto.randomUUID === "function") {
-            id = crypto.randomUUID();
-          } else {
-            const bytes = new Uint8Array(24);
-            crypto.getRandomValues(bytes);
-            id = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
-          }
-
+          id = crypto.randomUUID();
           localStorage.setItem(key, id);
         }
-
         return id;
       } catch {
-        throw new Error("تعذر إنشاء معرّف المتصفح. فعّل التخزين المحلي ثم حاول مجددًا.");
+        return crypto.randomUUID();
       }
     }
 
-    function getLocation() {
-      return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject(new Error("المتصفح لا يدعم تحديد الموقع."));
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            resolve({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            });
-          },
-          error => {
-            let message = "تعذر تحديد الموقع.";
-
-            if (error.code === 1) {
-              message = "يلزم السماح بإذن الموقع لإكمال التسجيل.";
-            } else if (error.code === 2) {
-              message = "الموقع غير متاح حاليًا. تحقق من إعدادات الموقع وحاول مجددًا.";
-            } else if (error.code === 3) {
-              message = "انتهت مهلة تحديد الموقع. حاول مرة أخرى.";
-            }
-
-            reject(new Error(message));
-          },
-          {
-            enableHighAccuracy: false,
-            timeout: 15000,
-            maximumAge: 60000
-          }
-        );
-      });
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = type;
     }
 
-    function explainServerError(code) {
-      const messages = {
-        INVALID_EMAIL: "البريد الإلكتروني غير صالح.",
-        PASSWORD_POLICY_FAILED: "كلمة المرور لا تحقق الشروط المطلوبة.",
-        PASSWORD_MISMATCH: "كلمتا المرور غير متطابقتين.",
-        INVALID_DEVICE_ID: "تعذر التحقق من معرّف المتصفح. أعد تحميل الصفحة.",
-        BOT_CHECK_REQUIRED: "أكمل التحقق الأمني أولًا.",
-        BOT_CHECK_FAILED: "فشل التحقق الأمني. أعد المحاولة.",
-        EMAIL_ALREADY_REGISTERED: "هذا البريد مسجل أو محجوز بالفعل.",
-        EMAIL_BLOCKED: "لا يمكن استخدام هذا البريد للتسجيل.",
-        EMAIL_DOMAIN_BLOCKED: "نطاق البريد غير مسموح به.",
-        EMAIL_COOLDOWN_ACTIVE: "لا يمكن إعادة استخدام هذا البريد في الوقت الحالي.",
-        DEVICE_BLOCKED: "التسجيل من هذا المتصفح غير مسموح حاليًا.",
-        DEVICE_ACCOUNT_LIMIT_REACHED: "تم بلوغ الحد المسموح به للحسابات من هذا المتصفح.",
-        DAILY_REGISTRATION_LIMIT_REACHED: "تم بلوغ الحد اليومي للتسجيل. حاول لاحقًا.",
-        RATE_LIMITED: "محاولات التسجيل كثيرة. انتظر قليلًا ثم حاول مجددًا.",
-        COUNTRY_REQUIRED: "تعذر تحديد الدولة المطلوبة.",
-        REGION_REQUIRED: "تعذر تحديد المحافظة أو المنطقة.",
-        LOCATION_LOOKUP_FAILED: "تعذر التحقق من الموقع حاليًا. حاول لاحقًا.",
-        REGISTRATION_UNAVAILABLE: "التسجيل متوقف مؤقتًا. حاول لاحقًا.",
-        REGISTRATION_SERVICE_UNAVAILABLE: "خدمة التسجيل غير جاهزة حاليًا. حاول لاحقًا.",
-        REGISTRATION_FAILED: "لم يكتمل التسجيل. إذا تكرر الخطأ، تواصل مع الدعم.",
-        METHOD_NOT_ALLOWED: "طريقة الطلب غير مدعومة.",
-        ORIGIN_NOT_ALLOWED: "مصدر الطلب غير مسموح به.",
-        INVALID_JSON: "تعذر قراءة الطلب المرسل.",
-        REQUEST_TOO_LARGE: "حجم الطلب أكبر من المسموح."
-      };
-
-      return messages[code] || "تعذر إكمال التسجيل. رمز الخطأ: " + String(code || "UNKNOWN_ERROR");
-    }
-
-    form.addEventListener("submit", async function (event) {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      message.className = "";
+      message.textContent = "";
 
-      if (submitting) return;
-
-      clearMessage();
-
-      const email = emailInput.value.trim().normalize("NFKC").toLowerCase();
-      const password = passwordInput.value;
-      const confirmPassword = confirmInput.value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword =
+        document.getElementById("confirmPassword").value;
 
       if (password !== confirmPassword) {
         showMessage("كلمتا المرور غير متطابقتين.", "error");
-        confirmInput.focus();
         return;
       }
 
-      if (
-        password.length < 12 ||
-        password.length > 128 ||
-        !/[a-z]/.test(password) ||
-        !/[A-Z]/.test(password) ||
-        !/[0-9]/.test(password)
-      ) {
-        showMessage(
-          "كلمة المرور يجب أن تكون بين 12 و128 خانة وتحتوي على حرف كبير وصغير ورقم.",
-          "error"
-        );
-        passwordInput.focus();
-        return;
-      }
-
-      if (!turnstileToken) {
-        showMessage("أكمل التحقق الأمني قبل التسجيل.", "error");
-        return;
-      }
-
-      if (!window.isSecureContext) {
-        showMessage(
-          "يلزم فتح صفحة التسجيل عبر HTTPS حتى يعمل تحديد الموقع.",
-          "error"
-        );
-        return;
-      }
-
-      setBusy(true);
-
-      try {
-        showMessage("جارٍ التحقق من الموقع وتجهيز طلب التسجيل...", "info");
-
-        const deviceId = getDeviceId();
-        const location = await getLocation();
-
-        // قد تنتهي صلاحية الرمز أثناء انتظار إذن الموقع.
-        if (!turnstileToken) {
-          throw new Error("انتهت صلاحية التحقق الأمني. أعد التحقق ثم حاول مجددًا.");
-        }
-
-        const payload = {
-          email,
-          password,
-          confirmPassword,
-          deviceId,
-          turnstileToken,
-          latitude: location.latitude,
-          longitude: location.longitude
-        };
-
-        const response = await fetch(PIPEDREAM_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify(payload),
-          cache: "no-store",
-          credentials: "omit"
-        });
-
-        const raw = await response.text();
-        let data;
-
-        try {
-          data = JSON.parse(raw);
-        } catch {
-          throw new Error(
-            "الخادم لم يُرجع استجابة JSON صالحة. تحقق من رابط Pipedream وإعداد الاستجابة."
-          );
-        }
-
-        // لا تعتبر HTTP 200 نجاحًا إذا لم يؤكد المحرك نجاح العملية.
-        if (!response.ok || data.ok !== true) {
-          const error = new Error(
-            explainServerError(data.code || ("HTTP_" + response.status))
-          );
-          error.serverResponse = true;
-          throw error;
-        }
-
-        showMessage(
-          data.message ||
-          "تم إنشاء الحساب. افحص بريدك الإلكتروني لتأكيده.",
-          "success"
-        );
-
-        form.reset();
-        turnstileToken = "";
-
-        if (window.turnstile) {
-          window.turnstile.reset();
-        }
-
-      } catch (error) {
-        showMessage(
-          error.serverResponse
-            ? error.message
-            : error.message && !error.name.includes("TypeError")
-              ? error.message
-              : "تعذر الاتصال بالخادم. تحقق من رابط Pipedream وإعدادات CORS ثم حاول مجددًا.",
-          "error"
-        );
-
-        turnstileToken = "";
-
-        if (window.turnstile) {
-          window.turnstile.reset();
-        }
-
-      } finally {
-        setBusy(false);
-      }
+      /*
+       * المحرك الحالي يشترط turnstileToken عند تفعيل الحماية.
+       * لا يمكن إنشاء هذا الرمز من الواجهة دون إعداد Turnstile
+       * بمفتاح الموقع الصحيح.
+       */
+      showMessage(
+        "تعذر بدء التسجيل: يجب إعداد Cloudflare Turnstile وربطه بالواجهة أولًا.",
+        "error"
+      );
     });
   </script>
 </body>
