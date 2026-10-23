@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل حساب جديد — AQX</title>
+    <!-- استدعاء مكتبة Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,6 +46,11 @@
             box-sizing: border-box;
             font-size: 14px;
         }
+        .turnstile-box {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
         button {
             width: 100%;
             padding: 12px;
@@ -78,20 +85,26 @@
             <input type="email" id="email" required placeholder="name@example.com">
         </div>
         <div class="form-group">
-            <label for="password">كلمة السر</label>
+            <label for="password">كلمة السر (12 خانة على الأقل، حروف وأرقام)</label>
             <input type="password" id="password" required placeholder="••••••••••••">
         </div>
         <div class="form-group">
             <label for="confirmPassword">تأكيد كلمة السر</label>
             <input type="password" id="confirmPassword" required placeholder="••••••••••••">
         </div>
+
+        <!-- عنصر Cloudflare Turnstile مع مفتاح الموقع الخاص بك -->
+        <div class="turnstile-box">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAFh8zv9K_UZuq3Fm"></div>
+        </div>
+
         <button type="submit" id="submitBtn">تسجيل الحساب</button>
     </form>
     <div id="message"></div>
 </div>
 
 <script>
-    // ضع هنا رابط الـ Webhook الخاص بك في Pipedream
+    // رابط الـ Webhook الخاص بك في Pipedream
     const PIPEDREAM_URL = "https://eopyvduj2s3rcj0.m.pipedream.net";
 
     document.getElementById("registerForm").addEventListener("submit", async function (e) {
@@ -100,6 +113,11 @@
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
+        
+        // جلب رمز الـ Turnstile الذي حلّه المستخدم
+        const turnstileInput = document.querySelector('[name="cf-turnstile-response"]');
+        const turnstileToken = turnstileInput ? turnstileInput.value : "";
+
         const messageDiv = document.getElementById("message");
         const submitBtn = document.getElementById("submitBtn");
 
@@ -111,11 +129,16 @@
             return;
         }
 
+        if (!turnstileToken) {
+            messageDiv.className = "error";
+            messageDiv.textContent = "يرجى إكمال التحقق الأمني (Turnstile).";
+            return;
+        }
+
         submitBtn.disabled = true;
-        submitBtn.textContent = "جاري إنشاء الحساب...";
+        submitBtn.textContent = "جاري إنشاء الحساب وإرسال التفعيل...";
 
         try {
-            // بيانات تجريبية متوافقة مع شروط الكود (deviceId و coordinates وهمية للاختبار)
             const response = await fetch(PIPEDREAM_URL, {
                 method: "POST",
                 headers: {
@@ -125,9 +148,9 @@
                     email: email,
                     password: password,
                     confirmPassword: confirmPassword,
-                    deviceId: "device_test_123456789",
-                    turnstileToken: "test_token_bypass",
-                    latitude: 30.0444,
+                    deviceId: "device_browser_" + Math.random().toString(36).substring(2),
+                    turnstileToken: turnstileToken,
+                    latitude: 30.0444, // إحداثيات افتراضية أو يمكن جلبها عبر الموقع الجغرافي
                     longitude: 31.2357
                 })
             });
@@ -136,7 +159,7 @@
 
             if (response.ok || data.ok) {
                 messageDiv.className = "success";
-                messageDiv.textContent = data.message || "تم إنشاء الحساب بنجاح! تحقق من بريدك.";
+                messageDiv.textContent = data.message || "تم إنشاء الحساب بنجاح! افحص بريدك الإلكتروني للتفعيل.";
             } else {
                 messageDiv.className = "error";
                 messageDiv.textContent = "خطأ: " + (data.code || "فشل التسجيل");
