@@ -1,84 +1,155 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إنشاء حساب جديد | AQX Auth</title>
-  <style>
-    body { background-color: #0d1117; color: #c9d1d9; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-    .card { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-    h2 { text-align: center; color: #fff; margin-bottom: 20px; }
-    .group { margin-bottom: 16px; }
-    label { display: block; margin-bottom: 6px; font-size: 14px; }
-    input { width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #238636; border: none; border-radius: 6px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    button:hover { background: #2ea043; }
-    .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; display: none; text-align: center; }
-    .error { background: rgba(218,54,51,0.2); border: 1px solid #da3633; color: #f85149; }
-    .success { background: rgba(35,134,54,0.2); border: 1px solid #238636; color: #3fb950; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل حساب جديد — AQX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+    </style>
 </head>
 <body>
 
-  <div class="card">
+<div class="register-container">
     <h2>إنشاء حساب جديد</h2>
-    <div id="msgBox" class="msg"></div>
-
-    <form id="regForm" action="https://script.google.com/macros/s/AKfycbwY1gTZS7rEvPfCCRvqD1E3pdOjB3hgCTDEx6eYMfyHkCzIqczfpaEunw2JBebVIE1WBw/exec" method="POST" onsubmit="return validateForm(event)">
-      <input type="hidden" name="device_id" id="deviceId">
-      
-      <div class="group">
-        <label>البريد الإلكتروني</label>
-        <input type="email" name="email" id="email" required>
-      </div>
-
-      <div class="group">
-        <label>كلمة السر</label>
-        <input type="password" name="password" id="password" required>
-      </div>
-
-      <div class="group">
-        <label>تأكيد كلمة السر</label>
-        <input type="password" name="password_confirm" id="passwordConfirm" required>
-      </div>
-
-      <button type="submit" id="submitBtn">تسجيل الحساب</button>
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="email">البريد الإلكتروني</label>
+            <input type="email" id="email" required placeholder="name@example.com">
+        </div>
+        <div class="form-group">
+            <label for="password">كلمة السر</label>
+            <input type="password" id="password" required placeholder="••••••••••••">
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">تأكيد كلمة السر</label>
+            <input type="password" id="confirmPassword" required placeholder="••••••••••••">
+        </div>
+        <button type="submit" id="submitBtn">تسجيل الحساب</button>
     </form>
-  </div>
+    <div id="message"></div>
+</div>
 
-  <script>
-    let devId = localStorage.getItem("aqx_dev_id");
-    if (!devId) {
-      devId = "DEV-" + Math.random().toString(36).substring(2, 10) + "-" + Date.now();
-      localStorage.setItem("aqx_dev_id", devId);
-    }
-    document.getElementById("deviceId").value = devId;
+<script>
+    // ضع هنا رابط الـ Webhook الخاص بك في Pipedream
+    const PIPEDREAM_URL = "https://eopyvduj2s3rcj0.m.pipedream.net";
 
-    function validateForm(e) {
-      const p1 = document.getElementById("password").value;
-      const p2 = document.getElementById("passwordConfirm").value;
-      const msgBox = document.getElementById("msgBox");
-
-      if (p1 !== p2) {
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
         e.preventDefault();
-        msgBox.textContent = "كلمة السر وتأكيد كلمة السر غير متطابقين.";
-        msgBox.className = "msg error";
-        msgBox.style.display = "block";
-        return false;
-      }
 
-      if (p1.length < 8) {
-        e.preventDefault();
-        msgBox.textContent = "كلمة السر يجب أن تكون 8 أحرف على الأقل.";
-        msgBox.className = "msg error";
-        msgBox.style.display = "block";
-        return false;
-      }
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const messageDiv = document.getElementById("message");
+        const submitBtn = document.getElementById("submitBtn");
 
-      document.getElementById("submitBtn").disabled = true;
-      document.getElementById("submitBtn").textContent = "جاري التسجيل...";
-      return true;
-    }
-  </script>
+        messageDiv.textContent = "";
+
+        if (password !== confirmPassword) {
+            messageDiv.className = "error";
+            messageDiv.textContent = "كلمتا السر غير متطابقتين!";
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "جاري إنشاء الحساب...";
+
+        try {
+            // بيانات تجريبية متوافقة مع شروط الكود (deviceId و coordinates وهمية للاختبار)
+            const response = await fetch(PIPEDREAM_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    confirmPassword: confirmPassword,
+                    deviceId: "device_test_123456789",
+                    turnstileToken: "test_token_bypass",
+                    latitude: 30.0444,
+                    longitude: 31.2357
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok || data.ok) {
+                messageDiv.className = "success";
+                messageDiv.textContent = data.message || "تم إنشاء الحساب بنجاح! تحقق من بريدك.";
+            } else {
+                messageDiv.className = "error";
+                messageDiv.textContent = "خطأ: " + (data.code || "فشل التسجيل");
+            }
+        } catch (err) {
+            messageDiv.className = "error";
+            messageDiv.textContent = "حدث خطأ في الاتصال بالخادم.";
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "تسجيل الحساب";
+        }
+    });
+</script>
+
 </body>
 </html>
