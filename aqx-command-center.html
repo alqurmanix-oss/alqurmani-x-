@@ -1,183 +1,110 @@
-import { randomUUID } from "node:crypto";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل حساب جديد — AQX</title>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+        .turnstile { margin: 15px 0; display: flex; justify-content: center; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        #msg { margin-top: 15px; text-align: center; font-size: 14px; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
 
-const CONFIG = {
-  VERIFIED_URL: "https://id.alqurmanix.com/verified",
-  PASSWORD_MIN: 12,
-  PASSWORD_MAX: 128,
-};
-
-function requiredEnv(name) {
-  const value = process.env[name];
-  if (!value || !String(value).trim()) {
-    throw new Error(`MISSING_CONFIG_${name}`);
-  }
-  return String(value).trim();
-}
-
-function normalizeEmail(value) {
-  return typeof value === "string" ? value.trim().normalize("NFKC").toLowerCase() : "";
-}
-
-function validEmail(email) {
-  return email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function validPassword(password) {
-  return typeof password === "string" &&
-    password.length >= CONFIG.PASSWORD_MIN &&
-    password.length <= CONFIG.PASSWORD_MAX &&
-    /[a-z]/.test(password) &&
-    /[A-Z]/.test(password) &&
-    /\d/.test(password);
-}
-
-async function fetchJson(url, options = {}, timeoutMs = 8000) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { ...options, signal: controller.signal });
-    const raw = await response.text();
-    let data = {};
-    try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
-    return { response, data };
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-async function respond($, status, body, origin = "") {
-  await $.respond({
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-      "Access-Control-Allow-Origin": origin || "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-    body: status === 204 ? "" : body,
-  });
-}
-
-async function verifyTurnstile(token, secret, ip) {
-  const form = new URLSearchParams({ secret, response: token });
-  if (ip) form.set("remoteip", ip);
-  const result = await fetchJson("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form.toString(),
-  });
-  return result.response.ok && result.data.success === true;
-}
-
-async function sendVerificationEmail(email, link) {
-  const apiKey = requiredEnv("RESEND_API_KEY");
-  const from = requiredEnv("RESEND_FROM");
-  const escapedLink = link.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
-
-  const result = await fetchJson("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [email],
-      subject: "تأكيد بريدك الإلكتروني — AQX",
-      html: `
-        <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.8">
-          <h2>تأكيد البريد الإلكتروني</h2>
-          <p>لإكمال إنشاء حسابك في AQX، اضغط على الرابط التالي:</p>
-          <p><a href="${escapedLink}">تأكيد البريد الإلكتروني</a></p>
-          <p>إذا لم تطلب إنشاء الحساب، يمكنك تجاهل هذه الرسالة.</p>
+<div class="container">
+    <h2>إنشاء حساب جديد</h2>
+    <form id="regForm">
+        <div class="group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="email" required placeholder="name@example.com">
         </div>
-      `,
-    }),
-  });
-  return result.response.ok && Boolean(result.data.id);
-}
+        <div class="group">
+            <label>كلمة السر (12 خانة، حروف وأرقام)</label>
+            <input type="password" id="password" required placeholder="••••••••••••">
+        </div>
+        <div class="group">
+            <label>تأكيد كلمة السر</label>
+            <input type="password" id="confirmPassword" required placeholder="••••••••••••">
+        </div>
 
-export default defineComponent({
-  async run({ steps, $ }) {
-    const event = steps?.trigger?.event || {};
-    const headers = event.headers || {};
-    const origin = headers.origin || headers.Origin || "";
-    const method = String(event.method || event.httpMethod || "POST").toUpperCase();
+        <div class="turnstile">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAFh8zv9K_UZuq3Fm"></div>
+        </div>
 
-    if (method === "OPTIONS") {
-      await respond($, 204, "", origin);
-      return;
-    }
+        <button type="submit" id="btn">تسجيل الحساب</button>
+    </form>
+    <div id="msg"></div>
+</div>
 
-    if (method !== "POST") {
-      await respond($, 405, { ok: false, code: "METHOD_NOT_ALLOWED" }, origin);
-      return;
-    }
+<script>
+    const PIPEDREAM_URL = "https://eopyvduj2s3rcj0.m.pipedream.net";
 
-    let body = event.body;
-    if (typeof body === "string") {
-      try { body = JSON.parse(body); } catch {
-        await respond($, 400, { ok: false, code: "INVALID_JSON" }, origin);
-        return;
-      }
-    }
+    document.getElementById("regForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-    if (!body || typeof body !== "object") {
-      await respond($, 400, { ok: false, code: "INVALID_BODY" }, origin);
-      return;
-    }
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        
+        const tokenInput = document.querySelector('[name="cf-turnstile-response"]');
+        const turnstileToken = tokenInput ? tokenInput.value : "";
 
-    const email = normalizeEmail(body.email);
-    const password = body.password;
-    const confirmPassword = body.confirmPassword ?? body.confirm_password;
-    const turnstileToken = body.turnstileToken;
+        const msg = document.getElementById("msg");
+        const btn = document.getElementById("btn");
 
-    if (!validEmail(email)) {
-      await respond($, 400, { ok: false, code: "INVALID_EMAIL" }, origin);
-      return;
-    }
+        msg.textContent = "";
 
-    if (!validPassword(password)) {
-      await respond($, 400, { ok: false, code: "PASSWORD_POLICY_FAILED" }, origin);
-      return;
-    }
+        if (password !== confirmPassword) {
+            msg.className = "error";
+            msg.textContent = "كلمتا السر غير متطابقتين!";
+            return;
+        }
 
-    if (password !== confirmPassword) {
-      await respond($, 400, { ok: false, code: "PASSWORD_MISMATCH" }, origin);
-      return;
-    }
+        if (!turnstileToken) {
+            msg.className = "error";
+            msg.textContent = "يرجى إكمال التحقق الأمني.";
+            return;
+        }
 
-    if (!turnstileToken) {
-      await respond($, 400, { ok: false, code: "BOT_CHECK_REQUIRED" }, origin);
-      return;
-    }
+        btn.disabled = true;
+        btn.textContent = "جاري التسجيل...";
 
-    try {
-      const rawIp = String(headers["x-forwarded-for"] || "").split(",")[0].trim();
-      const turnstilePassed = await verifyTurnstile(
-        turnstileToken,
-        requiredEnv("TURNSTILE_SECRET_KEY"),
-        rawIp
-      );
+        try {
+            const res = await fetch(PIPEDREAM_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password, confirmPassword, turnstileToken })
+            });
 
-      if (!turnstilePassed) {
-        await respond($, 403, { ok: false, code: "BOT_CHECK_FAILED" }, origin);
-        return;
-      }
+            const data = await res.json();
 
-      const requestId = randomUUID();
-      const verificationLink = `${CONFIG.VERIFIED_URL}?token=${requestId}`;
-      const emailSent = await sendVerificationEmail(email, verificationLink);
+            if (res.ok || data.ok) {
+                msg.className = "success";
+                msg.textContent = data.message || "تم إنشاء الحساب وإرسال بريد التفعيل بنجاح!";
+            } else {
+                msg.className = "error";
+                msg.textContent = "خطأ: " + (data.code || "فشل التسجيل");
+            }
+        } catch (err) {
+            msg.className = "error";
+            msg.textContent = "خطأ في الاتصال بالخادم.";
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "تسجيل الحساب";
+        }
+    });
+</script>
 
-      await respond($, 201, {
-        ok: true,
-        code: emailSent ? "ACCOUNT_CREATED_VERIFICATION_SENT" : "ACCOUNT_CREATED_EMAIL_PENDING",
-        message: emailSent ? "تم إنشاء الحساب وإرسال بريد التفعيل بنجاح!" : "تم إنشاء الحساب ولكن تعذر إرسال البريد.",
-        requestId,
-      }, origin);
-    } catch (error) {
-      await respond($, 500, { ok: false, code: "REGISTRATION_FAILED" }, origin);
-    }
-  },
-});
+</body>
+</html>
