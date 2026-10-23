@@ -4,85 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إنشاء حساب جديد — AQX</title>
-    <!-- استدعاء مكتبة Cloudflare Turnstile -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 420px;
-            box-sizing: border-box;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        input {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        input:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-        .turnstile-box {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        #message {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 14px;
-            padding: 10px;
-            border-radius: 6px;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f6f8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 420px; box-sizing: border-box; }
+        h2 { text-align: center; color: #333; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .turnstile-box { margin: 20px 0; display: flex; justify-content: center; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        #message { margin-top: 15px; text-align: center; font-size: 14px; padding: 10px; border-radius: 6px; word-break: break-word; }
         .success { background-color: #d4edda; color: #155724; }
         .error { background-color: #f8d7da; color: #721c24; }
     </style>
@@ -105,7 +38,6 @@
             <input type="password" id="confirmPassword" required placeholder="••••••••••••">
         </div>
 
-        <!-- عنصر Cloudflare Turnstile مع مفتاح الموقع الخاص بك -->
         <div class="turnstile-box">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAAFh8zv9K_UZuq3Fm" data-action="aqx_register"></div>
         </div>
@@ -116,15 +48,12 @@
 </div>
 
 <script>
-    // ضع هنا رابط الـ Webhook الخاص بك في Pipedream
     const PIPEDREAM_URL = "https://eopyvduj2s3rcj0.m.pipedream.net";
 
-    // دالة لتوليد أو استرجاع Device ID فريد وثابت للمتصفح (يتوافق مع شرط طول المحرك بين 8 و 512 حرفاً)
     function getOrCreateDeviceId() {
         let deviceId = localStorage.getItem("aqx_device_id");
         if (!deviceId || deviceId.length < 16) {
-            // توليد بصمة عشوائية طويلة وآمنة
-            deviceId = "dev_web_" + Math.random().toString(36).substring(2) + Date.now().toString(36) + Math.random().toString(36).substring(2);
+            deviceId = "dev_web_" + Math.random().toString(36).substring(2) + Date.now().toString(36);
             localStorage.setItem("aqx_device_id", deviceId);
         }
         return deviceId;
@@ -137,7 +66,6 @@
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
         
-        // جلب رمز التحقق الأمني Turnstile
         const turnstileInput = document.querySelector('[name="cf-turnstile-response"]');
         const turnstileToken = turnstileInput ? turnstileInput.value : "";
 
@@ -147,16 +75,9 @@
         messageDiv.textContent = "";
         messageDiv.className = "";
 
-        // التحقق المحلي السريع
         if (password !== confirmPassword) {
             messageDiv.className = "error";
             messageDiv.textContent = "خطأ: كلمة السر وتأكيدها غير متطابقتين.";
-            return;
-        }
-
-        if (password.length < 8) {
-            messageDiv.className = "error";
-            messageDiv.textContent = "خطأ: كلمة السر يجب ألا تقل عن 8 أحرف.";
             return;
         }
 
@@ -184,23 +105,29 @@
                 })
             });
 
-            const data = await response.json();
+            // قراءة الرد كـ Text أولاً لتجنب انهيار الـ JSON لو الخادم أرجع خطأ نصي
+            const rawText = await response.text();
+            let data = {};
+            try {
+                data = JSON.parse(rawText);
+            } catch {
+                data = { code: rawText || "SERVER_INVALID_RESPONSE" };
+            }
 
-            if (response.ok && data.success) {
+            if (response.ok && (data.success || data.ok)) {
                 messageDiv.className = "success";
-                messageDiv.textContent = "تم إنشاء الحساب بنجاح! تم إرسال بريد التفعيل إلى بريدك الإلكتروني.";
+                messageDiv.textContent = "تم إنشاء الحساب بنجاح! تم إرسال بريد التفعيل.";
                 document.getElementById("registerForm").reset();
             } else {
                 messageDiv.className = "error";
-                messageDiv.textContent = "فشل التسجيل: " + (data.code || "حدث خطأ غير معروف");
+                messageDiv.textContent = "خطأ من الخادم: " + (data.code || data.message || response.statusText);
             }
         } catch (err) {
             messageDiv.className = "error";
-            messageDiv.textContent = "حدث خطأ في الاتصال بالخادم. يجدر المحاولة لاحقاً.";
+            messageDiv.textContent = "خطأ في الشبكة أو الاتصال: " + err.message;
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = "تسجيل الحساب";
-            // إعادة تعيين كود التحقق إن أمكن
             if (typeof turnstile !== "undefined") {
                 turnstile.reset();
             }
