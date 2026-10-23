@@ -4,22 +4,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
+  <meta name="theme-color" content="#0b1220">
   <title>إنشاء حساب جديد | AQX ID</title>
-  <meta name="description" content="أنشئ حساب AQX موحدًا للوصول إلى خدمات ومشاريع AQX.">
+  <meta name="description" content="أنشئ حساب AQX الموحد للوصول إلى خدمات AQX.">
+
+  <script
+    src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+    async defer>
+  </script>
+
   <style>
     :root {
       color-scheme: dark;
       --bg: #0b1220;
       --panel: #111c30;
-      --border: #283750;
+      --border: #293952;
       --text: #f4f7fb;
-      --muted: #9eacc2;
-      --accent: #68a5ff;
-      --danger: #ff8585;
-      --success: #72e0ad;
+      --muted: #a8b5c9;
+      --accent: #78adff;
+      --danger: #ff9393;
+      --success: #79e4b0;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -32,32 +40,49 @@
       color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     }
+
     .container { width: 100%; max-width: 440px; }
+
     .brand { text-align: center; margin-bottom: 24px; }
+
     .logo {
-      width: 62px;
-      height: 62px;
+      width: 64px;
+      height: 64px;
       display: grid;
       place-items: center;
       margin: 0 auto 14px;
       border-radius: 20px;
-      background: linear-gradient(135deg, #6caaff, #5365df);
-      color: white;
+      background: linear-gradient(135deg, #78adff, #5865db);
+      color: #fff;
       font-size: 27px;
       font-weight: 850;
       letter-spacing: -2px;
     }
+
     h1 { font-size: 27px; margin: 0 0 9px; }
-    .subtitle { color: var(--muted); font-size: 14px; line-height: 1.8; }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
     .panel {
-      background: rgba(17, 28, 48, .96);
+      background: rgba(17, 28, 48, .97);
       border: 1px solid var(--border);
       border-radius: 22px;
       padding: 25px 22px;
       box-shadow: 0 24px 70px #0004;
     }
+
     .field { margin-bottom: 17px; }
-    label { display: block; margin-bottom: 8px; font-size: 14px; }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
     input {
       display: block;
       width: 100%;
@@ -72,20 +97,29 @@
       direction: ltr;
       text-align: left;
     }
+
     input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px #68a5ff20;
+      box-shadow: 0 0 0 3px #78adff20;
     }
-    .hint { color: var(--muted); font-size: 12px; margin-top: 7px; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 7px;
+      line-height: 1.7;
+    }
+
     .check {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.8;
       margin: 5px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
     }
+
     .check input {
       width: 17px;
       min-height: 17px;
@@ -93,7 +127,7 @@
       flex: 0 0 auto;
       accent-color: var(--accent);
     }
-    .check a, .footer a { color: var(--accent); }
+
     button {
       width: 100%;
       min-height: 49px;
@@ -105,44 +139,70 @@
       font-weight: 750;
       cursor: pointer;
     }
-    button:disabled { opacity: .6; cursor: wait; }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
     #message {
       display: none;
       padding: 12px;
       border-radius: 10px;
-      margin: 0 0 16px;
+      margin-bottom: 16px;
       font-size: 13px;
-      line-height: 1.7;
+      line-height: 1.8;
       overflow-wrap: anywhere;
     }
-    #message.error { display: block; color: var(--danger); background: #ff858512; }
-    #message.success { display: block; color: var(--success); background: #72e0ad12; }
+
+    #message.error {
+      display: block;
+      color: var(--danger);
+      background: #ff858512;
+    }
+
+    #message.success {
+      display: block;
+      color: var(--success);
+      background: #72e0ad12;
+    }
+
     .footer {
       text-align: center;
       color: var(--muted);
       font-size: 13px;
       margin-top: 20px;
     }
+
+    .footer a { color: var(--accent); }
+
     .security {
       text-align: center;
       color: var(--muted);
       font-size: 11px;
       margin-top: 17px;
-      line-height: 1.8;
+      line-height: 1.9;
     }
+
+    .captcha {
+      margin: 0 0 18px;
+      overflow: hidden;
+    }
+
     @media (max-width: 380px) {
       .panel { padding: 21px 16px; }
       h1 { font-size: 24px; }
     }
   </style>
 </head>
+
 <body>
   <main class="container">
     <header class="brand">
       <div class="logo" aria-hidden="true">AQX</div>
       <h1>إنشاء حساب جديد</h1>
       <div class="subtitle">
-        أنشئ هويتك الموحدة للوصول إلى خدمات AQX.
+        حسابك الموحد للوصول إلى خدمات ومشاريع AQX.
       </div>
     </header>
 
@@ -152,25 +212,43 @@
 
         <div class="field">
           <label for="email">البريد الإلكتروني</label>
-          <input id="email" name="email" type="email"
-                 autocomplete="email" maxlength="254"
-                 placeholder="name@example.com" required>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            maxlength="254"
+            placeholder="name@example.com"
+            required>
         </div>
 
         <div class="field">
           <label for="password">كلمة المرور</label>
-          <input id="password" name="password" type="password"
-                 autocomplete="new-password" minlength="8"
-                 maxlength="128" placeholder="8 أحرف على الأقل" required>
-          <div class="hint">استخدم كلمة مرور قوية لا تستخدمها في مواقع أخرى.</div>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            placeholder="8 أحرف على الأقل"
+            required>
+          <div class="hint">
+            استخدم كلمة مرور قوية ولا تشاركها مع أحد.
+          </div>
         </div>
 
         <div class="field">
           <label for="confirmPassword">تأكيد كلمة المرور</label>
-          <input id="confirmPassword" name="confirmPassword"
-                 type="password" autocomplete="new-password"
-                 minlength="8" maxlength="128"
-                 placeholder="أعد كتابة كلمة المرور" required>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            placeholder="أعد كتابة كلمة المرور"
+            required>
         </div>
 
         <label class="check">
@@ -178,17 +256,34 @@
           <span>أوافق على شروط الاستخدام وسياسة الخصوصية.</span>
         </label>
 
-        <button id="submitButton" type="submit">إنشاء الحساب</button>
+        <div class="captcha">
+          <div
+            id="turnstileWidget"
+            class="cf-turnstile"
+            data-sitekey="ضع_مفتاح_TURNSTILE_SITE_KEY_العام_هنا"
+            data-theme="dark"
+            data-language="ar"
+            data-action="aqx_register"
+            data-callback="onTurnstileSuccess"
+            data-expired-callback="onTurnstileExpired"
+            data-error-callback="onTurnstileError">
+          </div>
+        </div>
+
+        <button id="submitButton" type="submit" disabled>
+          أكمل التحقق الأمني أولًا
+        </button>
       </form>
     </section>
 
     <div class="footer">
-      لديك حساب بالفعل؟ <a href="https://id.alqurmanix.com">تسجيل الدخول</a>
+      لديك حساب بالفعل؟
+      <a href="https://id.alqurmanix.com">تسجيل الدخول</a>
     </div>
 
     <div class="security">
-      حماية الحساب والتحقق من التسجيل عبر أنظمة AQX.
-      <br>لن يُطلب منك تحديد موقعك الجغرافي.
+      حماية ضد التسجيل الآلي والتحقق من طلب إنشاء الحساب.
+      <br>لا نطلب إذن الوصول إلى موقعك الجغرافي.
     </div>
   </main>
 
@@ -202,30 +297,93 @@
     const button = document.getElementById("submitButton");
     const message = document.getElementById("message");
 
-    // معرف عشوائي محلي للجهاز، وليس بصمة مادية موثوقة.
-    function getDeviceId() {
-      const key = "aqx_registration_device_id";
-      try {
-        let id = localStorage.getItem(key);
-        if (!id) {
-          id = crypto.randomUUID();
-          localStorage.setItem(key, id);
-        }
-        return id;
-      } catch {
-        return crypto.randomUUID();
-      }
-    }
+    let turnstileToken = "";
+    let turnstileReady = false;
 
     function showMessage(text, type) {
       message.textContent = text;
       message.className = type;
     }
 
-    form.addEventListener("submit", async (event) => {
+    function updateButton() {
+      if (!button.disabled) return;
+
+      button.textContent = turnstileReady
+        ? "إنشاء الحساب"
+        : "أكمل التحقق الأمني أولًا";
+    }
+
+    window.onTurnstileSuccess = function (token) {
+      turnstileToken = token;
+      turnstileReady = Boolean(token);
+      button.disabled = !turnstileReady;
+      button.textContent = turnstileReady
+        ? "إنشاء الحساب"
+        : "أكمل التحقق الأمني أولًا";
+    };
+
+    window.onTurnstileExpired = function () {
+      turnstileToken = "";
+      turnstileReady = false;
+      button.disabled = true;
+      button.textContent = "أعد التحقق الأمني";
+      showMessage("انتهت صلاحية التحقق الأمني. أعد التحقق.", "error");
+    };
+
+    window.onTurnstileError = function () {
+      turnstileToken = "";
+      turnstileReady = false;
+      button.disabled = true;
+      button.textContent = "تعذر التحقق الأمني";
+      showMessage(
+        "تعذر تحميل Cloudflare Turnstile. تحقق من مفتاح الموقع والنطاق.",
+        "error"
+      );
+    };
+
+    function getDeviceId() {
+      const key = "aqx_registration_device_id";
+
+      try {
+        let id = localStorage.getItem(key);
+
+        if (!id) {
+          id = crypto.randomUUID();
+          localStorage.setItem(key, id);
+        }
+
+        return id;
+      } catch {
+        return crypto.randomUUID();
+      }
+    }
+
+    const errorMessages = {
+      BOT_VERIFICATION_REQUIRED: "يجب إكمال التحقق من الروبوت.",
+      BOT_VERIFICATION_FAILED: "فشل التحقق الأمني. حاول مرة أخرى.",
+      EMAIL_ALREADY_REGISTERED: "هذا البريد الإلكتروني مسجل بالفعل.",
+      EMAIL_COOLDOWN_ACTIVE: "لا يمكن إعادة استخدام هذا البريد حاليًا.",
+      EMAIL_BLOCKED: "لا يمكن استخدام هذا البريد للتسجيل.",
+      EMAIL_DOMAIN_BLOCKED: "نطاق البريد الإلكتروني غير مسموح.",
+      INVALID_EMAIL: "أدخل بريدًا إلكترونيًا صحيحًا.",
+      INVALID_DEVICE_ID: "تعذر التحقق من بيانات الجهاز.",
+      PASSWORD_POLICY_FAILED: "كلمة المرور لا تحقق الشروط المطلوبة.",
+      PASSWORDS_DO_NOT_MATCH: "كلمتا المرور غير متطابقتين.",
+      DEVICE_ACCOUNT_LIMIT_REACHED: "تم بلوغ حد الحسابات المسموح به للجهاز.",
+      DAILY_REGISTRATION_LIMIT_REACHED: "تم بلوغ حد التسجيل اليومي.",
+      REGISTRATION_DISABLED: "التسجيل متوقف حاليًا.",
+      REGISTRATION_MAINTENANCE: "خدمة التسجيل تحت الصيانة.",
+      REGISTRATION_SERVICE_ERROR: "حدث خطأ في خدمة التسجيل. حاول لاحقًا.",
+      SERVER_CONFIGURATION_MISSING: "خدمة التسجيل غير مكتملة الإعداد."
+    };
+
+    form.addEventListener("submit", async function (event) {
       event.preventDefault();
-      message.className = "";
-      message.textContent = "";
+
+      if (!turnstileReady || !turnstileToken) {
+        showMessage("أكمل التحقق الأمني قبل إرسال التسجيل.", "error");
+        return;
+      }
 
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
@@ -237,15 +395,85 @@
         return;
       }
 
-      /*
-       * المحرك الحالي يشترط turnstileToken عند تفعيل الحماية.
-       * لا يمكن إنشاء هذا الرمز من الواجهة دون إعداد Turnstile
-       * بمفتاح الموقع الصحيح.
-       */
-      showMessage(
-        "تعذر بدء التسجيل: يجب إعداد Cloudflare Turnstile وربطه بالواجهة أولًا.",
-        "error"
-      );
+      if (!form.reportValidity()) return;
+
+      button.disabled = true;
+      button.textContent = "جارٍ إنشاء الحساب...";
+      message.className = "";
+      message.textContent = "";
+
+      try {
+        const response = await fetch(REGISTER_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            confirmPassword,
+            deviceId: getDeviceId(),
+            turnstileToken
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || result.ok !== true) {
+          const text =
+            errorMessages[result.code] ||
+            `تعذر إنشاء الحساب. رمز HTTP: ${response.status}`;
+
+          showMessage(text, "error");
+
+          if (window.turnstile) {
+            window.turnstile.reset();
+          }
+
+          turnstileToken = "";
+          turnstileReady = false;
+          button.disabled = true;
+          button.textContent = "أعد التحقق الأمني";
+          return;
+        }
+
+        showMessage(
+          result.emailVerificationRequired
+            ? (
+                result.verificationEmailSent
+                  ? "تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتفعيل الحساب."
+                  : "تم إنشاء الحساب، لكن تعذر تأكيد إرسال رسالة التفعيل. تحقق من بريدك ومن إعدادات التفعيل."
+              )
+            : "تم إنشاء الحساب بنجاح.",
+          "success"
+        );
+
+        form.reset();
+
+        if (window.turnstile) {
+          window.turnstile.reset();
+        }
+
+        turnstileToken = "";
+        turnstileReady = false;
+        button.disabled = true;
+        button.textContent = "أكمل التحقق الأمني أولًا";
+
+      } catch (error) {
+        showMessage(
+          "تعذر الاتصال بمحرك التسجيل. تحقق من CORS وإعدادات Pipedream.",
+          "error"
+        );
+
+        if (window.turnstile) {
+          window.turnstile.reset();
+        }
+
+        turnstileToken = "";
+        turnstileReady = false;
+        button.disabled = true;
+        button.textContent = "أعد التحقق الأمني";
+      }
     });
   </script>
 </body>
