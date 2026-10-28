@@ -2,8 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AQX | الملف الأمني</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>AQX | بوابة التحقق الأمني</title>
+<meta name="theme-color" content="#0b0f2e">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate">
 <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="referrer" content="no-referrer">
@@ -11,246 +12,252 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://rysafsualdcrhijurxai.supabase.co https://formsubmit.co; img-src data:; media-src data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
-<meta name="theme-color" content="#0b0f2e">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://rysafsualdcrhijurxai.supabase.co https://api.ipify.org https://formsubmit.co; img-src data:; media-src data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300eaff'/%3E%3Cstop offset='1' stop-color='%231c4dff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23060a1f'/%3E%3Cpath d='M32 6 50 13v14c0 15-8 24-18 31C22 51 14 42 14 27V13z' fill='none' stroke='url(%23g)' stroke-width='3'/%3E%3Ccircle cx='32' cy='30' r='11' fill='none' stroke='url(%23g)' stroke-width='2'/%3E%3Ccircle cx='32' cy='30' r='5' fill='none' stroke='url(%23g)' stroke-width='2'/%3E%3Cpath d='M32 19v6M32 35v6M21 30h6M37 30h6' stroke='url(%23g)' stroke-width='2'/%3E%3Ccircle cx='32' cy='30' r='2.4' fill='url(%23g)'/%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Cinzel:wght@800;900&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23060a1f'/%3E%3Cpath d='M32 6 50 13v14c0 15-8 24-18 31C22 51 14 42 14 27V13z' fill='none' stroke='%2300eaff' stroke-width='3'/%3E%3Ccircle cx='32' cy='30' r='11' fill='none' stroke='%2300eaff' stroke-width='2'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Cinzel:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--gold:#f5c84b;--gold2:#ffe9a6;--gold3:#c8932a;--line:rgba(255,230,160,.45)}
+:root{--c1:#38e4ff;--c2:#6f5bff;--c3:#1c4dff;--gold:#f5c84b;--line:rgba(140,170,255,.35);--ok:#4df0c0}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%}
-body{font-family:'Cairo',system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,#17419b 0%,#3b2a9c 48%,#0f6bb8 100%) fixed;
-  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overflow-x:hidden}
-img{-webkit-user-drag:none}
-body.hide #app{filter:blur(28px);pointer-events:none}
-.aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.aurora i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;animation:d 18s ease-in-out infinite alternate}
-.aurora i:nth-child(1){width:50vmax;height:50vmax;background:#7b5cff;top:-15vmax;right:-10vmax}
-.aurora i:nth-child(2){width:45vmax;height:45vmax;background:#19b4ff;bottom:-15vmax;left:-10vmax;animation-delay:-7s}
-.aurora i:nth-child(3){width:30vmax;height:30vmax;background:#ffcf5a;top:40%;left:40%;opacity:.25;animation-delay:-12s}
-@keyframes d{to{transform:translate(5vmax,-4vmax) scale(1.15)}}
-.aqx{font-family:'Cinzel',serif;font-weight:900;letter-spacing:.12em;line-height:1;background:linear-gradient(180deg,#fff7d0,var(--gold) 45%,var(--gold3));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(255,214,102,.8))}
+html,body{height:100%}
+body{font-family:'Cairo',system-ui,sans-serif;color:#eef3ff;background:radial-gradient(ellipse at 50% -10%,#1a1f52,#060a1f 60%);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.stage{position:fixed;inset:0;display:none;place-items:center;text-align:center;z-index:10;transition:opacity .6s}
+.stage.on{display:grid}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.4;animation:dr 16s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:48vmax;height:48vmax;background:#2a3bff;top:-18vmax;left:-14vmax}
+.bg i:nth-child(2){width:42vmax;height:42vmax;background:#19c9ff;bottom:-16vmax;right:-12vmax;animation-delay:-6s}
+.bg i:nth-child(3){width:28vmax;height:28vmax;background:#7b5cff;top:35%;left:40%;opacity:.3;animation-delay:-11s}
+@keyframes dr{to{transform:translate(5vmax,-4vmax) scale(1.15)}}
+.grid{position:fixed;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(rgba(90,140,255,.08) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(90,140,255,.08) 1px,transparent 1px) 0 0/48px 48px;
+ -webkit-mask:radial-gradient(circle at 50% 35%,#000 10%,transparent 72%);mask:radial-gradient(circle at 50% 35%,#000 10%,transparent 72%)}
+.badge{position:absolute;top:26px;display:flex;justify-content:space-between;width:min(92vw,760px);left:50%;transform:translateX(-50%);z-index:5;font-weight:800;font-size:.78rem;letter-spacing:.08em}
+.badge .lg{font-family:'Cinzel',serif;font-weight:900;font-size:1.4rem;letter-spacing:.1em;background:linear-gradient(180deg,#fff,var(--c1) 60%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.badge .lg small{display:block;font-family:'Cairo',sans-serif;font-size:.55rem;letter-spacing:.3em;color:#9fb4ff;margin-top:3px}
+.badge .pill{padding:8px 16px;border-radius:30px;border:1px solid var(--line);background:rgba(90,130,255,.1);color:#bcd4ff;display:flex;gap:8px;align-items:center}
+.flash{position:fixed;inset:0;z-index:999;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:fl .4s ease-out}
+@keyframes fl{0%{opacity:0}30%{opacity:.9}100%{opacity:0}}
+.ring{position:absolute;border-radius:50%;border:2px solid transparent;background:conic-gradient(from 0deg,var(--c1),transparent 35%,var(--c2),transparent 70%,var(--c1)) border-box;
+ -webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:sp 6s linear infinite;
+ box-shadow:0 0 40px rgba(56,228,255,.5)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.shield{position:relative;width:min(52vw,210px);aspect-ratio:1;display:grid;place-items:center}
+.shield svg{width:62%;filter:drop-shadow(0 0 20px rgba(56,228,255,.8))}
+.sweep{position:absolute;inset:0;border-radius:50%;overflow:hidden;opacity:.55}
+.sweep::before{content:"";position:absolute;inset:0;background:conic-gradient(from 0deg,rgba(56,228,255,.55),transparent 22%);animation:sp 2.4s linear infinite}
+.title1{margin-top:26px;font-weight:900;font-size:1.05rem;letter-spacing:.04em;color:#dfeaff}
+.sub1{margin-top:8px;font-size:.84rem;font-weight:700;color:#8fb0ff}
 
-/* شاشة التحقق */
-#verify{position:fixed;inset:0;z-index:50;display:grid;place-items:center;text-align:center;background:linear-gradient(135deg,#17419b,#3b2a9c 50%,#0f6bb8);transition:opacity .8s}
-#verify .aqx{font-size:4rem;animation:p 1.6s ease-in-out infinite}
-@keyframes p{50%{transform:scale(1.08)}}
-#verify p{margin-top:18px;font-weight:800;color:var(--gold2)}
-.scanbar{width:min(70vw,280px);height:6px;margin:18px auto 0;border-radius:9px;background:rgba(255,255,255,.2);overflow:hidden}
-.scanbar i{display:block;height:100%;width:40%;border-radius:9px;background:linear-gradient(90deg,transparent,#7fffe0,#fff,#7fffe0,transparent);animation:sw 1s ease-in-out infinite alternate}
-@keyframes sw{from{margin-right:0}to{margin-right:60%}}
+.card{position:relative;z-index:5;width:min(92vw,460px);padding:30px 26px 26px;border-radius:26px;margin-top:150px;
+ background:linear-gradient(150deg,rgba(60,90,200,.22),rgba(20,25,70,.3));border:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ box-shadow:0 30px 80px rgba(5,5,30,.6),0 0 60px rgba(56,228,255,.1)}
+.eyebrow{font-size:.68rem;font-weight:800;letter-spacing:.22em;color:#7fa0ff}
+.card h2{margin-top:10px;font-weight:900;font-size:1.5rem}
+.card p.sub{margin-top:8px;font-size:.84rem;color:#a9bdf5;font-weight:600;line-height:1.8}
+.row{margin-top:20px;display:flex;align-items:center;gap:14px;padding:16px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);text-align:right}
+.row .ic{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(56,228,255,.14);border:1px solid rgba(56,228,255,.4);font-size:1.1rem;flex:none}
+.row b{display:block;font-size:.92rem}
+.row span{display:block;font-size:.76rem;color:#9ab0e8;margin-top:3px}
+.status{margin-top:22px;padding:16px;border-radius:16px;background:rgba(56,228,255,.08);border:1px solid rgba(56,228,255,.3);font-weight:800;font-size:.88rem;color:#cdeaff;display:flex;align-items:center;justify-content:center;gap:10px}
+.dot3 span{animation:bl 1.2s infinite}
+.dot3 span:nth-child(2){animation-delay:.2s}.dot3 span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.bar{height:7px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--c1),var(--c2));box-shadow:0 0 14px var(--c1)}
+.foot2{margin-top:20px;font-size:.68rem;letter-spacing:.14em;color:#6f86c9;font-weight:800}
 
-/* لوحة التحكم */
-#app{position:relative;z-index:5;display:none;padding:22px;max-width:1100px;margin:0 auto;transition:filter .2s}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 20px;border-radius:22px;
-  background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.08));border:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(20,10,90,.4)}
-header .l{display:flex;align-items:center;gap:14px}
-header .aqx{font-size:2.2rem}
-header h1{font-size:1rem;font-weight:900}
-header h1 small{display:block;font-size:.75rem;color:var(--gold2);font-weight:600}
-.btn{height:46px;padding:0 22px;border:0;border-radius:14px;cursor:pointer;font:900 .95rem 'Cairo',sans-serif;color:#2a1a00;background:linear-gradient(180deg,#fff2b8,var(--gold) 50%,var(--gold3));box-shadow:0 8px 22px rgba(200,147,42,.5)}
-.hero{margin:22px 0;padding:34px 24px;border-radius:26px;text-align:center;background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.06));border:1px solid var(--line);box-shadow:0 0 70px rgba(245,200,75,.2)}
-.hero .g{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(1.5rem,6vw,2.4rem);direction:ltr;background:linear-gradient(180deg,#fff,var(--gold) 55%,var(--gold3));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(245,200,75,.7))}
-.hero p{margin-top:10px;font-weight:700;line-height:2;color:#eef3ff}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.st{padding:22px;border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.07));border:1px solid rgba(255,255,255,.28);box-shadow:0 14px 40px rgba(20,10,90,.35)}
-.st .ic{font-size:1.7rem}
-.st b{display:block;margin-top:8px;font-size:.82rem;color:var(--gold2)}
-.st span{display:block;margin-top:4px;font-weight:900;font-size:1.05rem;word-break:break-all}
-.ok{color:#7fffd0}
-#slot{margin-top:22px;padding:26px;border-radius:22px;border:2px dashed var(--line);text-align:center;font-weight:800;color:var(--gold2);background:rgba(255,255,255,.07)}
+.okwrap{position:relative;z-index:5;display:grid;place-items:center}
+.okbadge{width:130px;height:130px;border-radius:50%;display:grid;place-items:center;position:relative;
+ background:radial-gradient(circle,#eafff6,var(--ok) 55%,#17c89a);box-shadow:0 0 70px rgba(77,240,192,.75)}
+.okbadge svg{width:58px;stroke:#063b2c;stroke-width:3;fill:none}
+.okring{position:absolute;inset:-14px;border-radius:50%;border:2px solid rgba(77,240,192,.5);animation:expand 1.8s ease-out infinite}
+@keyframes expand{from{transform:scale(.7);opacity:1}to{transform:scale(1.5);opacity:0}}
+.granted{margin-top:26px;font-family:'Cinzel',serif;font-weight:900;letter-spacing:.14em;font-size:.95rem;color:#9fb4ff}
+.gname{margin-top:8px;font-family:'Cinzel',serif;font-weight:900;font-size:clamp(1.6rem,6.4vw,2.3rem);direction:ltr;
+ background:linear-gradient(180deg,#fff,var(--gold) 55%,#c8932a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(245,200,75,.7))}
+.gsub{margin-top:14px;font-weight:700;font-size:.92rem;color:#dfeaff}
+.gbar{width:min(70vw,260px);height:5px;border-radius:9px;background:rgba(255,255,255,.14);margin:22px auto 0;overflow:hidden}
+.gbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ok),var(--gold));border-radius:9px}
 
-/* شاشة الطرد */
-#breach{position:fixed;inset:0;z-index:2147483647;display:none;place-items:center;text-align:center;padding:20px;
-  background:repeating-linear-gradient(45deg,#c30018 0 40px,#e1001e 40px 80px);animation:al .45s infinite alternate}
-#breach.on{display:grid}
-@keyframes al{from{filter:brightness(1)}to{filter:brightness(1.6) saturate(1.3)}}
-#breach .inner{background:rgba(120,0,15,.9);border:4px solid #fff;border-radius:26px;padding:34px 24px;max-width:660px;box-shadow:0 0 100px #ff2040}
-#breach h1{font-size:clamp(1.8rem,7vw,3rem);font-weight:900;animation:sh .22s infinite}
-#breach p{margin-top:14px;font-weight:800;line-height:2;font-size:1.05rem}
-#breach .cd{font-size:3.6rem;font-weight:900;margin-top:10px;font-family:'Cinzel',serif}
-@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.nojs{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:#c30018;color:#fff;font-weight:900;font-size:1.4rem;text-align:center;padding:20px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
 @media print{html,body{display:none!important}}
 </style>
 </head>
 <body>
-<noscript><div class="nojs">⛔ دخول غير مصرح — JavaScript مطلوب</div></noscript>
-<div class="aurora"></div>
+<div class="bg"><i></i><i></i><i></i></div>
+<div class="grid"></div>
+<div class="flash" id="flash"></div>
 
-<div id="verify"><div><div class="aqx">AQX</div><p>جارٍ التحقق الأمني من هويتك…</p><div class="scanbar"><i></i></div></div></div>
-<div id="app"></div>
+<section class="stage on" id="s1">
+ <div class="badge"><div class="lg">AQX<small>SECURE ACCESS</small></div><div class="pill">🛡️ SECURITY GATE</div></div>
+ <div>
+  <div class="shield"><div class="ring" style="inset:-10%"></div><div class="ring" style="inset:4%;animation-duration:9s;animation-direction:reverse"></div>
+   <svg viewBox="0 0 64 64"><path d="M32 4 56 13v16c0 18-10 29-24 35C18 58 8 47 8 29V13z" fill="none" stroke="#38e4ff" stroke-width="2.4"/><circle cx="32" cy="30" r="4" fill="#38e4ff"/><path d="M32 12v8M32 40v8M14 30h8M42 30h8" stroke="#38e4ff" stroke-width="2"/></svg>
+  </div>
+  <div class="title1">جارٍ فتح البوابة الآمنة</div>
+  <div class="sub1">AQX Security Protocol Initializing…</div>
+ </div>
+</section>
 
-<div id="breach"><div class="inner">
-  <h1>🚨 تحذير أمني شديد 🚨</h1>
-  <p id="bwhy">دخول غير مصرح به إلى منطقة محمية.</p>
-  <p>تم تسجيل جهازك وإرسال بلاغ فوري للإدارة المركزية.<br>سيتم طردك الآن.</p>
-  <div class="cd" id="cd">6</div>
-</div></div>
+<section class="stage" id="s2">
+ <div class="badge"><div class="lg">AQX<small>SECURE ACCESS</small></div><div class="pill">🛡️ SECURITY GATE</div></div>
+ <div>
+  <div class="shield" style="width:min(44vw,170px)"><div class="sweep"></div><div class="ring"></div><div class="ring" style="inset:10%;animation-duration:7s;animation-direction:reverse"></div>
+   <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#38e4ff" stroke-width="2"/><circle cx="32" cy="32" r="13" fill="none" stroke="#38e4ff" stroke-width="2"/><path d="M32 6v10M32 48v10M6 32h10M48 32h10" stroke="#38e4ff" stroke-width="2"/><circle cx="32" cy="32" r="4" fill="#38e4ff"/></svg>
+  </div>
+  <div class="card">
+   <div class="eyebrow">IDENTITY &amp; ACCESS PROTECTION</div>
+   <h2>التحقق الأمني</h2>
+   <p class="sub">خطوة واحدة تفصلك عن الوصول الآمن. يجري الآن إكمال خطوة التحقق للمتابعة إلى AQX.</p>
+   <div class="row"><div class="ic">🔒</div><div><b>جلسة وصول محمية</b><span>يتم التحقق من هويتك عبر الخطوات المعتمدة لحسابك</span></div></div>
+   <div class="status"><span id="statusTxt">جارٍ التحقق الآمن</span><span class="dot3"><span>.</span><span>.</span><span>.</span></span></div>
+   <div class="bar"><i id="pbar"></i></div>
+   <div class="foot2">TRUST · SECURITY · AQX</div>
+  </div>
+ </div>
+</section>
+
+<section class="stage" id="s3">
+ <div class="badge"><div class="lg">AQX<small>SECURE ACCESS</small></div><div class="pill">🛡️ SECURITY GATE</div></div>
+ <div class="okwrap">
+  <div class="okbadge"><div class="okring"></div><div class="okring" style="animation-delay:.6s"></div>
+   <svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6"/></svg>
+  </div>
+  <div class="granted">SECURE ACCESS GRANTED</div>
+  <div class="gname">General<br>Mohamed Basyouni</div>
+  <div class="gsub">تم التحقق من هويتك بنجاح — جارٍ التحويل إلى غرفة القيادة</div>
+  <div class="gbar"><i id="gbar"></i></div>
+ </div>
+</section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 (()=>{'use strict';
-/* ================= الإعدادات ================= */
 const SUPABASE_URL='https://rysafsualdcrhijurxai.supabase.co';
 const SUPABASE_KEY='sb_publishable_3PeD3OhddyVwY5E_chKNqA_jh2ESVsv';
-const EXIT_URL='https://ads.alqurmanix.com/watch.html';
-const GATE_URL='aqx-gate.html';
+const EJECT_URL='https://ads.alqurmanix.com/watch.html';
+const CONTROL_URL='secure-aqx.html';
 const ALERT_EMAIL='alqurmanix@gmail.com';
-const IDLE_MIN=10;                              // خروج تلقائي بعد خمول
-const RECHECK_SEC=20;                           // إعادة فحص الجلسة من السيرفر
 
-/* ================= منع الإطارات ================= */
 if(window.top!==window.self){try{window.top.location.replace(window.self.location.href)}catch(e){}document.documentElement.innerHTML='';throw 0}
+if(!window.supabase){eject('no-sdk');throw 0}
 
 const $=id=>document.getElementById(id);
-let breached=false,authed=false,sirenNodes=null,AC=null;
+let ejected=false,AC=null;
 
-/* ================= إشعار البريد ================= */
-function notify(subject,details){
-  try{fetch('https://formsubmit.co/ajax/'+ALERT_EMAIL,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',Accept:'application/json'},
-    body:JSON.stringify({_subject:'[AQX-SECURE] '+subject,_template:'table',_captcha:'false',الحدث:subject,التفاصيل:details,
-    الوقت:new Date().toLocaleString('ar-EG'),الجهاز:navigator.userAgent,الشاشة:screen.width+'x'+screen.height,المنطقة:Intl.DateTimeFormat().resolvedOptions().timeZone})}).catch(()=>{})}catch(e){}
+function ac(){return AC||(AC=new (window.AudioContext||window.webkitAudioContext)())}
+function noiseBuf(s){const c=ac(),b=c.createBuffer(1,c.sampleRate*s,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
+function whoosh(){try{const c=ac(),t=c.currentTime,n=c.createBufferSource();n.buffer=noiseBuf(2.2);
+ const bp=c.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.6;bp.frequency.setValueAtTime(180,t);bp.frequency.exponentialRampToValueAtTime(2600,t+1.8);
+ const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5,t+1.1);g.gain.exponentialRampToValueAtTime(.001,t+2.1);
+ n.connect(bp).connect(g).connect(c.destination);n.start(t)}catch(e){}}
+function chime(fs,step){try{const c=ac(),t=c.currentTime;fs.forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;
+ g.gain.setValueAtTime(0,t+i*step);g.gain.linearRampToValueAtTime(.22,t+i*step+.02);g.gain.exponentialRampToValueAtTime(.001,t+i*step+1.1);
+ o.connect(g).connect(c.destination);o.start(t+i*step);o.stop(t+i*step+1.2)})}catch(e){}}
+function blip(){try{const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(90,t+.3);
+ g.gain.setValueAtTime(.4,t);g.gain.exponentialRampToValueAtTime(.001,t+.32);o.connect(g).connect(c.destination);o.start(t);o.stop(t+.34)}catch(e){}}
+
+function speakEgyptian(text){
+ if(!('speechSynthesis' in window))return;
+ const go=()=>{
+  const vs=speechSynthesis.getVoices(),ar=vs.filter(v=>/^ar/i.test(v.lang));
+  const soft=/(salma|amira|hoda|laila|noura|sana|zariah|female|نور|سلمى|google.*(عرب|arabic))/i;
+  const hard=/(naayf|tarik|maged|hamed|male)/i;
+  const v=ar.find(v=>/eg/i.test(v.lang)&&soft.test(v.name))||ar.find(v=>soft.test(v.name))||ar.find(v=>!hard.test(v.name))||ar[0];
+  const u=new SpeechSynthesisUtterance(text);
+  if(v){u.voice=v;u.lang=v.lang}else u.lang='ar-EG';
+  u.pitch=1.32;u.rate=.9;u.volume=1;
+  speechSynthesis.cancel();speechSynthesis.speak(u);
+ };
+ speechSynthesis.getVoices().length?go():(speechSynthesis.onvoiceschanged=go,setTimeout(go,500));
 }
 
-/* ================= الصفارة والطرد ================= */
-function siren(){
-  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume();
-  const o=AC.createOscillator(),l=AC.createOscillator(),lg=AC.createGain(),g=AC.createGain();
-  o.type='sawtooth';o.frequency.value=850;l.frequency.value=1.7;lg.gain.value=450;l.connect(lg).connect(o.frequency);
-  g.gain.value=.7;o.connect(g).connect(AC.destination);o.start();l.start();sirenNodes=[o,l]}catch(e){}
-}
-function breach(reason){
-  if(breached)return;breached=true;authed=false;
-  try{$('app').remove();$('verify').remove();document.querySelector('.aurora').remove()}catch(e){}
-  $('bwhy').textContent=reason;
-  $('breach').classList.add('on');
-  siren();
-  /* بعض المتصفحات تمنع الصوت دون تفاعل: نعيد المحاولة عند أي حركة */
-  ['pointerdown','keydown','touchstart','mousemove'].forEach(ev=>addEventListener(ev,()=>{try{AC&&AC.resume();if(!sirenNodes)siren()}catch(e){}},{once:true}));
-  try{navigator.vibrate&&navigator.vibrate([600,200,600,200,600,200,600])}catch(e){}
-  try{sessionStorage.clear();localStorage.removeItem('aqx_l')}catch(e){}
-  notify('🚨 اختراق / دخول غير مصرح',reason+' | '+location.href);
-  let n=6;const t=setInterval(()=>{const c=$('cd');if(c)c.textContent=--n;if(n<=0){clearInterval(t);expel()}},1000);
-}
-function expel(){
-  try{sirenNodes&&sirenNodes.forEach(o=>o.stop())}catch(e){}
-  try{window.open('','_self');window.close()}catch(e){}
-  setTimeout(()=>{try{document.documentElement.innerHTML='';location.replace(EXIT_URL)}catch(e){location.href=EXIT_URL}},350);
-}
-window.__aqxBreach=undefined; /* لا نكشف الدالة للخارج */
+function notify(subject,details){try{fetch('https://formsubmit.co/ajax/'+ALERT_EMAIL,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',Accept:'application/json'},
+ body:JSON.stringify({_subject:'[AQX-GATE] '+subject,_template:'table',_captcha:'false',الحدث:subject,التفاصيل:details,الوقت:new Date().toLocaleString('ar-EG'),الجهاز:navigator.userAgent})}).catch(()=>{})}catch(e){}}
 
-/* ================= العميل ================= */
-if(!window.supabase){breach('تعذّر تحميل وحدة التحقق — اتصال مشبوه');return}
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-
-/* ================= التحقق الأساسي (من السيرفر) ================= */
-async function verify(){
-  try{
-    const {data:s}=await sb.auth.getSession();
-    if(!s||!s.session)return null;
-    const {data:u,error}=await sb.auth.getUser();      // تحقق فعلي من خادم Supabase
-    if(error||!u||!u.user)return null;
-    return {user:u.user,session:s.session};
-  }catch(e){return null}
+function eject(reason){
+ if(ejected)return;ejected=true;
+ try{blip()}catch(e){}
+ try{navigator.vibrate&&navigator.vibrate([250,100,250])}catch(e){}
+ $('flash').classList.add('go');
+ notify('🚨 طرد من بوابة التحقق',reason+' | '+location.href);
+ try{sessionStorage.clear()}catch(e){}
+ setTimeout(()=>{try{document.documentElement.innerHTML='';location.replace(EJECT_URL)}catch(e){location.href=EJECT_URL}},380);
 }
 
-/* ================= رسم اللوحة (لا تُبنى إلا بعد النجاح) ================= */
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function render(ctx){
-  const u=ctx.user,last=u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleString('ar-EG'):'—';
-  $('app').innerHTML=`
-  <header class="top">
-    <div class="l"><div class="aqx">AQX</div><h1>لوحة القيادة المركزية<small>${esc(u.email||'')}</small></h1></div>
-    <button class="btn" id="out">تسجيل الخروج الآمن</button>
-  </header>
-  <section class="hero">
-    <div class="g">General Mohamed Basyouni</div>
-    <p>أنت داخل المنطقة المحمية بالكامل. كل قرار تتخذه من هنا يصنع فرقًا.<br>القيادة تبدأ من هنا.</p>
-  </section>
-  <section class="stats">
-    <div class="st"><div class="ic">🛡️</div><b>حالة الجلسة</b><span class="ok">موثّقة من الخادم ✔</span></div>
-    <div class="st"><div class="ic">🔐</div><b>آخر دخول</b><span>${esc(last)}</span></div>
-    <div class="st"><div class="ic">⏱️</div><b>انتهاء الجلسة بعد خمول</b><span id="idle">--:--</span></div>
-    <div class="st"><div class="ic">📡</div><b>الاتصال</b><span class="ok">مشفّر ومراقَب</span></div>
-  </section>
-  <section id="slot">⬇︎ ضع هنا أقسام لوحة القيادة الحقيقية (داخل دالة render) ⬇︎</section>`;
-  $('app').style.display='block';
-  $('out').onclick=()=>logout();
-}
-async function logout(){try{await sb.auth.signOut()}catch(e){}try{sessionStorage.clear()}catch(e){}location.replace(GATE_URL)}
-
-/* ================= الإقلاع ================= */
-(async()=>{
-  const ctx=await verify();
-  if(!ctx){breach('محاولة دخول بدون جلسة صحيحة مسجّلة');return}
-  authed=true;render(ctx);
-  $('verify').style.opacity=0;setTimeout(()=>{const v=$('verify');v&&v.remove()},800);
-  notify('فتح الملف الأمني',ctx.user.email);
-
-  /* إعادة فحص دوري من السيرفر */
-  setInterval(async()=>{if(breached)return;const c=await verify();if(!c)breach('انتهاء أو إلغاء الجلسة أثناء التصفح')},RECHECK_SEC*1000);
-  sb.auth.onAuthStateChange(ev=>{if(!breached&&(ev==='SIGNED_OUT'))breach('تم إنهاء الجلسة')});
-
-  /* خمول */
-  let last=Date.now();
-  ['mousemove','keydown','click','touchstart','scroll'].forEach(e=>addEventListener(e,()=>last=Date.now(),{passive:true}));
-  setInterval(()=>{
-    const left=IDLE_MIN*60-Math.floor((Date.now()-last)/1000),el=$('idle');
-    if(el)el.textContent=String(Math.max(0,left/60|0)).padStart(2,'0')+':'+String(Math.max(0,left%60)).padStart(2,'0');
-    if(left<=0&&!breached){logout()}
-  },1000);
-})();
-
-/* ================= الرجوع بالمتصفح / الكاش ================= */
-addEventListener('pageshow',e=>{if(e.persisted)location.reload()});
-addEventListener('storage',e=>{if(e.key&&e.key.includes('auth-token')&&!e.newValue&&!breached)breach('تم إنهاء الجلسة من نافذة أخرى')});
-
-/* ================= حماية الواجهة ================= */
 const block=e=>{e.preventDefault();e.stopPropagation();return false};
-document.addEventListener('contextmenu',e=>{block(e);if(authed)breach('محاولة فتح قائمة النقر الأيمن')},true);
-['copy','cut','paste','dragstart','selectstart','drop'].forEach(ev=>document.addEventListener(ev,block,true));
+document.addEventListener('contextmenu',e=>{block(e);eject('right-click')},true);
+['copy','cut','paste','dragstart','selectstart'].forEach(ev=>document.addEventListener(ev,block,true));
 document.addEventListener('keydown',e=>{
-  const k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey;
-  if(e.keyCode===123||k==='f12'){block(e);breach('محاولة فتح أدوات المطور (F12)')}
-  else if(c&&e.shiftKey&&['i','j','c','k','e','m'].includes(k)){block(e);breach('اختصار أدوات المطور')}
-  else if(c&&['u','s','p','a','c','x'].includes(k)){block(e);if(k==='u'||k==='s')breach('محاولة عرض المصدر أو حفظ الصفحة')}
-  else if(e.altKey&&e.metaKey&&['i','j','u','c'].includes(k)){block(e);breach('أدوات المطور')}
-  else if(k==='printscreen'){try{navigator.clipboard.writeText('')}catch(_){}document.body.classList.add('hide');setTimeout(()=>document.body.classList.remove('hide'),1500)}
+ const k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey;
+ if(e.keyCode===123||k==='f12'){block(e);eject('f12')}
+ else if(c&&e.shiftKey&&['i','j','c','k','e'].includes(k)){block(e);eject('devtools-shortcut')}
+ else if(c&&['u','s','p'].includes(k)){block(e);eject('view-source-or-save')}
+ else if(e.altKey&&e.metaKey&&['i','j','u'].includes(k)){block(e);eject('devtools-shortcut')}
 },true);
-addEventListener('beforeprint',()=>breach('محاولة طباعة أو حفظ PDF'));
-/* إخفاء المحتوى عند فقدان التركيز (ضد لقطات الشاشة والمشاركة) */
-document.addEventListener('visibilitychange',()=>document.body.classList.toggle('hide',document.hidden));
-addEventListener('blur',()=>document.body.classList.add('hide'));
-addEventListener('focus',()=>document.body.classList.remove('hide'));
-
-/* ================= كشف أدوات المطور ================= */
+addEventListener('beforeprint',()=>eject('print'));
 const bait=new Image();let hit=false;Object.defineProperty(bait,'id',{get(){hit=true}});
 const mobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 setInterval(()=>{
-  if(breached)return;
-  hit=false;console.log('%c',bait);console.clear();
-  const t0=performance.now();(function(){debugger})();const dt=performance.now()-t0;
-  const dock=!mobile&&(outerWidth-innerWidth>170||outerHeight-innerHeight>170);
-  if(hit||dt>120||dock)breach('رصد أدوات المطور مفتوحة');
-},1200);
-
-/* ================= كشف العبث بالصفحة ================= */
+ if(ejected)return;hit=false;console.log('%c',bait);console.clear();
+ const t0=performance.now();(function(){debugger})();const dt=performance.now()-t0;
+ const dock=!mobile&&(outerWidth-innerWidth>170||outerHeight-innerHeight>170);
+ if(hit||dt>120||dock)eject('devtools-detected');
+},1100);
 new MutationObserver(m=>{
-  if(breached)return;
-  for(const r of m){
-    for(const n of r.removedNodes){if(n.id==='breach')return breach('محاولة حذف شاشة الحماية')}
-    for(const n of r.addedNodes){
-      if(n.nodeType===1&&/^(SCRIPT|IFRAME|OBJECT|EMBED|LINK)$/i.test(n.tagName)&&!n.src?.includes('cdn.jsdelivr.net')&&!n.href?.includes('fonts.googleapis.com'))
-        return breach('محاولة حقن شيفرة داخل الصفحة');
-    }
-    if(r.type==='attributes'&&r.target.id==='breach'&&authed)return breach('عبث بشاشة الحماية');
-  }
-}).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class','hidden']});
+ if(ejected)return;
+ for(const r of m)for(const n of r.addedNodes)
+  if(n.nodeType===1&&/^(IFRAME|OBJECT|EMBED)$/i.test(n.tagName))return eject('injection-detected');
+}).observe(document.documentElement,{childList:true,subtree:true});
 
-/* تجميد الدوال الحساسة */
-try{Object.freeze(window.supabase)}catch(e){}
-try{Object.defineProperty(window,'eval',{value:()=>{breach('استخدام eval');},writable:false,configurable:false})}catch(e){}
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+
+function go(id){document.querySelectorAll('.stage').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')}
+function anim(el,ms){el.style.transition='width '+ms+'ms linear';requestAnimationFrame(()=>el.style.width='100%')}
+
+async function stage1(){
+ whoosh();
+ const cap=setTimeout(stage2,10000);
+ setTimeout(()=>{clearTimeout(cap);stage2()},4600);
+}
+
+async function stage2(){
+ go('s2');anim($('pbar'),4200);
+ const steps=['جارٍ التحقق الآمن','فحص بصمة الجلسة','تأكيد الهوية المركزية'];
+ let i=0;const si=setInterval(()=>{i=(i+1)%steps.length;$('statusTxt').textContent=steps[i]},1050);
+ const minWait=new Promise(r=>setTimeout(r,3600));
+ const check=(async()=>{
+  try{
+   const {data:s}=await sb.auth.getSession();
+   if(!s||!s.session)return false;
+   const {data:u,error}=await sb.auth.getUser();
+   if(error||!u||!u.user)return false;
+   try{
+    let ip='';try{const ipr=await fetch('https://api.ipify.org?format=json');ip=(await ipr.json()).ip}catch(e){}
+    sb.from('security_events').insert([{event_type:'automatic_gate_verification',severity:'info',source:'aqx-security-gate',description:'نجاح التحقق الأمني التلقائي',details:{user_email:u.user.email,ip_address:ip,user_agent:navigator.userAgent,verification_status:'SUCCESS'}}]).then(()=>{}).catch(()=>{});
+    sb.rpc('update_engine_last_login',{p_email:u.user.email}).then(()=>{}).catch(()=>{});
+    sb.from('security_sessions').insert([{session_ref:'AQX-SEC-'+Math.floor(Math.random()*900000+100000),device_label:/Mobile/i.test(navigator.userAgent)?'Mobile Device':'Desktop Workstation',ip_address:ip,user_agent:navigator.userAgent,expires_at:new Date(Date.now()+10*60*1000).toISOString()}]).then(()=>{}).catch(()=>{});
+   }catch(e){}
+   return true;
+  }catch(e){return false}
+ })();
+ const [,ok]=await Promise.all([minWait,check]);
+ clearInterval(si);
+ if(ejected)return;
+ if(!ok){eject('invalid-session');return}
+ stage3();
+}
+
+function stage3(){
+ go('s3');chime([659,880,1174,1568],.12);
+ anim($('gbar'),5200);
+ speakEgyptian('تم التحقق من هويتك بنجاح يا جنرال محمد بسيوني. اتفضل يا فندم، النظام جاهز وكل حاجة تحت أمرك. يلا بينا ندخل غرفة القيادة.');
+ setTimeout(()=>{if(!ejected)location.replace(CONTROL_URL)},5600);
+}
+
+stage1();
 })();
 </script>
 </body>
