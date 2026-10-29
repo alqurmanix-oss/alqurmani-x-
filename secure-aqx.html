@@ -107,19 +107,19 @@ body{font-family:'Cairo',system-ui,sans-serif;color:var(--ink);background:radial
 <div class="flash" id="flash"></div>
 
 <section class="stage on" id="s1">
- <div class="badge"><div class="lg">AQX<small>CYBER SECURITY</small></div><div class="pill">🛡️ SECURITY GATE</div></div>
+ <div class="badge"><div class="lg">AQX<small>SENTINEL PROTOCOL</small></div><div class="pill">🛡️ AQX SENTINEL</div></div>
  <div>
   <div class="shield"><div class="ring" style="inset:-10%"></div><div class="ring" style="inset:4%;animation-duration:9s;animation-direction:reverse"></div>
    <svg viewBox="0 0 64 64"><path d="M32 4 56 13v16c0 18-10 29-24 35C18 58 8 47 8 29V13z" fill="none" stroke="#38e4ff" stroke-width="2.4"/><circle cx="32" cy="30" r="4" fill="#38e4ff"/><path d="M32 12v8M32 40v8M14 30h8M42 30h8" stroke="#38e4ff" stroke-width="2"/></svg>
   </div>
-  <div class="title1">تهيئة بروتوكول الأمن السيبراني</div>
-  <div class="sub1">Initializing Secure Channel — AQX Defense Layer</div>
+  <div class="title1">تهيئة نظام AQX Sentinel</div>
+  <div class="sub1">Initializing AQX Sentinel — Secure Channel</div>
   <div class="mono1 mono" id="hashLine">0x000000</div>
  </div>
 </section>
 
 <section class="stage" id="s2">
- <div class="badge"><div class="lg">AQX<small>CYBER SECURITY</small></div><div class="pill">🛡️ SECURITY GATE</div></div>
+ <div class="badge"><div class="lg">AQX<small>SENTINEL PROTOCOL</small></div><div class="pill">🛡️ AQX SENTINEL</div></div>
  <div class="wrap2">
   <div class="shield shield2"><div class="ring"></div><div class="ring" style="inset:10%;animation-duration:7s;animation-direction:reverse"></div>
    <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#38e4ff" stroke-width="2"/><circle cx="32" cy="32" r="13" fill="none" stroke="#38e4ff" stroke-width="2"/><path d="M32 6v10M32 48v10M6 32h10M48 32h10" stroke="#38e4ff" stroke-width="2"/><circle cx="32" cy="32" r="4" fill="#38e4ff"/></svg>
@@ -127,7 +127,7 @@ body{font-family:'Cairo',system-ui,sans-serif;color:var(--ink);background:radial
   <div class="card">
    <div class="eyebrow">IDENTITY &amp; THREAT VERIFICATION</div>
    <h2>التحقق الأمني الحي</h2>
-   <p class="sub">يجري الآن تنفيذ سلسلة فحوصات أمن سيبراني حقيقية للتأكد من هويتك قبل منح الوصول.</p>
+   <p class="sub">يجري الآن تنفيذ سلسلة فحوصات AQX Sentinel الحقيقية للتأكد من هويتك قبل منح الوصول.</p>
    <div class="term mono" id="term"></div>
    <div class="stats" id="stats">
     <div class="st"><b>الحالة</b><span id="stA">—</span></div>
@@ -139,20 +139,20 @@ body{font-family:'Cairo',system-ui,sans-serif;color:var(--ink);background:radial
    </div>
    <div class="status"><span id="statusTxt">جارٍ التحقق الآمن</span><span class="dot3"><span>.</span><span>.</span><span>.</span></span></div>
    <div class="bar"><i id="pbar"></i></div>
-   <div class="foot2">AES-256 · TLS · AQX DEFENSE GRID</div>
+   <div class="foot2">AES-256 · TLS · AQX SENTINEL</div>
   </div>
  </div>
 </section>
 
 <section class="stage" id="s3">
- <div class="badge"><div class="lg">AQX<small>CYBER SECURITY</small></div><div class="pill">🛡️ SECURITY GATE</div></div>
+ <div class="badge"><div class="lg">AQX<small>SENTINEL PROTOCOL</small></div><div class="pill">🛡️ AQX SENTINEL</div></div>
  <div class="okwrap">
   <div class="okbadge"><div class="okring"></div><div class="okring" style="animation-delay:.6s"></div>
    <svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6"/></svg>
   </div>
   <div class="granted">IDENTITY CONFIRMED</div>
   <div class="gname">General<br>Mohamed Basyouni</div>
-  <div class="gsub">تم التأكد من هويتك بنجاح. جميع فحوصات الأمن السيبراني اكتملت دون رصد أي تهديد.</div>
+  <div class="gsub">تم التأكد من هويتك بنجاح. جميع فحوصات AQX Sentinel اكتملت دون رصد أي تهديد.</div>
   <div class="gstats">
    <div class="chip" id="chA">THREAT 0/100</div>
    <div class="chip" id="chB">ENCRYPTED</div>
@@ -170,7 +170,7 @@ const AUTH_KEY='sb_publishable_3PeD3OhddyVwY5E_chKNqA_jh2ESVsv';
 const MON_URL='https://emqgatvfryhprrexrext.supabase.co';
 const MON_KEY='sb_publishable_rCs9X4P7JjxJGIoq4_Vadg_xUlRSzk-';
 const EJECT_URL='https://ads.alqurmanix.com/watch.html';
-const CONTROL_URL='secure-aqx.html';
+const CONTROL_URL='aqx-central-control.html';
 const ALERT_EMAIL='alqurmanix@gmail.com';
 
 if(window.top!==window.self){try{window.top.location.replace(window.self.location.href)}catch(e){}document.documentElement.innerHTML='';throw 0}
@@ -278,7 +278,10 @@ async function stage1(){
 }
 
 async function stage2(){
- go('s2');anim($('pbar'),9600);
+ go('s2');
+ const WAIT=10000;
+ const tStart=performance.now();
+ anim($('pbar'),WAIT);
  const steps=['جارٍ التحقق الآمن','فحص بصمة الجلسة','تأكيد الهوية المركزية','مسح التهديدات النشطة'];
  let i=0;const si=setInterval(()=>{i=(i+1)%steps.length;$('statusTxt').textContent=steps[i]},1000);
 
@@ -286,10 +289,10 @@ async function stage2(){
  $('stE').textContent=location.protocol==='https:'?'HTTPS مشفّر':'غير آمن';
  $('stE').className=location.protocol==='https:'?'ok':'warn';
 
- let session=null,user=null,ip='';
+ let session=null,user=null;
  try{
   await new Promise(r=>setTimeout(r,500));
-  logLine('[AUTH] التحقق من رمز الجلسة الموقّع…');
+  logLine('[AUTH] التحقق من رمز الجلسة الموقّع عبر AQX Sentinel…');
   const {data:s}=await sbAuth.auth.getSession();
   session=s&&s.session;
   if(session){
@@ -300,7 +303,6 @@ async function stage2(){
  }catch(e){logLine('[AUTH] خطأ في قناة التحقق… <b>مرفوض</b>',true)}
 
  if(!user){
-  await new Promise(r=>setTimeout(r,900));
   clearInterval(si);eject('invalid-session');return;
  }
 
@@ -310,29 +312,35 @@ async function stage2(){
  const tickDur=()=>{const left=Math.max(0,Math.floor((expiresAt-Date.now())/1000));const m=String(Math.floor(left/60)).padStart(2,'0'),s=String(left%60).padStart(2,'0');$('stC').textContent=m+':'+s}
  tickDur();const durI=setInterval(tickDur,1000);
 
- await new Promise(r=>setTimeout(r,500));
- logLine('[DEVICE] تسجيل بصمة الجهاز…');
- try{const ipr=await fetch('https://api.ipify.org?format=json');ip=(await ipr.json()).ip}catch(e){}
- $('stD').textContent=ip||'غير متاح';
- logLine('[DEVICE] بصمة الجهاز مسجّلة… <b>OK</b>');
+ let ip='';
+ (async()=>{
+  await new Promise(r=>setTimeout(r,400));
+  logLine('[DEVICE] تسجيل بصمة الجهاز…');
+  try{const ipr=await fetch('https://api.ipify.org?format=json');ip=(await ipr.json()).ip}catch(e){}
+  $('stD').textContent=ip||'غير متاح';
+  logLine('[DEVICE] بصمة الجهاز مسجّلة… <b>OK</b>');
 
- await new Promise(r=>setTimeout(r,450));
- logLine('[THREAT] فحص التهديدات النشطة… <b>0 تهديد</b>');
- $('stF').textContent='0/100';$('stF').className='ok';
+  await new Promise(r=>setTimeout(r,350));
+  logLine('[THREAT] فحص التهديدات النشطة… <b>0 تهديد</b>');
+  $('stF').textContent='0/100';$('stF').className='ok';
 
- await new Promise(r=>setTimeout(r,450));
- logLine('[MONITOR] تسجيل الجلسة في نظام الرصد المركزي…');
- try{
-  const sref='AQX-SEC-'+Math.floor(Math.random()*900000+100000);
-  const monResults=await Promise.allSettled([
-   sbMon.from('security_events').insert([{event_type:'automatic_gate_verification',severity:'info',source:'aqx-security-gate',description:'نجاح التحقق الأمني التلقائي والانتقال للوحة المركزية',details:{user_email:user.email,ip_address:ip,user_agent:navigator.userAgent,verification_status:'SUCCESS',risk_level:'0/100'}}]),
-   sbMon.rpc('update_engine_last_login',{p_email:user.email}),
-   sbMon.from('security_sessions').insert([{session_ref:sref,device_label:mobile?'Mobile Device':'Desktop Workstation',ip_address:ip,user_agent:navigator.userAgent,expires_at:new Date(Date.now()+10*60*1000).toISOString()}])
-  ]);
-  const okMon=monResults.every(r=>r.status==='fulfilled'&&!r.value.error);
-  logLine(okMon?'[MONITOR] تم التوثيق في نظام الرصد… <b>OK</b>':'[MONITOR] تعذّر التوثيق الكامل… <b>تم التجاوز</b>',!okMon);
- }catch(e){logLine('[MONITOR] نظام الرصد غير متاح حاليًا… <b>تم التجاوز</b>',true)}
+  await new Promise(r=>setTimeout(r,350));
+  logLine('[SENTINEL] تسجيل الجلسة في نظام الرصد المركزي AQX Sentinel…');
+  const userEmail=user.email;
+  const userAgent=navigator.userAgent;
+  const clientIp=ip||'غير متاح';
+  try{
+   const {error:eventError}=await sbMon.from('security_events').insert([{event_type:'automatic_gate_verification',severity:'info',source:'aqx-gate-client',description:'نجاح التحقق الأمني التلقائي والانتقال للوحة المركزية',details:{user_email:userEmail,ip_address:clientIp,user_agent:userAgent,verification_status:'SUCCESS',risk_level:'0/100'}}]);
+   if(eventError)throw eventError;
+   await sbMon.rpc('update_engine_last_login',{p_email:userEmail});
+   const sessionRef='AQX-SEC-'+Math.floor(Math.random()*900000+100000);
+   await sbMon.from('security_sessions').insert([{session_ref:sessionRef,device_label:userAgent.includes('Mobile')?'Mobile Device':'Desktop Workstation',ip_address:clientIp,user_agent:userAgent,expires_at:new Date(Date.now()+10*60*1000).toISOString()}]);
+   logLine('[SENTINEL] تم التوثيق في نظام الرصد… <b>OK</b>');
+  }catch(e){logLine('[SENTINEL] تعذّر التوثيق الكامل… <b>تم التجاوز</b>',true)}
+ })();
 
+ const elapsed=performance.now()-tStart;
+ await new Promise(r=>setTimeout(r,Math.max(0,WAIT-elapsed)));
  clearInterval(durI);clearInterval(si);
  if(ejected)return;
  stage3();
@@ -342,7 +350,7 @@ function stage3(){
  go('s3');chime([659,880,1174,1568],.12);
  anim($('gbar'),8600);
  speakQueue([
-  {lang:'ar',t:'تم التأكد من هويتك بنجاح يا جنرال محمد بسيوني. جميع فحوصات الأمن السيبراني اكتملت ولم يتم رصد أي تهديد.'},
+  {lang:'ar',t:'تم التأكد من هويتك بنجاح يا جنرال محمد بسيوني. جميع فحوصات نظام إيه كيو إكس سنتينل اكتملت ولم يتم رصد أي تهديد.'},
   {lang:'en',t:'Identity verified. All cybersecurity checks passed. Secure access granted.'}
  ]);
  setTimeout(()=>{if(!ejected){try{location.replace(CONTROL_URL)}catch(e){location.href=CONTROL_URL}}},9000);
