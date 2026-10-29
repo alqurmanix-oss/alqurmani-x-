@@ -125,7 +125,18 @@ a{color:inherit;text-decoration:none}
 .breach h1{color:#fff;font-size:clamp(1.6rem,6vw,2.6rem);font-weight:900}
 .breach p{color:#fff;margin-top:14px;font-weight:800;line-height:2}
 
-@media (max-width:640px){.mbody iframe{height:50vh}}
+@media (max-width:480px){
+ .fNums{grid-template-columns:repeat(2,1fr)}
+ .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+ .nextgen{grid-template-columns:1fr}
+ .tab{padding:9px 14px;font-size:.76rem}
+ .cmdSide{width:92vw;padding:16px}
+ .plusBtn{width:48px;height:48px}
+ .searchBox input{height:48px;font-size:.86rem}
+ #fab{width:52px;height:52px;bottom:16px;left:16px}
+}
+@media (max-width:640px){.mbody iframe{height:50vh}.waBox{padding:16px}}
+body{padding-top:calc(18px + env(safe-area-inset-top,0))}
 </style>
 </head>
 <body>
@@ -236,240 +247,51 @@ a{color:inherit;text-decoration:none}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="aqx-data.js"></script>
 <script src="aqx-modules.js"></script>
-<script>
-(()=>{'use strict';
-const AUTH_URL='https://rysafsualdcrhijurxai.supabase.co';
-const AUTH_KEY='sb_publishable_3PeD3OhddyVwY5E_chKNqA_jh2ESVsv';
-const MON_URL='https://emqgatvfryhprrexrext.supabase.co';
-const MON_KEY='sb_publishable_rCs9X4P7JjxJGIoq4_Vadg_xUlRSzk-';
-const EJECT_URL='https://ads.alqurmanix.com/watch.html';
-const REQUIRED_REFERRER='secure-aqx.html';
-const ENTRY_FLAG='aqx_entry_token';
-
-if(window.top!==window.self){try{window.top.location.replace(window.self.location.href)}catch(e){}document.documentElement.innerHTML='';throw 0}
+<script>(()=>{'use strict';const AUTH_URL='https://rysafsualdcrhijurxai.supabase.co';const AUTH_KEY='sb_publishable_3PeD3OhddyVwY5E_chKNqA_jh2ESVsv';const MON_URL='https://emqgatvfryhprrexrext.supabase.co';const MON_KEY='sb_publishable_rCs9X4P7JjxJGIoq4_Vadg_xUlRSzk-';const EJECT_URL='https://ads.alqurmanix.com/watch.html';const REQUIRED_REFERRER='secure-aqx.html';const ENTRY_FLAG='aqx_entry_token';if(window.top!==window.self){try{window.top.location.replace(window.self.location.href)}catch(e){}document.documentElement.innerHTML='';throw 0}
 if(!window.supabase){location.replace(EJECT_URL);throw 0}
-
-const $=id=>document.getElementById(id);
-let ejected=false;
-
-function notify(subject,details){try{fetch('https://formsubmit.co/ajax/alqurmanix@gmail.com',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',Accept:'application/json'},
- body:JSON.stringify({_subject:'[AQX-CONTROL] '+subject,_template:'table',_captcha:'false',الحدث:subject,التفاصيل:details,الوقت:new Date().toLocaleString('ar-EG'),الجهاز:navigator.userAgent})}).catch(()=>{})}catch(e){}}
-
-function eject(reason){
- if(ejected)return;ejected=true;
- try{document.body.querySelectorAll(':scope > *:not(.breach)').forEach(e=>e.remove())}catch(e){}
- $('bwhy').textContent=reason;
- $('breach').classList.add('on');
- try{navigator.vibrate&&navigator.vibrate([300,120,300])}catch(e){}
- notify('🚨 طرد من لوحة التحكم',reason+' | '+location.href+' | ref:'+document.referrer);
- try{sessionStorage.clear()}catch(e){}
- setTimeout(()=>{try{window.close()}catch(e){}location.replace(EJECT_URL)},500);
-}
-
-history.pushState(null,'',location.href);
-addEventListener('popstate',()=>{history.pushState(null,'',location.href);eject('back-navigation-blocked')});
-document.addEventListener('click',e=>{
- const a=e.target.closest('a[target="_blank"]');
- if(a){e.preventDefault()}
-},true);
-window.open=function(){eject('new-tab-blocked');return null};
-
-const block=e=>{e.preventDefault();e.stopPropagation();return false};
-document.addEventListener('contextmenu',e=>{block(e);eject('right-click')},true);
-['copy','cut','selectstart'].forEach(ev=>document.addEventListener(ev,e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName))block(e)},true));
-document.addEventListener('keydown',e=>{
- const k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey;
- if(e.keyCode===123||k==='f12'){block(e);eject('f12')}
- else if(c&&e.shiftKey&&['i','j','c','k'].includes(k)){block(e);eject('devtools-shortcut')}
- else if(c&&['u','s'].includes(k)){block(e);eject('view-source-or-save')}
-},true);
-const bait=new Image();let hit=false;Object.defineProperty(bait,'id',{get(){hit=true}});
-const mobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-if(!mobile){setInterval(()=>{
- if(ejected)return;hit=false;console.log('%c',bait);console.clear();
- const dock=outerWidth-innerWidth>170||outerHeight-innerHeight>170;
- if(hit||dock)eject('devtools-detected');
-},1800);}
-
-let entryOk=false;
-try{entryOk=sessionStorage.getItem(ENTRY_FLAG)==='1'}catch(e){}
-if(!entryOk){eject('missing-entry-token');throw 0}
-if(document.referrer && document.referrer.indexOf(REQUIRED_REFERRER)===-1){
- notify('⚠ مرجع غير متوقع',document.referrer||'(فارغ)');
-}
-
-const sbAuth=window.supabase.createClient(AUTH_URL,AUTH_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-const sbMon=window.supabase.createClient(MON_URL,MON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-
-let keepAlive=null;
-function say(text){
- if(!('speechSynthesis' in window))return;
- const run=()=>{
-  const vs=speechSynthesis.getVoices(),ar=vs.filter(v=>/^ar/i.test(v.lang));
-  const soft=/(salma|amira|hoda|laila|noura|sana|female|google.*(عرب|arabic))/i,hard=/(naayf|tarik|maged|hamed|male)/i;
-  const v=ar.find(v=>/eg/i.test(v.lang)&&soft.test(v.name))||ar.find(v=>soft.test(v.name))||ar.find(v=>!hard.test(v.name))||ar[0];
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);
-  if(v){u.voice=v;u.lang=v.lang}else u.lang='ar-EG';
-  u.pitch=1.1;u.rate=.98;u.volume=1;
-  if(keepAlive)clearInterval(keepAlive);
-  keepAlive=setInterval(()=>{if(speechSynthesis.speaking){speechSynthesis.pause();speechSynthesis.resume()}else{clearInterval(keepAlive)}},3500);
-  speechSynthesis.speak(u);
- };
- speechSynthesis.getVoices().length?run():(speechSynthesis.onvoiceschanged=run,setTimeout(run,400));
-}
-document.addEventListener('click',e=>{
- const t=e.target.closest('[data-say]');
- if(t)say(t.getAttribute('data-say'));
-},true);
-
-function renderFinance(){
- const f=window.AQX_DATA.finance;
- $('fGoal').textContent=f.totalGoal.toLocaleString('ar-EG')+' '+f.currency;
- $('fAch').textContent=f.achieved.toLocaleString('ar-EG')+' '+f.currency;
- $('fRem').textContent=f.remaining.toLocaleString('ar-EG')+' '+f.currency;
- $('fPct').textContent=f.progressPct+'%';
- $('fBar').style.width=f.progressPct+'%';
- $('fUpd').textContent='آخر تحديث: '+new Date(f.lastUpdate).toLocaleString('ar-EG');
- const dev=$('fDev');
- if(f.onTrack){dev.className='fDev ok';dev.textContent='✔ الأداء ضمن الخطة المستهدفة'}
- else{dev.className='fDev warn';dev.textContent='⚠ انحراف عن الخطة بنسبة '+f.deviationPct+'%'}
- const sys=window.AQX_DATA.system;
- $('sysStatus').textContent=sys.statusLabel;
- $('svcCount').textContent=sys.services.filter(s=>s.up).length+'/'+sys.services.length+' تعمل';
-}
-
-const MOD=window.AQX_MODULES;
-let activeTab='g1';
-function renderTabs(){
- const tabsEl=$('tabs');
- const all=MOD.groups.map(g=>({id:g.id,title:g.title})).concat([{id:'extras',title:'الإضافات والتوسعات'}]);
- tabsEl.innerHTML=all.map(g=>'<button class="tab'+(g.id===activeTab?' on':'')+'" data-tab="'+g.id+'" data-say="عرض مجموعة '+g.title+'">'+g.title+'</button>').join('');
- tabsEl.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{activeTab=b.getAttribute('data-tab');renderTabs();renderGrid()});
-}
-function cardHTML(m){
- return '<div class="card" data-file="'+m.file+'" data-ready="'+(m.ready?'1':'0')+'" data-title="'+m.title+'" data-icon="'+m.icon+'" data-say="فتح '+m.title+'">'+
-  '<div class="ic">'+m.icon+'</div><h3>'+m.title+'</h3><p>'+m.desc+'</p>'+
-  '<div class="meta"><span class="dot2"></span><span>متاحة</span>'+(m.pending?'<span class="pending">'+m.pending+'</span>':'')+'</div></div>';
-}
-function renderGrid(){
- const grid=$('grid'),ng=$('nextgen'),sub=$('groupSub');
- if(activeTab==='extras'){
-  sub.textContent='أنظمة AQX للجيل القادم وإضافات توسّع المنظومة';
-  ng.style.display='grid';
-  const colors=['#7b5cff','#38b6ff','#ff8a5c','#36c98f','#ff5f8f','#5c6cff'];
-  ng.innerHTML=MOD.nextGen.map((m,i)=>'<div class="ng" style="background:'+colors[i%colors.length]+'" data-file="'+m.file+'" data-ready="0" data-title="'+m.title+'" data-icon="'+m.icon+'" data-say="فتح '+m.title+'"><span>'+m.icon+'</span><h4>'+m.title+'</h4></div>').join('');
-  grid.innerHTML=MOD.extras.map(cardHTML).join('');
- }else{
-  ng.style.display='none';
-  const g=MOD.groups.find(g=>g.id===activeTab);
-  sub.textContent=g.sub;
-  grid.innerHTML=g.items.map(cardHTML).join('');
- }
- bindCards();
-}
-function bindCards(){
- document.querySelectorAll('[data-file]').forEach(el=>{
-  el.onclick=()=>openModule(el.getAttribute('data-file'),el.getAttribute('data-ready')==='1',el.getAttribute('data-title'),el.getAttribute('data-icon'));
- });
-}
-
-function pushMRU(title,icon){
- let l=[];try{l=JSON.parse(localStorage.getItem('aqx_mru')||'[]')}catch(e){}
- l=l.filter(x=>x.t!==title);l.unshift({t:title,i:icon});l=l.slice(0,6);
- try{localStorage.setItem('aqx_mru',JSON.stringify(l))}catch(e){}
- renderMRU();
-}
-function renderMRU(){
- let l=[];try{l=JSON.parse(localStorage.getItem('aqx_mru')||'[]')}catch(e){}
- $('mru').innerHTML=l.length?l.map(x=>'<div class="it">'+x.i+' '+x.t+'</div>').join(''):'<div class="it">لا يوجد بعد</div>';
-}
-
-function openModule(file,ready,title,icon){
- pushMRU(title,icon);
- $('mTitle').textContent=icon+' '+title;
- $('mBody').innerHTML=ready?'<iframe src="'+file+'"></iframe>':'<div class="stub"><div style="font-size:2.4rem">'+icon+'</div><div style="margin-top:10px;font-weight:900;color:var(--ink)">'+title+'</div><div class="b2">قيد التطوير — الملف جاهز للربط: '+file+'</div></div>';
- $('moduleModal').classList.add('on');
-}
-$('mClose').onclick=()=>$('moduleModal').classList.remove('on');
-$('moduleModal').addEventListener('click',e=>{if(e.target.id==='moduleModal')$('moduleModal').classList.remove('on')});
-
-function allModulesFlat(){
- let out=[];
- MOD.groups.forEach(g=>g.items.forEach(m=>out.push(Object.assign({group:g.title},m))));
- MOD.extras.forEach(m=>out.push(Object.assign({group:'الإضافات'},m)));
- MOD.nextGen.forEach(m=>out.push(Object.assign({group:'الجيل القادم'},m)));
- return out;
-}
-const FLAT=allModulesFlat();
-$('searchInput').addEventListener('input',e=>{
- const q=e.target.value.trim();
- const sug=$('suggest');
- if(!q){sug.classList.remove('on');return}
- const res=FLAT.filter(m=>m.title.indexOf(q)>-1).slice(0,8);
- sug.innerHTML=res.length?res.map(m=>'<div class="it" data-file="'+m.file+'" data-ready="'+(m.ready?'1':'0')+'" data-title="'+m.title+'" data-icon="'+m.icon+'">'+m.icon+' '+m.title+'<small>'+m.group+'</small></div>').join(''):'<div class="it">لا توجد نتائج</div>';
- sug.classList.add('on');
- sug.querySelectorAll('.it[data-file]').forEach(el=>el.onclick=()=>{openModule(el.getAttribute('data-file'),el.getAttribute('data-ready')==='1',el.getAttribute('data-title'),el.getAttribute('data-icon'));sug.classList.remove('on');say('فتح '+el.getAttribute('data-title'))});
-});
-document.addEventListener('click',e=>{if(!e.target.closest('.searchBox'))$('suggest').classList.remove('on')});
-
-$('cmdToggle').onclick=()=>{$('cmdPanel').classList.add('on');say('فتح قائمة الأوامر')};
-function closeCmd(){$('cmdPanel').classList.remove('on');say('إغلاق القائمة')}
-$('cmdClose').onclick=closeCmd;
-document.querySelector('.cmdBack').onclick=closeCmd;
-
-function tickClock(){
- const n=new Date();
- $('clock').textContent=n.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
- $('dateline').textContent=n.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-}
-setInterval(tickClock,1000);tickClock();
-
-const ACTIONS=[
- {t:'إضافة جهة اتصال',i:'➕'},{t:'إرسال إشعار عام',i:'📢'},{t:'إعداد بريد عام',i:'✉️'},{t:'إضافة سعر خدمة',i:'🏷️'},
- {t:'إنشاء مشروع',i:'🚧'},{t:'إضافة محتوى',i:'🧩'},{t:'إنشاء كوبون',i:'🎟️'},{t:'تسجيل طلب',i:'📥'}
-];
-$('actGrid').innerHTML=ACTIONS.map(a=>'<div class="card" data-say="'+a.t+'" style="cursor:pointer" onclick="alert(\''+a.t+' — جاهز للربط بنموذج فعلي\')"><div class="ic">'+a.i+'</div><h3>'+a.t+'</h3></div>').join('');
-function openActions(){$('actionsModal').classList.add('on')}
-$('plusBtn').onclick=openActions;$('fab').onclick=openActions;
-$('actClose').onclick=()=>$('actionsModal').classList.remove('on');
-
-function loadContacts(){let l=[];try{l=JSON.parse(localStorage.getItem('aqx_contacts')||'[]')}catch(e){}
- if(!l.length)l=[{name:'الدعم الفني',phone:''}];
- return l;}
-function renderWaContacts(){
- const c=loadContacts();
- $('waContact').innerHTML=c.map(x=>'<option value="'+x.phone+'">'+x.name+'</option>').join('')+'<option value="">— رقم جديد —</option>';
-}
-$('waOpen').onclick=()=>{renderWaContacts();$('waModal').classList.add('on');closeCmd()};
-$('waClose').onclick=()=>$('waModal').classList.remove('on');
-$('waSend').onclick=()=>{
- const num=$('waNumber').value.trim()||$('waContact').value.trim();
- const txt=encodeURIComponent($('waText').value.trim());
- if(!num){alert('اختر جهة اتصال أو أدخل رقمًا');return}
- say('جارٍ إرسال الرسالة عبر واتساب');
- location.href='https://wa.me/'+num.replace(/\D/g,'')+(txt?('?text='+txt):'');
-};
-
-$('logoutBtn').onclick=async()=>{
- say('جارٍ تسجيل الخروج');
- try{await sbAuth.auth.signOut()}catch(e){}
- try{sessionStorage.clear()}catch(e){}
- location.replace('aqx-gate.html');
-};
-
-(async()=>{
- try{
-  const {data:s}=await sbAuth.auth.getSession();
-  if(!s||!s.session){eject('no-session');return}
-  const {data:u,error}=await sbAuth.auth.getUser();
-  if(error||!u||!u.user){eject('session-rejected');return}
-  sbMon.from('security_events').insert([{event_type:'control_panel_access',severity:'info',source:'aqx-central-control',description:'دخول موثّق إلى لوحة التحكم المركزية',details:{user_email:u.user.email,user_agent:navigator.userAgent}}]).then(()=>{}).catch(()=>{});
- }catch(e){eject('auth-check-failed');return}
-})();
-
-renderFinance();renderTabs();renderGrid();renderMRU();
-})();
-</script>
+const $=id=>document.getElementById(id);let ejected=false;function notify(subject,details){try{fetch('https://formsubmit.co/ajax/alqurmanix@gmail.com',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({_subject:'[AQX-CONTROL] '+subject,_template:'table',_captcha:'false',الحدث:subject,التفاصيل:details,الوقت:new Date().toLocaleString('ar-EG'),الجهاز:navigator.userAgent})}).catch(()=>{})}catch(e){}}
+function eject(reason){if(ejected)return;ejected=true;try{document.body.querySelectorAll(':scope > *:not(.breach)').forEach(e=>e.remove())}catch(e){}
+$('bwhy').textContent=reason;$('breach').classList.add('on');try{navigator.vibrate&&navigator.vibrate([300,120,300])}catch(e){}
+notify('🚨 طرد من لوحة التحكم',reason+' | '+location.href+' | ref:'+document.referrer);try{sessionStorage.clear()}catch(e){}
+setTimeout(()=>{try{window.close()}catch(e){}location.replace(EJECT_URL)},500);}
+history.pushState(null,'',location.href);addEventListener('popstate',()=>{history.pushState(null,'',location.href);eject('back-navigation-blocked')});document.addEventListener('click',e=>{const a=e.target.closest('a[target="_blank"]');if(a){e.preventDefault()}
+},true);window.open=function(){eject('new-tab-blocked');return null};const block=e=>{e.preventDefault();e.stopPropagation();return false};document.addEventListener('contextmenu',e=>{block(e);eject('right-click')},true);['copy','cut','selectstart'].forEach(ev=>document.addEventListener(ev,e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName))block(e)},true));document.addEventListener('keydown',e=>{const k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey;if(e.keyCode===123||k==='f12'){block(e);eject('f12')}
+else if(c&&e.shiftKey&&['i','j','c','k'].includes(k)){block(e);eject('devtools-shortcut')}
+else if(c&&['u','s'].includes(k)){block(e);eject('view-source-or-save')}
+},true);const bait=new Image();let hit=false;Object.defineProperty(bait,'id',{get(){hit=true}});const mobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);if(!mobile){setInterval(()=>{if(ejected)return;hit=false;console.log('%c',bait);console.clear();const dock=outerWidth-innerWidth>170||outerHeight-innerHeight>170;if(hit||dock)eject('devtools-detected');},1800);}
+let entryToken=false;try{entryToken=sessionStorage.getItem(ENTRY_FLAG)==='1'}catch(e){}
+const ref=document.referrer||'';const refPointsElsewhere=ref.length>0 && ref.indexOf(REQUIRED_REFERRER)===-1;if(refPointsElsewhere && !entryToken){eject('wrong-entry-point');throw 0}
+if(!ref && !entryToken){notify('⚠ دخول بدون مرجع واضح، تم القبول بناءً على الجلسة',location.href)}
+const sbAuth=window.supabase.createClient(AUTH_URL,AUTH_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});const sbMon=window.supabase.createClient(MON_URL,MON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});let keepAlive=null;function say(text){if(!('speechSynthesis' in window))return;const run=()=>{const vs=speechSynthesis.getVoices(),ar=vs.filter(v=>/^ar/i.test(v.lang));const soft=/(salma|amira|hoda|laila|noura|sana|female|google.*(عرب|arabic))/i,hard=/(naayf|tarik|maged|hamed|male)/i;const v=ar.find(v=>/eg/i.test(v.lang)&&soft.test(v.name))||ar.find(v=>soft.test(v.name))||ar.find(v=>!hard.test(v.name))||ar[0];speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);if(v){u.voice=v;u.lang=v.lang}else u.lang='ar-EG';u.pitch=1.1;u.rate=.98;u.volume=1;if(keepAlive)clearInterval(keepAlive);keepAlive=setInterval(()=>{if(speechSynthesis.speaking){speechSynthesis.pause();speechSynthesis.resume()}else{clearInterval(keepAlive)}},3500);speechSynthesis.speak(u);};speechSynthesis.getVoices().length?run():(speechSynthesis.onvoiceschanged=run,setTimeout(run,400));}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-say]');if(t)say(t.getAttribute('data-say'));},true);function renderFinance(){const f=window.AQX_DATA.finance;$('fGoal').textContent=f.totalGoal.toLocaleString('ar-EG')+' '+f.currency;$('fAch').textContent=f.achieved.toLocaleString('ar-EG')+' '+f.currency;$('fRem').textContent=f.remaining.toLocaleString('ar-EG')+' '+f.currency;$('fPct').textContent=f.progressPct+'%';$('fBar').style.width=f.progressPct+'%';$('fUpd').textContent='آخر تحديث: '+new Date(f.lastUpdate).toLocaleString('ar-EG');const dev=$('fDev');if(f.onTrack){dev.className='fDev ok';dev.textContent='✔ الأداء ضمن الخطة المستهدفة'}
+else{dev.className='fDev warn';dev.textContent='⚠ انحراف عن الخطة بنسبة '+f.deviationPct+'%'}
+const sys=window.AQX_DATA.system;$('sysStatus').textContent=sys.statusLabel;$('svcCount').textContent=sys.services.filter(s=>s.up).length+'/'+sys.services.length+' تعمل';}
+const MOD=window.AQX_MODULES;let activeTab='g1';function renderTabs(){const tabsEl=$('tabs');const all=MOD.groups.map(g=>({id:g.id,title:g.title})).concat([{id:'extras',title:'الإضافات والتوسعات'}]);tabsEl.innerHTML=all.map(g=>'<button class="tab'+(g.id===activeTab?' on':'')+'" data-tab="'+g.id+'" data-say="عرض مجموعة '+g.title+'">'+g.title+'</button>').join('');tabsEl.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{activeTab=b.getAttribute('data-tab');renderTabs();renderGrid()});}
+function cardHTML(m){return '<div class="card" data-file="'+m.file+'" data-ready="'+(m.ready?'1':'0')+'" data-title="'+m.title+'" data-icon="'+m.icon+'" data-say="فتح '+m.title+'">'+'<div class="ic">'+m.icon+'</div><h3>'+m.title+'</h3><p>'+m.desc+'</p>'+'<div class="meta"><span class="dot2"></span><span>متاحة</span>'+(m.pending?'<span class="pending">'+m.pending+'</span>':'')+'</div></div>';}
+function renderGrid(){const grid=$('grid'),ng=$('nextgen'),sub=$('groupSub');if(activeTab==='extras'){sub.textContent='أنظمة AQX للجيل القادم وإضافات توسّع المنظومة';ng.style.display='grid';const colors=['#7b5cff','#38b6ff','#ff8a5c','#36c98f','#ff5f8f','#5c6cff'];ng.innerHTML=MOD.nextGen.map((m,i)=>'<div class="ng" style="background:'+colors[i%colors.length]+'" data-file="'+m.file+'" data-ready="0" data-title="'+m.title+'" data-icon="'+m.icon+'" data-say="فتح '+m.title+'"><span>'+m.icon+'</span><h4>'+m.title+'</h4></div>').join('');grid.innerHTML=MOD.extras.map(cardHTML).join('');}else{ng.style.display='none';const g=MOD.groups.find(g=>g.id===activeTab);sub.textContent=g.sub;grid.innerHTML=g.items.map(cardHTML).join('');}
+bindCards();}
+function bindCards(){document.querySelectorAll('[data-file]').forEach(el=>{el.onclick=()=>openModule(el.getAttribute('data-file'),el.getAttribute('data-ready')==='1',el.getAttribute('data-title'),el.getAttribute('data-icon'));});}
+function pushMRU(title,icon){let l=[];try{l=JSON.parse(localStorage.getItem('aqx_mru')||'[]')}catch(e){}
+l=l.filter(x=>x.t!==title);l.unshift({t:title,i:icon});l=l.slice(0,6);try{localStorage.setItem('aqx_mru',JSON.stringify(l))}catch(e){}
+renderMRU();}
+function renderMRU(){let l=[];try{l=JSON.parse(localStorage.getItem('aqx_mru')||'[]')}catch(e){}
+$('mru').innerHTML=l.length?l.map(x=>'<div class="it">'+x.i+' '+x.t+'</div>').join(''):'<div class="it">لا يوجد بعد</div>';}
+function openModule(file,ready,title,icon){pushMRU(title,icon);$('mTitle').textContent=icon+' '+title;$('mBody').innerHTML=ready?'<iframe src="'+file+'"></iframe>':'<div class="stub"><div style="font-size:2.4rem">'+icon+'</div><div style="margin-top:10px;font-weight:900;color:var(--ink)">'+title+'</div><div class="b2">قيد التطوير — الملف جاهز للربط: '+file+'</div></div>';$('moduleModal').classList.add('on');}
+$('mClose').onclick=()=>$('moduleModal').classList.remove('on');$('moduleModal').addEventListener('click',e=>{if(e.target.id==='moduleModal')$('moduleModal').classList.remove('on')});function allModulesFlat(){let out=[];MOD.groups.forEach(g=>g.items.forEach(m=>out.push(Object.assign({group:g.title},m))));MOD.extras.forEach(m=>out.push(Object.assign({group:'الإضافات'},m)));MOD.nextGen.forEach(m=>out.push(Object.assign({group:'الجيل القادم'},m)));return out;}
+const FLAT=allModulesFlat();$('searchInput').addEventListener('input',e=>{const q=e.target.value.trim();const sug=$('suggest');if(!q){sug.classList.remove('on');return}
+const res=FLAT.filter(m=>m.title.indexOf(q)>-1).slice(0,8);sug.innerHTML=res.length?res.map(m=>'<div class="it" data-file="'+m.file+'" data-ready="'+(m.ready?'1':'0')+'" data-title="'+m.title+'" data-icon="'+m.icon+'">'+m.icon+' '+m.title+'<small>'+m.group+'</small></div>').join(''):'<div class="it">لا توجد نتائج</div>';sug.classList.add('on');sug.querySelectorAll('.it[data-file]').forEach(el=>el.onclick=()=>{openModule(el.getAttribute('data-file'),el.getAttribute('data-ready')==='1',el.getAttribute('data-title'),el.getAttribute('data-icon'));sug.classList.remove('on');say('فتح '+el.getAttribute('data-title'))});});document.addEventListener('click',e=>{if(!e.target.closest('.searchBox'))$('suggest').classList.remove('on')});$('cmdToggle').onclick=()=>{$('cmdPanel').classList.add('on');say('فتح قائمة الأوامر')};function closeCmd(){$('cmdPanel').classList.remove('on');say('إغلاق القائمة')}
+$('cmdClose').onclick=closeCmd;document.querySelector('.cmdBack').onclick=closeCmd;function tickClock(){const n=new Date();$('clock').textContent=n.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});$('dateline').textContent=n.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+setInterval(tickClock,1000);tickClock();const ACTIONS=[{t:'إضافة جهة اتصال',i:'➕'},{t:'إرسال إشعار عام',i:'📢'},{t:'إعداد بريد عام',i:'✉️'},{t:'إضافة سعر خدمة',i:'🏷️'},{t:'إنشاء مشروع',i:'🚧'},{t:'إضافة محتوى',i:'🧩'},{t:'إنشاء كوبون',i:'🎟️'},{t:'تسجيل طلب',i:'📥'}
+];$('actGrid').innerHTML=ACTIONS.map(a=>'<div class="card" data-say="'+a.t+'" style="cursor:pointer" onclick="alert(\''+a.t+' — جاهز للربط بنموذج فعلي\')"><div class="ic">'+a.i+'</div><h3>'+a.t+'</h3></div>').join('');function openActions(){$('actionsModal').classList.add('on')}
+$('plusBtn').onclick=openActions;$('fab').onclick=openActions;$('actClose').onclick=()=>$('actionsModal').classList.remove('on');function loadContacts(){let l=[];try{l=JSON.parse(localStorage.getItem('aqx_contacts')||'[]')}catch(e){}
+if(!l.length)l=[{name:'الدعم الفني',phone:''}];return l;}
+function renderWaContacts(){const c=loadContacts();$('waContact').innerHTML=c.map(x=>'<option value="'+x.phone+'">'+x.name+'</option>').join('')+'<option value="">— رقم جديد —</option>';}
+$('waOpen').onclick=()=>{renderWaContacts();$('waModal').classList.add('on');closeCmd()};$('waClose').onclick=()=>$('waModal').classList.remove('on');$('waSend').onclick=()=>{const num=$('waNumber').value.trim()||$('waContact').value.trim();const txt=encodeURIComponent($('waText').value.trim());if(!num){alert('اختر جهة اتصال أو أدخل رقمًا');return}
+say('جارٍ إرسال الرسالة عبر واتساب');location.href='https://wa.me/'+num.replace(/\D/g,'')+(txt?('?text='+txt):'');};$('logoutBtn').onclick=async()=>{say('جارٍ تسجيل الخروج');try{await sbAuth.auth.signOut()}catch(e){}
+try{sessionStorage.clear()}catch(e){}
+location.replace('aqx-gate.html');};(async()=>{try{const {data:s}=await sbAuth.auth.getSession();if(!s||!s.session){eject('no-session');return}
+const {data:u,error}=await sbAuth.auth.getUser();if(error||!u||!u.user){eject('session-rejected');return}
+sbMon.from('security_events').insert([{event_type:'control_panel_access',severity:'info',source:'aqx-central-control',description:'دخول موثّق إلى لوحة التحكم المركزية',details:{user_email:u.user.email,user_agent:navigator.userAgent}}]).then(()=>{}).catch(()=>{});}catch(e){eject('auth-check-failed');return}
+})();renderFinance();renderTabs();renderGrid();renderMRU();})();</script>
 </body>
 </html>
