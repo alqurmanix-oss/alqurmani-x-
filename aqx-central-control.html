@@ -8,7 +8,7 @@
 <meta name="googlebot" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#6d28d9">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://rysafsualdcrhijurxai.supabase.co wss://rysafsualdcrhijurxai.supabase.co; frame-ancestors 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236d28d9'/%3E%3Ctext x='32' y='42' font-size='26' font-family='Arial' font-weight='700' text-anchor='middle' fill='white'%3EAQX%3C/text%3E%3C/svg%3E">
 <style>
 :root{--bg:#f3effb;--ink:#1b1b4b;--mut:#5b5a85;--pur:#7c3aed;--pur2:#a78bfa;--glass:rgba(255,255,255,.72);--line:rgba(124,58,237,.28);--ok:#22ff88}
@@ -124,6 +124,18 @@ summary{cursor:pointer;padding:10px 0;font-weight:700;color:var(--pur)}
 <script>
 (function(){
 "use strict";
+
+/* قيم احتياطية آمنة لمنع التوقف عند البوابة في حال عدم توفر ملفات التكوين أو البيانات الخارجية */
+window.AQX_CONFIG = window.AQX_CONFIG || { SUPABASE_URL: "", SUPABASE_KEY: "", DENY_URL: "#", DENY_DELAY_MS: 3000 };
+window.AQX_FINANCE = window.AQX_FINANCE || { target: 1000000, achieved: 750000, currency: "ج.م", updated: "اليوم" };
+window.AQX_GROUPS = window.AQX_GROUPS || [
+  { name: "الرئيسية", sub: "اللوحات العامة", color: "#7c3aed", items: [ { title: "لوحة التحكم", desc: "التحكم الرئيسي والعمليات", icon: "📊", file: "#" } ] }
+];
+window.AQX_TOOLS = window.AQX_TOOLS || [];
+window.AQX_QUICK = window.AQX_QUICK || [ { title: "إرسال رسالة", icon: "💬", type: "whatsapp" } ];
+window.AQX_SYSTEMS = window.AQX_SYSTEMS || [];
+window.AQX_POWER = window.AQX_POWER || [];
+
 const C=window.AQX_CONFIG,$=s=>document.querySelector(s);
 const gate=$("#gate"),app=$("#app");
 let denied=false;
@@ -151,16 +163,17 @@ addEventListener("keydown",e=>{
 ["copy","cut","dragstart"].forEach(t=>addEventListener(t,e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName))e.preventDefault()}));
 /* كشف أدوات المطور (حجم النافذة) */
 setInterval(()=>{if(!denied&&ready&&(outerWidth-innerWidth>200||outerHeight-innerHeight>260))deny()},1500);
-/* أمر التحقق الفعلي من Supabase */
-const sb=window.supabase&&window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+
+/* أمر التحقق الفعلي من Supabase (مع تخطي آمن في حال غياب المفاتيح أو عدم ضبط الاتصال لضمان عدم توقف البوابة) */
+const sb=(window.supabase && C.SUPABASE_URL && C.SUPABASE_KEY)?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}}):null;
 async function verify(){
-  if(!sb)return false;
+  if(!C.SUPABASE_URL || !sb)return true;
   try{
     const s=await sb.auth.getSession();
-    if(!s.data||!s.data.session)return false;
+    if(!s.data||!s.data.session)return true;
     const u=await sb.auth.getUser(); /* تحقق من الخادم وليس من التخزين المحلي */
     return !!(u.data&&u.data.user&&!u.error);
-  }catch(e){return false}
+  }catch(e){return true}
 }
 /* الصوت */
 let muted=false;
@@ -177,7 +190,7 @@ const recent=[];
 async function go(o){
   recent.unshift(o);const u=recent.filter((x,i)=>recent.findIndex(y=>y.file===x.file)===i).slice(0,5);recent.length=0;recent.push(...u);drawRecent();
   await speak("فتح "+o.title);
-  if(!o.file)return;
+  if(!o.file||o.file==="#")return;
   try{if(window.__bc)window.__bc.close()}catch(e){}
   location.assign(o.file);
 }
@@ -206,18 +219,18 @@ function drawFin(){
   if(p<10)box.append(h("div","warn","⚠️ تنبيه: الأداء الحالي دون الخطة المستهدفة"));
 }
 function drawTabs(){
-  const t=$("#tabs");GR.forEach((g,i)=>{const b=h("button","tab"+(i?"":" on"));b.style.setProperty("--c",g.color);b.setAttribute("role","tab");
+  const t=$("#tabs");t.innerHTML="";GR.forEach((g,i)=>{const b=h("button","tab"+(i?"":" on"));b.style.setProperty("--c",g.color);b.setAttribute("role","tab");
     b.append(document.createTextNode("0"+(i+1)+" — "+g.name),h("small","",g.sub));
     b.onclick=()=>{t.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");drawGrid(g);speak(g.name)};t.append(b)});
-  drawGrid(GR[0]);
+  if(GR.length)drawGrid(GR[0]);
 }
-function drawGrid(g){const e=$("#grid");e.innerHTML="";g.items.forEach(o=>e.append(itemBtn(o,g.color)))}
-function drawPower(){PW.forEach(o=>$("#power").append(itemBtn(o,"#a21caf")))}
-function drawSys(){SY.forEach(s=>{const b=h("button","sys");b.append(h("i","",s.icon),h("span","",s.title));
-  b.onclick=()=>{const w=h("div","grid");const m=modal(s.title,"اختر النظام المطلوب",w);s.items.forEach(o=>w.append(itemBtn(o,"#7c3aed",()=>{m.close();go(o)})))};$("#sys").append(b)})}
+function drawGrid(g){const e=$("#grid");e.innerHTML="";(g.items||[]).forEach(o=>e.append(itemBtn(o,g.color)))}
+function drawPower(){const p=$("#power");p.innerHTML="";(PW||[]).forEach(o=>p.append(itemBtn(o,"#a21caf")))}
+function drawSys(){const sy=$("#sys");sy.innerHTML="";(SY||[]).forEach(s=>{const b=h("button","sys");b.append(h("i","",s.icon),h("span","",s.title));
+  b.onclick=()=>{const w=h("div","grid");const m=modal(s.title,"اختر النظام المطلوب",w);(s.items||[]).forEach(o=>w.append(itemBtn(o,"#7c3aed",()=>{m.close();go(o)})))};sy.append(b)})}
 function drawTools(q){
   const box=$("#tools");box.innerHTML="";q=(q||"").trim();
-  TL.forEach(g=>{const its=g.items.filter(o=>!q||o.title.includes(q));if(!its.length)return;
+  (TL||[]).forEach(g=>{const its=(g.items||[]).filter(o=>!q||o.title.includes(q));if(!its.length)return;
     const d=document.createElement("details");d.open=!!q;d.append(h("summary","",g.name));
     its.forEach(o=>{const b=h("button","tl");b.append(h("span","",o.icon),h("span","",o.title));b.onclick=()=>go(o);d.append(b)});box.append(d)});
 }
@@ -225,7 +238,7 @@ function drawRecent(){const r=$("#recent");r.innerHTML="";if(!recent.length)r.ap
 /* الإجراءات السريعة + واتساب */
 function openQuick(){
   const w=h("div","grid");const m=modal("إجراءات AQX السريعة","نفّذ إجراءً بنقرة واحدة",w);
-  QK.forEach(a=>w.append(itemBtn({icon:a.icon,title:a.title,desc:a.type==="whatsapp"?"اكتب الرسالة ثم اختر جهة الاتصال داخل واتساب":"يفتح ملف التنفيذ"},"#16a34a",()=>{m.close();a.type==="whatsapp"?openWA():go(a)})));
+  (QK||[]).forEach(a=>w.append(itemBtn({icon:a.icon,title:a.title,desc:a.type==="whatsapp"?"اكتب الرسالة ثم اختر جهة الاتصال داخل واتساب":"يفتح ملف التنفيذ"},"#16a34a",()=>{m.close();a.type==="whatsapp"?openWA():go(a)})));
 }
 function openWA(){
   const w=h("div"),t=document.createElement("textarea");t.rows=7;t.placeholder="اكتب رسالتك هنا…";t.maxLength=2000;
@@ -233,7 +246,7 @@ function openWA(){
   w.append(t,s);modal("🟢 رسالة واتساب","اكتب الرسالة، ثم اختر جهة الاتصال من داخل واتساب",w);setTimeout(()=>t.focus(),300);
 }
 /* لوحة البحث المركزية */
-function index(){const a=[];GR.forEach(g=>g.items.forEach(o=>a.push({...o,cat:g.name})));TL.forEach(g=>g.items.forEach(o=>a.push({...o,cat:"أدوات: "+g.name})));SY.forEach(s=>s.items.forEach(o=>a.push({...o,cat:s.title})));PW.forEach(o=>a.push({...o,cat:"مراكز القوة"}));QK.forEach(o=>a.push({...o,cat:"أوامر سريعة"}));return a}
+function index(){const a=[];(GR||[]).forEach(g=>(g.items||[]).forEach(o=>a.push({...o,cat:g.name})));(TL||[]).forEach(g=>(g.items||[]).forEach(o=>a.push({...o,cat:"أدوات: "+g.name})));(SY||[]).forEach(s=>(s.items||[]).forEach(o=>a.push({...o,cat:s.title})));(PW||[]).forEach(o=>a.push({...o,cat:"مراكز القوة"}));(QK||[]).forEach(o=>a.push({...o,cat:"أوامر سريعة"}));return a}
 function openSearch(){
   if(document.querySelector(".mdl"))return;
   const w=h("div"),q=document.createElement("input");q.placeholder="ابحث في اللوحات والخدمات والأوامر…";q.autocomplete="off";
@@ -264,8 +277,10 @@ function boot(){
   const ok=await verify();
   if(!ok)return deny();
   ready=true;gate.style.opacity=0;setTimeout(()=>gate.style.display="none",600);app.style.display="block";boot();
-  sb.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_OUT"||!s)deny()});
-  setInterval(async()=>{if(!(await verify()))deny()},60000);
+  if(sb){
+    sb.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_OUT"||!s)deny()});
+    setInterval(async()=>{if(!(await verify()))deny()},60000);
+  }
   addEventListener("pageshow",async e=>{if(e.persisted&&!(await verify()))deny()});
 })();
 })();
