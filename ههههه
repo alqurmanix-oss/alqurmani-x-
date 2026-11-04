@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080d19">
+  <meta name="robots" content="noindex,nofollow">
+  <title>تأكيد البريد الإلكتروني | AQX Identity</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d19;
+      --panel: #111a2b;
+      --text: #f4f7ff;
+      --muted: #9aa9c1;
+      --green: #22c985;
+      --red: #ff6474;
+      --blue: #6c91ff;
+      --border: rgba(255,255,255,.09);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 50% 0%, #172b4c 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 460px;
+      padding: 34px 26px;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      background: rgba(17,26,43,.94);
+      box-shadow: 0 25px 80px rgba(0,0,0,.35);
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 35px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #91adff;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .icon {
+      width: 88px;
+      height: 88px;
+      margin: 30px auto 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 43px;
+      background: rgba(108,145,255,.12);
+      border: 1px solid var(--border);
+    }
+
+    .icon.success {
+      color: var(--green);
+      background: rgba(34,201,133,.12);
+    }
+
+    .icon.error {
+      color: var(--red);
+      background: rgba(255,100,116,.12);
+    }
+
+    h1 {
+      font-size: 23px;
+      margin: 15px 0;
+    }
+
+    .message {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 2;
+      overflow-wrap: anywhere;
+    }
+
+    .email {
+      display: none;
+      margin: 20px 0;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: #b8cbff;
+      font-size: 13px;
+      direction: ltr;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    a.button {
+      display: block;
+      padding: 15px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      background: linear-gradient(120deg,#4778f5,#7458e9);
+      color: white;
+      transition: .2s;
+    }
+
+    a.button:hover { opacity: .9; }
+
+    button {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 30px;
+      color: #73829a;
+      font-size: 11px;
+      line-height: 2;
+    }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+
+    <div class="logo">AQX</div>
+    <div class="subtitle">حسابك الموحد لخدمات القرماني إكس</div>
+
+    <div id="statusIcon" class="icon">◌</div>
+
+    <h1 id="title">جارٍ التحقق من البريد الإلكتروني</h1>
+
+    <p id="message" class="message">
+      نتحقق من حالة تفعيل حسابك بأمان. يرجى الانتظار...
+    </p>
+
+    <div id="emailBox" class="email"></div>
+
+    <div class="actions">
+      <a id="loginButton"
+         class="button"
+         href="https://id.alqurmanix.com/login.html"
+         hidden>
+        الانتقال إلى تسجيل الدخول
+      </a>
+
+      <a id="registerButton"
+         class="button"
+         href="https://id.alqurmanix.com/register.html"
+         hidden>
+        العودة إلى التسجيل
+      </a>
+
+      <button id="retryButton" hidden>
+        إعادة التحقق
+      </button>
+    </div>
+
+    <div class="footer">
+      هوية موحدة • خدمات مستقلة • حماية مركزية
+      <br>
+      AQX Identity
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { createClient }
+      from "https://esm.sh/@supabase/supabase-js@2";
+
+    const CONFIG = {
+      SUPABASE_URL:
+        "https://fkiokwwztbyztleeuwks.supabase.co",
+
+      PUBLISHABLE_KEY:
+        "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+      LOGIN_URL:
+        "https://id.alqurmanix.com/login.html",
+
+      REGISTER_URL:
+        "https://id.alqurmanix.com/register.html"
+    };
+
+    const supabase = createClient(
+      CONFIG.SUPABASE_URL,
+      CONFIG.PUBLISHABLE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          flowType: "implicit"
+        }
+      }
+    );
+
+    const $ = id => document.getElementById(id);
+
+    function show(type, title, message, email = "") {
+      $("statusIcon").className = "icon " + type;
+
+      $("statusIcon").textContent =
+        type === "success" ? "✓" :
+        type === "error" ? "!" : "◌";
+
+      $("title").textContent = title;
+      $("message").textContent = message;
+
+      $("emailBox").style.display = email ? "block" : "none";
+      $("emailBox").textContent = email;
+
+      $("loginButton").hidden = type !== "success";
+      $("registerButton").hidden = type !== "error";
+      $("retryButton").hidden = type !== "error";
+    }
+
+    function cleanAuthParams() {
+      const url = new URL(location.href);
+
+      [
+        "access_token",
+        "refresh_token",
+        "token",
+        "token_hash",
+        "type",
+        "expires_at",
+        "expires_in"
+      ].forEach(key => url.searchParams.delete(key));
+
+      if (url.hash) {
+        history.replaceState(null, "", url.pathname + url.search);
+      } else {
+        history.replaceState(null, "", url.toString());
+      }
+    }
+
+    async function verify() {
+      $("retryButton").hidden = true;
+      $("registerButton").hidden = true;
+      $("loginButton").hidden = true;
+
+      show("loading", "جارٍ التحقق من البريد الإلكتروني",
+        "نراجع حالة حسابك لدى محرك الهوية الموحد...");
+
+      try {
+        // دعم روابط التفعيل التي تحتوي على token_hash.
+        const params = new URLSearchParams(location.search);
+        const tokenHash = params.get("token_hash");
+        const type = params.get("type");
+
+        if (tokenHash && type === "signup") {
+          const { error } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: "signup"
+          });
+
+          if (error) throw error;
+
+          cleanAuthParams();
+        }
+
+        // قراءة الجلسة الفعلية من Supabase.
+        const { data, error } =
+          await supabase.auth.getSession();
+
+        if (error) throw error;
+
+        let user = data.session?.user || null;
+
+        // عند وجود جلسة، نتحقق من المستخدم لدى الخادم.
+        if (data.session) {
+          const result = await supabase.auth.getUser();
+
+          if (result.error) throw result.error;
+
+          user = result.data.user;
+        }
+
+        if (!user) {
+          throw new Error(
+            "لم يتم العثور على جلسة تفعيل صالحة. قد يكون الرابط منتهي الصلاحية أو سبق استخدامه."
+          );
+        }
+
+        if (!user.email_confirmed_at) {
+          throw new Error(
+            "لم يؤكد محرك الهوية البريد الإلكتروني حتى الآن."
+          );
+        }
+
+        show(
+          "success",
+          "تم تفعيل بريدك الإلكتروني بنجاح",
+          "أصبح بريدك الإلكتروني مؤكدًا لدى AQX Identity. يمكنك الآن الانتقال إلى صفحة تسجيل الدخول.",
+          user.email || ""
+        );
+
+      } catch (error) {
+        console.error("AQX confirmation:", error);
+
+        const message =
+          error?.message ||
+          "تعذر التحقق من حالة التفعيل.";
+
+        show(
+          "error",
+          "تعذر تأكيد البريد الإلكتروني",
+          message
+        );
+      }
+    }
+
+    $("loginButton").href = CONFIG.LOGIN_URL;
+    $("registerButton").href = CONFIG.REGISTER_URL;
+
+    $("retryButton").addEventListener("click", verify);
+
+    verify();
+  </script>
+</body>
+</html>
