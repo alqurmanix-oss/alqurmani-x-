@@ -3,347 +3,425 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#080d19">
-  <meta name="robots" content="noindex,nofollow">
-  <title>تأكيد البريد الإلكتروني | AQX Identity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>مركز الحساب الذكي | AQX Identity</title>
 
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #080d19;
-      --panel: #111a2b;
-      --text: #f4f7ff;
-      --muted: #9aa9c1;
-      --green: #22c985;
-      --red: #ff6474;
-      --blue: #6c91ff;
-      --border: rgba(255,255,255,.09);
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:24px 15px;
+      display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at top,#203653,#101827 65%);
+      color:#edf3ff;font-family:Tahoma,Arial,sans-serif
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 24px;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(ellipse at 50% 0%, #172b4c 0%, transparent 55%),
-        var(--bg);
-      color: var(--text);
-      font-family: Tahoma, Arial, sans-serif;
+    .card{
+      width:100%;max-width:480px;padding:30px 23px;
+      background:#172438;border:1px solid #30445f;
+      border-radius:22px;box-shadow:0 20px 60px #0005
     }
-
-    .card {
-      width: 100%;
-      max-width: 460px;
-      padding: 34px 26px;
-      border: 1px solid var(--border);
-      border-radius: 25px;
-      background: rgba(17,26,43,.94);
-      box-shadow: 0 25px 80px rgba(0,0,0,.35);
-      text-align: center;
+    .brand{text-align:center;margin-bottom:25px}
+    .logo{
+      width:65px;height:65px;margin:auto auto 13px;
+      display:grid;place-items:center;border-radius:20px;
+      background:#243c5b;font-size:30px
     }
-
-    .logo {
-      font-size: 35px;
-      font-weight: 900;
-      letter-spacing: 3px;
-      color: #91adff;
+    h1{font-size:23px;margin:0 0 8px}
+    .sub{color:#9fb1ca;font-size:13px;line-height:1.8}
+    .status{
+      padding:14px;margin:18px 0;border-radius:12px;
+      background:#20334d;color:#dceaff;line-height:1.8;
+      font-size:14px
     }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 8px;
+    .status.success{background:#123b32;color:#a8f0d5}
+    .status.error{background:#48252c;color:#ffc2c9}
+    .status.warning{background:#443719;color:#ffe4a1}
+    .section{display:none;margin-top:20px}
+    .section.active{display:block}
+    label{display:block;margin:14px 0 7px;font-size:13px;color:#c6d4e8}
+    input{
+      width:100%;padding:14px;border-radius:10px;
+      border:1px solid #405572;background:#101c2d;
+      color:white;font-size:15px;outline:none
     }
-
-    .icon {
-      width: 88px;
-      height: 88px;
-      margin: 30px auto 20px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      font-size: 43px;
-      background: rgba(108,145,255,.12);
-      border: 1px solid var(--border);
+    input:focus{border-color:#65a9ff}
+    button,.link{
+      display:block;width:100%;padding:14px;margin-top:13px;
+      border:0;border-radius:10px;background:#397de0;
+      color:white;font-size:15px;font-weight:bold;
+      text-align:center;text-decoration:none;cursor:pointer
     }
-
-    .icon.success {
-      color: var(--green);
-      background: rgba(34,201,133,.12);
-    }
-
-    .icon.error {
-      color: var(--red);
-      background: rgba(255,100,116,.12);
-    }
-
-    h1 {
-      font-size: 23px;
-      margin: 15px 0;
-    }
-
-    .message {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 2;
-      overflow-wrap: anywhere;
-    }
-
-    .email {
-      display: none;
-      margin: 20px 0;
-      padding: 13px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: #b8cbff;
-      font-size: 13px;
-      direction: ltr;
-      overflow-wrap: anywhere;
-    }
-
-    .actions {
-      display: grid;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    a.button {
-      display: block;
-      padding: 15px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: bold;
-      background: linear-gradient(120deg,#4778f5,#7458e9);
-      color: white;
-      transition: .2s;
-    }
-
-    a.button:hover { opacity: .9; }
-
-    button {
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      border-radius: 12px;
-      padding: 13px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .footer {
-      margin-top: 30px;
-      color: #73829a;
-      font-size: 11px;
-      line-height: 2;
-    }
-
-    [hidden] { display: none !important; }
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .secondary{background:#293d58}
+    .small{font-size:12px;color:#9fb1ca;line-height:1.8;margin-top:14px}
+    .hidden{display:none!important}
+    .loader{display:inline-block;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    footer{text-align:center;color:#7f94b0;font-size:11px;margin-top:25px}
   </style>
 </head>
 
 <body>
-  <main class="card">
+<main class="card">
 
-    <div class="logo">AQX</div>
-    <div class="subtitle">حسابك الموحد لخدمات القرماني إكس</div>
+  <header class="brand">
+    <div class="logo">🔐</div>
+    <h1>AQX Identity</h1>
+    <div class="sub">مركز تأكيد وإدارة الحساب الذكي</div>
+  </header>
 
-    <div id="statusIcon" class="icon">◌</div>
+  <div id="status" class="status">
+    <span class="loader">◌</span>
+    جارٍ التحقق من بيانات العملية...
+  </div>
 
-    <h1 id="title">جارٍ التحقق من البريد الإلكتروني</h1>
+  <!-- تأكيد البريد -->
+  <section id="confirmed" class="section">
+    <h3>تم تأكيد البريد الإلكتروني</h3>
+    <p class="sub">تم التحقق من حالة البريد عبر محرك المصادقة.</p>
+    <div id="confirmedEmail" class="status success"></div>
+    <a class="link" href="https://id.alqurmanix.com/login.html">
+      الانتقال إلى تسجيل الدخول
+    </a>
+  </section>
 
-    <p id="message" class="message">
-      نتحقق من حالة تفعيل حسابك بأمان. يرجى الانتظار...
+  <!-- طلب إعادة إرسال التفعيل -->
+  <section id="resend" class="section">
+    <h3>إعادة إرسال رسالة التفعيل</h3>
+    <p class="sub">أدخل بريدك الإلكتروني لإرسال رسالة تأكيد جديدة.</p>
+    <label for="resendEmail">البريد الإلكتروني</label>
+    <input id="resendEmail" type="email" autocomplete="email"
+      placeholder="name@example.com">
+    <button id="resendBtn">إرسال رسالة التفعيل</button>
+  </section>
+
+  <!-- طلب استعادة كلمة المرور -->
+  <section id="forgot" class="section">
+    <h3>استعادة كلمة المرور</h3>
+    <p class="sub">أدخل بريد حسابك لإرسال رابط استعادة آمن.</p>
+    <label for="resetEmail">البريد الإلكتروني</label>
+    <input id="resetEmail" type="email" autocomplete="email"
+      placeholder="name@example.com">
+    <button id="resetBtn">إرسال رابط الاستعادة</button>
+  </section>
+
+  <!-- تعيين كلمة مرور جديدة -->
+  <section id="newPassword" class="section">
+    <h3>إنشاء كلمة مرور جديدة</h3>
+    <p class="sub">أدخل كلمة المرور الجديدة بعد التحقق من رابط الاستعادة.</p>
+    <label for="password">كلمة المرور الجديدة</label>
+    <input id="password" type="password" autocomplete="new-password"
+      minlength="8" placeholder="8 أحرف على الأقل">
+    <label for="password2">تأكيد كلمة المرور</label>
+    <input id="password2" type="password" autocomplete="new-password"
+      minlength="8" placeholder="أعد كتابة كلمة المرور">
+    <button id="savePasswordBtn">حفظ كلمة المرور الجديدة</button>
+  </section>
+
+  <!-- إعادة تنشيط الحساب -->
+  <section id="reactivation" class="section">
+    <h3>إعادة تنشيط الحساب</h3>
+    <p class="sub">
+      تختلف إجراءات إعادة التنشيط حسب سبب إيقاف الحساب.
+      يجب أن يتحقق محرك AQX Identity من الحالة والصلاحيات قبل إعادة فتحه.
     </p>
-
-    <div id="emailBox" class="email"></div>
-
-    <div class="actions">
-      <a id="loginButton"
-         class="button"
-         href="https://id.alqurmanix.com/login.html"
-         hidden>
-        الانتقال إلى تسجيل الدخول
-      </a>
-
-      <a id="registerButton"
-         class="button"
-         href="https://id.alqurmanix.com/register.html"
-         hidden>
-        العودة إلى التسجيل
-      </a>
-
-      <button id="retryButton" hidden>
-        إعادة التحقق
-      </button>
+    <div class="status warning">
+      خدمة طلب إعادة التنشيط ستُفعّل بعد تجهيز مسار الطلب والتحقق
+      الإداري في المحرك. لا يمكن لهذه الصفحة تجاوز إيقاف المدير.
     </div>
+    <a class="link secondary" href="https://id.alqurmanix.com/login.html">
+      العودة إلى تسجيل الدخول
+    </a>
+  </section>
 
-    <div class="footer">
-      هوية موحدة • خدمات مستقلة • حماية مركزية
-      <br>
-      AQX Identity
-    </div>
+  <section id="generalActions" class="section">
+    <a class="link secondary" href="https://id.alqurmanix.com/login.html">
+      تسجيل الدخول
+    </a>
+    <a class="link secondary" href="https://id.alqurmanix.com/signup.html">
+      إنشاء حساب جديد
+    </a>
+  </section>
 
-  </main>
+  <footer>
+    AQX Identity · Unified Account System
+  </footer>
+</main>
 
-  <script type="module">
-    import { createClient }
-      from "https://esm.sh/@supabase/supabase-js@2";
+<script type="module">
+import { createClient } from
+  "https://esm.sh/@supabase/supabase-js@2.57.4";
 
-    const CONFIG = {
-      SUPABASE_URL:
-        "https://fkiokwwztbyztleeuwks.supabase.co",
+const CONFIG = {
+  URL: "https://fkiokwwztbyztleeuwks.supabase.co",
+  KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+  CONFIRMED_URL: "https://id.alqurmanix.com/confirmed.html",
+  LOGIN_URL: "https://id.alqurmanix.com/login.html"
+};
 
-      PUBLISHABLE_KEY:
-        "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+const supabase = createClient(CONFIG.URL, CONFIG.KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    flowType: "pkce"
+  }
+});
 
-      LOGIN_URL:
-        "https://id.alqurmanix.com/login.html",
+const $ = id => document.getElementById(id);
 
-      REGISTER_URL:
-        "https://id.alqurmanix.com/register.html"
-    };
+function showStatus(message, type = "") {
+  const el = $("status");
+  el.className = "status " + type;
+  el.textContent = message;
+}
 
-    const supabase = createClient(
-      CONFIG.SUPABASE_URL,
-      CONFIG.PUBLISHABLE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          flowType: "implicit"
-        }
+function showSection(id) {
+  document.querySelectorAll(".section")
+    .forEach(el => el.classList.remove("active"));
+  if (id) $(id).classList.add("active");
+}
+
+function cleanUrl() {
+  history.replaceState({}, document.title,
+    location.pathname);
+}
+
+function errorMessage(error) {
+  const message = String(error?.message || "").toLowerCase();
+
+  if (message.includes("expired") || message.includes("invalid"))
+    return "الرابط غير صالح أو انتهت صلاحيته. اطلب رابطًا جديدًا.";
+
+  if (message.includes("password"))
+    return "كلمة المرور غير مقبولة. تحقق من شروط كلمة المرور.";
+
+  if (message.includes("rate limit"))
+    return "تم تجاوز عدد المحاولات المسموح. حاول لاحقًا.";
+
+  return "تعذر تنفيذ العملية. يرجى المحاولة لاحقًا.";
+}
+
+async function getVerifiedUser() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  return data.user;
+}
+
+async function initialize() {
+  try {
+    const params = new URLSearchParams(location.search);
+    const hash = new URLSearchParams(location.hash.slice(1));
+
+    const authError =
+      params.get("error_description") ||
+      hash.get("error_description");
+
+    if (authError) {
+      showStatus("تعذر إتمام التحقق: " + authError, "error");
+      showSection("generalActions");
+      cleanUrl();
+      return;
+    }
+
+    // دعم روابط PKCE
+    const code = params.get("code");
+    if (code) {
+      const { error } =
+        await supabase.auth.exchangeCodeForSession(code);
+      if (error) throw error;
+      cleanUrl();
+    }
+
+    // دعم روابط Token Hash المخصصة
+    const tokenHash = params.get("token_hash");
+    const type = params.get("type");
+
+    if (tokenHash && type) {
+      const allowedTypes = [
+        "signup", "recovery", "email", "email_change"
+      ];
+
+      if (!allowedTypes.includes(type))
+        throw new Error("Unsupported verification type");
+
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: tokenHash,
+        type
+      });
+
+      if (error) throw error;
+      cleanUrl();
+
+      if (type === "recovery") {
+        showStatus("تم التحقق من رابط الاستعادة. أنشئ كلمة مرور جديدة.",
+          "success");
+        showSection("newPassword");
+        return;
       }
+    }
+
+    // دعم روابط Implicit التي تعيد رموز الجلسة في الرابط
+    const hashType = hash.get("type");
+    if (hashType === "recovery") {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session)
+        throw new Error("Recovery session missing");
+
+      showStatus("تم التحقق من رابط الاستعادة. أنشئ كلمة مرور جديدة.",
+        "success");
+      showSection("newPassword");
+      return;
+    }
+
+    // التحقق من المستخدم من خادم Supabase
+    const user = await getVerifiedUser();
+
+    if (user?.email_confirmed_at) {
+      $("confirmedEmail").textContent =
+        "البريد المؤكد: " + (user.email || "تم التأكيد");
+
+      showStatus("تم تأكيد البريد الإلكتروني بنجاح.", "success");
+      showSection("confirmed");
+      return;
+    }
+
+    if (user && !user.email_confirmed_at) {
+      $("resendEmail").value = user.email || "";
+      showStatus("الحساب موجود، لكن البريد لم يتم تأكيده بعد.", "warning");
+      showSection("resend");
+      return;
+    }
+
+    showStatus("لم نعثر على جلسة مؤكدة. اختر الإجراء المناسب.", "warning");
+    showSection("generalActions");
+
+  } catch (error) {
+    console.error("AQX Identity:", error);
+    showStatus(errorMessage(error), "error");
+    showSection("generalActions");
+  }
+}
+
+// إعادة إرسال رسالة التفعيل
+$("resendBtn").addEventListener("click", async () => {
+  const email = $("resendEmail").value.trim();
+  const btn = $("resendBtn");
+
+  if (!email) {
+    showStatus("أدخل البريد الإلكتروني أولًا.", "error");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "جارٍ الإرسال...";
+
+  try {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: CONFIG.CONFIRMED_URL
+      }
+    });
+
+    if (error) throw error;
+
+    showStatus(
+      "إذا كان البريد مؤهلًا لإعادة التفعيل، فستصلك رسالة وفق سياسة المصادقة. تحقق من الوارد والرسائل غير المرغوب فيها.",
+      "success"
+    );
+  } catch (error) {
+    showStatus(errorMessage(error), "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "إرسال رسالة التفعيل";
+  }
+});
+
+// طلب رابط استعادة كلمة المرور
+$("resetBtn").addEventListener("click", async () => {
+  const email = $("resetEmail").value.trim();
+  const btn = $("resetBtn");
+
+  if (!email) {
+    showStatus("أدخل البريد الإلكتروني أولًا.", "error");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "جارٍ الإرسال...";
+
+  try {
+    const { error } =
+      await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: CONFIG.CONFIRMED_URL
+      });
+
+    if (error) throw error;
+
+    showStatus(
+      "إذا كان الحساب مؤهلًا للاستعادة، فستصلك رسالة على بريدك الإلكتروني.",
+      "success"
+    );
+  } catch (error) {
+    showStatus(errorMessage(error), "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "إرسال رابط الاستعادة";
+  }
+});
+
+// حفظ كلمة المرور الجديدة بعد إثبات جلسة الاستعادة
+$("savePasswordBtn").addEventListener("click", async () => {
+  const password = $("password").value;
+  const password2 = $("password2").value;
+  const btn = $("savePasswordBtn");
+
+  if (password.length < 8) {
+    showStatus("كلمة المرور يجب ألا تقل عن 8 أحرف.", "error");
+    return;
+  }
+
+  if (password !== password2) {
+    showStatus("كلمتا المرور غير متطابقتين.", "error");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "جارٍ الحفظ...";
+
+  try {
+    const { data } = await supabase.auth.getSession();
+
+    if (!data.session)
+      throw new Error("No valid recovery session");
+
+    const { error } =
+      await supabase.auth.updateUser({ password });
+
+    if (error) throw error;
+
+    $("password").value = "";
+    $("password2").value = "";
+
+    showStatus(
+      "تم تحديث كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.",
+      "success"
     );
 
-    const $ = id => document.getElementById(id);
+    showSection("generalActions");
+    await supabase.auth.signOut();
 
-    function show(type, title, message, email = "") {
-      $("statusIcon").className = "icon " + type;
+  } catch (error) {
+    showStatus(errorMessage(error), "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "حفظ كلمة المرور الجديدة";
+  }
+});
 
-      $("statusIcon").textContent =
-        type === "success" ? "✓" :
-        type === "error" ? "!" : "◌";
-
-      $("title").textContent = title;
-      $("message").textContent = message;
-
-      $("emailBox").style.display = email ? "block" : "none";
-      $("emailBox").textContent = email;
-
-      $("loginButton").hidden = type !== "success";
-      $("registerButton").hidden = type !== "error";
-      $("retryButton").hidden = type !== "error";
-    }
-
-    function cleanAuthParams() {
-      const url = new URL(location.href);
-
-      [
-        "access_token",
-        "refresh_token",
-        "token",
-        "token_hash",
-        "type",
-        "expires_at",
-        "expires_in"
-      ].forEach(key => url.searchParams.delete(key));
-
-      if (url.hash) {
-        history.replaceState(null, "", url.pathname + url.search);
-      } else {
-        history.replaceState(null, "", url.toString());
-      }
-    }
-
-    async function verify() {
-      $("retryButton").hidden = true;
-      $("registerButton").hidden = true;
-      $("loginButton").hidden = true;
-
-      show("loading", "جارٍ التحقق من البريد الإلكتروني",
-        "نراجع حالة حسابك لدى محرك الهوية الموحد...");
-
-      try {
-        // دعم روابط التفعيل التي تحتوي على token_hash.
-        const params = new URLSearchParams(location.search);
-        const tokenHash = params.get("token_hash");
-        const type = params.get("type");
-
-        if (tokenHash && type === "signup") {
-          const { error } = await supabase.auth.verifyOtp({
-            token_hash: tokenHash,
-            type: "signup"
-          });
-
-          if (error) throw error;
-
-          cleanAuthParams();
-        }
-
-        // قراءة الجلسة الفعلية من Supabase.
-        const { data, error } =
-          await supabase.auth.getSession();
-
-        if (error) throw error;
-
-        let user = data.session?.user || null;
-
-        // عند وجود جلسة، نتحقق من المستخدم لدى الخادم.
-        if (data.session) {
-          const result = await supabase.auth.getUser();
-
-          if (result.error) throw result.error;
-
-          user = result.data.user;
-        }
-
-        if (!user) {
-          throw new Error(
-            "لم يتم العثور على جلسة تفعيل صالحة. قد يكون الرابط منتهي الصلاحية أو سبق استخدامه."
-          );
-        }
-
-        if (!user.email_confirmed_at) {
-          throw new Error(
-            "لم يؤكد محرك الهوية البريد الإلكتروني حتى الآن."
-          );
-        }
-
-        show(
-          "success",
-          "تم تفعيل بريدك الإلكتروني بنجاح",
-          "أصبح بريدك الإلكتروني مؤكدًا لدى AQX Identity. يمكنك الآن الانتقال إلى صفحة تسجيل الدخول.",
-          user.email || ""
-        );
-
-      } catch (error) {
-        console.error("AQX confirmation:", error);
-
-        const message =
-          error?.message ||
-          "تعذر التحقق من حالة التفعيل.";
-
-        show(
-          "error",
-          "تعذر تأكيد البريد الإلكتروني",
-          message
-        );
-      }
-    }
-
-    $("loginButton").href = CONFIG.LOGIN_URL;
-    $("registerButton").href = CONFIG.REGISTER_URL;
-
-    $("retryButton").addEventListener("click", verify);
-
-    verify();
-  </script>
+initialize();
+</script>
 </body>
 </html>
