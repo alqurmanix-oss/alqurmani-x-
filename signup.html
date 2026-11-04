@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -200,8 +199,6 @@
       text-decoration: none;
     }
 
-    .hidden { display: none !important; }
-
     @media (max-width: 420px) {
       .card { padding: 23px 17px; }
       .brand h1 { font-size: 22px; }
@@ -227,6 +224,7 @@
       <div id="notice" class="notice" role="status" aria-live="polite"></div>
 
       <form id="registerForm" novalidate>
+
         <div class="field">
           <label for="email">البريد الإلكتروني</label>
           <input
@@ -298,6 +296,7 @@
    ========================================== */
 
 const CONFIG = Object.freeze({
+
   SUPABASE_URL:
     "https://fkiokwwztbyztleeuwks.supabase.co",
 
@@ -307,8 +306,9 @@ const CONFIG = Object.freeze({
   ENGINE_STATUS_URL:
     "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity/v1/registration/status",
 
+  // الوجهة الصحيحة بعد تأكيد البريد الإلكتروني
   REDIRECT_URL:
-    "https://id.alqurmanix.com/",
+    "https://id.alqurmanix.com/confirmed.html",
 
   REFRESH_INTERVAL: 20000,
   REQUEST_TIMEOUT: 12000
@@ -355,21 +355,6 @@ function setEngineStatus(message, state = "waiting") {
 
 /* ---------- أدوات عامة ---------- */
 
-function withTimeout(promise, milliseconds) {
-  const controller = new AbortController();
-
-  const timer = setTimeout(
-    () => controller.abort(),
-    milliseconds
-  );
-
-  return {
-    signal: controller.signal,
-    promise,
-    clear: () => clearTimeout(timer)
-  };
-}
-
 function normalizeEmail(value) {
   return value.trim().toLowerCase();
 }
@@ -377,7 +362,6 @@ function normalizeEmail(value) {
 function unwrapPolicy(response) {
   let result = response;
 
-  // دعم أغلفة الاستجابة المختلفة دون افتراض شكل واحد.
   for (let i = 0; i < 3; i++) {
     if (!result || typeof result !== "object") break;
 
@@ -502,7 +486,6 @@ function applyRegistrationPolicy(policy) {
         : "التسجيل مغلق حاليًا من إدارة AQX Identity.";
 
     showNotice(reason, "warning");
-
     submitButton.textContent = "التسجيل مغلق حاليًا";
 
     setEngineStatus(
@@ -584,6 +567,7 @@ async function refreshRegistrationStatus() {
 /* ---------- إرسال طلب التسجيل ---------- */
 
 async function createAccount(email, password) {
+
   const endpoint =
     CONFIG.SUPABASE_URL +
     "/auth/v1/signup?redirect_to=" +
@@ -678,6 +662,7 @@ function validateForm() {
 /* ---------- تنفيذ التسجيل ---------- */
 
 form.addEventListener("submit", async function(event) {
+
   event.preventDefault();
 
   if (registrationBusy) return;
@@ -685,9 +670,10 @@ form.addEventListener("submit", async function(event) {
   hideNotice();
 
   try {
+
     const credentials = validateForm();
 
-    // لا نعتمد على حالة قديمة محفوظة في الصفحة.
+    // تحديث سياسة التسجيل قبل إنشاء الحساب
     await refreshRegistrationStatus();
 
     if (
@@ -727,13 +713,16 @@ form.addEventListener("submit", async function(event) {
       : null;
 
     if (identities && identities.length === 0) {
+
       showNotice(
         "تعذر تأكيد إنشاء حساب جديد بهذا البريد. قد يكون البريد مرتبطًا بحساب موجود بالفعل. جرّب تسجيل الدخول بدلًا من التسجيل.",
         "warning"
       );
+
     } else {
+
       showNotice(
-        "استقبل نظام المصادقة طلب إنشاء الحساب بنجاح. إذا كان تأكيد البريد مفعّلًا، فتحقق من بريدك الإلكتروني واتبع رابط التفعيل. وصول الرسالة يعتمد على إعدادات خدمة البريد.",
+        "استقبل نظام المصادقة طلب إنشاء الحساب بنجاح. تحقق من بريدك الإلكتروني واتبع رابط التفعيل لإكمال إنشاء حسابك.",
         "success"
       );
 
@@ -743,6 +732,7 @@ form.addEventListener("submit", async function(event) {
     submitButton.textContent = "تم استلام الطلب";
 
   } catch (error) {
+
     showNotice(
       error.name === "AbortError"
         ? "انتهت مهلة الاتصال. تحقق من اتصالك وحاول مرة أخرى."
@@ -751,6 +741,7 @@ form.addEventListener("submit", async function(event) {
     );
 
   } finally {
+
     registrationBusy = false;
 
     await refreshRegistrationStatus();
@@ -760,6 +751,7 @@ form.addEventListener("submit", async function(event) {
       currentPolicy?.registration_open === true &&
       currentPolicy?.signup_methods?.email?.signup_enabled === true
     ) {
+
       [
         emailInput,
         passwordInput,
@@ -779,6 +771,7 @@ form.addEventListener("submit", async function(event) {
 /* ---------- التحديث التلقائي ---------- */
 
 function startAutomaticUpdates() {
+
   if (refreshTimer) clearInterval(refreshTimer);
 
   refreshTimer = setInterval(
@@ -794,6 +787,7 @@ document.addEventListener("visibilitychange", () => {
 window.addEventListener("online", refreshRegistrationStatus);
 
 window.addEventListener("offline", () => {
+
   policyAvailable = false;
   currentPolicy = null;
 
@@ -818,12 +812,15 @@ window.addEventListener("offline", () => {
 /* ---------- بدء الصفحة ---------- */
 
 (async function initialize() {
+
   submitButton.disabled = true;
 
   await refreshRegistrationStatus();
 
   startAutomaticUpdates();
+
 })();
+
 </script>
 
 </body>
