@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#080d19">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta http-equiv="Cache-Control" content="no-store">
   <title>AQX | الفحص الأمني</title>
 
   <style>
@@ -36,7 +38,10 @@
       font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
     }
 
-    .shell { width:100%; max-width:480px }
+    .shell {
+      width:100%;
+      max-width:480px;
+    }
 
     .brand {
       text-align:center;
@@ -44,9 +49,11 @@
     }
 
     .logo {
-      width:66px;height:66px;
+      width:66px;
+      height:66px;
       margin:auto auto 12px;
-      display:grid;place-items:center;
+      display:grid;
+      place-items:center;
       border:1px solid #4778ae;
       border-radius:22px;
       background:linear-gradient(145deg,#1d4776,#10213b);
@@ -56,8 +63,16 @@
       box-shadow:0 12px 40px #0008;
     }
 
-    .brand h1 { margin:0;font-size:22px }
-    .brand p { color:var(--muted);font-size:13px;margin:7px 0 }
+    .brand h1 {
+      margin:0;
+      font-size:22px;
+    }
+
+    .brand p {
+      color:var(--muted);
+      font-size:13px;
+      margin:7px 0;
+    }
 
     .card {
       background:linear-gradient(160deg,#142238,#0d1727);
@@ -68,8 +83,10 @@
     }
 
     .shield {
-      width:88px;height:88px;
-      display:grid;place-items:center;
+      width:88px;
+      height:88px;
+      display:grid;
+      place-items:center;
       margin:0 auto 18px;
       border-radius:50%;
       border:1px solid #31577d;
@@ -77,7 +94,12 @@
       font-size:39px;
     }
 
-    h2 { text-align:center;font-size:20px;margin:0 0 9px }
+    h2 {
+      text-align:center;
+      font-size:20px;
+      margin:0 0 9px;
+    }
+
     .intro {
       text-align:center;
       color:var(--muted);
@@ -98,17 +120,29 @@
     }
 
     .dot {
-      width:10px;height:10px;
+      width:10px;
+      height:10px;
       border-radius:50%;
       background:var(--gold);
       box-shadow:0 0 12px currentColor;
       flex:none;
     }
 
-    .status strong { display:block;font-size:13px }
-    .status small { color:var(--muted);font-size:11px }
+    .status strong {
+      display:block;
+      font-size:13px;
+    }
 
-    .steps { display:grid;gap:10px;margin:20px 0 }
+    .status small {
+      color:var(--muted);
+      font-size:11px;
+    }
+
+    .steps {
+      display:grid;
+      gap:10px;
+      margin:20px 0;
+    }
 
     .step {
       display:flex;
@@ -123,19 +157,34 @@
     }
 
     .step-icon {
-      width:29px;height:29px;
-      display:grid;place-items:center;
+      width:29px;
+      height:29px;
+      display:grid;
+      place-items:center;
       border-radius:9px;
       background:#172b43;
       color:#7ebaff;
       font-weight:800;
+      flex:none;
     }
 
-    .step.done { border-color:#17694f }
-    .step.done .step-icon { background:#124d3c;color:#5df0b7 }
+    .step.done {
+      border-color:#17694f;
+    }
 
-    .step.failed { border-color:#783341 }
-    .step.failed .step-icon { background:#542432;color:#ff9baa }
+    .step.done .step-icon {
+      background:#124d3c;
+      color:#5df0b7;
+    }
+
+    .step.failed {
+      border-color:#783341;
+    }
+
+    .step.failed .step-icon {
+      background:#542432;
+      color:#ff9baa;
+    }
 
     .message {
       display:none;
@@ -146,9 +195,21 @@
       line-height:1.8;
     }
 
-    .message.show { display:block }
-    .message.error { background:#351923;border:1px solid #773546;color:#ffc1cb }
-    .message.success { background:#10372d;border:1px solid #1b7256;color:#a7f5d7 }
+    .message.show {
+      display:block;
+    }
+
+    .message.error {
+      background:#351923;
+      border:1px solid #773546;
+      color:#ffc1cb;
+    }
+
+    .message.success {
+      background:#10372d;
+      border:1px solid #1b7256;
+      color:#a7f5d7;
+    }
 
     button {
       width:100%;
@@ -163,7 +224,10 @@
       cursor:pointer;
     }
 
-    button:disabled { opacity:.5;cursor:not-allowed }
+    button:disabled {
+      opacity:.5;
+      cursor:not-allowed;
+    }
 
     .footer {
       text-align:center;
@@ -173,9 +237,13 @@
       line-height:1.8;
     }
 
-    .hidden { display:none!important }
+    .hidden {
+      display:none!important;
+    }
+
     .loader {
-      width:17px;height:17px;
+      width:17px;
+      height:17px;
       display:inline-block;
       vertical-align:middle;
       border:2px solid #ffffff55;
@@ -185,7 +253,9 @@
       margin-left:8px;
     }
 
-    @keyframes spin { to { transform:rotate(360deg) } }
+    @keyframes spin {
+      to { transform:rotate(360deg) }
+    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script>
@@ -201,6 +271,7 @@
   </header>
 
   <section class="card">
+
     <div class="shield" id="shield">🛡️</div>
 
     <h2 id="heading">الفحص الأمني للحساب</h2>
@@ -219,6 +290,7 @@
     </div>
 
     <div class="steps">
+
       <div class="step" id="s1">
         <span class="step-icon">1</span>
         <span>التحقق من هوية Supabase</span>
@@ -226,7 +298,7 @@
 
       <div class="step" id="s2">
         <span class="step-icon">2</span>
-        <span>التحقق من جلسة AQX</span>
+        <span>التحقق من جلسة AQX وإثبات الدخول</span>
       </div>
 
       <div class="step" id="s3">
@@ -238,6 +310,7 @@
         <span class="step-icon">4</span>
         <span>تسجيل نتيجة الفحص الأمني</span>
       </div>
+
     </div>
 
     <div class="message" id="message"></div>
@@ -249,6 +322,7 @@
     <button id="continue" class="hidden" type="button">
       متابعة
     </button>
+
   </section>
 
   <footer class="footer">
@@ -263,16 +337,39 @@
 (() => {
   "use strict";
 
+  /* =========================================
+     AQX SECURITY CONFIGURATION
+  ========================================= */
+
   const CONFIG = Object.freeze({
-    SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
-    SUPABASE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
-    SOC_URL: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-soc",
-    IDENTITY_URL: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
-    LOGIN_URL: "https://id.alqurmanix.com/login.html",
-    DASHBOARD_URL: "https://id.alqurmanix.com/dashboard-aqx.html"
+
+    SUPABASE_URL:
+      "https://fkiokwwztbyztleeuwks.supabase.co",
+
+    SUPABASE_KEY:
+      "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+    SOC_URL:
+      "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-soc",
+
+    IDENTITY_URL:
+      "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+    LOGIN_URL:
+      "https://id.alqurmanix.com/login.html",
+
+    DASHBOARD_URL:
+      "https://id.alqurmanix.com/dashboard-aqx.html"
+
   });
 
+
+  /* =========================================
+     ALLOWED ACTIONS
+  ========================================= */
+
   const ACTIONS = new Set([
+
     "dashboard_access",
     "password_change",
     "email_change",
@@ -280,204 +377,592 @@
     "financial_withdrawal",
     "security_settings",
     "unknown"
+
   ]);
+
+
+  /* =========================================
+     DOM HELPERS
+  ========================================= */
 
   const $ = id => document.getElementById(id);
 
+
+  /* =========================================
+     REQUEST PARAMETERS
+  ========================================= */
+
   const params = new URLSearchParams(location.search);
-  const requestedAction = params.get("action") || "dashboard_access";
-  const ACTION = ACTIONS.has(requestedAction) ? requestedAction : "unknown";
+
+  const requestedAction =
+    params.get("action") || "dashboard_access";
+
+  const ACTION = ACTIONS.has(requestedAction)
+    ? requestedAction
+    : "unknown";
+
+
+  /* =========================================
+     SAFE RETURN URL
+  ========================================= */
 
   function safeReturnUrl() {
+
     const raw = params.get("return_to");
-    if (!raw) return CONFIG.DASHBOARD_URL;
+
+    if (!raw) {
+      return CONFIG.DASHBOARD_URL;
+    }
 
     try {
+
       const url = new URL(raw, location.origin);
 
+      // منع الانتقال إلى نطاق خارجي.
       if (url.origin !== location.origin) {
         return CONFIG.DASHBOARD_URL;
       }
 
+      // منع إعادة التوجيه إلى صفحة الفحص نفسها.
       if (url.pathname === "/secure-aqx.html") {
         return CONFIG.DASHBOARD_URL;
       }
 
       return url.href;
-    } catch {
+
+    } catch (_) {
+
       return CONFIG.DASHBOARD_URL;
+
     }
+
   }
 
   const RETURN_URL = safeReturnUrl();
 
-  const supabaseClient = window.supabase.createClient(
-    CONFIG.SUPABASE_URL,
-    CONFIG.SUPABASE_KEY,
-    {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
+
+  /* =========================================
+     SUPABASE CLIENT
+  ========================================= */
+
+  let supabaseClient = null;
+
+  function initializeSupabase() {
+
+    if (!window.supabase?.createClient) {
+      throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
     }
-  );
+
+    supabaseClient = window.supabase.createClient(
+      CONFIG.SUPABASE_URL,
+      CONFIG.SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      }
+    );
+
+    return supabaseClient;
+
+  }
+
+
+  /* =========================================
+     STATE
+  ========================================= */
 
   let running = false;
   let passed = false;
+  let rejected = false;
+
+
+  /* =========================================
+     UI HELPERS
+  ========================================= */
 
   function setStatus(title, description, color) {
+
     $("statusTitle").textContent = title;
+
     $("statusText").textContent = description;
-    $("dot").style.background = color || "#f4c66a";
+
+    $("dot").style.background =
+      color || "#f4c66a";
+
   }
 
+
   function setStep(number, state) {
+
     const element = $("s" + number);
+
+    const icon = element.querySelector(".step-icon");
+
     element.classList.remove("done", "failed");
 
     if (state === "done") {
+
       element.classList.add("done");
-      element.querySelector(".step-icon").textContent = "✓";
+
+      icon.textContent = "✓";
+
     } else if (state === "failed") {
+
       element.classList.add("failed");
-      element.querySelector(".step-icon").textContent = "!";
+
+      icon.textContent = "!";
+
+    } else {
+
+      icon.textContent = String(number);
+
     }
+
   }
+
+
+  function resetSteps() {
+
+    for (let i = 1; i <= 4; i++) {
+      setStep(i, "pending");
+    }
+
+  }
+
 
   function showMessage(text, type) {
-    const el = $("message");
-    el.textContent = text;
-    el.className = "message show " + type;
+
+    const element = $("message");
+
+    element.textContent = text;
+
+    element.className = "message show " + type;
+
   }
+
+
+  function hideMessage() {
+
+    $("message").className = "message";
+
+  }
+
+
+  /* =========================================
+     AQX SESSION TOKEN
+  ========================================= */
 
   function getAqxToken() {
+
     try {
+
       return localStorage.getItem("aqx_session_token") || "";
-    } catch {
+
+    } catch (_) {
+
       return "";
+
     }
+
   }
 
-  async function logoutAndReject(reason) {
+
+  /* =========================================
+     LOGIN PROOF CONSUMPTION
+     MUST HAPPEN BEFORE SOC CHECK
+  ========================================= */
+
+  async function consumeLoginProof(accessToken, aqxToken) {
+
+    let proof = "";
+
     try {
-      const { data } = await supabaseClient.auth.getSession();
-      const accessToken = data?.session?.access_token;
+
+      proof =
+        sessionStorage.getItem("aqx_login_proof") || "";
+
+    } catch (_) {
+
+      throw new Error("LOGIN_PROOF_STORAGE_UNAVAILABLE");
+
+    }
+
+    if (!proof || proof.length < 30 || proof.length > 100) {
+
+      throw new Error("LOGIN_PROOF_REQUIRED");
+
+    }
+
+    let response;
+
+    try {
+
+      response = await fetch(
+        CONFIG.IDENTITY_URL + "/v1/security/login-proof/consume",
+        {
+          method: "POST",
+
+          headers: {
+
+            "Authorization": "Bearer " + accessToken,
+
+            "apikey": CONFIG.SUPABASE_KEY,
+
+            "Content-Type": "application/json",
+
+            "x-aqx-session": aqxToken
+
+          },
+
+          body: JSON.stringify({
+
+            proof_token: proof
+
+          }),
+
+          cache: "no-store",
+
+          credentials: "omit"
+
+        }
+      );
+
+    } finally {
+
+      // حذف الإثبات محليًا بعد محاولة الاستهلاك.
+      try {
+
+        sessionStorage.removeItem("aqx_login_proof");
+
+      } catch (_) {}
+
+    }
+
+    const result = await response.json().catch(() => null);
+
+    if (
+      !response.ok ||
+      result?.success !== true ||
+      result?.valid !== true ||
+      result?.purpose !== "dashboard_access"
+    ) {
+
+      throw new Error(
+        result?.error || "LOGIN_PROOF_INVALID"
+      );
+
+    }
+
+    return true;
+
+  }
+
+
+  /* =========================================
+     LOGOUT AND REJECT
+  ========================================= */
+
+  async function logoutAndReject(reason) {
+
+    if (rejected) return;
+
+    rejected = true;
+
+    $("retry").classList.add("hidden");
+
+    $("continue").classList.add("hidden");
+
+    $("retry").disabled = true;
+
+    $("continue").disabled = true;
+
+    try {
+
+      const { data } =
+        await supabaseClient.auth.getSession();
+
+      const accessToken =
+        data?.session?.access_token;
+
       const aqxToken = getAqxToken();
 
       if (accessToken && aqxToken) {
-        await fetch(CONFIG.IDENTITY_URL + "/v1/session/logout", {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + accessToken,
-            "apikey": CONFIG.SUPABASE_KEY,
-            "Content-Type": "application/json",
-            "x-aqx-session": aqxToken
-          },
-          body: JSON.stringify({ reason: "security_check_failed" })
-        });
+
+        await fetch(
+          CONFIG.IDENTITY_URL + "/v1/session/logout",
+          {
+            method: "POST",
+
+            headers: {
+
+              "Authorization": "Bearer " + accessToken,
+
+              "apikey": CONFIG.SUPABASE_KEY,
+
+              "Content-Type": "application/json",
+
+              "x-aqx-session": aqxToken
+
+            },
+
+            body: JSON.stringify({
+              reason: "security_check_failed"
+            }),
+
+            cache: "no-store",
+
+            credentials: "omit"
+
+          }
+        );
+
       }
+
+    } catch (_) {
+
+      // نكمل إنهاء الجلسة المحلية حتى لو تعذر الاتصال.
+
+    }
+
+    try {
+
+      await supabaseClient.auth.signOut({
+        scope: "local"
+      });
+
     } catch (_) {}
 
     try {
-      await supabaseClient.auth.signOut({ scope: "local" });
-    } catch (_) {}
 
-    try {
       localStorage.removeItem("aqx_session_token");
+
       localStorage.removeItem("aqx_session_id");
+
+      sessionStorage.removeItem("aqx_login_proof");
+
     } catch (_) {}
+
 
     $("shield").textContent = "⛔";
-    $("heading").textContent = "تعذر اجتياز الفحص";
-    $("retry").classList.add("hidden");
-    $("continue").classList.add("hidden");
 
-    setStatus("تم رفض الوصول", reason, "#ff6478");
+    $("heading").textContent = "تعذر اجتياز الفحص";
+
+    setStatus(
+      "تم رفض الوصول",
+      "لم يتم اجتياز التحقق الأمني",
+      "#ff6478"
+    );
+
     showMessage(
       "تم إيقاف العملية حفاظًا على أمان الحساب. ستتم إعادتك إلى تسجيل الدخول.",
       "error"
     );
 
     setTimeout(() => {
+
       location.replace(CONFIG.LOGIN_URL);
+
     }, 2200);
+
   }
 
+
+  /* =========================================
+     MAIN SECURITY CHECK
+  ========================================= */
+
   async function runCheck() {
-    if (running || passed) return;
+
+    if (running || passed || rejected) {
+      return;
+    }
 
     running = true;
+
     $("retry").classList.add("hidden");
+
     $("continue").classList.add("hidden");
-    $("message").className = "message";
+
+    $("retry").disabled = true;
+
+    $("continue").disabled = true;
+
+    hideMessage();
+
+    resetSteps();
+
     $("shield").textContent = "🛡️";
 
-    setStatus("جاري تنفيذ الفحص", "التحقق من بيانات الجلسة", "#f4c66a");
+    setStatus(
+      "جاري تنفيذ الفحص",
+      "التحقق من بيانات الجلسة",
+      "#f4c66a"
+    );
+
 
     try {
-      if (!window.supabase?.createClient) {
-        throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
-      }
 
-      const { data, error } = await supabaseClient.auth.getSession();
+      /* -------------------------------------
+         STEP 0: INITIALIZE CLIENT
+      ------------------------------------- */
 
-      if (error || !data?.session?.access_token) {
+      initializeSupabase();
+
+
+      /* -------------------------------------
+         STEP 1: SUPABASE AUTH
+      ------------------------------------- */
+
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.getSession();
+
+      if (
+        error ||
+        !data?.session?.access_token
+      ) {
+
         throw new Error("IDENTITY_SESSION_MISSING");
+
       }
 
-      const accessToken = data.session.access_token;
-      const user = data.session.user;
+      const accessToken =
+        data.session.access_token;
+
+      const user =
+        data.session.user;
 
       if (!user?.id) {
+
         throw new Error("IDENTITY_INVALID");
+
       }
 
       setStep(1, "done");
 
+
+      /* -------------------------------------
+         STEP 2: AQX SESSION
+      ------------------------------------- */
+
       const aqxToken = getAqxToken();
 
-      if (!aqxToken || aqxToken.length < 30) {
+      if (
+        !aqxToken ||
+        aqxToken.length < 30 ||
+        aqxToken.length > 100
+      ) {
+
         throw new Error("AQX_SESSION_MISSING");
+
       }
+
+
+      /* -------------------------------------
+         STEP 2-A: LOGIN PROOF
+         CRITICAL SECURITY GATE
+      ------------------------------------- */
+
+      setStatus(
+        "جاري تأكيد إثبات الدخول",
+        "التحقق من التحدي الأمني المرتبط بالجلسة",
+        "#f4c66a"
+      );
+
+      await consumeLoginProof(
+        accessToken,
+        aqxToken
+      );
 
       setStep(2, "done");
-      setStatus("جاري مراجعة الحالة الأمنية", "الاتصال بمحرك AQX-SOC", "#f4c66a");
 
-      const response = await fetch(CONFIG.SOC_URL + "/v1/check", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + accessToken,
-          "apikey": CONFIG.SUPABASE_KEY,
-          "Content-Type": "application/json",
-          "x-aqx-session": aqxToken
-        },
-        body: JSON.stringify({
-          action: ACTION
-        }),
-        cache: "no-store",
-        credentials: "omit"
-      });
 
-      const result = await response.json().catch(() => null);
+      /* -------------------------------------
+         STEP 3: AQX SOC
+      ------------------------------------- */
 
-      if (!response.ok || !result || result.success !== true ||
-          result.decision !== "allow" || result.verified !== true) {
+      setStatus(
+        "جاري مراجعة الحالة الأمنية",
+        "تم إثبات الدخول، الاتصال بمحرك AQX-SOC",
+        "#f4c66a"
+      );
+
+      const response = await fetch(
+        CONFIG.SOC_URL + "/v1/check",
+        {
+          method: "POST",
+
+          headers: {
+
+            "Authorization": "Bearer " + accessToken,
+
+            "apikey": CONFIG.SUPABASE_KEY,
+
+            "Content-Type": "application/json",
+
+            "x-aqx-session": aqxToken
+
+          },
+
+          body: JSON.stringify({
+
+            action: ACTION
+
+          }),
+
+          cache: "no-store",
+
+          credentials: "omit"
+
+        }
+      );
+
+
+      const result =
+        await response.json().catch(() => null);
+
+
+      /* -------------------------------------
+         SOC DECISION
+      ------------------------------------- */
+
+      if (
+        !response.ok ||
+        !result ||
+        result.success !== true ||
+        result.decision !== "allow" ||
+        result.verified !== true
+      ) {
 
         setStep(3, "failed");
+
         setStep(4, "failed");
 
-        const reason = result?.error || "SECURITY_CHECK_DENIED";
-        await logoutAndReject(reason);
-        return;
+        throw new Error(
+          result?.error || "SECURITY_CHECK_DENIED"
+        );
+
       }
 
+
+      /* -------------------------------------
+         STEP 4: SUCCESS
+      ------------------------------------- */
+
       setStep(3, "done");
+
       setStep(4, "done");
 
       passed = true;
+
       $("shield").textContent = "✅";
-      $("heading").textContent = "اجتاز الحساب الفحص الأمني";
+
+      $("heading").textContent =
+        "اجتاز الحساب الفحص الأمني";
 
       setStatus(
         "الفحص الأمني ناجح",
@@ -490,42 +975,87 @@
         "success"
       );
 
+
+      /* -------------------------------------
+         CONTINUE
+      ------------------------------------- */
+
+      $("continue").disabled = false;
+
       $("continue").classList.remove("hidden");
+
       $("continue").textContent =
-        ACTION === "dashboard_access" ? "الدخول إلى لوحة الحساب" : "العودة إلى العملية";
+        ACTION === "dashboard_access"
+          ? "الدخول إلى لوحة الحساب"
+          : "العودة إلى العملية";
+
 
     } catch (error) {
-      console.error("AQX security check:", error);
 
-      setStatus(
-        "تعذر إكمال الفحص",
-        "النظام أوقف العملية احتياطيًا",
-        "#ff6478"
+      console.error(
+        "AQX Security Check:",
+        error
       );
 
-      $("shield").textContent = "⚠️";
-      $("heading").textContent = "الفحص الأمني غير متاح";
+      setStep(3, "failed");
 
-      showMessage(
-        "لم نتمكن من تأكيد سلامة الجلسة. لن نسمح باستكمال العملية قبل نجاح الفحص.",
-        "error"
+      setStep(4, "failed");
+
+      await logoutAndReject(
+        error?.message || "SECURITY_CHECK_FAILED"
       );
 
-      $("retry").classList.remove("hidden");
+      return;
+
     } finally {
+
       running = false;
+
     }
+
   }
 
-  $("retry").addEventListener("click", runCheck);
+
+  /* =========================================
+     CONTINUE BUTTON
+  ========================================= */
 
   $("continue").addEventListener("click", () => {
-    if (!passed) return;
+
+    if (!passed || rejected) {
+      return;
+    }
+
+    $("continue").disabled = true;
+
     location.replace(RETURN_URL);
+
   });
 
+
+  /* =========================================
+     RETRY BUTTON
+  ========================================= */
+
+  $("retry").addEventListener("click", () => {
+
+    if (running || passed || rejected) {
+      return;
+    }
+
+    runCheck();
+
+  });
+
+
+  /* =========================================
+     INITIAL EXECUTION
+  ========================================= */
+
   runCheck();
+
 })();
 </script>
+
 </body>
 </html>
