@@ -138,6 +138,11 @@
 
     input::placeholder { color:#a8afbd; }
 
+    input:disabled {
+      background:#f5f6fa;
+      cursor:not-allowed;
+    }
+
     .password-note {
       margin:6px 2px 0;
       color:var(--muted);
@@ -185,7 +190,12 @@
     }
 
     .primary-btn:hover { transform:translateY(-1px); }
-    button:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+    button:disabled {
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+    }
 
     .divider {
       display:flex;
@@ -212,7 +222,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
+      gap:11px;
       border:1px solid var(--line);
       color:#344054;
       background:#fff;
@@ -224,12 +234,20 @@
     }
 
     .provider-icon {
-      width:20px;
-      height:20px;
+      width:21px;
+      height:21px;
       display:inline-grid;
       place-items:center;
-      font-size:15px;
+      font-size:18px;
       font-weight:800;
+    }
+
+    .provider-icon.github {
+      color:#24292f;
+    }
+
+    .provider-icon.google {
+      color:#4285F4;
     }
 
     .message {
@@ -289,6 +307,15 @@
       animation:spin .7s linear infinite;
     }
 
+    .provider-loading {
+      width:15px;
+      height:15px;
+      border:2px solid #d8d9e5;
+      border-top-color:var(--primary);
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+
     @keyframes spin { to { transform:rotate(360deg); } }
 
     @media(max-width:480px) {
@@ -305,17 +332,22 @@
       <header class="brand">
         <div class="logo">AQX</div>
         <p class="brand-name">القرماني إكس <span>AQX</span></p>
-        <p class="subtitle" data-i18n="brandSubtitle">نظام الهوية والحساب الموحد</p>
+        <p class="subtitle" data-i18n="brandSubtitle">
+          نظام الهوية والحساب الموحد
+        </p>
       </header>
 
       <h1 data-i18n="heading">إنشاء حساب جديد</h1>
-      <p class="intro" data-i18n="intro">أنشئ حسابك للوصول إلى خدمات AQX</p>
+      <p class="intro" data-i18n="intro">
+        أنشئ حسابك للوصول إلى خدمات AQX
+      </p>
 
       <div id="message" class="message" role="alert" aria-live="polite"></div>
 
       <div id="registrationClosed" class="message error hidden"></div>
 
       <form id="signupForm" novalidate>
+
         <div class="field">
           <label for="email" data-i18n="emailLabel">البريد الإلكتروني</label>
           <input id="email" name="email" type="email"
@@ -335,7 +367,9 @@
         </div>
 
         <div class="field">
-          <label for="confirmPassword" data-i18n="confirmLabel">تأكيد كلمة المرور</label>
+          <label for="confirmPassword" data-i18n="confirmLabel">
+            تأكيد كلمة المرور
+          </label>
           <input id="confirmPassword" name="confirmPassword"
                  type="password" autocomplete="new-password"
                  required maxlength="128"
@@ -362,13 +396,17 @@
       </form>
 
       <div id="providerSection">
-        <div class="divider"><span data-i18n="or">أو التسجيل باستخدام</span></div>
+        <div class="divider">
+          <span data-i18n="or">أو التسجيل باستخدام</span>
+        </div>
         <div id="providers" class="providers"></div>
       </div>
 
       <div class="engine-status">
         <span id="statusDot" class="status-dot"></span>
-        <span id="engineStatusText" data-i18n="checking">جارٍ الاتصال بمحرك الهوية...</span>
+        <span id="engineStatusText" data-i18n="checking">
+          جارٍ الاتصال بمحرك الهوية...
+        </span>
       </div>
 
     </section>
@@ -386,13 +424,16 @@
   (() => {
     "use strict";
 
-    /* =====================================================
-       AQX IDENTITY — FRONTEND CONFIGURATION
-       ===================================================== */
+    /* ==========================================
+       AQX IDENTITY CONFIGURATION
+       ========================================== */
 
     const CONFIG = Object.freeze({
-      SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
-      SUPABASE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+      SUPABASE_URL:
+        "https://fkiokwwztbyztleeuwks.supabase.co",
+
+      SUPABASE_KEY:
+        "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
 
       ENGINE_BASE:
         "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
@@ -400,8 +441,11 @@
       STATUS_URL:
         "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity/v1/registration/status",
 
-      CONFIRMED_URL: "https://id.alqurmanix.com/confirmed.html",
-      LOGIN_URL: "https://id.alqurmanix.com/login.html",
+      CONFIRMED_URL:
+        "https://id.alqurmanix.com/confirmed.html",
+
+      LOGIN_URL:
+        "https://id.alqurmanix.com/login.html",
 
       REFRESH_INTERVAL: 20000,
       REQUEST_TIMEOUT: 15000,
@@ -409,6 +453,10 @@
       DEFAULT_MIN_PASSWORD_LENGTH: 8,
       MAX_PASSWORD_LENGTH: 128
     });
+
+    /* ==========================================
+       LANGUAGES
+       ========================================== */
 
     const I18N = {
       ar: {
@@ -426,6 +474,7 @@
         createAccount:"إنشاء الحساب",
         or:"أو التسجيل باستخدام",
         checking:"جارٍ الاتصال بمحرك الهوية...",
+        checkingPolicy:"يتم التحقق من سياسة التسجيل...",
         online:"محرك الهوية متصل",
         offline:"تعذر الاتصال بمحرك الهوية",
         haveAccount:"لديك حساب بالفعل؟",
@@ -435,26 +484,24 @@
         shortPassword:"كلمة المرور أقصر من الحد الأدنى المسموح.",
         longPassword:"كلمة المرور أطول من الحد المسموح.",
         mismatch:"كلمتا المرور غير متطابقتين.",
-        acceptTerms:"يجب الموافقة على الشروط والأحكام.",
         closed:"التسجيل مغلق حاليًا من إدارة AQX.",
         emailDisabled:"التسجيل بالبريد الإلكتروني غير متاح حاليًا.",
         providerDisabled:"طريقة التسجيل هذه غير متاحة حاليًا.",
-        checkingPolicy:"يتم التحقق من سياسة التسجيل...",
         policyUnavailable:"تعذر التحقق من سياسة التسجيل. تم إيقاف التسجيل حفاظًا على الأمان.",
         creating:"جارٍ إنشاء الحساب...",
         signupSuccess:"تم إرسال طلب إنشاء الحساب. افحص بريدك الإلكتروني لإكمال التفعيل.",
         duplicate:"تعذر إنشاء الحساب بهذا البريد. إذا كان لديك حساب بالفعل، سجّل الدخول أو استخدم استعادة كلمة المرور.",
         genericError:"تعذر إنشاء الحساب. يرجى المحاولة مرة أخرى.",
         networkError:"تعذر الاتصال بالخدمة. تحقق من اتصال الإنترنت.",
-        oauthError:"تعذر بدء تسجيل الدخول بهذه الطريقة.",
+        oauthError:"تعذر بدء التسجيل بهذه الطريقة.",
         google:"المتابعة باستخدام Google",
         github:"المتابعة باستخدام GitHub",
-        facebook:"المتابعة باستخدام Facebook",
-        apple:"المتابعة باستخدام Apple",
-        microsoft:"المتابعة باستخدام Microsoft",
-        discord:"المتابعة باستخدام Discord",
         termsRequired:"يجب الموافقة على الشروط قبل التسجيل.",
-        registrationUnavailable:"خدمة التسجيل غير متاحة حاليًا."
+        registrationUnavailable:"خدمة التسجيل غير متاحة حاليًا.",
+        passwordUpper:"يجب أن تحتوي كلمة المرور على حرف إنجليزي كبير.",
+        passwordLower:"يجب أن تحتوي كلمة المرور على حرف إنجليزي صغير.",
+        passwordNumber:"يجب أن تحتوي كلمة المرور على رقم.",
+        passwordSpecial:"يجب أن تحتوي كلمة المرور على رمز خاص."
       },
 
       en: {
@@ -472,6 +519,7 @@
         createAccount:"Create account",
         or:"Or continue with",
         checking:"Connecting to identity engine...",
+        checkingPolicy:"Checking registration policy...",
         online:"Identity engine connected",
         offline:"Identity engine unavailable",
         haveAccount:"Already have an account?",
@@ -481,26 +529,24 @@
         shortPassword:"Password is shorter than the required minimum.",
         longPassword:"Password exceeds the allowed length.",
         mismatch:"Passwords do not match.",
-        acceptTerms:"You must accept the terms.",
         closed:"Registration is currently closed.",
         emailDisabled:"Email registration is currently unavailable.",
         providerDisabled:"This sign-up method is currently unavailable.",
-        checkingPolicy:"Checking registration policy...",
         policyUnavailable:"Registration policy could not be verified. Registration is blocked.",
         creating:"Creating your account...",
         signupSuccess:"Your account request was submitted. Check your email to complete verification.",
         duplicate:"Unable to create an account with this email. Sign in or reset your password if you already have an account.",
         genericError:"Unable to create your account. Please try again.",
         networkError:"Unable to connect. Check your internet connection.",
-        oauthError:"Unable to start this sign-in method.",
+        oauthError:"Unable to start this sign-up method.",
         google:"Continue with Google",
         github:"Continue with GitHub",
-        facebook:"Continue with Facebook",
-        apple:"Continue with Apple",
-        microsoft:"Continue with Microsoft",
-        discord:"Continue with Discord",
         termsRequired:"You must accept the terms before registering.",
-        registrationUnavailable:"Registration is currently unavailable."
+        registrationUnavailable:"Registration is currently unavailable.",
+        passwordUpper:"Password must contain an uppercase letter.",
+        passwordLower:"Password must contain a lowercase letter.",
+        passwordNumber:"Password must contain a number.",
+        passwordSpecial:"Password must contain a special character."
       },
 
       es: {
@@ -518,6 +564,7 @@
         createAccount:"Crear cuenta",
         or:"O continuar con",
         checking:"Conectando con el motor de identidad...",
+        checkingPolicy:"Comprobando la política de registro...",
         online:"Motor de identidad conectado",
         offline:"Motor de identidad no disponible",
         haveAccount:"¿Ya tienes una cuenta?",
@@ -527,50 +574,67 @@
         shortPassword:"La contraseña es demasiado corta.",
         longPassword:"La contraseña supera la longitud permitida.",
         mismatch:"Las contraseñas no coinciden.",
-        acceptTerms:"Debes aceptar los términos.",
         closed:"El registro está cerrado actualmente.",
         emailDisabled:"El registro por correo electrónico no está disponible.",
         providerDisabled:"Este método de registro no está disponible.",
-        checkingPolicy:"Comprobando la política de registro...",
         policyUnavailable:"No se pudo verificar la política. El registro está bloqueado.",
         creating:"Creando tu cuenta...",
         signupSuccess:"Solicitud enviada. Revisa tu correo para completar la verificación.",
         duplicate:"No se pudo crear una cuenta con este correo. Inicia sesión o restablece tu contraseña.",
         genericError:"No se pudo crear la cuenta. Inténtalo de nuevo.",
         networkError:"No se pudo conectar. Comprueba tu conexión.",
-        oauthError:"No se pudo iniciar este método de acceso.",
+        oauthError:"No se pudo iniciar este método de registro.",
         google:"Continuar con Google",
         github:"Continuar con GitHub",
-        facebook:"Continuar con Facebook",
-        apple:"Continuar con Apple",
-        microsoft:"Continuar con Microsoft",
-        discord:"Continuar con Discord",
         termsRequired:"Debes aceptar los términos antes de registrarte.",
-        registrationUnavailable:"El registro no está disponible actualmente."
+        registrationUnavailable:"El registro no está disponible actualmente.",
+        passwordUpper:"La contraseña debe contener una mayúscula.",
+        passwordLower:"La contraseña debe contener una minúscula.",
+        passwordNumber:"La contraseña debe contener un número.",
+        passwordSpecial:"La contraseña debe contener un símbolo especial."
       }
     };
 
     const PROVIDER_INFO = {
-      google:    { icon:"G", color:"#4285F4" },
-      github:    { icon:"⌘", color:"#24292f" },
-      facebook:  { icon:"f", color:"#1877F2" },
-      apple:     { icon:"●", color:"#111111" },
-      azure:     { icon:"▦", color:"#1673c9", label:"Microsoft" },
-      microsoft: { icon:"▦", color:"#1673c9" },
-      discord:   { icon:"◈", color:"#5865F2" }
+      google: {
+        icon:"G",
+        className:"google"
+      },
+      github: {
+        icon:"⌘",
+        className:"github"
+      }
     };
 
     const $ = id => document.getElementById(id);
+
+    /* ==========================================
+       SUPABASE CLIENT
+       ========================================== */
+
+    if (!window.supabase || !window.supabase.createClient) {
+      $("engineStatusText").textContent =
+        "تعذر تحميل مكتبة المصادقة";
+
+      $("statusDot").className = "status-dot offline";
+      $("signupForm").classList.add("hidden");
+      $("providerSection").classList.add("hidden");
+      $("registrationClosed").classList.remove("hidden");
+      $("registrationClosed").textContent =
+        "تعذر تشغيل نظام التسجيل. يرجى إعادة تحميل الصفحة.";
+
+      return;
+    }
 
     const supabase = window.supabase.createClient(
       CONFIG.SUPABASE_URL,
       CONFIG.SUPABASE_KEY,
       {
         auth: {
-          autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true,
-          flowType: "pkce"
+          autoRefreshToken:true,
+          persistSession:true,
+          detectSessionInUrl:true,
+          flowType:"pkce"
         }
       }
     );
@@ -579,12 +643,18 @@
     let currentPolicy = null;
     let policyReady = false;
     let requestInProgress = false;
+    let policyRefreshTimer = null;
+
+    /* ==========================================
+       LANGUAGE
+       ========================================== */
 
     function detectLanguage() {
       const language = (navigator.language || "ar").toLowerCase();
 
       if (language.startsWith("es")) return "es";
       if (language.startsWith("en")) return "en";
+
       return "ar";
     }
 
@@ -602,6 +672,7 @@
 
       document.querySelectorAll("[data-i18n]").forEach(element => {
         const key = element.dataset.i18n;
+
         if (I18N[currentLanguage][key]) {
           element.textContent = t(key);
         }
@@ -609,11 +680,17 @@
 
       $("loginLink").href = CONFIG.LOGIN_URL;
       $("passwordHint").textContent = t("passwordHint");
+
       renderProviders();
     }
 
+    /* ==========================================
+       MESSAGES
+       ========================================== */
+
     function showMessage(message, type = "info") {
       const element = $("message");
+
       element.className = "message show " + type;
       element.textContent = message;
     }
@@ -631,8 +708,13 @@
         online ? t("online") : t("offline");
     }
 
+    /* ==========================================
+       NETWORK
+       ========================================== */
+
     async function fetchWithTimeout(url, options = {}) {
       const controller = new AbortController();
+
       const timer = setTimeout(
         () => controller.abort(),
         CONFIG.REQUEST_TIMEOUT
@@ -641,112 +723,95 @@
       try {
         return await fetch(url, {
           ...options,
-          signal: controller.signal,
-          cache: "no-store"
+          signal:controller.signal,
+          cache:"no-store"
         });
       } finally {
         clearTimeout(timer);
       }
     }
 
-    function firstBoolean(objects, keys) {
-      for (const object of objects) {
-        if (!object || typeof object !== "object") continue;
+    /* ==========================================
+       POLICY PARSING
+       ========================================== */
 
-        for (const key of keys) {
-          if (typeof object[key] === "boolean") {
-            return object[key];
+    function getBoolean(value) {
+      if (typeof value === "boolean") return value;
+
+      if (typeof value === "string") {
+        const normalized = value.trim().toLowerCase();
+
+        if (normalized === "true" || normalized === "1") {
+          return true;
+        }
+
+        if (normalized === "false" || normalized === "0") {
+          return false;
+        }
+      }
+
+      if (typeof value === "number") {
+        if (value === 1) return true;
+        if (value === 0) return false;
+      }
+
+      if (value && typeof value === "object") {
+        for (const key of ["enabled", "signup_enabled", "active"]) {
+          if (typeof value[key] === "boolean") {
+            return value[key];
           }
         }
       }
+
       return undefined;
     }
 
-    function findObjects(root, predicate, output = [], depth = 0) {
-      if (!root || typeof root !== "object" || depth > 7) return output;
-
-      if (!Array.isArray(root) && predicate(root)) output.push(root);
-
-      const values = Array.isArray(root) ? root : Object.values(root);
-
+    function firstDefined(values) {
       for (const value of values) {
-        if (value && typeof value === "object") {
-          findObjects(value, predicate, output, depth + 1);
+        const result = getBoolean(value);
+
+        if (result !== undefined) {
+          return result;
         }
       }
 
-      return output;
+      return undefined;
     }
 
     function extractPolicy(payload) {
-      const roots = [
-        payload,
-        payload?.policy,
-        payload?.settings,
-        payload?.registration
-      ].filter(Boolean);
+      const registrationOpen = firstDefined([
+        payload?.registration_open,
+        payload?.signup_open,
+        payload?.registration?.registration_open,
+        payload?.registration?.signup_open,
+        payload?.registration?.open,
+        payload?.registration?.enabled,
+        payload?.policy?.registration_open,
+        payload?.settings?.registration_open
+      ]);
 
-      const providerObjects = findObjects(
-        payload,
-        object => [
-          "google", "github", "facebook", "apple",
-          "azure", "microsoft", "discord"
-        ].some(key => Object.prototype.hasOwnProperty.call(object, key))
-      );
-
-      const emailObjects = findObjects(
-        payload,
-        object =>
-          Object.prototype.hasOwnProperty.call(object, "email_signup_enabled") ||
-          Object.prototype.hasOwnProperty.call(object, "signup_enabled")
-      );
-
-      const registrationOpen = firstBoolean(
-        roots,
-        ["registration_open", "signup_open", "enabled"]
-      );
-
-      const emailEnabled = firstBoolean(
-        [
-          payload?.signup_methods?.email,
-          payload?.registration?.signup_methods?.email,
-          ...emailObjects
-        ],
-        ["signup_enabled", "email_signup_enabled", "enabled"]
-      );
+      const emailEnabled = firstDefined([
+        payload?.signup_methods?.email,
+        payload?.registration?.signup_methods?.email,
+        payload?.registration?.email_enabled,
+        payload?.email_signup_enabled,
+        payload?.email_enabled,
+        payload?.providers?.email,
+        payload?.provider_settings?.email
+      ]);
 
       const providers = {};
 
-      for (const provider of [
-        "google", "github", "facebook", "apple",
-        "azure", "microsoft", "discord"
-      ]) {
-        const candidates = [];
-
-        for (const object of providerObjects) {
-          if (object[provider] && typeof object[provider] === "object") {
-            candidates.push(object[provider]);
-          }
-
-          if (Object.prototype.hasOwnProperty.call(object, provider)) {
-            candidates.push({ enabled: object[provider] });
-          }
-        }
-
-        const direct = payload?.provider_settings?.[provider] ??
-                       payload?.signup_methods?.[provider] ??
-                       payload?.providers?.[provider];
-
-        if (direct !== undefined) {
-          candidates.unshift(
-            typeof direct === "object" ? direct : { enabled: direct }
-          );
-        }
-
-        providers[provider] = firstBoolean(
-          candidates,
-          ["enabled", "signup_enabled", "active"]
-        );
+      for (const provider of ["google", "github"]) {
+        providers[provider] = firstDefined([
+          payload?.signup_methods?.[provider],
+          payload?.registration?.signup_methods?.[provider],
+          payload?.registration?.providers?.[provider],
+          payload?.provider_settings?.[provider],
+          payload?.providers?.[provider],
+          payload?.oauth_providers?.[provider],
+          payload?.[provider]
+        ]);
       }
 
       const passwordPolicy =
@@ -761,34 +826,53 @@
         payload?.policies?.terms ||
         {};
 
+      const minLength = Number(
+        passwordPolicy.min_length ??
+        passwordPolicy.minimum_length ??
+        CONFIG.DEFAULT_MIN_PASSWORD_LENGTH
+      );
+
+      const maxLength = Number(
+        passwordPolicy.max_length ??
+        CONFIG.MAX_PASSWORD_LENGTH
+      );
+
       return {
-        raw: payload,
+        raw:payload,
         registrationOpen,
         emailEnabled,
         providers,
-        password: {
-          minLength: Number(
-            passwordPolicy.min_length ??
-            passwordPolicy.minimum_length ??
-            CONFIG.DEFAULT_MIN_PASSWORD_LENGTH
-          ),
-          maxLength: Number(
-            passwordPolicy.max_length ??
-            CONFIG.MAX_PASSWORD_LENGTH
-          ),
-          requireUppercase: passwordPolicy.require_uppercase === true,
-          requireLowercase: passwordPolicy.require_lowercase === true,
-          requireNumber: passwordPolicy.require_number === true,
-          requireSpecial: passwordPolicy.require_special === true
+
+        password:{
+          minLength:Number.isFinite(minLength) ? minLength : 8,
+          maxLength:Number.isFinite(maxLength) ? maxLength : 128,
+
+          requireUppercase:
+            passwordPolicy.require_uppercase === true,
+
+          requireLowercase:
+            passwordPolicy.require_lowercase === true,
+
+          requireNumber:
+            passwordPolicy.require_number === true,
+
+          requireSpecial:
+            passwordPolicy.require_special === true
         },
+
         termsRequired:
           termsPolicy.required === true ||
           payload?.terms_required === true
       };
     }
 
+    /* ==========================================
+       PROVIDER BUTTONS
+       ========================================== */
+
     function renderProviders() {
       const container = $("providers");
+
       container.innerHTML = "";
 
       if (!currentPolicy) {
@@ -796,42 +880,55 @@
         return;
       }
 
-      const configured = Object.entries(currentPolicy.providers)
-        .filter(([name, enabled]) =>
-          enabled === true &&
-          PROVIDER_INFO[name]
-        );
+      if (currentPolicy.registrationOpen !== true) {
+        $("providerSection").classList.add("hidden");
+        return;
+      }
 
-      if (!configured.length || currentPolicy.registrationOpen !== true) {
+      const configured = ["google", "github"].filter(
+        provider => currentPolicy.providers[provider] === true
+      );
+
+      if (!configured.length) {
         $("providerSection").classList.add("hidden");
         return;
       }
 
       $("providerSection").classList.remove("hidden");
 
-      configured.forEach(([provider]) => {
+      configured.forEach(provider => {
         const button = document.createElement("button");
+
         button.type = "button";
         button.className = "provider-btn";
         button.dataset.provider = provider;
 
         const info = PROVIDER_INFO[provider];
-        const label = provider === "azure" ? "microsoft" : provider;
 
         const icon = document.createElement("span");
-        icon.className = "provider-icon";
+
+        icon.className =
+          "provider-icon " + info.className;
+
         icon.textContent = info.icon;
-        icon.style.color = info.color;
 
-        const text = document.createElement("span");
-        text.textContent = t(label);
+        const label = document.createElement("span");
 
-        button.append(icon, text);
-        button.addEventListener("click", () => startOAuth(provider));
+        label.textContent = t(provider);
+
+        button.append(icon, label);
+
+        button.addEventListener("click", () => {
+          startOAuth(provider);
+        });
 
         container.appendChild(button);
       });
     }
+
+    /* ==========================================
+       RENDER REGISTRATION POLICY
+       ========================================== */
 
     function renderPolicy() {
       const policy = currentPolicy;
@@ -839,27 +936,32 @@
       if (!policy || policy.registrationOpen !== true) {
         $("signupForm").classList.add("hidden");
         $("providerSection").classList.add("hidden");
+
         $("registrationClosed").classList.remove("hidden");
+
         $("registrationClosed").textContent =
           policy?.raw?.closed_reason || t("closed");
+
         return;
       }
 
       $("registrationClosed").classList.add("hidden");
-      $("signupForm").classList.remove("hidden");
 
-      if (policy.emailEnabled !== true) {
-        $("email").disabled = true;
-        $("password").disabled = true;
-        $("confirmPassword").disabled = true;
-        $("terms").disabled = true;
-        $("submitButton").disabled = true;
-      } else {
+      if (policy.emailEnabled === true) {
+        $("signupForm").classList.remove("hidden");
+
         $("email").disabled = false;
         $("password").disabled = false;
         $("confirmPassword").disabled = false;
         $("terms").disabled = false;
-        $("submitButton").disabled = false;
+
+      } else {
+        $("signupForm").classList.remove("hidden");
+
+        $("email").disabled = true;
+        $("password").disabled = true;
+        $("confirmPassword").disabled = true;
+        $("terms").disabled = true;
       }
 
       const min = Math.max(
@@ -890,24 +992,36 @@
 
       $("terms").required = policy.termsRequired;
 
+      $("submitButton").disabled =
+        policy.emailEnabled !== true || requestInProgress;
+
       renderProviders();
     }
 
+    /* ==========================================
+       LOAD POLICY FROM ENGINE
+       ========================================== */
+
     async function loadPolicy() {
-      policyReady = false;
-      $("submitButton").disabled = true;
+      if (requestInProgress) return false;
+
       $("engineStatusText").textContent = t("checkingPolicy");
 
       try {
-        const response = await fetchWithTimeout(CONFIG.STATUS_URL, {
-          method: "GET",
-          headers: {
-            "Accept": "application/json",
-            "apikey": CONFIG.SUPABASE_KEY
+        const response = await fetchWithTimeout(
+          CONFIG.STATUS_URL,
+          {
+            method:"GET",
+            headers:{
+              "Accept":"application/json",
+              "apikey":CONFIG.SUPABASE_KEY
+            }
           }
-        });
+        );
 
-        if (!response.ok) throw new Error("POLICY_HTTP_" + response.status);
+        if (!response.ok) {
+          throw new Error("POLICY_HTTP_" + response.status);
+        }
 
         const payload = await response.json();
 
@@ -915,24 +1029,18 @@
           throw new Error("POLICY_NOT_CONFIRMED");
         }
 
-        const policy = extractPolicy(payload);
+        currentPolicy = extractPolicy(payload);
 
         /*
-          Fail closed:
-          لا نسمح بالتسجيل إذا لم يعلن المحرك صراحة أن التسجيل مفتوح.
+          لا نفتح التسجيل إلا بتأكيد صريح من المحرك.
         */
-        if (policy.registrationOpen !== true) {
-          currentPolicy = policy;
-          renderPolicy();
-          setEngineStatus(true);
-          policyReady = true;
-          return;
-        }
-
-        currentPolicy = policy;
         renderPolicy();
-        setEngineStatus(true);
+
         policyReady = true;
+
+        setEngineStatus(true);
+
+        return true;
 
       } catch (error) {
         currentPolicy = null;
@@ -940,12 +1048,21 @@
 
         $("signupForm").classList.add("hidden");
         $("providerSection").classList.add("hidden");
+
         $("registrationClosed").classList.remove("hidden");
-        $("registrationClosed").textContent = t("policyUnavailable");
+
+        $("registrationClosed").textContent =
+          t("policyUnavailable");
 
         setEngineStatus(false);
+
+        return false;
       }
     }
+
+    /* ==========================================
+       PASSWORD VALIDATION
+       ========================================== */
 
     function validatePassword(password, policy) {
       const p = policy.password;
@@ -959,19 +1076,19 @@
       }
 
       if (p.requireUppercase && !/[A-Z]/.test(password)) {
-        return t("shortPassword");
+        return t("passwordUpper");
       }
 
       if (p.requireLowercase && !/[a-z]/.test(password)) {
-        return t("shortPassword");
+        return t("passwordLower");
       }
 
       if (p.requireNumber && !/[0-9]/.test(password)) {
-        return t("shortPassword");
+        return t("passwordNumber");
       }
 
       if (p.requireSpecial && !/[^A-Za-z0-9]/.test(password)) {
-        return t("shortPassword");
+        return t("passwordSpecial");
       }
 
       return null;
@@ -982,7 +1099,8 @@
     }
 
     function mapAuthError(error) {
-      const message = String(error?.message || "").toLowerCase();
+      const message =
+        String(error?.message || "").toLowerCase();
 
       if (
         message.includes("already registered") ||
@@ -1009,28 +1127,41 @@
       return t("genericError");
     }
 
+    /* ==========================================
+       BUTTON LOADING
+       ========================================== */
+
     function setLoading(loading) {
       requestInProgress = loading;
 
       const button = $("submitButton");
-      button.disabled = loading || !policyReady ||
+
+      button.disabled =
+        loading ||
+        !policyReady ||
         currentPolicy?.registrationOpen !== true ||
         currentPolicy?.emailEnabled !== true;
 
       button.innerHTML = loading
         ? `<span class="loading"></span>${t("creating")}`
         : `<span>${t("createAccount")}</span>`;
+
+      document.querySelectorAll(".provider-btn").forEach(item => {
+        item.disabled = loading;
+      });
     }
+
+    /* ==========================================
+       EMAIL REGISTRATION
+       ========================================== */
 
     async function submitSignup(event) {
       event.preventDefault();
+
       clearMessage();
 
       if (requestInProgress) return;
 
-      /*
-        لا يتم التسجيل دون قراءة سياسة المحرك بنجاح.
-      */
       if (!policyReady || !currentPolicy) {
         showMessage(t("policyUnavailable"), "error");
         await loadPolicy();
@@ -1076,7 +1207,10 @@
         return;
       }
 
-      if (currentPolicy.termsRequired && !$("terms").checked) {
+      if (
+        currentPolicy.termsRequired &&
+        !$("terms").checked
+      ) {
         showMessage(t("termsRequired"), "error");
         return;
       }
@@ -1085,16 +1219,15 @@
 
       try {
         /*
-          إعادة قراءة السياسة قبل تنفيذ التسجيل.
-          هذا يقلل احتمال استخدام سياسة قديمة.
+          إعادة قراءة سياسة المحرك قبل التسجيل.
         */
         const policyResponse = await fetchWithTimeout(
           CONFIG.STATUS_URL,
           {
-            method: "GET",
-            headers: {
-              "Accept": "application/json",
-              "apikey": CONFIG.SUPABASE_KEY
+            method:"GET",
+            headers:{
+              "Accept":"application/json",
+              "apikey":CONFIG.SUPABASE_KEY
             }
           }
         );
@@ -1111,47 +1244,53 @@
 
         const latestPolicy = extractPolicy(latestPayload);
 
+        currentPolicy = latestPolicy;
+
         if (
           latestPolicy.registrationOpen !== true ||
           latestPolicy.emailEnabled !== true
         ) {
-          currentPolicy = latestPolicy;
           renderPolicy();
           throw new Error("REGISTRATION_DISABLED");
         }
 
-        currentPolicy = latestPolicy;
-
+        /*
+          التسجيل يتم عبر Supabase Auth.
+          لا يتم إنشاء الحساب من الواجهة مباشرة في قاعدة البيانات.
+        */
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: CONFIG.CONFIRMED_URL,
-            data: {
-              aqx_identity: true,
-              registration_source: "aqx_identity_web"
+
+          options:{
+            emailRedirectTo:CONFIG.CONFIRMED_URL,
+
+            data:{
+              aqx_identity:true,
+              registration_source:"aqx_identity_web"
             }
           }
         });
 
         if (error) throw error;
 
-        /*
-          لا نعرض رسالة نجاح إلا بعد استجابة Supabase الناجحة.
-          لا نعتمد على وجود user وحده لإثبات تفعيل البريد.
-        */
         if (!data || !data.user) {
           throw new Error("SIGNUP_RESPONSE_INVALID");
         }
 
         $("signupForm").reset();
+
         showMessage(t("signupSuccess"), "success");
 
       } catch (error) {
         if (error.message === "REGISTRATION_DISABLED") {
           showMessage(t("closed"), "error");
-        } else if (error.message === "POLICY_RECHECK_FAILED") {
+
+        } else if (
+          error.message === "POLICY_RECHECK_FAILED"
+        ) {
           showMessage(t("policyUnavailable"), "error");
+
         } else {
           showMessage(mapAuthError(error), "error");
         }
@@ -1161,30 +1300,114 @@
       }
     }
 
+    /* ==========================================
+       GOOGLE / GITHUB OAUTH REGISTRATION
+       ========================================== */
+
     async function startOAuth(provider) {
       clearMessage();
 
-      if (
-        !policyReady ||
-        !currentPolicy ||
-        currentPolicy.registrationOpen !== true ||
-        currentPolicy.providers[provider] !== true
-      ) {
+      if (!["google", "github"].includes(provider)) {
         showMessage(t("providerDisabled"), "error");
         return;
       }
 
+      if (requestInProgress) return;
+
+      if (!policyReady || !currentPolicy) {
+        showMessage(t("policyUnavailable"), "error");
+        return;
+      }
+
+      if (currentPolicy.registrationOpen !== true) {
+        showMessage(t("closed"), "error");
+        return;
+      }
+
+      if (currentPolicy.providers[provider] !== true) {
+        showMessage(t("providerDisabled"), "error");
+        return;
+      }
+
+      if (
+        currentPolicy.termsRequired &&
+        !$("terms").checked
+      ) {
+        showMessage(t("termsRequired"), "error");
+        $("terms").focus();
+        return;
+      }
+
+      requestInProgress = true;
+
+      const buttons = document.querySelectorAll(".provider-btn");
+
+      buttons.forEach(button => {
+        button.disabled = true;
+      });
+
+      const clickedButton = Array.from(buttons).find(
+        button => button.dataset.provider === provider
+      );
+
+      if (clickedButton) {
+        clickedButton.innerHTML =
+          `<span class="provider-loading"></span>` +
+          `<span>${t("checkingPolicy")}</span>`;
+      }
+
       try {
         /*
-          لا يكفي إظهار الزر:
-          إعداد المزود يجب أن يكون مفعّلًا أيضًا في Supabase Auth.
+          إعادة التحقق من المحرك قبل OAuth.
+        */
+        const response = await fetchWithTimeout(
+          CONFIG.STATUS_URL,
+          {
+            method:"GET",
+            headers:{
+              "Accept":"application/json",
+              "apikey":CONFIG.SUPABASE_KEY
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("POLICY_RECHECK_FAILED");
+        }
+
+        const payload = await response.json();
+
+        if (payload?.success !== true) {
+          throw new Error("POLICY_RECHECK_FAILED");
+        }
+
+        const latestPolicy = extractPolicy(payload);
+
+        currentPolicy = latestPolicy;
+
+        if (latestPolicy.registrationOpen !== true) {
+          throw new Error("REGISTRATION_DISABLED");
+        }
+
+        if (latestPolicy.providers[provider] !== true) {
+          throw new Error("PROVIDER_DISABLED");
+        }
+
+        /*
+          Supabase Auth يتولى تحويل المستخدم لمزود OAuth.
+          بعد نجاح المصادقة يعود إلى صفحة التأكيد.
         */
         const { error } = await supabase.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: CONFIG.CONFIRMED_URL,
-            queryParams: provider === "google"
-              ? { access_type:"offline", prompt:"select_account" }
+          provider:provider,
+
+          options:{
+            redirectTo:CONFIG.CONFIRMED_URL,
+
+            queryParams:provider === "google"
+              ? {
+                  access_type:"offline",
+                  prompt:"select_account"
+                }
               : undefined
           }
         });
@@ -1192,25 +1415,58 @@
         if (error) throw error;
 
       } catch (error) {
-        showMessage(t("oauthError"), "error");
+        if (error.message === "REGISTRATION_DISABLED") {
+          showMessage(t("closed"), "error");
+
+        } else if (error.message === "PROVIDER_DISABLED") {
+          showMessage(t("providerDisabled"), "error");
+
+        } else if (
+          error.message === "POLICY_RECHECK_FAILED"
+        ) {
+          showMessage(t("policyUnavailable"), "error");
+
+        } else {
+          showMessage(t("oauthError"), "error");
+        }
+
+        requestInProgress = false;
+
+        buttons.forEach(button => {
+          button.disabled = false;
+        });
+
+        renderProviders();
       }
     }
 
+    /* ==========================================
+       INITIALIZATION
+       ========================================== */
+
     async function initialize() {
       currentLanguage = detectLanguage();
+
       applyLanguage();
 
       $("loginLink").href = CONFIG.LOGIN_URL;
-      $("signupForm").addEventListener("submit", submitSignup);
+
+      $("signupForm").addEventListener(
+        "submit",
+        submitSignup
+      );
 
       await loadPolicy();
 
       /*
-        تحديث السياسة دوريًا:
-        فتح/غلق التسجيل وتغيير مزودي الدخول يظهر تلقائيًا.
+        تحديث سياسة المحرك دوريًا.
+        أي تغيير في فتح التسجيل أو المزودين
+        يظهر عند إعادة قراءة الحالة.
       */
-      setInterval(async () => {
-        await loadPolicy();
+      policyRefreshTimer = setInterval(async () => {
+        if (!requestInProgress) {
+          await loadPolicy();
+        }
       }, CONFIG.REFRESH_INTERVAL);
     }
 
