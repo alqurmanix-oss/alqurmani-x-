@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /login.html
-Disallow: /signup.html
-
-Sitemap: https://YOUR-DOMAIN/sitemap.xml
