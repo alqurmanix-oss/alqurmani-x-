@@ -3,359 +3,240 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#080d19">
-  <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="referrer" content="same-origin">
-
-  <title>AQX | الفحص الأمني المركزي</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <meta name="robots" content="noindex,nofollow">
+  <title>AQX | الفحص الأمني</title>
 
   <style>
     :root {
       color-scheme: dark;
-      --bg:#080d19;
-      --panel:#111d30;
-      --panel2:#0b1627;
-      --line:#263b56;
-      --text:#f4f7ff;
-      --muted:#9aabc1;
-      --blue:#4b9cff;
-      --green:#27d69b;
-      --red:#ff667c;
-      --gold:#f2c66d;
+      --bg: #0b1220;
+      --panel: #131e30;
+      --border: #26364d;
+      --text: #f2f6fc;
+      --muted: #9aabc1;
+      --accent: #49c6c0;
+      --danger: #ff6474;
+      --success: #42d69b;
     }
 
-    * { box-sizing:border-box; }
+    * { box-sizing: border-box; }
 
     body {
-      margin:0;
-      min-height:100vh;
-      padding:24px 15px;
-      display:grid;
-      place-items:center;
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 22px;
       background:
-        radial-gradient(ellipse at 50% 0%,#18365a 0%,transparent 55%),
+        radial-gradient(ellipse at 50% 0%, #1b3650 0%, transparent 55%),
         var(--bg);
-      color:var(--text);
-      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
     }
 
-    .shell {
-      width:100%;
-      max-width:500px;
-    }
-
-    .brand {
-      text-align:center;
-      margin-bottom:22px;
+    .panel {
+      width: 100%;
+      max-width: 470px;
+      padding: 34px 25px;
+      text-align: center;
+      background: linear-gradient(160deg, #17253a, #101a2b);
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      box-shadow: 0 25px 80px #0007;
     }
 
     .logo {
-      width:70px;
-      height:70px;
-      margin:0 auto 12px;
-      display:grid;
-      place-items:center;
-      border:1px solid #477db5;
-      border-radius:22px;
-      background:linear-gradient(145deg,#23558b,#10223c);
-      font-size:24px;
-      font-weight:950;
-      box-shadow:0 15px 40px #0007;
+      width: 75px;
+      height: 75px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 20px;
+      border: 1px solid #49c6c055;
+      border-radius: 23px;
+      background: #49c6c014;
+      color: var(--accent);
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -2px;
     }
 
-    .brand h1 {
-      margin:0;
-      font-size:21px;
-      letter-spacing:.2px;
+    h1 {
+      margin: 0 0 9px;
+      font-size: 23px;
     }
 
-    .brand p {
-      margin:7px 0;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .card {
-      padding:24px 20px;
-      border:1px solid var(--line);
-      border-radius:24px;
-      background:linear-gradient(155deg,#15253c,#0d1728);
-      box-shadow:0 25px 70px #0007;
-    }
-
-    .shield {
-      width:86px;
-      height:86px;
-      display:grid;
-      place-items:center;
-      margin:0 auto 17px;
-      border:1px solid #31577e;
-      border-radius:50%;
-      background:#142e4c;
-      font-size:39px;
-    }
-
-    h2 {
-      margin:0 0 9px;
-      text-align:center;
-      font-size:20px;
-    }
-
-    .intro {
-      margin:0 0 22px;
-      text-align:center;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.9;
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
     }
 
     .status {
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:14px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:var(--panel2);
+      margin: 27px 0 18px;
+      padding: 17px 12px;
+      background: #0c1625;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      font-size: 14px;
+      line-height: 1.9;
     }
 
-    .dot {
-      width:11px;
-      height:11px;
-      flex:none;
-      border-radius:50%;
-      background:var(--gold);
-      box-shadow:0 0 12px currentColor;
+    .spinner {
+      width: 38px;
+      height: 38px;
+      margin: 0 auto 14px;
+      border: 3px solid #ffffff18;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
     }
 
-    .status strong {
-      display:block;
-      font-size:13px;
-    }
-
-    .status small {
-      display:block;
-      margin-top:4px;
-      color:var(--muted);
-      font-size:11px;
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .steps {
-      display:grid;
-      gap:9px;
-      margin:19px 0;
+      display: grid;
+      gap: 10px;
+      text-align: right;
     }
 
     .step {
-      display:flex;
-      align-items:center;
-      gap:11px;
-      min-height:48px;
-      padding:10px 12px;
-      border:1px solid #20334c;
-      border-radius:12px;
-      background:#0b1626;
-      color:#c6d4e6;
-      font-size:12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 13px;
+      border: 1px solid #ffffff0b;
+      border-radius: 11px;
+      background: #ffffff06;
+      color: var(--muted);
+      font-size: 12px;
     }
 
     .step-icon {
-      width:29px;
-      height:29px;
-      display:grid;
-      place-items:center;
-      flex:none;
-      border-radius:9px;
-      background:#172d47;
-      color:#8bc2ff;
-      font-weight:900;
+      width: 23px;
+      height: 23px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #ffffff0b;
+      font-size: 12px;
+    }
+
+    .step.active {
+      color: var(--text);
+      border-color: #49c6c044;
     }
 
     .step.done {
-      border-color:#176a50;
-    }
-
-    .step.done .step-icon {
-      background:#124c3b;
-      color:#70f1be;
+      color: var(--success);
+      border-color: #42d69b33;
     }
 
     .step.failed {
-      border-color:#793748;
-    }
-
-    .step.failed .step-icon {
-      background:#512431;
-      color:#ff9baa;
-    }
-
-    .message {
-      display:none;
-      padding:13px;
-      margin-top:14px;
-      border-radius:12px;
-      font-size:13px;
-      line-height:1.9;
-    }
-
-    .message.show { display:block; }
-
-    .message.error {
-      color:#ffc3cc;
-      background:#351923;
-      border:1px solid #773546;
-    }
-
-    .message.success {
-      color:#a9f5d8;
-      background:#10372d;
-      border:1px solid #1b7256;
-    }
-
-    button {
-      width:100%;
-      padding:14px;
-      margin-top:14px;
-      border:0;
-      border-radius:13px;
-      background:linear-gradient(100deg,#287fe0,#4ba9ff);
-      color:white;
-      font-size:14px;
-      font-weight:850;
-      cursor:pointer;
-    }
-
-    button:disabled {
-      opacity:.55;
-      cursor:not-allowed;
+      color: var(--danger);
+      border-color: #ff647455;
     }
 
     .footer {
-      margin-top:18px;
-      color:#74869f;
-      text-align:center;
-      font-size:11px;
-      line-height:1.9;
+      margin-top: 25px;
+      color: #71839a;
+      font-size: 11px;
     }
 
-    .hidden { display:none !important; }
-
-    @keyframes pulse {
-      50% { opacity:.45; }
+    .timer {
+      margin-top: 17px;
+      color: var(--muted);
+      font-size: 12px;
     }
 
-    .working .dot {
-      animation:pulse 1s infinite;
+    .timer strong {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
     }
 
-    @media(max-width:380px) {
-      .card { padding:20px 15px; }
-      .brand h1 { font-size:19px; }
-    }
+    .hidden { display: none !important; }
   </style>
+
+  <!-- تحميل مكتبة Supabase بصورة غير حاجبة -->
+  <script
+    async
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js">
+  </script>
 </head>
 
 <body>
-
-<main class="shell">
-
-  <header class="brand">
+  <main class="panel">
     <div class="logo">AQX</div>
-    <h1>AQX Security Operations Center</h1>
-    <p>مركز العمليات الأمنية المركزي</p>
-  </header>
 
-  <section class="card" id="mainCard">
+    <h1>مركز التحقق الأمني</h1>
 
-    <div class="shield" id="shield">🛡️</div>
-
-    <h2 id="heading">الفحص الأمني للحساب</h2>
-
-    <p class="intro">
-      يقوم مركز أمن AQX بالتحقق من هويتك وصلاحية جلستك
-      وإثبات الدخول قبل السماح بمتابعة لوحة الحساب.
-    </p>
-
-    <div class="status working" id="statusBox">
-      <span class="dot" id="dot"></span>
-      <div>
-        <strong id="statusTitle">جاري تجهيز الفحص</strong>
-        <small id="statusText">الاتصال بمحركات الحماية المركزية</small>
-      </div>
+    <div class="subtitle">
+      AQX SECURITY OPERATIONS CENTER<br>
+      يتم التحقق من الهوية وصلاحية الجلسة قبل السماح بالدخول.
     </div>
 
-    <div class="steps">
+    <section class="status" id="statusBox" aria-live="polite">
+      <div class="spinner" id="spinner"></div>
+      <div id="statusTitle">جاري تجهيز الفحص</div>
+      <div class="subtitle" id="statusMessage">
+        الاتصال بمحركات الحماية المركزية
+      </div>
+    </section>
 
-      <div class="step" id="step1">
+    <section class="steps" aria-label="مراحل الفحص">
+      <div class="step active" id="step1">
         <span class="step-icon">1</span>
-        <span>🔐 التحقق من هوية Supabase</span>
+        التحقق من هوية المستخدم
       </div>
 
       <div class="step" id="step2">
         <span class="step-icon">2</span>
-        <span>🪪 التحقق من جلسة AQX</span>
+        التحقق من جلسة AQX
       </div>
 
       <div class="step" id="step3">
         <span class="step-icon">3</span>
-        <span>🔑 استهلاك إثبات الدخول أحادي الاستخدام</span>
+        التحقق من إثبات الدخول
       </div>
 
       <div class="step" id="step4">
         <span class="step-icon">4</span>
-        <span>📱 جمع بيانات الجهاز والمتصفح</span>
+        فحص مركز العمليات الأمنية
       </div>
 
       <div class="step" id="step5">
         <span class="step-icon">5</span>
-        <span>🛡️ مراجعة الحالة الأمنية عبر AQX-SOC</span>
+        اعتماد قرار السماح بالدخول
       </div>
+    </section>
 
-      <div class="step" id="step6">
-        <span class="step-icon">6</span>
-        <span>📋 استلام القرار الأمني النهائي</span>
-      </div>
-
+    <div class="timer">
+      المهلة القصوى للفحص:
+      <strong id="countdown">10</strong>
+      ثوانٍ
     </div>
 
-    <div class="message" id="message"></div>
-
-    <button id="continueButton" class="hidden" type="button">
-      الدخول إلى لوحة الحساب
-    </button>
-
-  </section>
-
-  <footer class="footer">
-    AQX SECURITY OPERATIONS CENTER<br>
-    حماية الهوية والجلسات والعمليات الحساسة<br>
-    جميع الحقوق محفوظة © AQX
-  </footer>
-
-</main>
+    <div class="footer">
+      AQX Identity · Central Security Verification
+    </div>
+  </main>
 
 <script>
 (() => {
   "use strict";
 
-  /* ==================================================
-     01 — الإعدادات المركزية
-     تحديث الروابط والإصدارات من مكان واحد
-  ================================================== */
+  /* =========================================
+     1. الإعدادات المركزية
+  ========================================= */
 
   const CONFIG = Object.freeze({
-
-    VERSION: "3.0.0",
-
-    TELEMETRY_VERSION: "1.0",
-
     SUPABASE_URL:
       "https://fkiokwwztbyztleeuwks.supabase.co",
 
-    SUPABASE_KEY:
+    SUPABASE_PUBLIC_KEY:
       "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
 
     IDENTITY_URL:
@@ -370,1053 +251,732 @@
     DASHBOARD_URL:
       "https://id.alqurmanix.com/dashboard-aqx.html",
 
-    REQUEST_TIMEOUT: 20000,
-
-    LOGOUT_TIMEOUT: 8000,
-
-    TELEMETRY_ENABLED: true
-
+    TIMEOUT_MS: 10000
   });
 
+  const STORAGE = Object.freeze({
+    SESSION_TOKEN: "aqx_session_token",
+    SESSION_ID: "aqx_session_id",
+    LOGIN_PROOF: "aqx_login_proof"
+  });
 
-  /* ==================================================
-     02 — العملية المعتمدة
-     الصفحة مخصصة لدخول لوحة الحساب فقط
-  ================================================== */
+  /* =========================================
+     2. حالة التشغيل
+  ========================================= */
 
-  const ACTION = "dashboard_access";
+  let finished = false;
+  let client = null;
+  let accessToken = null;
+  let sessionToken = null;
+  let deadlineController = new AbortController();
 
+  const startedAt = Date.now();
+  const deadline = startedAt + CONFIG.TIMEOUT_MS;
 
-  /* ==================================================
-     03 — عناصر الصفحة
-  ================================================== */
+  const statusTitle = document.getElementById("statusTitle");
+  const statusMessage = document.getElementById("statusMessage");
+  const spinner = document.getElementById("spinner");
+  const countdown = document.getElementById("countdown");
 
-  const $ = id => document.getElementById(id);
+  /* =========================================
+     3. إدارة الواجهة
+  ========================================= */
 
-  let supabaseClient = null;
+  function updateStatus(title, message) {
+    if (finished) return;
 
-  let running = false;
-  let passed = false;
-  let rejected = false;
-
-
-  /* ==================================================
-     04 — تهيئة Supabase
-  ================================================== */
-
-  function initializeSupabase() {
-
-    if (!window.supabase?.createClient) {
-      throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
-    }
-
-    if (supabaseClient) {
-      return supabaseClient;
-    }
-
-    supabaseClient = window.supabase.createClient(
-      CONFIG.SUPABASE_URL,
-      CONFIG.SUPABASE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: false
-        }
-      }
-    );
-
-    return supabaseClient;
-
+    statusTitle.textContent = title;
+    statusMessage.textContent = message;
   }
-
-
-  /* ==================================================
-     05 — واجهة الفحص
-  ================================================== */
-
-  function setStatus(title, description, color) {
-
-    $("statusTitle").textContent = title;
-    $("statusText").textContent = description;
-    $("dot").style.background = color || "#f2c66d";
-
-  }
-
 
   function setStep(number, state) {
-
-    const element = $("step" + number);
-
+    const element = document.getElementById("step" + number);
     if (!element) return;
+
+    element.classList.remove("active", "done", "failed");
+
+    if (state) element.classList.add(state);
 
     const icon = element.querySelector(".step-icon");
 
-    element.classList.remove("done", "failed");
+    if (icon) {
+      if (state === "done") icon.textContent = "✓";
+      else if (state === "failed") icon.textContent = "×";
+      else icon.textContent = String(number);
+    }
+  }
 
-    if (state === "done") {
-
-      element.classList.add("done");
-      icon.textContent = "✓";
-
-    } else if (state === "failed") {
-
-      element.classList.add("failed");
-      icon.textContent = "!";
-
-    } else {
-
-      icon.textContent = String(number);
-
+  function activateStep(number, message) {
+    for (let i = 1; i <= 5; i++) {
+      if (i < number) setStep(i, "done");
+      else if (i === number) setStep(i, "active");
+      else setStep(i, "");
     }
 
+    updateStatus(message, "يتم تنفيذ التحقق المطلوب...");
   }
 
-
-  function resetSteps() {
-
-    for (let i = 1; i <= 6; i++) {
-      setStep(i, "pending");
+  function markSuccess() {
+    for (let i = 1; i <= 5; i++) {
+      setStep(i, "done");
     }
 
+    spinner.classList.add("hidden");
+    updateStatus(
+      "تم اجتياز الفحص الأمني بنجاح",
+      "تم اعتماد السماح بالدخول. جاري فتح لوحة التحكم..."
+    );
   }
 
+  /* =========================================
+     4. أدوات مساعدة
+  ========================================= */
 
-  function showMessage(message, type) {
-
-    const box = $("message");
-
-    box.textContent = message;
-    box.className = "message show " + type;
-
+  function remainingTime() {
+    return Math.max(0, deadline - Date.now());
   }
 
+  function ensureTime() {
+    if (finished) throw new Error("PROCESS_FINISHED");
 
-  /* ==================================================
-     06 — قراءة آمنة للبيانات
-  ================================================== */
+    if (remainingTime() <= 0) {
+      throw new Error("SECURITY_TIMEOUT");
+    }
+  }
 
-  function safeRead(callback, fallback = null) {
+  function withDeadline(promise) {
+    ensureTime();
 
-    try {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        const remaining = remainingTime();
 
-      const result = callback();
+        setTimeout(() => {
+          reject(new Error("SECURITY_TIMEOUT"));
+        }, remaining);
+      })
+    ]);
+  }
 
-      return result === undefined ? fallback : result;
+  async function requestJson(url, options = {}) {
+    ensureTime();
 
-    } catch (_) {
+    const response = await fetch(url, {
+      ...options,
+      signal: deadlineController.signal,
+      cache: "no-store",
+      credentials: "omit"
+    });
 
-      return fallback;
+    const data = await response.json().catch(() => null);
 
+    if (!response.ok) {
+      const error = new Error(
+        data?.error || "SERVER_REQUEST_FAILED"
+      );
+
+      error.status = response.status;
+      error.payload = data;
+
+      throw error;
     }
 
-  }
-
-
-  function safeString(value, max = 200) {
-
-    if (typeof value !== "string") {
-      return null;
+    if (!data || typeof data !== "object") {
+      throw new Error("INVALID_SERVER_RESPONSE");
     }
 
-    return value.slice(0, max);
-
+    return data;
   }
 
-
-  function safeNumber(value) {
-
-    return typeof value === "number" &&
-      Number.isFinite(value)
-      ? value
-      : null;
-
-  }
-
-
-  function safeBoolean(value) {
-
-    return typeof value === "boolean"
-      ? value
-      : null;
-
-  }
-
-
-  /* ==================================================
-     07 — جمع بيانات الجهاز والمتصفح
-     لا توجد خدمات خارجية
-     لا GPS ولا كاميرا ولا ميكروفون
-  ================================================== */
-
-  async function collectAqxBrowserTelemetry() {
-
-    if (!CONFIG.TELEMETRY_ENABLED) {
-      return null;
+  function authHeaders() {
+    if (!accessToken || !sessionToken) {
+      throw new Error("AUTHENTICATION_REQUIRED");
     }
-
-    const n = navigator;
-    const s = window.screen;
-
-    const connection = safeRead(
-      () => n.connection ||
-        n.mozConnection ||
-        n.webkitConnection,
-      null
-    );
-
-    const timezone = safeRead(
-      () => Intl.DateTimeFormat().resolvedOptions().timeZone,
-      null
-    );
-
-    const languages = safeRead(
-      () => Array.from(n.languages || []).slice(0, 8),
-      []
-    );
-
-    const uaData = safeRead(
-      () => n.userAgentData,
-      null
-    );
-
-    const brands = safeRead(
-      () => Array.from(uaData?.brands || [])
-        .slice(0, 8)
-        .map(item => ({
-          brand: safeString(item.brand, 60),
-          version: safeString(item.version, 30)
-        })),
-      []
-    );
-
-    const storage = {
-      quota: null,
-      usage: null
-    };
-
-    try {
-
-      if (n.storage?.estimate) {
-
-        const estimate = await n.storage.estimate();
-
-        storage.quota = safeNumber(estimate.quota);
-        storage.usage = safeNumber(estimate.usage);
-
-      }
-
-    } catch (_) {}
-
-
-    const orientation = safeRead(
-      () => s.orientation?.type ||
-        (s.width >= s.height ? "landscape" : "portrait"),
-      null
-    );
-
-    const reducedMotion = safeRead(
-      () => matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "reduce"
-        : "no-preference",
-      null
-    );
-
-    const colorScheme = safeRead(
-      () => matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light",
-      null
-    );
 
     return {
-
-      collected_at: new Date().toISOString(),
-
-      telemetry_version: CONFIG.TELEMETRY_VERSION,
-
-      timezone: safeString(timezone, 80),
-
-      timezone_offset_minutes:
-        safeNumber(new Date().getTimezoneOffset()),
-
-      locale:
-        safeString(n.language, 35),
-
-      languages,
-
-      platform:
-        safeString(n.platform, 100),
-
-      vendor:
-        safeString(n.vendor, 100),
-
-      user_agent:
-        safeString(n.userAgent, 500),
-
-      ua_platform:
-        safeString(uaData?.platform, 100),
-
-      ua_mobile:
-        safeBoolean(uaData?.mobile),
-
-      ua_brands: brands,
-
-      screen_width:
-        safeNumber(s.width),
-
-      screen_height:
-        safeNumber(s.height),
-
-      screen_avail_width:
-        safeNumber(s.availWidth),
-
-      screen_avail_height:
-        safeNumber(s.availHeight),
-
-      viewport_width:
-        safeNumber(window.innerWidth),
-
-      viewport_height:
-        safeNumber(window.innerHeight),
-
-      pixel_ratio:
-        safeNumber(window.devicePixelRatio),
-
-      color_depth:
-        safeNumber(s.colorDepth),
-
-      orientation,
-
-      touch_points:
-        safeNumber(n.maxTouchPoints),
-
-      hardware_concurrency:
-        safeNumber(n.hardwareConcurrency),
-
-      device_memory_gb:
-        safeNumber(n.deviceMemory),
-
-      cookie_enabled:
-        safeBoolean(n.cookieEnabled),
-
-      do_not_track:
-        safeString(n.doNotTrack, 20),
-
-      online:
-        safeBoolean(n.onLine),
-
-      webdriver:
-        safeBoolean(n.webdriver),
-
-      pdf_viewer_enabled:
-        safeBoolean(n.pdfViewerEnabled),
-
-      connection_type:
-        safeString(connection?.type, 40),
-
-      connection_effective_type:
-        safeString(connection?.effectiveType, 20),
-
-      connection_downlink_mbps:
-        safeNumber(connection?.downlink),
-
-      connection_rtt_ms:
-        safeNumber(connection?.rtt),
-
-      connection_save_data:
-        safeBoolean(connection?.saveData),
-
-      reduced_motion:
-        safeString(reducedMotion, 20),
-
-      color_scheme:
-        safeString(colorScheme, 20),
-
-      storage_quota_bytes:
-        safeNumber(storage.quota),
-
-      storage_usage_bytes:
-        safeNumber(storage.usage)
-
+      "Authorization": "Bearer " + accessToken,
+      "apikey": CONFIG.SUPABASE_PUBLIC_KEY,
+      "Content-Type": "application/json",
+      "x-aqx-session": sessionToken
     };
-
   }
 
+  function getClientTelemetry() {
+    const nav = navigator;
+    const screenInfo = window.screen || {};
+    const connection =
+      nav.connection ||
+      nav.mozConnection ||
+      nav.webkitConnection ||
+      {};
 
-  /* ==================================================
-     08 — قراءة جلسة AQX
-  ================================================== */
+    const uaData = nav.userAgentData || null;
+    const storageEstimate =
+      navigator.storage &&
+      navigator.storage.estimate
+        ? navigator.storage.estimate()
+        : Promise.resolve({});
 
-  function getAqxSessionToken() {
+    return Promise.resolve(storageEstimate)
+      .catch(() => ({}))
+      .then(storage => {
+        const languages = Array.isArray(nav.languages)
+          ? nav.languages.slice(0, 10)
+          : [];
 
-    return safeRead(
-      () => localStorage.getItem("aqx_session_token"),
-      ""
-    ) || "";
+        const brands = uaData &&
+          Array.isArray(uaData.brands)
+          ? uaData.brands.slice(0, 10)
+          : [];
 
+        return {
+          collected_at: new Date().toISOString(),
+          telemetry_version: "1.0",
+
+          timezone:
+            Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+
+          timezone_offset_minutes:
+            new Date().getTimezoneOffset(),
+
+          locale: nav.language || null,
+          languages: languages,
+
+          platform: nav.platform || null,
+          vendor: nav.vendor || null,
+          user_agent: nav.userAgent || null,
+
+          ua_platform: uaData?.platform || null,
+          ua_mobile:
+            typeof uaData?.mobile === "boolean"
+              ? uaData.mobile
+              : null,
+
+          ua_brands: brands,
+
+          orientation:
+            screenInfo.orientation?.type || null,
+
+          screen_width: screenInfo.width || null,
+          screen_height: screenInfo.height || null,
+
+          screen_avail_width:
+            screenInfo.availWidth || null,
+
+          screen_avail_height:
+            screenInfo.availHeight || null,
+
+          viewport_width: window.innerWidth || null,
+          viewport_height: window.innerHeight || null,
+
+          pixel_ratio: window.devicePixelRatio || null,
+          color_depth: screenInfo.colorDepth || null,
+
+          touch_points:
+            Number.isFinite(nav.maxTouchPoints)
+              ? nav.maxTouchPoints
+              : null,
+
+          hardware_concurrency:
+            nav.hardwareConcurrency || null,
+
+          device_memory_gb:
+            nav.deviceMemory || null,
+
+          connection_type: connection.type || null,
+          connection_effective_type:
+            connection.effectiveType || null,
+
+          connection_downlink_mbps:
+            Number.isFinite(connection.downlink)
+              ? connection.downlink
+              : null,
+
+          connection_rtt_ms:
+            Number.isFinite(connection.rtt)
+              ? connection.rtt
+              : null,
+
+          connection_save_data:
+            typeof connection.saveData === "boolean"
+              ? connection.saveData
+              : null,
+
+          cookie_enabled:
+            Boolean(nav.cookieEnabled),
+
+          online:
+            typeof nav.onLine === "boolean"
+              ? nav.onLine
+              : null,
+
+          do_not_track:
+            nav.doNotTrack || null,
+
+          webdriver:
+            typeof nav.webdriver === "boolean"
+              ? nav.webdriver
+              : null,
+
+          pdf_viewer_enabled:
+            typeof nav.pdfViewerEnabled === "boolean"
+              ? nav.pdfViewerEnabled
+              : null,
+
+          reduced_motion:
+            window.matchMedia(
+              "(prefers-reduced-motion: reduce)"
+            ).matches
+              ? "reduce"
+              : "no-preference",
+
+          color_scheme:
+            window.matchMedia(
+              "(prefers-color-scheme: dark)"
+            ).matches
+              ? "dark"
+              : "light",
+
+          storage_quota_bytes:
+            Number.isFinite(storage.quota)
+              ? storage.quota
+              : null,
+
+          storage_usage_bytes:
+            Number.isFinite(storage.usage)
+              ? storage.usage
+              : null
+        };
+      });
   }
 
+  /* =========================================
+     5. إنهاء الفحص والطرد
+  ========================================= */
 
-  function getAqxSessionId() {
+  async function bestEffortLogout(reason) {
+    const token = sessionToken;
+    const bearer = accessToken;
 
-    return safeRead(
-      () => localStorage.getItem("aqx_session_id"),
-      ""
-    ) || "";
-
-  }
-
-
-  /* ==================================================
-     09 — طلبات الشبكة بمهلة محددة
-  ================================================== */
-
-  async function request(url, options = {}, timeout = CONFIG.REQUEST_TIMEOUT) {
-
-    const controller = new AbortController();
-
-    const timer = setTimeout(
-      () => controller.abort(),
-      timeout
-    );
+    if (!token || !bearer) return;
 
     try {
+      const controller = new AbortController();
 
-      return await fetch(url, {
-        ...options,
-        signal: controller.signal,
-        cache: "no-store",
-        credentials: "omit"
-      });
-
-    } finally {
-
-      clearTimeout(timer);
-
-    }
-
-  }
-
-
-  async function readJson(response) {
-
-    return await response.json().catch(() => null);
-
-  }
-
-
-  /* ==================================================
-     10 — التحقق من جلسة AQX لدى الخادم
-  ================================================== */
-
-  async function validateAqxSession(accessToken, aqxToken) {
-
-    const response = await request(
-      CONFIG.IDENTITY_URL + "/v1/session/check",
-      {
-        method: "POST",
-
-        headers: {
-          "Authorization": "Bearer " + accessToken,
-          "apikey": CONFIG.SUPABASE_KEY,
-          "Content-Type": "application/json",
-          "x-aqx-session": aqxToken
-        },
-
-        body: JSON.stringify({})
-
-      }
-    );
-
-    const result = await readJson(response);
-
-    if (
-      !response.ok ||
-      result?.valid !== true
-    ) {
-
-      throw new Error(
-        result?.error || "AQX_SESSION_INVALID"
+      const timer = setTimeout(
+        () => controller.abort(),
+        1200
       );
 
-    }
-
-    return true;
-
-  }
-
-
-  /* ==================================================
-     11 — استهلاك إثبات الدخول
-     مرتبط بالمستخدم والجلسة والغرض
-  ================================================== */
-
-  async function consumeLoginProof(accessToken, aqxToken) {
-
-    let proof = "";
-
-    try {
-
-      proof =
-        sessionStorage.getItem("aqx_login_proof") || "";
-
-    } catch (_) {
-
-      throw new Error("LOGIN_PROOF_STORAGE_UNAVAILABLE");
-
-    }
-
-    if (
-      typeof proof !== "string" ||
-      proof.length < 30 ||
-      proof.length > 100
-    ) {
-
-      throw new Error("LOGIN_PROOF_REQUIRED");
-
-    }
-
-    let response;
-
-    try {
-
-      response = await request(
-        CONFIG.IDENTITY_URL + "/v1/security/login-proof/consume",
+      await fetch(
+        CONFIG.IDENTITY_URL + "/v1/session/logout",
         {
           method: "POST",
-
           headers: {
-            "Authorization": "Bearer " + accessToken,
-            "apikey": CONFIG.SUPABASE_KEY,
+            "Authorization": "Bearer " + bearer,
+            "apikey": CONFIG.SUPABASE_PUBLIC_KEY,
             "Content-Type": "application/json",
-            "x-aqx-session": aqxToken
+            "x-aqx-session": token
           },
-
           body: JSON.stringify({
-            proof_token: proof
-          })
-
+            reason: reason || "security_check_failed"
+          }),
+          signal: controller.signal,
+          cache: "no-store",
+          keepalive: true
         }
-      );
+      ).catch(() => null);
 
-    } finally {
-
-      // لا نحتفظ بالإثبات بعد محاولة استهلاكه.
-      try {
-        sessionStorage.removeItem("aqx_login_proof");
-      } catch (_) {}
+      clearTimeout(timer);
+    } catch (_) {
+      // التحويل لا يعتمد على نجاح طلب تسجيل الخروج.
     }
-
-    const result = await readJson(response);
-
-    if (
-      !response.ok ||
-      result?.success !== true ||
-      result?.valid !== true ||
-      result?.purpose !== "dashboard_access"
-    ) {
-
-      throw new Error(
-        result?.error || "LOGIN_PROOF_INVALID"
-      );
-
-    }
-
-    return true;
-
   }
 
+  async function eject(reason, message) {
+    if (finished) return;
 
-  /* ==================================================
-     12 — إرسال طلب الفحص إلى AQX-SOC
-  ================================================== */
+    finished = true;
 
-  async function submitSocCheck(
-    accessToken,
-    aqxToken,
-    clientTelemetry
-  ) {
+    deadlineController.abort();
 
-    const response = await request(
-      CONFIG.SOC_URL + "/v1/check",
-      {
-        method: "POST",
+    spinner.classList.add("hidden");
 
-        headers: {
-          "Authorization": "Bearer " + accessToken,
-          "apikey": CONFIG.SUPABASE_KEY,
-          "Content-Type": "application/json",
-          "x-aqx-session": aqxToken
-        },
+    statusTitle.textContent = "تعذر اجتياز الفحص الأمني";
+    statusMessage.textContent =
+      message || "تم منع الوصول. جاري إنهاء الجلسة...";
 
-        body: JSON.stringify({
-
-          action: ACTION,
-
-          client_telemetry: clientTelemetry,
-
-          client_metadata: {
-
-            application: "AQX Identity",
-
-            page: "secure-aqx",
-
-            page_version: CONFIG.VERSION,
-
-            telemetry_version: CONFIG.TELEMETRY_VERSION,
-
-            collection_method: "browser_native_apis",
-
-            requested_action: ACTION
-
-          }
-
-        })
-
+    for (let i = 1; i <= 5; i++) {
+      const element = document.getElementById("step" + i);
+      if (element && element.classList.contains("active")) {
+        setStep(i, "failed");
+        break;
       }
-    );
-
-    const result = await readJson(response);
-
-    if (
-      !response.ok ||
-      !result ||
-      result.success !== true ||
-      result.decision !== "allow" ||
-      result.verified !== true
-    ) {
-
-      throw new Error(
-        result?.error || "SECURITY_CHECK_DENIED"
-      );
-
     }
 
-    return result;
-
-  }
-
-
-  /* ==================================================
-     13 — إنهاء الجلسات عند الفشل
-  ================================================== */
-
-  async function logoutAndReject(accessToken, reason) {
-
-    if (rejected) return;
-
-    rejected = true;
-
-    $("continueButton").classList.add("hidden");
-
+    // حذف إثبات الدخول من المتصفح.
     try {
-
-      const aqxToken = getAqxSessionToken();
-
-      if (accessToken && aqxToken) {
-
-        await request(
-          CONFIG.IDENTITY_URL + "/v1/session/logout",
-          {
-            method: "POST",
-
-            headers: {
-              "Authorization": "Bearer " + accessToken,
-              "apikey": CONFIG.SUPABASE_KEY,
-              "Content-Type": "application/json",
-              "x-aqx-session": aqxToken
-            },
-
-            body: JSON.stringify({
-              reason: "security_check_failed"
-            })
-
-          },
-          CONFIG.LOGOUT_TIMEOUT
-        );
-
-      }
-
-    } catch (error) {
-
-      console.warn(
-        "AQX server logout could not be confirmed:",
-        error?.message
-      );
-
-    }
-
-
-    try {
-
-      if (supabaseClient) {
-
-        await supabaseClient.auth.signOut({
-          scope: "local"
-        });
-
-      }
-
+      sessionStorage.removeItem(STORAGE.LOGIN_PROOF);
     } catch (_) {}
 
+    // محاولة إلغاء جلسة AQX من الخادم.
+    await Promise.race([
+      bestEffortLogout(reason),
+      new Promise(resolve => setTimeout(resolve, 1200))
+    ]);
 
+    // إلغاء جلسة Supabase المحلية.
     try {
-
-      localStorage.removeItem("aqx_session_token");
-      localStorage.removeItem("aqx_session_id");
-
-      sessionStorage.removeItem("aqx_login_proof");
-
+      if (client) {
+        await Promise.race([
+          client.auth.signOut({ scope: "local" }),
+          new Promise(resolve => setTimeout(resolve, 500))
+        ]);
+      }
     } catch (_) {}
 
+    // حذف بيانات جلسة AQX المحلية فقط.
+    try {
+      localStorage.removeItem(STORAGE.SESSION_TOKEN);
+      localStorage.removeItem(STORAGE.SESSION_ID);
+    } catch (_) {}
 
-    $("shield").textContent = "⛔";
-
-    $("heading").textContent =
-      "تعذر اجتياز الفحص الأمني";
-
-    $("statusBox").classList.remove("working");
-
-    setStatus(
-      "تم رفض الوصول",
-      "تم إيقاف العملية احتياطيًا لحماية الحساب",
-      "#ff667c"
-    );
-
-    showMessage(
-      "لم يتم اجتياز متطلبات التحقق الأمني. تم إيقاف الوصول وسيتم تحويلك إلى تسجيل الدخول.",
-      "error"
-    );
-
-    console.warn("AQX security gate rejected:", reason);
-
-    setTimeout(() => {
-
-      location.replace(CONFIG.LOGIN_URL);
-
-    }, 2200);
-
+    // لا نترك المستخدم في صفحة الفحص.
+    window.location.replace(CONFIG.LOGIN_URL);
   }
 
+  /* =========================================
+     6. المهلة الإجمالية: 10 ثوانٍ
+  ========================================= */
 
-  /* ==================================================
-     14 — معالجة نجاح الفحص
-  ================================================== */
-
-  function completeCheck(result) {
-
-    passed = true;
-
-    $("shield").textContent = "✅";
-
-    $("heading").textContent =
-      "اجتاز الحساب الفحص الأمني";
-
-    $("statusBox").classList.remove("working");
-
-    setStatus(
-      "الفحص الأمني ناجح",
-      "تم قبول النتيجة من مركز AQX-SOC",
-      "#27d69b"
+  const deadlineTimer = setTimeout(() => {
+    eject(
+      "security_timeout",
+      "انتهت مهلة الفحص الأمني. تم منع الدخول احتياطيًا."
     );
+  }, CONFIG.TIMEOUT_MS);
 
-    showMessage(
-      "تم التحقق من الهوية وجلسة AQX وإثبات الدخول. يمكنك الآن متابعة لوحة الحساب.",
-      "success"
-    );
-
-    $("continueButton").classList.remove("hidden");
-
-    $("continueButton").disabled = false;
-
-    $("continueButton").addEventListener("click", () => {
-
-      if (!passed || rejected) return;
-
-      $("continueButton").disabled = true;
-
-      location.replace(CONFIG.DASHBOARD_URL);
-
-    }, { once: true });
-
-    // معرّف الفحص متاح للتشخيص دون كشف رموز الجلسة.
-    if (result?.check_id) {
-      console.info("AQX SOC check ID:", result.check_id);
-    }
-
-  }
-
-
-  /* ==================================================
-     15 — محرك الفحص الرئيسي
-  ================================================== */
-
-  async function runSecurityCheck() {
-
-    if (running || passed || rejected) {
+  const countdownTimer = setInterval(() => {
+    if (finished) {
+      clearInterval(countdownTimer);
       return;
     }
 
-    running = true;
+    const seconds = Math.ceil(remainingTime() / 1000);
 
-    let accessToken = null;
+    countdown.textContent = String(Math.max(0, seconds));
+  }, 150);
 
-    resetSteps();
+  /* =========================================
+     7. تحميل Supabase
+  ========================================= */
 
-    $("continueButton").classList.add("hidden");
+  function loadSupabase() {
+    return new Promise((resolve, reject) => {
+      if (window.supabase?.createClient) {
+        resolve();
+        return;
+      }
 
-    $("statusBox").classList.add("working");
+      const script = document.querySelector(
+        'script[src*="supabase-js"]'
+      );
 
-    $("shield").textContent = "🛡️";
+      if (!script) {
+        reject(new Error("SUPABASE_SDK_MISSING"));
+        return;
+      }
 
-    hideMessage();
+      script.addEventListener("load", () => {
+        if (window.supabase?.createClient) resolve();
+        else reject(new Error("SUPABASE_SDK_INVALID"));
+      }, { once: true });
 
-    setStatus(
-      "جاري تنفيذ الفحص الأمني",
-      "بدء سلسلة التحقق المركزية",
-      "#f2c66d"
-    );
+      script.addEventListener("error", () => {
+        reject(new Error("SUPABASE_SDK_LOAD_FAILED"));
+      }, { once: true });
+    });
+  }
 
+  /* =========================================
+     8. تنفيذ التحقق الأمني
+  ========================================= */
 
+  async function runSecurityCheck() {
     try {
+      ensureTime();
 
-      /* ------------------------------------------
-         المرحلة 1 — التحقق من Supabase
-      ------------------------------------------ */
+      activateStep(
+        1,
+        "جاري التحقق من هوية المستخدم"
+      );
 
-      initializeSupabase();
+      // انتظار مكتبة Supabase ضمن نفس مهلة العشر ثواني.
+      await withDeadline(loadSupabase());
 
-      const {
-        data: sessionData,
-        error: sessionError
-      } = await supabaseClient.auth.getSession();
+      ensureTime();
 
-      if (
-        sessionError ||
-        !sessionData?.session?.access_token
-      ) {
+      client = window.supabase.createClient(
+        CONFIG.SUPABASE_URL,
+        CONFIG.SUPABASE_PUBLIC_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false
+          }
+        }
+      );
 
-        throw new Error("IDENTITY_SESSION_MISSING");
+      // قراءة جلسة Supabase.
+      const sessionResult = await withDeadline(
+        client.auth.getSession()
+      );
 
+      const session = sessionResult?.data?.session;
+
+      if (!session?.access_token || !session?.user?.id) {
+        throw new Error("SUPABASE_SESSION_MISSING");
       }
 
-      accessToken =
-        sessionData.session.access_token;
+      accessToken = session.access_token;
 
+      // تحقق من صلاحية المستخدم لدى خادم Supabase.
+      const userResult = await withDeadline(
+        client.auth.getUser(accessToken)
+      );
 
-      // تحقق خادمي من المستخدم بدل الاكتفاء
-      // بقراءة بيانات الجلسة المخزنة محليًا.
+      const user = userResult?.data?.user;
 
-      const {
-        data: userData,
-        error: userError
-      } = await supabaseClient.auth.getUser();
-
-      if (
-        userError ||
-        !userData?.user?.id
-      ) {
-
-        throw new Error("IDENTITY_INVALID");
-
+      if (!user?.id || user.id !== session.user.id) {
+        throw new Error("IDENTITY_VERIFICATION_FAILED");
       }
+
+      if (!user.email_confirmed_at) {
+        throw new Error("EMAIL_NOT_CONFIRMED");
+      }
+
+      ensureTime();
 
       setStep(1, "done");
 
+      /* -------------------------------------
+         المرحلة الثانية: جلسة AQX
+      ------------------------------------- */
 
-      /* ------------------------------------------
-         المرحلة 2 — جلسة AQX
-      ------------------------------------------ */
+      activateStep(
+        2,
+        "جاري التحقق من جلسة AQX"
+      );
 
-      const aqxToken = getAqxSessionToken();
+      sessionToken = localStorage.getItem(
+        STORAGE.SESSION_TOKEN
+      );
 
-      const aqxSessionId = getAqxSessionId();
+      const sessionId = localStorage.getItem(
+        STORAGE.SESSION_ID
+      );
 
       if (
-        !aqxToken ||
-        aqxToken.length < 30 ||
-        aqxToken.length > 100
+        !sessionToken ||
+        sessionToken.length < 30 ||
+        sessionToken.length > 100 ||
+        !sessionId ||
+        sessionId.length > 150
       ) {
-
         throw new Error("AQX_SESSION_MISSING");
-
       }
 
-      if (
-        !aqxSessionId ||
-        aqxSessionId.length > 150
-      ) {
+      const sessionCheck = await requestJson(
+        CONFIG.IDENTITY_URL + "/v1/session/check",
+        {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({})
+        }
+      );
 
-        throw new Error("AQX_SESSION_ID_MISSING");
-
+      if (sessionCheck.valid !== true) {
+        throw new Error("AQX_SESSION_INVALID");
       }
-
-      setStatus(
-        "جاري التحقق من جلسة AQX",
-        "مراجعة صلاحية الجلسة لدى الخادم",
-        "#4b9cff"
-      );
-
-      await validateAqxSession(
-        accessToken,
-        aqxToken
-      );
 
       setStep(2, "done");
 
+      /* -------------------------------------
+         المرحلة الثالثة: إثبات الدخول
+      ------------------------------------- */
 
-      /* ------------------------------------------
-         المرحلة 3 — إثبات الدخول
-      ------------------------------------------ */
-
-      setStatus(
-        "جاري تأكيد إثبات الدخول",
-        "التحقق من الإثبات أحادي الاستخدام",
-        "#4b9cff"
+      activateStep(
+        3,
+        "جاري التحقق من إثبات الدخول"
       );
 
-      await consumeLoginProof(
-        accessToken,
-        aqxToken
+      let proofToken = null;
+
+      try {
+        proofToken = sessionStorage.getItem(
+          STORAGE.LOGIN_PROOF
+        );
+      } catch (_) {
+        throw new Error("LOGIN_PROOF_STORAGE_UNAVAILABLE");
+      }
+
+      if (
+        !proofToken ||
+        proofToken.length < 30 ||
+        proofToken.length > 100
+      ) {
+        throw new Error("LOGIN_PROOF_MISSING");
+      }
+
+      const proofResult = await requestJson(
+        CONFIG.IDENTITY_URL +
+          "/v1/security/login-proof/consume",
+        {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({
+            proof_token: proofToken
+          })
+        }
       );
+
+      // الإثبات أحادي الاستخدام؛ نحذفه بعد محاولة استهلاكه.
+      try {
+        sessionStorage.removeItem(STORAGE.LOGIN_PROOF);
+      } catch (_) {}
+
+      if (
+        proofResult.success !== true ||
+        proofResult.valid !== true ||
+        proofResult.purpose !== "dashboard_access"
+      ) {
+        throw new Error("LOGIN_PROOF_REJECTED");
+      }
 
       setStep(3, "done");
 
+      /* -------------------------------------
+         المرحلة الرابعة: محرك SOC
+      ------------------------------------- */
 
-      /* ------------------------------------------
-         المرحلة 4 — بيانات المتصفح
-      ------------------------------------------ */
-
-      setStatus(
-        "جاري جمع بيانات الجهاز",
-        "قراءة الخصائص التي يتيحها المتصفح",
-        "#4b9cff"
+      activateStep(
+        4,
+        "جاري الاتصال بمركز العمليات الأمنية"
       );
 
-      let clientTelemetry = null;
+      const telemetry = await withDeadline(
+        getClientTelemetry()
+      );
 
-      try {
+      const socResult = await requestJson(
+        CONFIG.SOC_URL + "/v1/check",
+        {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({
+            action: "dashboard_access",
+            client_telemetry: telemetry,
+            client_metadata: {
+              source: "secure-aqx.html",
+              version: "4.0.0"
+            }
+          })
+        }
+      );
 
-        clientTelemetry =
-          await collectAqxBrowserTelemetry();
-
-      } catch (telemetryError) {
-
-        console.warn(
-          "AQX telemetry collection unavailable:",
-          telemetryError?.message
+      if (
+        socResult.success !== true ||
+        socResult.decision !== "allow" ||
+        socResult.verified !== true
+      ) {
+        throw new Error(
+          socResult.error || "SOC_SECURITY_DENIED"
         );
-
-        clientTelemetry = null;
-
       }
 
       setStep(4, "done");
 
+      /* -------------------------------------
+         المرحلة الخامسة: اعتماد الدخول
+      ------------------------------------- */
 
-      /* ------------------------------------------
-         المرحلة 5 — AQX-SOC
-      ------------------------------------------ */
+      ensureTime();
 
-      setStatus(
-        "جاري فحص الحالة الأمنية",
-        "إرسال الطلب إلى مركز العمليات الأمنية",
-        "#f2c66d"
+      activateStep(
+        5,
+        "جاري اعتماد قرار السماح بالدخول"
       );
 
-      const result = await submitSocCheck(
-        accessToken,
-        aqxToken,
-        clientTelemetry
-      );
+      // لا نسمح بأي نجاح بعد تجاوز المهلة.
+      ensureTime();
 
-      setStep(5, "done");
+      markSuccess();
 
+      finished = true;
 
-      /* ------------------------------------------
-         المرحلة 6 — القرار النهائي
-      ------------------------------------------ */
+      clearTimeout(deadlineTimer);
+      clearInterval(countdownTimer);
 
-      setStep(6, "done");
-
-      completeCheck(result);
-
+      // التحويل التلقائي الفوري.
+      window.location.replace(CONFIG.DASHBOARD_URL);
 
     } catch (error) {
+      if (finished) return;
 
-      console.error(
-        "AQX Security Check Error:",
-        error
-      );
+      const code = error?.message || "UNKNOWN_SECURITY_ERROR";
 
-      const reason =
-        error?.message || "SECURITY_CHECK_FAILED";
+      const messages = {
+        SECURITY_TIMEOUT:
+          "انتهت مهلة الفحص الأمني (10 ثوانٍ). تم منع الدخول.",
 
-      const failedStep =
-        !accessToken ? 1 :
-        reason.includes("AQX_SESSION") ? 2 :
-        reason.includes("LOGIN_PROOF") ? 3 :
-        reason.includes("SECURITY_CHECK") ? 5 : 6;
+        SUPABASE_SDK_LOAD_FAILED:
+          "تعذر الاتصال بمكتبة المصادقة. تم منع الدخول.",
 
-      setStep(failedStep, "failed");
+        SUPABASE_SESSION_MISSING:
+          "لم يتم العثور على جلسة دخول صالحة.",
 
-      await logoutAndReject(
-        accessToken,
-        reason
-      );
+        IDENTITY_VERIFICATION_FAILED:
+          "تعذر إثبات هوية المستخدم.",
 
-    } finally {
+        EMAIL_NOT_CONFIRMED:
+          "البريد الإلكتروني غير مؤكد.",
 
-      running = false;
+        AQX_SESSION_MISSING:
+          "جلسة AQX غير موجودة أو غير صالحة.",
 
+        AQX_SESSION_INVALID:
+          "فشل التحقق من جلسة AQX.",
+
+        LOGIN_PROOF_MISSING:
+          "إثبات الدخول غير موجود.",
+
+        LOGIN_PROOF_REJECTED:
+          "إثبات الدخول غير صالح أو منتهي الصلاحية.",
+
+        SOC_SECURITY_DENIED:
+          "مركز العمليات الأمنية رفض السماح بالدخول.",
+
+        SECURITY_CHECK_UNAVAILABLE:
+          "محركات الحماية غير متاحة حاليًا."
+      };
+
+      const message =
+        messages[code] ||
+        "حدث خطأ أثناء الفحص الأمني. تم منع الدخول.";
+
+      await eject(code, message);
     }
-
   }
 
-
-  /* ==================================================
-     16 — حماية من استعادة صفحة قديمة
-  ================================================== */
-
-  window.addEventListener("pageshow", event => {
-
-    if (
-      event.persisted &&
-      !passed &&
-      !rejected
-    ) {
-
-      location.reload();
-
-    }
-
-  });
-
-
-  /* ==================================================
-     17 — منع الرجوع إلى صفحة الفحص بعد النجاح
-  ================================================== */
-
-  window.addEventListener("pagehide", () => {
-
-    try {
-
-      sessionStorage.removeItem("aqx_login_proof");
-
-    } catch (_) {}
-
-  });
-
-
-  /* ==================================================
-     18 — بدء الفحص
-  ================================================== */
+  /* =========================================
+     9. بدء الفحص
+  ========================================= */
 
   runSecurityCheck();
 
 })();
 </script>
-
 </body>
 </html>
