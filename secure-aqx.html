@@ -1,362 +1,530 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
-<title>AQX | التحقق الأمني</title>
-<meta name="theme-color" content="#0a0e26">
-<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate">
-<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
-<meta name="referrer" content="no-referrer">
-<meta name="google" content="notranslate">
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://rysafsualdcrhijurxai.supabase.co https://emqgatvfryhprrexrext.supabase.co https://api.ipify.org https://formsubmit.co; img-src data:; media-src data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300eaff'/%3E%3Cstop offset='1' stop-color='%231c4dff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23060a1f'/%3E%3Cpath d='M32 6 50 13v14c0 15-8 24-18 31C22 51 14 42 14 27V13z' fill='none' stroke='url(%23g)' stroke-width='3'/%3E%3Ccircle cx='32' cy='30' r='11' fill='none' stroke='url(%23g)' stroke-width='2'/%3E%3Ccircle cx='32' cy='30' r='5' fill='none' stroke='url(%23g)' stroke-width='2'/%3E%3Cpath d='M32 19v6M32 35v6M21 30h6M37 30h6' stroke='url(%23g)' stroke-width='2'/%3E%3Ccircle cx='32' cy='30' r='2.4' fill='url(%23g)'/%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Cinzel:wght@700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<style>
-:root{--c1:#38e4ff;--c2:#6f5bff;--ok:#36f0b8;--warn:#ffb545;--gold:#f5c84b;--line:rgba(140,170,255,.32);--ink:#eaf1ff}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overscroll-behavior:none}
-body{font-family:'Cairo',system-ui,sans-serif;color:var(--ink);background:radial-gradient(ellipse at 50% -8%,#161b4a,#070a1e 62%);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
- padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0)}
-.mono{font-family:'JetBrains Mono',monospace}
-.stage{position:fixed;inset:0;display:none;place-items:center;text-align:center;z-index:10;padding:16px}
-.stage.on{display:grid}
-.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.bg i{position:absolute;border-radius:50%;filter:blur(60px);opacity:.38;animation:dr 17s ease-in-out infinite alternate;will-change:transform}
-.bg i:nth-child(1){width:42vmax;height:42vmax;background:#2a3bff;top:-16vmax;left:-12vmax}
-.bg i:nth-child(2){width:36vmax;height:36vmax;background:#19c9ff;bottom:-14vmax;right:-10vmax;animation-delay:-6s}
-.bg i:nth-child(3){width:24vmax;height:24vmax;background:#7b5cff;top:35%;left:40%;opacity:.22;animation-delay:-11s}
-@keyframes dr{to{transform:translate(4vmax,-3vmax) scale(1.12)}}
-.grid{position:fixed;inset:0;z-index:1;pointer-events:none;
- background:linear-gradient(rgba(90,140,255,.07) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(90,140,255,.07) 1px,transparent 1px) 0 0/44px 44px;
- -webkit-mask:radial-gradient(circle at 50% 30%,#000 5%,transparent 68%);mask:radial-gradient(circle at 50% 30%,#000 5%,transparent 68%)}
-.flash{position:fixed;inset:0;z-index:999;background:#fff;opacity:0;pointer-events:none}
-.flash.go{animation:fl .4s ease-out}
-@keyframes fl{0%{opacity:0}30%{opacity:.9}100%{opacity:0}}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080d19">
+  <title>AQX | الفحص الأمني</title>
 
-.badge{position:absolute;top:calc(14px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;width:min(92vw,720px);z-index:5}
-.badge .lg{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(1rem,4vw,1.3rem);letter-spacing:.1em;background:linear-gradient(180deg,#fff,var(--c1) 60%,#1c4dff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.badge .lg small{display:block;font-family:'Cairo',sans-serif;font-size:.52rem;letter-spacing:.28em;color:#9fb4ff;margin-top:2px}
-.badge .pill{padding:7px 14px;border-radius:30px;border:1px solid var(--line);background:rgba(90,130,255,.1);color:#bcd4ff;font-size:clamp(.62rem,2.6vw,.75rem);font-weight:800;display:flex;gap:6px;align-items:center;white-space:nowrap}
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg:#080d19;
+      --panel:#101a2b;
+      --line:#263750;
+      --text:#f3f7ff;
+      --muted:#9aabc2;
+      --blue:#4c9cff;
+      --green:#24d69a;
+      --red:#ff6478;
+      --gold:#f4c66a;
+    }
 
-.ring{position:absolute;border-radius:50%;background:conic-gradient(from 0deg,var(--c1),transparent 35%,var(--c2),transparent 70%,var(--c1)) border-box;
- -webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;border:2px solid transparent;animation:sp 6s linear infinite;will-change:transform}
-@keyframes sp{to{transform:rotate(360deg)}}
-.shield{position:relative;width:clamp(120px,34vw,190px);aspect-ratio:1;display:grid;place-items:center;margin:0 auto}
-.shield svg{width:60%;filter:drop-shadow(0 0 16px rgba(56,228,255,.75))}
-.title1{margin-top:clamp(16px,4vw,26px);font-weight:900;font-size:clamp(.92rem,3.4vw,1.05rem)}
-.sub1{margin-top:6px;font-size:clamp(.74rem,2.6vw,.84rem);font-weight:700;color:#8fb0ff}
-.mono1{margin-top:10px;font-size:.68rem;color:#5f7ecb;letter-spacing:.08em}
+    * { box-sizing:border-box }
 
-.wrap2{width:100%;max-width:560px;margin-top:clamp(70px,16vw,110px)}
-.shield2{width:clamp(96px,26vw,150px)}
-.card{position:relative;z-index:5;width:100%;padding:clamp(20px,5vw,30px) clamp(16px,5vw,26px) clamp(18px,4vw,24px);border-radius:24px;margin-top:18px;
- background:linear-gradient(150deg,rgba(60,90,200,.2),rgba(18,22,60,.32));border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
- box-shadow:0 24px 70px rgba(5,5,30,.55)}
-.eyebrow{font-size:.64rem;font-weight:800;letter-spacing:.2em;color:#7fa0ff}
-.card h2{margin-top:8px;font-weight:900;font-size:clamp(1.15rem,4.6vw,1.45rem)}
-.card p.sub{margin-top:6px;font-size:clamp(.74rem,2.8vw,.82rem);color:#a9bdf5;font-weight:600;line-height:1.75}
+    body {
+      margin:0;
+      min-height:100vh;
+      padding:24px 16px;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(ellipse at 50% 0%,#142b4b 0%,transparent 55%),
+        var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    }
 
-.term{margin-top:16px;border-radius:14px;background:rgba(5,8,22,.6);border:1px solid rgba(100,140,255,.22);padding:12px 14px;text-align:right;max-height:150px;overflow:hidden}
-.term div{font-size:clamp(.66rem,2.4vw,.74rem);line-height:1.9;color:#8ad7ff;opacity:0;transform:translateY(4px);animation:tin .4s forwards}
-.term div b{color:var(--ok)}
-.term div.warn b{color:var(--warn)}
-@keyframes tin{to{opacity:1;transform:none}}
+    .shell { width:100%; max-width:480px }
 
-.stats{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
-.st{padding:10px 10px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);text-align:right}
-.st b{display:block;font-size:.62rem;color:#8fa6e8;font-weight:800;letter-spacing:.02em}
-.st span{display:block;margin-top:4px;font-weight:800;font-size:clamp(.72rem,2.6vw,.84rem);word-break:break-word}
-.st span.ok{color:var(--ok)}
-.st span.warn{color:var(--warn)}
+    .brand {
+      text-align:center;
+      margin-bottom:22px;
+    }
 
-.status{margin-top:16px;padding:13px;border-radius:14px;background:rgba(56,228,255,.08);border:1px solid rgba(56,228,255,.28);font-weight:800;font-size:clamp(.78rem,2.8vw,.88rem);color:#cdeaff;display:flex;align-items:center;justify-content:center;gap:8px}
-.dot3 span{animation:bl 1.2s infinite}
-.dot3 span:nth-child(2){animation-delay:.2s}.dot3 span:nth-child(3){animation-delay:.4s}
-@keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
-.bar{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:14px}
-.bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--c1),var(--c2));box-shadow:0 0 12px var(--c1);transition:width .3s linear}
-.foot2{margin-top:16px;font-size:.62rem;letter-spacing:.12em;color:#5f78bd;font-weight:800}
+    .logo {
+      width:66px;height:66px;
+      margin:auto auto 12px;
+      display:grid;place-items:center;
+      border:1px solid #4778ae;
+      border-radius:22px;
+      background:linear-gradient(145deg,#1d4776,#10213b);
+      color:#fff;
+      font-size:23px;
+      font-weight:900;
+      box-shadow:0 12px 40px #0008;
+    }
 
-.okwrap{position:relative;z-index:5;display:grid;place-items:center;width:100%;max-width:520px}
-.okbadge{width:clamp(96px,26vw,130px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;
- background:radial-gradient(circle,#eafff6,var(--ok) 55%,#17c89a);box-shadow:0 0 56px rgba(54,240,184,.7)}
-.okbadge svg{width:50%;stroke:#063b2c;stroke-width:3;fill:none}
-.okring{position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(54,240,184,.5);animation:expand 1.8s ease-out infinite}
-@keyframes expand{from{transform:scale(.7);opacity:1}to{transform:scale(1.5);opacity:0}}
-.granted{margin-top:clamp(18px,5vw,26px);font-family:'Cinzel',serif;font-weight:900;letter-spacing:.12em;font-size:clamp(.78rem,3vw,.95rem);color:#9fb4ff}
-.gname{margin-top:6px;font-family:'Cinzel',serif;font-weight:900;font-size:clamp(1.3rem,6.4vw,2.1rem);direction:ltr;
- background:linear-gradient(180deg,#fff,var(--gold) 55%,#c8932a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(245,200,75,.65))}
-.gsub{margin-top:12px;font-weight:700;font-size:clamp(.8rem,3vw,.92rem);color:#dfeaff;padding:0 6px}
-.gstats{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.chip{padding:7px 13px;border-radius:30px;background:rgba(54,240,184,.1);border:1px solid rgba(54,240,184,.35);font-size:.7rem;font-weight:800;color:#b6ffe6}
-.gbar{width:min(76vw,260px);height:5px;border-radius:9px;background:rgba(255,255,255,.14);margin:20px auto 0;overflow:hidden}
-.gbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ok),var(--gold));border-radius:9px;transition:width .3s linear}
+    .brand h1 { margin:0;font-size:22px }
+    .brand p { color:var(--muted);font-size:13px;margin:7px 0 }
 
-@media (max-width:600px){.bg i{filter:blur(36px)}.card{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
-@media print{html,body{display:none!important}}
-</style>
+    .card {
+      background:linear-gradient(160deg,#142238,#0d1727);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:25px 21px;
+      box-shadow:0 25px 70px #0007;
+    }
+
+    .shield {
+      width:88px;height:88px;
+      display:grid;place-items:center;
+      margin:0 auto 18px;
+      border-radius:50%;
+      border:1px solid #31577d;
+      background:#132b47;
+      font-size:39px;
+    }
+
+    h2 { text-align:center;font-size:20px;margin:0 0 9px }
+    .intro {
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.9;
+      margin:0 0 22px;
+    }
+
+    .status {
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#091321;
+      margin-bottom:17px;
+    }
+
+    .dot {
+      width:10px;height:10px;
+      border-radius:50%;
+      background:var(--gold);
+      box-shadow:0 0 12px currentColor;
+      flex:none;
+    }
+
+    .status strong { display:block;font-size:13px }
+    .status small { color:var(--muted);font-size:11px }
+
+    .steps { display:grid;gap:10px;margin:20px 0 }
+
+    .step {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      border-radius:12px;
+      background:#0a1524;
+      border:1px solid #1d3049;
+      font-size:12px;
+      color:#c6d3e4;
+    }
+
+    .step-icon {
+      width:29px;height:29px;
+      display:grid;place-items:center;
+      border-radius:9px;
+      background:#172b43;
+      color:#7ebaff;
+      font-weight:800;
+    }
+
+    .step.done { border-color:#17694f }
+    .step.done .step-icon { background:#124d3c;color:#5df0b7 }
+
+    .step.failed { border-color:#783341 }
+    .step.failed .step-icon { background:#542432;color:#ff9baa }
+
+    .message {
+      display:none;
+      padding:13px;
+      margin-top:15px;
+      border-radius:12px;
+      font-size:13px;
+      line-height:1.8;
+    }
+
+    .message.show { display:block }
+    .message.error { background:#351923;border:1px solid #773546;color:#ffc1cb }
+    .message.success { background:#10372d;border:1px solid #1b7256;color:#a7f5d7 }
+
+    button {
+      width:100%;
+      border:0;
+      border-radius:13px;
+      padding:14px;
+      margin-top:14px;
+      background:linear-gradient(100deg,#287fe0,#4ba9ff);
+      color:white;
+      font-weight:800;
+      font-size:14px;
+      cursor:pointer;
+    }
+
+    button:disabled { opacity:.5;cursor:not-allowed }
+
+    .footer {
+      text-align:center;
+      color:#71839c;
+      font-size:11px;
+      margin-top:18px;
+      line-height:1.8;
+    }
+
+    .hidden { display:none!important }
+    .loader {
+      width:17px;height:17px;
+      display:inline-block;
+      vertical-align:middle;
+      border:2px solid #ffffff55;
+      border-top-color:white;
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+      margin-left:8px;
+    }
+
+    @keyframes spin { to { transform:rotate(360deg) } }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script>
 </head>
+
 <body>
-<div class="bg"><i></i><i></i><i></i></div>
-<div class="grid"></div>
-<div class="flash" id="flash"></div>
+<main class="shell">
 
-<section class="stage on" id="s1">
- <div class="badge"><div class="lg">AQX<small>SENTINEL PROTOCOL</small></div><div class="pill">🛡️ AQX SENTINEL</div></div>
- <div>
-  <div class="shield"><div class="ring" style="inset:-10%"></div><div class="ring" style="inset:4%;animation-duration:9s;animation-direction:reverse"></div>
-   <svg viewBox="0 0 64 64"><path d="M32 4 56 13v16c0 18-10 29-24 35C18 58 8 47 8 29V13z" fill="none" stroke="#38e4ff" stroke-width="2.4"/><circle cx="32" cy="30" r="4" fill="#38e4ff"/><path d="M32 12v8M32 40v8M14 30h8M42 30h8" stroke="#38e4ff" stroke-width="2"/></svg>
-  </div>
-  <div class="title1">تهيئة نظام AQX Sentinel</div>
-  <div class="sub1">Initializing AQX Sentinel — Secure Channel</div>
-  <div class="mono1 mono" id="hashLine">0x000000</div>
- </div>
-</section>
+  <header class="brand">
+    <div class="logo">AQX</div>
+    <h1>AQX Security Operations Center</h1>
+    <p>مركز العمليات الأمنية المركزي</p>
+  </header>
 
-<section class="stage" id="s2">
- <div class="badge"><div class="lg">AQX<small>SENTINEL PROTOCOL</small></div><div class="pill">🛡️ AQX SENTINEL</div></div>
- <div class="wrap2">
-  <div class="shield shield2"><div class="ring"></div><div class="ring" style="inset:10%;animation-duration:7s;animation-direction:reverse"></div>
-   <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#38e4ff" stroke-width="2"/><circle cx="32" cy="32" r="13" fill="none" stroke="#38e4ff" stroke-width="2"/><path d="M32 6v10M32 48v10M6 32h10M48 32h10" stroke="#38e4ff" stroke-width="2"/><circle cx="32" cy="32" r="4" fill="#38e4ff"/></svg>
-  </div>
-  <div class="card">
-   <div class="eyebrow">IDENTITY &amp; THREAT VERIFICATION</div>
-   <h2>التحقق الأمني الحي</h2>
-   <p class="sub">يجري الآن تنفيذ سلسلة فحوصات AQX Sentinel الحقيقية للتأكد من هويتك قبل منح الوصول.</p>
-   <div class="term mono" id="term"></div>
-   <div class="stats" id="stats">
-    <div class="st"><b>الحالة</b><span id="stA">—</span></div>
-    <div class="st"><b>آخر دخول</b><span id="stB">—</span></div>
-    <div class="st"><b>مدة الجلسة</b><span id="stC">—</span></div>
-    <div class="st"><b>عنوان IP</b><span id="stD">—</span></div>
-    <div class="st"><b>الاتصال</b><span id="stE">—</span></div>
-    <div class="st"><b>درجة التهديد</b><span id="stF">—</span></div>
-   </div>
-   <div class="status"><span id="statusTxt">جارٍ التحقق الآمن</span><span class="dot3"><span>.</span><span>.</span><span>.</span></span></div>
-   <div class="bar"><i id="pbar"></i></div>
-   <div class="foot2">AES-256 · TLS · AQX SENTINEL</div>
-  </div>
- </div>
-</section>
+  <section class="card">
+    <div class="shield" id="shield">🛡️</div>
 
-<section class="stage" id="s3">
- <div class="badge"><div class="lg">AQX<small>SENTINEL PROTOCOL</small></div><div class="pill">🛡️ AQX SENTINEL</div></div>
- <div class="okwrap">
-  <div class="okbadge"><div class="okring"></div><div class="okring" style="animation-delay:.6s"></div>
-   <svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6"/></svg>
-  </div>
-  <div class="granted">IDENTITY CONFIRMED</div>
-  <div class="gname">General<br>Mohamed Basyouni</div>
-  <div class="gsub">تم التأكد من هويتك بنجاح. جميع فحوصات AQX Sentinel اكتملت دون رصد أي تهديد.</div>
-  <div class="gstats">
-   <div class="chip" id="chA">THREAT 0/100</div>
-   <div class="chip" id="chB">ENCRYPTED</div>
-   <div class="chip" id="chC">SESSION LOGGED</div>
-  </div>
-  <div class="gbar"><i id="gbar"></i></div>
- </div>
-</section>
+    <h2 id="heading">الفحص الأمني للحساب</h2>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <p class="intro" id="intro">
+      نقوم بالتحقق من هويتك وجلسة حسابك وحالة الحماية المركزية.
+      لن يُسمح باستكمال العملية قبل اجتياز الفحص.
+    </p>
+
+    <div class="status">
+      <span class="dot" id="dot"></span>
+      <div>
+        <strong id="statusTitle">جاري تجهيز الفحص</strong>
+        <small id="statusText">الاتصال بمحرك الحماية المركزي</small>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step" id="s1">
+        <span class="step-icon">1</span>
+        <span>التحقق من هوية Supabase</span>
+      </div>
+
+      <div class="step" id="s2">
+        <span class="step-icon">2</span>
+        <span>التحقق من جلسة AQX</span>
+      </div>
+
+      <div class="step" id="s3">
+        <span class="step-icon">3</span>
+        <span>مراجعة الحالة الأمنية المركزية</span>
+      </div>
+
+      <div class="step" id="s4">
+        <span class="step-icon">4</span>
+        <span>تسجيل نتيجة الفحص الأمني</span>
+      </div>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <button id="retry" class="hidden" type="button">
+      إعادة المحاولة
+    </button>
+
+    <button id="continue" class="hidden" type="button">
+      متابعة
+    </button>
+  </section>
+
+  <footer class="footer">
+    AQX Security Operations Center<br>
+    حماية الهوية والجلسات والعمليات الحساسة<br>
+    لا تشارك بيانات الدخول أو رموز الجلسات مع أي شخص.
+  </footer>
+
+</main>
+
 <script>
-(()=>{'use strict';
-const AUTH_URL='https://rysafsualdcrhijurxai.supabase.co';
-const AUTH_KEY='sb_publishable_3PeD3OhddyVwY5E_chKNqA_jh2ESVsv';
-const MON_URL='https://emqgatvfryhprrexrext.supabase.co';
-const MON_KEY='sb_publishable_rCs9X4P7JjxJGIoq4_Vadg_xUlRSzk-';
-const EJECT_URL='https://ads.alqurmanix.com/watch.html';
-const CONTROL_URL='aqx-central-control.html';
-const ALERT_EMAIL='alqurmanix@gmail.com';
+(() => {
+  "use strict";
 
-if(window.top!==window.self){try{window.top.location.replace(window.self.location.href)}catch(e){}document.documentElement.innerHTML='';throw 0}
-if(!window.supabase){location.replace(EJECT_URL);throw 0}
+  const CONFIG = Object.freeze({
+    SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
+    SUPABASE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+    SOC_URL: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-soc",
+    IDENTITY_URL: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+    LOGIN_URL: "https://id.alqurmanix.com/login.html",
+    DASHBOARD_URL: "https://id.alqurmanix.com/dashboard-aqx.html"
+  });
 
-const $=id=>document.getElementById(id);
-let ejected=false,AC=null,mobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  const ACTIONS = new Set([
+    "dashboard_access",
+    "password_change",
+    "email_change",
+    "recovery_change",
+    "financial_withdrawal",
+    "security_settings",
+    "unknown"
+  ]);
 
-function ac(){return AC||(AC=new (window.AudioContext||window.webkitAudioContext)())}
-function noiseBuf(s){const c=ac(),b=c.createBuffer(1,c.sampleRate*s,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
-function whoosh(){try{const c=ac(),t=c.currentTime,n=c.createBufferSource();n.buffer=noiseBuf(2.2);
- const bp=c.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.6;bp.frequency.setValueAtTime(180,t);bp.frequency.exponentialRampToValueAtTime(2600,t+1.8);
- const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.45,t+1.1);g.gain.exponentialRampToValueAtTime(.001,t+2.1);
- n.connect(bp).connect(g).connect(c.destination);n.start(t)}catch(e){}}
-function chime(fs,step){try{const c=ac(),t=c.currentTime;fs.forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;
- g.gain.setValueAtTime(0,t+i*step);g.gain.linearRampToValueAtTime(.2,t+i*step+.02);g.gain.exponentialRampToValueAtTime(.001,t+i*step+1.1);
- o.connect(g).connect(c.destination);o.start(t+i*step);o.stop(t+i*step+1.2)})}catch(e){}}
-function tick(){try{const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=1500;
- g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.07);o.connect(g).connect(c.destination);o.start(t);o.stop(t+.08)}catch(e){}}
-function blip(){try{const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(90,t+.3);
- g.gain.setValueAtTime(.4,t);g.gain.exponentialRampToValueAtTime(.001,t+.32);o.connect(g).connect(c.destination);o.start(t);o.stop(t+.34)}catch(e){}}
+  const $ = id => document.getElementById(id);
 
-let keepAlive=null;
-function speakQueue(items){
- if(!('speechSynthesis' in window))return;
- const run=()=>{
-  const vs=speechSynthesis.getVoices();
-  const ar=vs.filter(v=>/^ar/i.test(v.lang)),en=vs.filter(v=>/^en/i.test(v.lang));
-  const softAr=/(salma|amira|hoda|laila|noura|sana|female|google.*(عرب|arabic))/i;
-  const hardAr=/(naayf|tarik|maged|hamed|male)/i;
-  const vAr=ar.find(v=>/eg/i.test(v.lang)&&softAr.test(v.name))||ar.find(v=>softAr.test(v.name))||ar.find(v=>!hardAr.test(v.name))||ar[0];
-  const softEn=/(female|samantha|zira|susan|victoria|google us english|aria|jenny)/i;
-  const vEn=en.find(v=>softEn.test(v.name))||en.find(v=>!/male/i.test(v.name))||en[0];
-  speechSynthesis.cancel();
-  let i=0;
-  const next=()=>{
-   if(i>=items.length){clearInterval(keepAlive);keepAlive=null;return}
-   const it=items[i++];
-   const u=new SpeechSynthesisUtterance(it.t);
-   const v=it.lang==='en'?vEn:vAr;
-   if(v){u.voice=v;u.lang=v.lang}else u.lang=it.lang==='en'?'en-US':'ar-EG';
-   u.pitch=it.lang==='en'?1.08:1.12;u.rate=it.lang==='en'?.98:.93;u.volume=1;
-   u.onend=next;u.onerror=next;
-   speechSynthesis.speak(u);
-  };
-  if(keepAlive)clearInterval(keepAlive);
-  keepAlive=setInterval(()=>{if(speechSynthesis.speaking){speechSynthesis.pause();speechSynthesis.resume()}},4000);
-  next();
- };
- speechSynthesis.getVoices().length?run():(speechSynthesis.onvoiceschanged=run,setTimeout(run,500));
-}
+  const params = new URLSearchParams(location.search);
+  const requestedAction = params.get("action") || "dashboard_access";
+  const ACTION = ACTIONS.has(requestedAction) ? requestedAction : "unknown";
 
-function notify(subject,details){try{fetch('https://formsubmit.co/ajax/'+ALERT_EMAIL,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',Accept:'application/json'},
- body:JSON.stringify({_subject:'[AQX-GATE] '+subject,_template:'table',_captcha:'false',الحدث:subject,التفاصيل:details,الوقت:new Date().toLocaleString('ar-EG'),الجهاز:navigator.userAgent})}).catch(()=>{})}catch(e){}}
+  function safeReturnUrl() {
+    const raw = params.get("return_to");
+    if (!raw) return CONFIG.DASHBOARD_URL;
 
-function eject(reason){
- if(ejected)return;ejected=true;
- try{blip()}catch(e){}
- try{navigator.vibrate&&navigator.vibrate([250,100,250])}catch(e){}
- $('flash').classList.add('go');
- notify('🚨 طرد من بوابة التحقق',reason+' | '+location.href);
- try{sessionStorage.clear()}catch(e){}
- setTimeout(()=>{try{document.documentElement.innerHTML='';location.replace(EJECT_URL)}catch(e){location.href=EJECT_URL}},340);
-}
+    try {
+      const url = new URL(raw, location.origin);
 
-const block=e=>{e.preventDefault();e.stopPropagation();return false};
-document.addEventListener('contextmenu',e=>{block(e);eject('right-click')},true);
-['copy','cut','paste','dragstart','selectstart'].forEach(ev=>document.addEventListener(ev,block,true));
-document.addEventListener('keydown',e=>{
- const k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey;
- if(e.keyCode===123||k==='f12'){block(e);eject('f12')}
- else if(c&&e.shiftKey&&['i','j','c','k','e'].includes(k)){block(e);eject('devtools-shortcut')}
- else if(c&&['u','s','p'].includes(k)){block(e);eject('view-source-or-save')}
- else if(e.altKey&&e.metaKey&&['i','j','u'].includes(k)){block(e);eject('devtools-shortcut')}
-},true);
-addEventListener('beforeprint',()=>eject('print'));
-if(!mobile){
- const bait=new Image();let hit=false;Object.defineProperty(bait,'id',{get(){hit=true}});
- setInterval(()=>{
-  if(ejected)return;hit=false;console.log('%c',bait);console.clear();
-  const t0=performance.now();(function(){debugger})();const dt=performance.now()-t0;
-  const dock=outerWidth-innerWidth>170||outerHeight-innerHeight>170;
-  if(hit||dt>120||dock)eject('devtools-detected');
- },1600);
-}
-new MutationObserver(m=>{
- if(ejected)return;
- for(const r of m)for(const n of r.addedNodes)
-  if(n.nodeType===1&&/^(IFRAME|OBJECT|EMBED)$/i.test(n.tagName))return eject('injection-detected');
-}).observe(document.documentElement,{childList:true,subtree:true});
+      if (url.origin !== location.origin) {
+        return CONFIG.DASHBOARD_URL;
+      }
 
-const sbAuth=window.supabase.createClient(AUTH_URL,AUTH_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-const sbMon=window.supabase.createClient(MON_URL,MON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+      if (url.pathname === "/secure-aqx.html") {
+        return CONFIG.DASHBOARD_URL;
+      }
 
-function go(id){document.querySelectorAll('.stage').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')}
-function anim(el,ms){el.style.transition='width '+ms+'ms linear';requestAnimationFrame(()=>el.style.width='100%')}
-function fmt(d){try{return new Date(d).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'})}catch(e){return '—'}}
-function logLine(t,warn){const d=document.createElement('div');if(warn)d.className='warn';d.innerHTML=t;$('term').appendChild(d);try{tick()}catch(e){}}
-
-async function stage1(){
- let h=0;const hi=setInterval(()=>{h++;$('hashLine').textContent='0x'+Math.random().toString(16).slice(2,10).toUpperCase()},140);
- whoosh();
- const cap=setTimeout(()=>{clearInterval(hi);stage2()},10000);
- setTimeout(()=>{clearInterval(hi);clearTimeout(cap);stage2()},5200);
-}
-
-async function stage2(){
- go('s2');
- const WAIT=10000;
- const tStart=performance.now();
- anim($('pbar'),WAIT);
- const steps=['جارٍ التحقق الآمن','فحص بصمة الجلسة','تأكيد الهوية المركزية','مسح التهديدات النشطة'];
- let i=0;const si=setInterval(()=>{i=(i+1)%steps.length;$('statusTxt').textContent=steps[i]},1000);
-
- logLine('[TLS] فحص قناة الاتصال المشفرة… <b>'+(location.protocol==='https:'?'OK':'تحذير')+'</b>',location.protocol!=='https:');
- $('stE').textContent=location.protocol==='https:'?'HTTPS مشفّر':'غير آمن';
- $('stE').className=location.protocol==='https:'?'ok':'warn';
-
- let session=null,user=null;
- try{
-  await new Promise(r=>setTimeout(r,500));
-  logLine('[AUTH] التحقق من رمز الجلسة الموقّع عبر AQX Sentinel…');
-  const {data:s}=await sbAuth.auth.getSession();
-  session=s&&s.session;
-  if(session){
-   const {data:u,error}=await sbAuth.auth.getUser();
-   if(!error&&u&&u.user)user=u.user;
+      return url.href;
+    } catch {
+      return CONFIG.DASHBOARD_URL;
+    }
   }
-  logLine(user?'[AUTH] تطابق التوقيع الرقمي… <b>OK</b>':'[AUTH] فشل التحقق من الجلسة… <b>مرفوض</b>',!user);
- }catch(e){logLine('[AUTH] خطأ في قناة التحقق… <b>مرفوض</b>',true)}
 
- if(!user){
-  clearInterval(si);eject('invalid-session');return;
- }
+  const RETURN_URL = safeReturnUrl();
 
- $('stA').textContent='موثّقة';$('stA').className='ok';
- $('stB').textContent=fmt(user.last_sign_in_at);
- const expiresAt=session.expires_at?session.expires_at*1000:Date.now()+3600000;
- const tickDur=()=>{const left=Math.max(0,Math.floor((expiresAt-Date.now())/1000));const m=String(Math.floor(left/60)).padStart(2,'0'),s=String(left%60).padStart(2,'0');$('stC').textContent=m+':'+s}
- tickDur();const durI=setInterval(tickDur,1000);
+  const supabaseClient = window.supabase.createClient(
+    CONFIG.SUPABASE_URL,
+    CONFIG.SUPABASE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
 
- let ip='';
- (async()=>{
-  await new Promise(r=>setTimeout(r,400));
-  logLine('[DEVICE] تسجيل بصمة الجهاز…');
-  try{const ipr=await fetch('https://api.ipify.org?format=json');ip=(await ipr.json()).ip}catch(e){}
-  $('stD').textContent=ip||'غير متاح';
-  logLine('[DEVICE] بصمة الجهاز مسجّلة… <b>OK</b>');
+  let running = false;
+  let passed = false;
 
-  await new Promise(r=>setTimeout(r,350));
-  logLine('[THREAT] فحص التهديدات النشطة… <b>0 تهديد</b>');
-  $('stF').textContent='0/100';$('stF').className='ok';
+  function setStatus(title, description, color) {
+    $("statusTitle").textContent = title;
+    $("statusText").textContent = description;
+    $("dot").style.background = color || "#f4c66a";
+  }
 
-  await new Promise(r=>setTimeout(r,350));
-  logLine('[SENTINEL] تسجيل الجلسة في نظام الرصد المركزي AQX Sentinel…');
-  const userEmail=user.email;
-  const userAgent=navigator.userAgent;
-  const clientIp=ip||'غير متاح';
-  try{
-   const {error:eventError}=await sbMon.from('security_events').insert([{event_type:'automatic_gate_verification',severity:'info',source:'aqx-gate-client',description:'نجاح التحقق الأمني التلقائي والانتقال للوحة المركزية',details:{user_email:userEmail,ip_address:clientIp,user_agent:userAgent,verification_status:'SUCCESS',risk_level:'0/100'}}]);
-   if(eventError)throw eventError;
-   await sbMon.rpc('update_engine_last_login',{p_email:userEmail});
-   const sessionRef='AQX-SEC-'+Math.floor(Math.random()*900000+100000);
-   await sbMon.from('security_sessions').insert([{session_ref:sessionRef,device_label:userAgent.includes('Mobile')?'Mobile Device':'Desktop Workstation',ip_address:clientIp,user_agent:userAgent,expires_at:new Date(Date.now()+10*60*1000).toISOString()}]);
-   logLine('[SENTINEL] تم التوثيق في نظام الرصد… <b>OK</b>');
-  }catch(e){logLine('[SENTINEL] تعذّر التوثيق الكامل… <b>تم التجاوز</b>',true)}
- })();
+  function setStep(number, state) {
+    const element = $("s" + number);
+    element.classList.remove("done", "failed");
 
- const elapsed=performance.now()-tStart;
- await new Promise(r=>setTimeout(r,Math.max(0,WAIT-elapsed)));
- clearInterval(durI);clearInterval(si);
- if(ejected)return;
- stage3();
-}
+    if (state === "done") {
+      element.classList.add("done");
+      element.querySelector(".step-icon").textContent = "✓";
+    } else if (state === "failed") {
+      element.classList.add("failed");
+      element.querySelector(".step-icon").textContent = "!";
+    }
+  }
 
-function stage3(){
- go('s3');chime([659,880,1174,1568],.12);
- anim($('gbar'),8600);
- speakQueue([
-  {lang:'ar',t:'تم التأكد من هويتك بنجاح يا جنرال محمد بسيوني. جميع فحوصات نظام إيه كيو إكس سنتينل اكتملت ولم يتم رصد أي تهديد.'},
-  {lang:'en',t:'Identity verified. All cybersecurity checks passed. Secure access granted.'}
- ]);
- setTimeout(()=>{if(!ejected){try{location.replace(CONTROL_URL)}catch(e){location.href=CONTROL_URL}}},9000);
-}
+  function showMessage(text, type) {
+    const el = $("message");
+    el.textContent = text;
+    el.className = "message show " + type;
+  }
 
-stage1();
+  function getAqxToken() {
+    try {
+      return localStorage.getItem("aqx_session_token") || "";
+    } catch {
+      return "";
+    }
+  }
+
+  async function logoutAndReject(reason) {
+    try {
+      const { data } = await supabaseClient.auth.getSession();
+      const accessToken = data?.session?.access_token;
+      const aqxToken = getAqxToken();
+
+      if (accessToken && aqxToken) {
+        await fetch(CONFIG.IDENTITY_URL + "/v1/session/logout", {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + accessToken,
+            "apikey": CONFIG.SUPABASE_KEY,
+            "Content-Type": "application/json",
+            "x-aqx-session": aqxToken
+          },
+          body: JSON.stringify({ reason: "security_check_failed" })
+        });
+      }
+    } catch (_) {}
+
+    try {
+      await supabaseClient.auth.signOut({ scope: "local" });
+    } catch (_) {}
+
+    try {
+      localStorage.removeItem("aqx_session_token");
+      localStorage.removeItem("aqx_session_id");
+    } catch (_) {}
+
+    $("shield").textContent = "⛔";
+    $("heading").textContent = "تعذر اجتياز الفحص";
+    $("retry").classList.add("hidden");
+    $("continue").classList.add("hidden");
+
+    setStatus("تم رفض الوصول", reason, "#ff6478");
+    showMessage(
+      "تم إيقاف العملية حفاظًا على أمان الحساب. ستتم إعادتك إلى تسجيل الدخول.",
+      "error"
+    );
+
+    setTimeout(() => {
+      location.replace(CONFIG.LOGIN_URL);
+    }, 2200);
+  }
+
+  async function runCheck() {
+    if (running || passed) return;
+
+    running = true;
+    $("retry").classList.add("hidden");
+    $("continue").classList.add("hidden");
+    $("message").className = "message";
+    $("shield").textContent = "🛡️";
+
+    setStatus("جاري تنفيذ الفحص", "التحقق من بيانات الجلسة", "#f4c66a");
+
+    try {
+      if (!window.supabase?.createClient) {
+        throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
+      }
+
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error || !data?.session?.access_token) {
+        throw new Error("IDENTITY_SESSION_MISSING");
+      }
+
+      const accessToken = data.session.access_token;
+      const user = data.session.user;
+
+      if (!user?.id) {
+        throw new Error("IDENTITY_INVALID");
+      }
+
+      setStep(1, "done");
+
+      const aqxToken = getAqxToken();
+
+      if (!aqxToken || aqxToken.length < 30) {
+        throw new Error("AQX_SESSION_MISSING");
+      }
+
+      setStep(2, "done");
+      setStatus("جاري مراجعة الحالة الأمنية", "الاتصال بمحرك AQX-SOC", "#f4c66a");
+
+      const response = await fetch(CONFIG.SOC_URL + "/v1/check", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + accessToken,
+          "apikey": CONFIG.SUPABASE_KEY,
+          "Content-Type": "application/json",
+          "x-aqx-session": aqxToken
+        },
+        body: JSON.stringify({
+          action: ACTION
+        }),
+        cache: "no-store",
+        credentials: "omit"
+      });
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || !result || result.success !== true ||
+          result.decision !== "allow" || result.verified !== true) {
+
+        setStep(3, "failed");
+        setStep(4, "failed");
+
+        const reason = result?.error || "SECURITY_CHECK_DENIED";
+        await logoutAndReject(reason);
+        return;
+      }
+
+      setStep(3, "done");
+      setStep(4, "done");
+
+      passed = true;
+      $("shield").textContent = "✅";
+      $("heading").textContent = "اجتاز الحساب الفحص الأمني";
+
+      setStatus(
+        "الفحص الأمني ناجح",
+        "تم التحقق من الهوية والجلسة والحالة الأمنية",
+        "#24d69a"
+      );
+
+      showMessage(
+        "تم تسجيل نتيجة الفحص لدى AQX-SOC. يمكنك متابعة وجهتك الآن.",
+        "success"
+      );
+
+      $("continue").classList.remove("hidden");
+      $("continue").textContent =
+        ACTION === "dashboard_access" ? "الدخول إلى لوحة الحساب" : "العودة إلى العملية";
+
+    } catch (error) {
+      console.error("AQX security check:", error);
+
+      setStatus(
+        "تعذر إكمال الفحص",
+        "النظام أوقف العملية احتياطيًا",
+        "#ff6478"
+      );
+
+      $("shield").textContent = "⚠️";
+      $("heading").textContent = "الفحص الأمني غير متاح";
+
+      showMessage(
+        "لم نتمكن من تأكيد سلامة الجلسة. لن نسمح باستكمال العملية قبل نجاح الفحص.",
+        "error"
+      );
+
+      $("retry").classList.remove("hidden");
+    } finally {
+      running = false;
+    }
+  }
+
+  $("retry").addEventListener("click", runCheck);
+
+  $("continue").addEventListener("click", () => {
+    if (!passed) return;
+    location.replace(RETURN_URL);
+  });
+
+  runCheck();
 })();
 </script>
 </body>
