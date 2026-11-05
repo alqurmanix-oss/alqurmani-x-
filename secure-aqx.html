@@ -7,7 +7,10 @@
   <meta name="theme-color" content="#080d19">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta http-equiv="Cache-Control" content="no-store">
-  <title>AQX | الفحص الأمني</title>
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <title>AQX | الفحص الأمني المركزي</title>
 
   <style>
     :root {
@@ -40,7 +43,7 @@
 
     .shell {
       width:100%;
-      max-width:480px;
+      max-width:490px;
     }
 
     .brand {
@@ -49,8 +52,8 @@
     }
 
     .logo {
-      width:66px;
-      height:66px;
+      width:68px;
+      height:68px;
       margin:auto auto 12px;
       display:grid;
       place-items:center;
@@ -168,18 +171,14 @@
       flex:none;
     }
 
-    .step.done {
-      border-color:#17694f;
-    }
+    .step.done { border-color:#17694f }
 
     .step.done .step-icon {
       background:#124d3c;
       color:#5df0b7;
     }
 
-    .step.failed {
-      border-color:#783341;
-    }
+    .step.failed { border-color:#783341 }
 
     .step.failed .step-icon {
       background:#542432;
@@ -195,9 +194,7 @@
       line-height:1.8;
     }
 
-    .message.show {
-      display:block;
-    }
+    .message.show { display:block }
 
     .message.error {
       background:#351923;
@@ -237,9 +234,7 @@
       line-height:1.8;
     }
 
-    .hidden {
-      display:none!important;
-    }
+    .hidden { display:none!important }
 
     .loader {
       width:17px;
@@ -256,12 +251,18 @@
     @keyframes spin {
       to { transform:rotate(360deg) }
     }
+
+    @media(max-width:380px) {
+      .card { padding:20px 15px }
+      .brand h1 { font-size:19px }
+    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script>
 </head>
 
 <body>
+
 <main class="shell">
 
   <header class="brand">
@@ -277,8 +278,8 @@
     <h2 id="heading">الفحص الأمني للحساب</h2>
 
     <p class="intro" id="intro">
-      نقوم بالتحقق من هويتك وجلسة حسابك وحالة الحماية المركزية.
-      لن يُسمح باستكمال العملية قبل اجتياز الفحص.
+      يقوم مركز أمن AQX بالتحقق من هويتك وجلسة حسابك
+      وبيانات الاتصال المتاحة قبل السماح باستكمال العملية.
     </p>
 
     <div class="status">
@@ -293,22 +294,27 @@
 
       <div class="step" id="s1">
         <span class="step-icon">1</span>
-        <span>التحقق من هوية Supabase</span>
+        <span>🔐 التحقق من هوية الحساب</span>
       </div>
 
       <div class="step" id="s2">
         <span class="step-icon">2</span>
-        <span>التحقق من جلسة AQX وإثبات الدخول</span>
+        <span>🪪 التحقق من جلسة AQX وإثبات الدخول</span>
       </div>
 
       <div class="step" id="s3">
         <span class="step-icon">3</span>
-        <span>مراجعة الحالة الأمنية المركزية</span>
+        <span>🛡️ مراجعة الحالة الأمنية المركزية</span>
       </div>
 
       <div class="step" id="s4">
         <span class="step-icon">4</span>
-        <span>تسجيل نتيجة الفحص الأمني</span>
+        <span>📋 تسجيل نتيجة الفحص الأمني</span>
+      </div>
+
+      <div class="step" id="s5">
+        <span class="step-icon">5</span>
+        <span>📡 إرسال بيانات الجهاز والمتصفح إلى AQX</span>
       </div>
 
     </div>
@@ -338,10 +344,13 @@
   "use strict";
 
   /* =========================================
-     AQX SECURITY CONFIGURATION
+     01 — إعدادات AQX المركزية
+     يمكن تحديث الروابط من هذا القسم
   ========================================= */
 
   const CONFIG = Object.freeze({
+
+    VERSION: "2.0.0",
 
     SUPABASE_URL:
       "https://fkiokwwztbyztleeuwks.supabase.co",
@@ -359,17 +368,24 @@
       "https://id.alqurmanix.com/login.html",
 
     DASHBOARD_URL:
-      "https://id.alqurmanix.com/dashboard-aqx.html"
+      "https://id.alqurmanix.com/dashboard-aqx.html",
+
+    REQUEST_TIMEOUT: 20000,
+
+    TELEMETRY_ENABLED: true,
+
+    TELEMETRY_VERSION: "1.0",
+
+    MAX_RETRIES: 0
 
   });
 
 
   /* =========================================
-     ALLOWED ACTIONS
+     02 — العمليات المسموح بها
   ========================================= */
 
   const ACTIONS = new Set([
-
     "dashboard_access",
     "password_change",
     "email_change",
@@ -377,19 +393,18 @@
     "financial_withdrawal",
     "security_settings",
     "unknown"
-
   ]);
 
 
   /* =========================================
-     DOM HELPERS
+     03 — عناصر الصفحة
   ========================================= */
 
   const $ = id => document.getElementById(id);
 
 
   /* =========================================
-     REQUEST PARAMETERS
+     04 — تحديد العملية المطلوبة
   ========================================= */
 
   const params = new URLSearchParams(location.search);
@@ -403,7 +418,7 @@
 
 
   /* =========================================
-     SAFE RETURN URL
+     05 — التحقق من رابط العودة
   ========================================= */
 
   function safeReturnUrl() {
@@ -418,12 +433,10 @@
 
       const url = new URL(raw, location.origin);
 
-      // منع الانتقال إلى نطاق خارجي.
       if (url.origin !== location.origin) {
         return CONFIG.DASHBOARD_URL;
       }
 
-      // منع إعادة التوجيه إلى صفحة الفحص نفسها.
       if (url.pathname === "/secure-aqx.html") {
         return CONFIG.DASHBOARD_URL;
       }
@@ -442,7 +455,7 @@
 
 
   /* =========================================
-     SUPABASE CLIENT
+     06 — عميل Supabase
   ========================================= */
 
   let supabaseClient = null;
@@ -451,6 +464,10 @@
 
     if (!window.supabase?.createClient) {
       throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
+    }
+
+    if (supabaseClient) {
+      return supabaseClient;
     }
 
     supabaseClient = window.supabase.createClient(
@@ -471,7 +488,7 @@
 
 
   /* =========================================
-     STATE
+     07 — حالة التشغيل
   ========================================= */
 
   let running = false;
@@ -480,13 +497,12 @@
 
 
   /* =========================================
-     UI HELPERS
+     08 — إدارة واجهة الفحص
   ========================================= */
 
   function setStatus(title, description, color) {
 
     $("statusTitle").textContent = title;
-
     $("statusText").textContent = description;
 
     $("dot").style.background =
@@ -499,6 +515,8 @@
 
     const element = $("s" + number);
 
+    if (!element) return;
+
     const icon = element.querySelector(".step-icon");
 
     element.classList.remove("done", "failed");
@@ -506,13 +524,11 @@
     if (state === "done") {
 
       element.classList.add("done");
-
       icon.textContent = "✓";
 
     } else if (state === "failed") {
 
       element.classList.add("failed");
-
       icon.textContent = "!";
 
     } else {
@@ -526,7 +542,7 @@
 
   function resetSteps() {
 
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
       setStep(i, "pending");
     }
 
@@ -538,7 +554,6 @@
     const element = $("message");
 
     element.textContent = text;
-
     element.className = "message show " + type;
 
   }
@@ -552,18 +567,324 @@
 
 
   /* =========================================
-     AQX SESSION TOKEN
+     09 — أدوات القراءة الآمنة
+  ========================================= */
+
+  function safeRead(callback, fallback = null) {
+
+    try {
+      const value = callback();
+      return value === undefined ? fallback : value;
+    } catch (_) {
+      return fallback;
+    }
+
+  }
+
+
+  function safeNumber(value) {
+
+    return typeof value === "number" &&
+      Number.isFinite(value)
+      ? value
+      : null;
+
+  }
+
+
+  function safeBoolean(value) {
+
+    return typeof value === "boolean"
+      ? value
+      : null;
+
+  }
+
+
+  function safeString(value, max = 200) {
+
+    if (typeof value !== "string") {
+      return null;
+    }
+
+    return value.slice(0, max);
+
+  }
+
+
+  /* =========================================
+     10 — جمع معلومات الجهاز والمتصفح
+     لا توجد اتصالات خارجية هنا
+  ========================================= */
+
+  async function collectAqxBrowserTelemetry() {
+
+    if (!CONFIG.TELEMETRY_ENABLED) {
+      return null;
+    }
+
+    const n = navigator;
+    const s = window.screen;
+
+    const connection = safeRead(
+      () => n.connection ||
+            n.mozConnection ||
+            n.webkitConnection,
+      null
+    );
+
+    const collectedAt = new Date().toISOString();
+
+    const timezone = safeRead(
+      () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+      null
+    );
+
+    const languages = safeRead(
+      () => Array.from(n.languages || []).slice(0, 8),
+      []
+    );
+
+    const uaData = safeRead(
+      () => n.userAgentData,
+      null
+    );
+
+    let uaBrands = [];
+
+    if (uaData?.brands) {
+
+      uaBrands = safeRead(
+        () => Array.from(uaData.brands).slice(0, 8).map(item => ({
+          brand: safeString(item.brand, 60),
+          version: safeString(item.version, 30)
+        })),
+        []
+      );
+
+    }
+
+    const storage = {
+      quota: null,
+      usage: null
+    };
+
+    try {
+
+      if (n.storage?.estimate) {
+
+        const estimate = await n.storage.estimate();
+
+        storage.quota = safeNumber(estimate.quota);
+        storage.usage = safeNumber(estimate.usage);
+
+      }
+
+    } catch (_) {}
+
+
+    const orientation = safeRead(
+      () => s.orientation?.type ||
+        (s.width >= s.height ? "landscape" : "portrait"),
+      null
+    );
+
+
+    const reducedMotion = safeRead(
+      () => matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "reduce"
+        : "no-preference",
+      null
+    );
+
+
+    const colorScheme = safeRead(
+      () => matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light",
+      null
+    );
+
+
+    const device = {
+
+      collected_at: collectedAt,
+
+      telemetry_version: CONFIG.TELEMETRY_VERSION,
+
+      /* اللغة والمنطقة */
+
+      timezone: safeString(timezone, 80),
+
+      timezone_offset_minutes:
+        safeNumber(new Date().getTimezoneOffset()),
+
+      locale:
+        safeString(n.language, 35),
+
+      languages,
+
+
+      /* بيانات المنصة والمتصفح */
+
+      platform:
+        safeString(n.platform, 100),
+
+      vendor:
+        safeString(n.vendor, 100),
+
+      user_agent:
+        safeString(n.userAgent, 500),
+
+      ua_platform:
+        safeString(uaData?.platform, 100),
+
+      ua_mobile:
+        safeBoolean(uaData?.mobile),
+
+      ua_brands:
+        uaBrands,
+
+
+      /* الشاشة والنافذة */
+
+      screen_width:
+        safeNumber(s.width),
+
+      screen_height:
+        safeNumber(s.height),
+
+      screen_avail_width:
+        safeNumber(s.availWidth),
+
+      screen_avail_height:
+        safeNumber(s.availHeight),
+
+      viewport_width:
+        safeNumber(window.innerWidth),
+
+      viewport_height:
+        safeNumber(window.innerHeight),
+
+      pixel_ratio:
+        safeNumber(window.devicePixelRatio),
+
+      color_depth:
+        safeNumber(s.colorDepth),
+
+      orientation,
+
+
+      /* إمكانات الجهاز */
+
+      touch_points:
+        safeNumber(n.maxTouchPoints),
+
+      hardware_concurrency:
+        safeNumber(n.hardwareConcurrency),
+
+      device_memory_gb:
+        safeNumber(n.deviceMemory),
+
+
+      /* إعدادات المتصفح */
+
+      cookie_enabled:
+        safeBoolean(n.cookieEnabled),
+
+      do_not_track:
+        safeString(n.doNotTrack, 20),
+
+      online:
+        safeBoolean(n.onLine),
+
+      webdriver:
+        safeBoolean(n.webdriver),
+
+      pdf_viewer_enabled:
+        safeBoolean(n.pdfViewerEnabled),
+
+
+      /* الاتصال */
+
+      connection_type:
+        safeString(connection?.type, 40),
+
+      connection_effective_type:
+        safeString(connection?.effectiveType, 20),
+
+      connection_downlink_mbps:
+        safeNumber(connection?.downlink),
+
+      connection_rtt_ms:
+        safeNumber(connection?.rtt),
+
+      connection_save_data:
+        safeBoolean(connection?.saveData),
+
+
+      /* تفضيلات العرض */
+
+      reduced_motion:
+        safeString(reducedMotion, 20),
+
+      color_scheme:
+        safeString(colorScheme, 20),
+
+
+      /* التخزين */
+
+      storage_quota_bytes:
+        safeNumber(storage.quota),
+
+      storage_usage_bytes:
+        safeNumber(storage.usage)
+
+    };
+
+
+    return device;
+
+  }
+
+
+  /* =========================================
+     11 — جلسة AQX
   ========================================= */
 
   function getAqxToken() {
 
+    return safeRead(
+      () => localStorage.getItem("aqx_session_token"),
+      ""
+    ) || "";
+
+  }
+
+
+  /* =========================================
+     12 — طلب HTTP مع مهلة زمنية
+  ========================================= */
+
+  async function fetchWithTimeout(url, options, timeout) {
+
+    const controller = new AbortController();
+
+    const timer = setTimeout(
+      () => controller.abort(),
+      timeout || CONFIG.REQUEST_TIMEOUT
+    );
+
     try {
 
-      return localStorage.getItem("aqx_session_token") || "";
+      return await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
 
-    } catch (_) {
+    } finally {
 
-      return "";
+      clearTimeout(timer);
 
     }
 
@@ -571,8 +892,8 @@
 
 
   /* =========================================
-     LOGIN PROOF CONSUMPTION
-     MUST HAPPEN BEFORE SOC CHECK
+     13 — استهلاك إثبات الدخول
+     إثبات أحادي الاستخدام
   ========================================= */
 
   async function consumeLoginProof(accessToken, aqxToken) {
@@ -590,7 +911,11 @@
 
     }
 
-    if (!proof || proof.length < 30 || proof.length > 100) {
+    if (
+      !proof ||
+      proof.length < 30 ||
+      proof.length > 100
+    ) {
 
       throw new Error("LOGIN_PROOF_REQUIRED");
 
@@ -600,31 +925,23 @@
 
     try {
 
-      response = await fetch(
+      response = await fetchWithTimeout(
         CONFIG.IDENTITY_URL + "/v1/security/login-proof/consume",
         {
           method: "POST",
 
           headers: {
-
             "Authorization": "Bearer " + accessToken,
-
             "apikey": CONFIG.SUPABASE_KEY,
-
             "Content-Type": "application/json",
-
             "x-aqx-session": aqxToken
-
           },
 
           body: JSON.stringify({
-
             proof_token: proof
-
           }),
 
           cache: "no-store",
-
           credentials: "omit"
 
         }
@@ -632,11 +949,8 @@
 
     } finally {
 
-      // حذف الإثبات محليًا بعد محاولة الاستهلاك.
       try {
-
         sessionStorage.removeItem("aqx_login_proof");
-
       } catch (_) {}
 
     }
@@ -662,7 +976,7 @@
 
 
   /* =========================================
-     LOGOUT AND REJECT
+     14 — إنهاء الجلسة عند الرفض
   ========================================= */
 
   async function logoutAndReject(reason) {
@@ -672,11 +986,9 @@
     rejected = true;
 
     $("retry").classList.add("hidden");
-
     $("continue").classList.add("hidden");
 
     $("retry").disabled = true;
-
     $("continue").disabled = true;
 
     try {
@@ -691,21 +1003,16 @@
 
       if (accessToken && aqxToken) {
 
-        await fetch(
+        await fetchWithTimeout(
           CONFIG.IDENTITY_URL + "/v1/session/logout",
           {
             method: "POST",
 
             headers: {
-
               "Authorization": "Bearer " + accessToken,
-
               "apikey": CONFIG.SUPABASE_KEY,
-
               "Content-Type": "application/json",
-
               "x-aqx-session": aqxToken
-
             },
 
             body: JSON.stringify({
@@ -713,19 +1020,16 @@
             }),
 
             cache: "no-store",
-
             credentials: "omit"
 
-          }
+          },
+          8000
         );
 
       }
 
-    } catch (_) {
+    } catch (_) {}
 
-      // نكمل إنهاء الجلسة المحلية حتى لو تعذر الاتصال.
-
-    }
 
     try {
 
@@ -735,10 +1039,10 @@
 
     } catch (_) {}
 
+
     try {
 
       localStorage.removeItem("aqx_session_token");
-
       localStorage.removeItem("aqx_session_id");
 
       sessionStorage.removeItem("aqx_login_proof");
@@ -748,11 +1052,12 @@
 
     $("shield").textContent = "⛔";
 
-    $("heading").textContent = "تعذر اجتياز الفحص";
+    $("heading").textContent =
+      "تعذر اجتياز الفحص الأمني";
 
     setStatus(
       "تم رفض الوصول",
-      "لم يتم اجتياز التحقق الأمني",
+      "لم يتم اجتياز متطلبات التحقق الأمني",
       "#ff6478"
     );
 
@@ -762,16 +1067,14 @@
     );
 
     setTimeout(() => {
-
       location.replace(CONFIG.LOGIN_URL);
-
     }, 2200);
 
   }
 
 
   /* =========================================
-     MAIN SECURITY CHECK
+     15 — تنفيذ الفحص الأمني
   ========================================= */
 
   async function runCheck() {
@@ -783,22 +1086,19 @@
     running = true;
 
     $("retry").classList.add("hidden");
-
     $("continue").classList.add("hidden");
 
     $("retry").disabled = true;
-
     $("continue").disabled = true;
 
     hideMessage();
-
     resetSteps();
 
     $("shield").textContent = "🛡️";
 
     setStatus(
       "جاري تنفيذ الفحص",
-      "التحقق من بيانات الجلسة",
+      "تهيئة الاتصال بمركز الحماية",
       "#f4c66a"
     );
 
@@ -806,14 +1106,14 @@
     try {
 
       /* -------------------------------------
-         STEP 0: INITIALIZE CLIENT
+         تهيئة Supabase
       ------------------------------------- */
 
       initializeSupabase();
 
 
       /* -------------------------------------
-         STEP 1: SUPABASE AUTH
+         الخطوة 1: هوية المستخدم
       ------------------------------------- */
 
       const {
@@ -837,16 +1137,14 @@
         data.session.user;
 
       if (!user?.id) {
-
         throw new Error("IDENTITY_INVALID");
-
       }
 
       setStep(1, "done");
 
 
       /* -------------------------------------
-         STEP 2: AQX SESSION
+         الخطوة 2: جلسة AQX
       ------------------------------------- */
 
       const aqxToken = getAqxToken();
@@ -863,8 +1161,7 @@
 
 
       /* -------------------------------------
-         STEP 2-A: LOGIN PROOF
-         CRITICAL SECURITY GATE
+         إثبات الدخول
       ------------------------------------- */
 
       setStatus(
@@ -882,40 +1179,72 @@
 
 
       /* -------------------------------------
-         STEP 3: AQX SOC
+         جمع بيانات المتصفح
+      ------------------------------------- */
+
+      setStatus(
+        "جاري جمع بيانات الجهاز",
+        "قراءة الخصائص التي يتيحها المتصفح",
+        "#4c9cff"
+      );
+
+      let clientTelemetry = null;
+
+      try {
+
+        clientTelemetry =
+          await collectAqxBrowserTelemetry();
+
+      } catch (_) {
+
+        // لا نستخدم بيانات غير موثوقة أو مصطنعة.
+        // يمكن للمحرك تسجيل عدم وصول بيانات العميل.
+
+        clientTelemetry = null;
+
+      }
+
+
+      /* -------------------------------------
+         الخطوة 3: فحص AQX-SOC
       ------------------------------------- */
 
       setStatus(
         "جاري مراجعة الحالة الأمنية",
-        "تم إثبات الدخول، الاتصال بمحرك AQX-SOC",
+        "إرسال طلب الفحص وبيانات الجهاز إلى AQX-SOC",
         "#f4c66a"
       );
 
-      const response = await fetch(
+
+      const response = await fetchWithTimeout(
         CONFIG.SOC_URL + "/v1/check",
         {
           method: "POST",
 
           headers: {
-
             "Authorization": "Bearer " + accessToken,
-
             "apikey": CONFIG.SUPABASE_KEY,
-
             "Content-Type": "application/json",
-
             "x-aqx-session": aqxToken
-
           },
 
           body: JSON.stringify({
 
-            action: ACTION
+            action: ACTION,
+
+            client_telemetry: clientTelemetry,
+
+            client_metadata: {
+              application: "AQX Identity",
+              page: "secure-aqx",
+              version: CONFIG.VERSION,
+              telemetry_version: CONFIG.TELEMETRY_VERSION,
+              collection_method: "browser_native_apis"
+            }
 
           }),
 
           cache: "no-store",
-
           credentials: "omit"
 
         }
@@ -927,7 +1256,7 @@
 
 
       /* -------------------------------------
-         SOC DECISION
+         قرار مركز العمليات الأمنية
       ------------------------------------- */
 
       if (
@@ -939,8 +1268,8 @@
       ) {
 
         setStep(3, "failed");
-
         setStep(4, "failed");
+        setStep(5, "failed");
 
         throw new Error(
           result?.error || "SECURITY_CHECK_DENIED"
@@ -950,12 +1279,12 @@
 
 
       /* -------------------------------------
-         STEP 4: SUCCESS
+         نجاح الفحص
       ------------------------------------- */
 
       setStep(3, "done");
-
       setStep(4, "done");
+      setStep(5, "done");
 
       passed = true;
 
@@ -971,13 +1300,13 @@
       );
 
       showMessage(
-        "تم تسجيل نتيجة الفحص لدى AQX-SOC. يمكنك متابعة وجهتك الآن.",
+        "تم قبول نتيجة الفحص من مركز AQX-SOC. يمكنك متابعة وجهتك الآن.",
         "success"
       );
 
 
       /* -------------------------------------
-         CONTINUE
+         زر المتابعة
       ------------------------------------- */
 
       $("continue").disabled = false;
@@ -997,13 +1326,16 @@
         error
       );
 
-      setStep(3, "failed");
+      if (!rejected) {
 
-      setStep(4, "failed");
+        setStep(3, "failed");
+        setStep(4, "failed");
 
-      await logoutAndReject(
-        error?.message || "SECURITY_CHECK_FAILED"
-      );
+        await logoutAndReject(
+          error?.message || "SECURITY_CHECK_FAILED"
+        );
+
+      }
 
       return;
 
@@ -1017,7 +1349,7 @@
 
 
   /* =========================================
-     CONTINUE BUTTON
+     16 — زر المتابعة
   ========================================= */
 
   $("continue").addEventListener("click", () => {
@@ -1034,7 +1366,7 @@
 
 
   /* =========================================
-     RETRY BUTTON
+     17 — منع التكرار
   ========================================= */
 
   $("retry").addEventListener("click", () => {
@@ -1049,7 +1381,20 @@
 
 
   /* =========================================
-     INITIAL EXECUTION
+     18 — حماية من الخروج غير المقصود
+  ========================================= */
+
+  window.addEventListener("pageshow", event => {
+
+    if (event.persisted && !passed && !rejected) {
+      location.reload();
+    }
+
+  });
+
+
+  /* =========================================
+     19 — بدء الفحص
   ========================================= */
 
   runCheck();
