@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10131b">
+<meta name="description" content="بوابة الهوية والحساب الموحد AQX">
 <title>تسجيل الدخول | القرماني إكس AQX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
@@ -23,8 +25,11 @@
 }
 *{box-sizing:border-box}
 body{
-  margin:0;min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   padding:22px;
   background:
     radial-gradient(circle at 50% 0%,#30364a 0,transparent 48%),
@@ -183,9 +188,6 @@ a:hover{text-decoration:underline}
     LOGIN_URL:
       "https://id.alqurmanix.com/login.html",
 
-    CONFIRMED_URL:
-      "https://id.alqurmanix.com/confirmed.html",
-
     SUCCESS_URL:
       "https://id.alqurmanix.com/secure-aqx.html",
 
@@ -193,7 +195,13 @@ a:hover{text-decoration:underline}
       "aqx_oauth_login_pending",
 
     AQX_SESSION_KEY:
-      "aqx_session_token"
+      "aqx_session_token",
+
+    AQX_SESSION_ID_KEY:
+      "aqx_session_id",
+
+    LOGIN_PROOF_KEY:
+      "aqx_login_proof"
   });
 
   const PROVIDERS = {
@@ -234,6 +242,14 @@ a:hover{text-decoration:underline}
     }
   };
 
+  if (!window.supabase || !window.supabase.createClient) {
+    document.getElementById("message").textContent =
+      "تعذر تحميل مكتبة تسجيل الدخول. أعد تحميل الصفحة.";
+    document.getElementById("message").className =
+      "message show error";
+    return;
+  }
+
   const supabase = window.supabase.createClient(
     CONFIG.SUPABASE_URL,
     CONFIG.SUPABASE_KEY,
@@ -251,6 +267,7 @@ a:hover{text-decoration:underline}
 
   let busy = false;
   let oauthFinishing = false;
+  let loginCompleting = false;
 
   function showMessage(text,type="info"){
     const box=$("message");
@@ -267,12 +284,22 @@ a:hover{text-decoration:underline}
   function setBusy(value){
     busy=value;
     $("loginButton").disabled=value;
-    $("loginButton").textContent=
+    $("loginButton").textContent =
       value ? "جارٍ التحقق..." : "تسجيل الدخول";
   }
 
   function safeText(value){
     return String(value || "").slice(0,500);
+  }
+
+  function clearLoginProof(){
+    sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY);
+  }
+
+  function clearAqxLocalSession(){
+    localStorage.removeItem(CONFIG.AQX_SESSION_KEY);
+    localStorage.removeItem(CONFIG.AQX_SESSION_ID_KEY);
+    clearLoginProof();
   }
 
   async function getPolicy(){
@@ -342,10 +369,10 @@ a:hover{text-decoration:underline}
       renderProviders(policy.login_methods);
       $("providerLoading").classList.add("hidden");
     }catch(error){
-      $("providerLoading").textContent=
+      $("providerLoading").textContent =
         "تعذر تحميل خيارات الدخول. يمكنك المحاولة لاحقًا.";
       $("providerLoading").classList.remove("hidden");
-      console.error(error);
+      console.error("AQX provider loading:",error);
     }
   }
 
@@ -362,9 +389,10 @@ a:hover{text-decoration:underline}
 
     setBusy(true);
     clearMessage();
+    clearLoginProof();
 
     try{
-      // Re-check the provider against the server before starting OAuth.
+      // إعادة التحقق من إعداد المزود من المحرك قبل استخدامه.
       if(!(await providerIsEnabled(key))){
         throw new Error("طريقة تسجيل الدخول هذه غير متاحة حاليًا.");
       }
@@ -384,12 +412,25 @@ a:hover{text-decoration:underline}
 
     }catch(error){
       sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
-      showMessage(safeText(error.message || "تعذر بدء تسجيل الدخول."),"error");
+      clearLoginProof();
+
+      showMessage(
+        safeText(error.message || "تعذر بدء تسجيل الدخول."),
+        "error"
+      );
+
       setBusy(false);
     }
   }
 
+  /*
+   * إنشاء جلسة AQX واستلام إثبات الدخول الأمني.
+   * لا يسمح بالانتقال إلى صفحة الفحص دون إثبات صالح.
+   */
   async function createAqxSession(session){
+
+    clearLoginProof();
+
     const response=await fetch(
       CONFIG.IDENTITY_API+"/v1/session/start",
       {
@@ -405,34 +446,96 @@ a:hover{text-decoration:underline}
 
     const data=await response.json().catch(()=>({}));
 
-    if(!response.ok || data.success!==true ||
-       !data.aqx_session_token){
+    if(
+      !response.ok ||
+      data.success!==true ||
+      !data.aqx_session_token
+    ){
       throw new Error(
         data.message || "تعذر إنشاء جلسة AQX الآمنة."
       );
     }
 
-    // Store only the AQX session token returned by the identity engine.
+    /*
+     * التحقق من إثبات الدخول الصادر من المحرك.
+     */
+    const proof=data.login_proof;
+
+    if(
+      !proof ||
+      typeof proof.token!=="string" ||
+      proof.token.length<30 ||
+      proof.token.length>100 ||
+      proof.purpose!=="dashboard_access" ||
+      proof.single_use!==true ||
+      !proof.expires_at
+    ){
+      throw new Error(
+        "محرك الهوية لم يصدر إثبات الدخول الأمني المطلوب."
+      );
+    }
+
+    const expiry=Date.parse(proof.expires_at);
+
+    if(
+      !Number.isFinite(expiry) ||
+      expiry<=Date.now()
+    ){
+      throw new Error(
+        "إثبات الدخول الأمني منتهي أو غير صالح."
+      );
+    }
+
+    /*
+     * حفظ جلسة AQX.
+     */
     localStorage.setItem(
       CONFIG.AQX_SESSION_KEY,
       data.aqx_session_token
     );
 
     if(data.session_id){
-      localStorage.setItem("aqx_session_id",data.session_id);
+      localStorage.setItem(
+        CONFIG.AQX_SESSION_ID_KEY,
+        data.session_id
+      );
+    }else{
+      localStorage.removeItem(CONFIG.AQX_SESSION_ID_KEY);
     }
+
+    /*
+     * حفظ الإثبات في التبويب الحالي فقط.
+     * لا يتم حفظه في localStorage.
+     */
+    sessionStorage.setItem(
+      CONFIG.LOGIN_PROOF_KEY,
+      proof.token
+    );
 
     return data;
   }
 
+  /*
+   * إكمال عملية تسجيل الدخول.
+   */
   async function completeLogin(){
-    if(oauthFinishing)return;
+
+    if(loginCompleting)return;
+
+    loginCompleting=true;
     oauthFinishing=true;
     setBusy(true);
-    showMessage("تمت المصادقة. جارٍ تجهيز جلسة AQX...","info");
+
+    clearLoginProof();
+
+    showMessage(
+      "تمت المصادقة. جارٍ تجهيز جلسة AQX والتحقق الأمني...",
+      "info"
+    );
 
     try{
-      const {data:userData,error:userError}=
+
+      const {data:userData,error:userError} =
         await supabase.auth.getUser();
 
       if(userError || !userData?.user){
@@ -443,64 +546,100 @@ a:hover{text-decoration:underline}
 
       if(!user.email_confirmed_at){
         await supabase.auth.signOut({scope:"local"});
+
         sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
-        throw new Error("يجب تأكيد البريد الإلكتروني أولًا.");
+
+        throw new Error(
+          "يجب تأكيد البريد الإلكتروني أولًا."
+        );
       }
 
-      const {data:sessionData,error:sessionError}=
+      const {data:sessionData,error:sessionError} =
         await supabase.auth.getSession();
 
       if(sessionError || !sessionData?.session){
-        throw new Error("لم يتم العثور على جلسة دخول صالحة.");
+        throw new Error(
+          "لم يتم العثور على جلسة دخول صالحة."
+        );
       }
 
+      /*
+       * لا ننتقل قبل إنشاء جلسة AQX واستلام الإثبات.
+       */
       await createAqxSession(sessionData.session);
 
       sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
 
-      // Redirect only after an explicit login action or OAuth callback.
+      showMessage(
+        "تم تسجيل الدخول بنجاح. جارٍ تحويلك للفحص الأمني...",
+        "success"
+      );
+
       window.location.replace(CONFIG.SUCCESS_URL);
 
     }catch(error){
+
       console.error("AQX login error:",error);
+
+      clearLoginProof();
+      sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
+
       showMessage(
         safeText(error.message || "تعذر إكمال تسجيل الدخول."),
         "error"
       );
+
+      loginCompleting=false;
       oauthFinishing=false;
       setBusy(false);
     }
   }
 
+  /*
+   * تسجيل الدخول بالبريد وكلمة المرور.
+   */
   $("loginForm").addEventListener("submit",async event=>{
+
     event.preventDefault();
+
     if(busy)return;
 
     clearMessage();
+    clearLoginProof();
 
     const email=$("email").value.trim().toLowerCase();
     const password=$("password").value;
 
     if(!email || !password){
-      showMessage("أدخل البريد الإلكتروني وكلمة المرور.","error");
+      showMessage(
+        "أدخل البريد الإلكتروني وكلمة المرور.",
+        "error"
+      );
       return;
     }
 
     setBusy(true);
 
     try{
+
       const {data,error}=await supabase.auth.signInWithPassword({
         email,
         password
       });
 
       if(error)throw error;
-      if(!data?.session)throw new Error("لم يتم إنشاء جلسة دخول.");
+
+      if(!data?.session){
+        throw new Error("لم يتم إنشاء جلسة دخول.");
+      }
 
       await completeLogin();
 
     }catch(error){
-      console.error(error);
+
+      console.error("AQX password login:",error);
+
+      clearLoginProof();
 
       let message=error.message || "تعذر تسجيل الدخول.";
 
@@ -511,51 +650,85 @@ a:hover{text-decoration:underline}
       }
 
       showMessage(safeText(message),"error");
+
       setBusy(false);
       oauthFinishing=false;
+      loginCompleting=false;
     }
   });
 
   /*
-   * IMPORTANT:
-   * An old saved session alone never triggers a redirect.
-   * OAuth completion is accepted only when this page was
-   * explicitly opened as the callback of an OAuth action.
+   * إنهاء OAuth فقط إذا كان هذا التبويب قد بدأ العملية.
+   * وجود جلسة قديمة وحده لا يؤدي إلى إعادة توجيه.
    */
   async function finishExplicitOAuth(){
+
     const pending=sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY);
+
     if(!pending)return;
 
+    if(oauthFinishing || loginCompleting)return;
+
     try{
+
       const {data,error}=await supabase.auth.getSession();
+
       if(error)throw error;
 
       if(data?.session){
         await completeLogin();
       }
+
     }catch(error){
-      console.error(error);
+
+      console.error("AQX OAuth callback:",error);
+
       sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
+      clearLoginProof();
+
       showMessage(
-        safeText(error.message || "تعذر إكمال تسجيل الدخول عبر المزود."),
+        safeText(
+          error.message ||
+          "تعذر إكمال تسجيل الدخول عبر المزود."
+        ),
         "error"
       );
+
+      oauthFinishing=false;
+      loginCompleting=false;
       setBusy(false);
     }
   }
 
+  /*
+   * الاستماع إلى اكتمال مصادقة OAuth.
+   */
   supabase.auth.onAuthStateChange((event,session)=>{
-    if(event==="SIGNED_IN" &&
-       sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY)){
-      // Defer work outside the auth callback to avoid locking the client.
-      setTimeout(()=>finishExplicitOAuth(),0);
+
+    if(
+      event==="SIGNED_IN" &&
+      session &&
+      sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY)
+    ){
+      // تنفيذ خارج callback الخاص بـ Supabase.
+      setTimeout(()=>{
+        finishExplicitOAuth();
+      },0);
     }
   });
 
+  /*
+   * التهيئة.
+   */
   async function initialize(){
-    // Do not redirect merely because an old session exists.
-    // Only resume OAuth if this tab initiated that OAuth flow.
+
+    // لا نسمح بإثبات قديم عند فتح الصفحة.
+    clearLoginProof();
+
+    // تحميل خيارات الدخول من محرك AQX.
     await loadProviders();
+
+    // استكمال OAuth فقط عند وجود عملية بدأها هذا التبويب.
     await finishExplicitOAuth();
   }
 
