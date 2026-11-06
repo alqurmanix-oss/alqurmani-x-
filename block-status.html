@@ -4,889 +4,762 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#071426">
-<meta name="description" content="خدمة الاستعلام عن حالة الحظر في AQX Identity">
-<title>الاستعلام عن حالة الحظر | AQX Identity</title>
-
+<meta name="theme-color" content="#101827">
+<title>AQX Identity | الاستعلام والمتابعة</title>
 <style>
 :root{
-  color-scheme:dark;
-  --bg:#071426;
-  --panel:#0d1e34;
-  --border:#203b59;
-  --text:#edf5ff;
-  --muted:#9db0c7;
-  --blue:#4da3ff;
-  --green:#35d6a0;
-  --red:#ff7887;
-  --yellow:#ffc36b;
+  --bg:#0b1220;
+  --panel:#111c2e;
+  --panel2:#16243a;
+  --border:#263750;
+  --text:#edf3fc;
+  --muted:#9aabc2;
+  --primary:#3b82f6;
+  --success:#16a36a;
+  --danger:#e05252;
+  --warning:#d99a32;
 }
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
   margin:0;
   min-height:100vh;
-  padding:22px 13px;
-  font-family:Tahoma,Arial,sans-serif;
+  background:linear-gradient(145deg,#0b1220,#111d30);
   color:var(--text);
-  background:
-    radial-gradient(ellipse at 50% -15%,#173c65,transparent 55%),
-    var(--bg);
+  font-family:Tahoma,Arial,sans-serif;
+  padding:22px 14px;
 }
-.container{
+#aqx-status{
   width:100%;
-  max-width:650px;
+  max-width:760px;
   margin:auto;
 }
-.brand{
+.header{
   text-align:center;
-  padding:17px 8px 25px;
+  margin:12px 0 26px;
 }
 .logo{
-  width:60px;
-  height:60px;
+  width:62px;height:62px;
   margin:0 auto 13px;
+  border-radius:19px;
   display:grid;
   place-items:center;
-  border-radius:18px;
-  background:linear-gradient(145deg,#267bd1,#12416f);
-  border:1px solid #579fe0;
+  background:linear-gradient(135deg,#2563eb,#1746a2);
   font-size:25px;
-  font-weight:900;
-}
-.brand h1{
-  font-size:22px;
-  margin:0 0 7px;
-}
-.brand p{
-  font-size:13px;
-  color:var(--muted);
-  margin:0;
-}
-.card{
-  background:linear-gradient(155deg,#10243c,#0b1a2d);
-  border:1px solid var(--border);
-  border-radius:19px;
-  padding:25px;
-  box-shadow:0 20px 60px #0004;
-}
-.heading{
-  font-size:19px;
   font-weight:bold;
-  margin-bottom:9px;
+  box-shadow:0 8px 28px #2563eb40;
 }
-.description{
-  font-size:13px;
+.header h1{font-size:25px;margin:0 0 9px}
+.header p{color:var(--muted);font-size:14px;line-height:1.8;margin:0}
+.tabs{
+  display:flex;
+  gap:9px;
+  margin-bottom:16px;
+}
+.tab{
+  flex:1;
+  border:1px solid var(--border);
+  background:var(--panel);
   color:var(--muted);
-  line-height:1.9;
-}
-.info{
-  margin:19px 0;
-  padding:14px;
-  background:#091a2c;
-  border:1px solid #1c344e;
-  border-radius:11px;
-  font-size:12px;
-  color:#b8cce2;
-  line-height:1.9;
-}
-.info strong{
-  color:#edf5ff;
-}
-label{
-  display:block;
-  font-size:13px;
-  margin:20px 0 9px;
-}
-input{
-  display:block;
-  width:100%;
-  padding:15px;
-  color:var(--text);
-  background:#08182a;
-  border:1px solid #29435e;
-  border-radius:10px;
-  outline:none;
-  font-family:monospace;
-  font-size:17px;
-  letter-spacing:2px;
-  direction:ltr;
-  text-align:center;
-  text-transform:uppercase;
-}
-input:focus{
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px #4da3ff18;
-}
-input:disabled{
-  opacity:.6;
-}
-.hint{
-  font-size:11px;
-  color:var(--muted);
-  margin-top:8px;
-  line-height:1.7;
-}
-button{
-  width:100%;
-  padding:14px;
-  border:0;
-  border-radius:11px;
-  background:#2379cb;
-  color:white;
+  border-radius:13px;
+  padding:14px 8px;
   font-size:14px;
   font-weight:bold;
   cursor:pointer;
-  font-family:inherit;
   transition:.2s;
 }
-button:hover{
-  background:#318de4;
+.tab.active{
+  color:white;
+  border-color:var(--primary);
+  background:#1d3d70;
 }
-button:disabled{
-  opacity:.55;
-  cursor:not-allowed;
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:19px;
+  padding:22px;
+  box-shadow:0 14px 40px #0003;
+  margin-bottom:16px;
 }
-.actions{
-  display:grid;
-  gap:10px;
-  margin-top:18px;
-}
-.secondary{
-  display:block;
-  width:100%;
-  padding:13px;
-  text-align:center;
-  text-decoration:none;
-  background:#142a42;
-  border:1px solid #294763;
-  color:#dcecff;
-  border-radius:10px;
+.panel[hidden]{display:none}
+.panel h2{font-size:19px;margin:0 0 9px}
+.description{
+  color:var(--muted);
   font-size:13px;
+  line-height:1.9;
+  margin:0 0 20px;
+}
+.field-label{
+  display:block;
+  margin-bottom:9px;
+  font-size:14px;
+  font-weight:bold;
+}
+.input-wrap{position:relative}
+input{
+  width:100%;
+  height:52px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  outline:none;
+  background:#0b1525;
+  color:white;
+  padding:0 14px;
+  font-size:15px;
+  font-family:Arial,Tahoma,sans-serif;
+  direction:ltr;
+  text-align:center;
+  letter-spacing:1px;
+  transition:.2s;
+}
+input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px #3b82f622;
+}
+input::placeholder{color:#64758e}
+.primary-btn{
+  width:100%;
+  height:51px;
+  border:0;
+  border-radius:12px;
+  margin-top:13px;
+  color:white;
+  background:linear-gradient(135deg,#347ff0,#2055b7);
+  font-size:15px;
+  font-weight:bold;
   cursor:pointer;
+  transition:.2s;
 }
-.secondary:hover{
-  background:#1b3856;
-}
+.primary-btn:hover{filter:brightness(1.1)}
+.primary-btn:disabled{opacity:.6;cursor:wait}
 .result{
+  margin-top:19px;
+  border:1px solid var(--border);
+  background:#0d1829;
+  border-radius:14px;
+  padding:17px;
   display:none;
-  margin-top:22px;
-  padding-top:20px;
-  border-top:1px solid var(--border);
 }
-.status{
+.result.show{display:block}
+.result-head{
   display:flex;
   align-items:center;
-  gap:12px;
-  padding:15px;
+  justify-content:space-between;
+  gap:10px;
   margin-bottom:16px;
-  border:1px solid var(--border);
-  background:#07182a;
-  border-radius:13px;
 }
-.status-icon{
-  width:43px;
-  height:43px;
-  border-radius:13px;
-  display:grid;
-  place-items:center;
-  font-size:21px;
-  background:#26364b;
-  flex-shrink:0;
-}
-.status strong{
-  display:block;
-  font-size:15px;
-  margin-bottom:5px;
-}
-.status small{
-  color:var(--muted);
+.result-head strong{font-size:15px}
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:30px;
+  padding:7px 12px;
   font-size:12px;
-  line-height:1.7;
+  font-weight:bold;
+  background:#26364b;
+  color:#dce8f8;
 }
-.status.active .status-icon{
-  background:#552b35;
-  color:#ff8995;
-}
-.status.expired .status-icon,
-.status.lifted .status-icon{
-  background:#123e36;
-  color:#54e2ae;
-}
-.status.unknown .status-icon{
-  background:#49391e;
-  color:#ffbd59;
-}
-.details{
+.status.success{background:#123d30;color:#6de0ae}
+.status.danger{background:#492426;color:#ffaaaa}
+.status.warning{background:#48371d;color:#ffd17a}
+.status.neutral{background:#26364b;color:#c4d4e9}
+.info-grid{
   display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
 }
-.item{
-  background:#091a2c;
-  border:1px solid #1c344e;
-  border-radius:11px;
-  padding:14px;
+.info-item{
+  min-width:0;
+  padding:12px;
+  background:var(--panel2);
+  border:1px solid #263750;
+  border-radius:10px;
 }
-.item-label{
-  font-size:12px;
+.info-item.full{grid-column:1/-1}
+.info-item small{
+  display:block;
   color:var(--muted);
+  font-size:12px;
   margin-bottom:8px;
 }
-.item-value{
-  font-size:14px;
-  line-height:1.9;
+.info-item strong{
+  display:block;
+  font-size:13px;
+  line-height:1.8;
   overflow-wrap:anywhere;
+  white-space:pre-wrap;
 }
 .reference{
   direction:ltr;
   text-align:left;
-  font-family:monospace;
-  letter-spacing:1px;
+  font-family:Arial,sans-serif;
+  letter-spacing:.5px;
 }
-.notice{
-  margin-top:17px;
-  padding:13px;
+.actions{
+  display:flex;
+  gap:9px;
+  margin-top:14px;
+}
+.secondary-btn{
+  flex:1;
+  min-height:43px;
+  border:1px solid var(--border);
   border-radius:10px;
-  background:#0b1b2d;
-  border:1px solid #1b344e;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.9;
+  color:var(--text);
+  background:#18273d;
+  font-size:13px;
+  font-weight:bold;
+  cursor:pointer;
 }
+.secondary-btn:hover{background:#223752}
 .message{
   display:none;
-  margin-top:17px;
-  padding:14px;
+  padding:12px 14px;
   border-radius:10px;
+  margin-top:13px;
   font-size:13px;
-  line-height:1.9;
-  overflow-wrap:anywhere;
+  line-height:1.8;
 }
-.message.error{
-  display:block;
-  background:#3c202b;
-  border:1px solid #783d4a;
-  color:#ffc1ca;
-}
-.message.info{
-  display:block;
-  background:#102b48;
-  border:1px solid #315578;
-  color:#c7e3ff;
-}
-.message.success{
-  display:block;
-  background:#10372e;
-  border:1px solid #246b55;
-  color:#a9f0d4;
-}
-.loading{
-  text-align:center;
-  padding:25px;
-  display:none;
-  color:var(--muted);
-  font-size:13px;
-}
-.spinner{
-  width:35px;
-  height:35px;
-  border:3px solid #284461;
-  border-top-color:#58aaff;
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-  margin:0 auto 15px;
-}
-@keyframes spin{
-  to{transform:rotate(360deg)}
-}
+.message.show{display:block}
+.message.error{background:#482326;color:#ffb5b5;border:1px solid #71383d}
+.message.info{background:#183451;color:#b9ddff;border:1px solid #28547d}
+.message.success{background:#143b2e;color:#8ce6bc;border:1px solid #24694d}
 .footer{
   text-align:center;
-  color:#70869f;
-  font-size:11px;
-  padding:22px 8px;
+  color:#75869e;
+  font-size:12px;
+  line-height:1.9;
+  padding:15px 8px 5px;
 }
-.hidden{
-  display:none!important;
+.footer a{color:#8bb8ff;text-decoration:none}
+.loader{
+  display:inline-block;
+  width:15px;height:15px;
+  border:2px solid #ffffff55;
+  border-top-color:white;
+  border-radius:50%;
+  vertical-align:middle;
+  animation:spin .7s linear infinite;
+  margin-left:7px;
 }
-@media(max-width:480px){
-  .card{padding:18px}
-  .brand h1{font-size:20px}
-}
-@media(prefers-reduced-motion:reduce){
-  *,*:before,*:after{
-    animation-duration:.01ms!important;
-    transition-duration:.01ms!important;
-  }
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:520px){
+  body{padding:13px 10px}
+  .panel{padding:17px}
+  .header h1{font-size:22px}
+  .info-grid{grid-template-columns:1fr}
+  .info-item.full{grid-column:auto}
+  .tab{font-size:12px;padding:13px 5px}
 }
 </style>
 </head>
 
 <body>
-<main class="container">
+<main id="aqx-status">
 
-<header class="brand">
-  <div class="logo">AQX</div>
-  <h1>AQX Identity</h1>
-  <p>مركز الهوية والوصول الموحد</p>
-</header>
+  <header class="header">
+    <div class="logo">AQX</div>
+    <h1>AQX Identity</h1>
+    <p>مركز الهوية والوصول الموحد<br>الاستعلام عن حالة الحظر ومتابعة الالتماسات</p>
+  </header>
 
-<section class="card">
+  <nav class="tabs" aria-label="خدمات الاستعلام">
+    <button class="tab active" type="button" data-tab="block">
+      حالة الحظر
+    </button>
+    <button class="tab" type="button" data-tab="appeal">
+      متابعة الالتماس
+    </button>
+  </nav>
 
-  <div class="heading">الاستعلام عن حالة الحظر</div>
+  <!-- الاستعلام عن الحظر -->
+  <section class="panel" id="blockPanel">
+    <h2>الاستعلام عن حالة الحظر</h2>
+    <p class="description">
+      أدخل الرقم المرجعي للحظر لمعرفة حالته ونوعه وسببه ومدته وآخر تحديث.
+    </p>
 
-  <div class="description">
-    أدخل الرقم المرجعي الخاص بالحظر لمعرفة حالته الحالية
-    والتفاصيل العامة المتاحة في نظام AQX.
-  </div>
-
-  <div class="info">
-    <strong>كيف تحصل على الرقم المرجعي؟</strong><br>
-    يمكنك العثور عليه في صفحة تفاصيل الحظر أو في إشعار الحظر
-    الصادر من نظام AQX.
-    <br>
-    يتكون الرقم المرجعي من 12 خانة.
-  </div>
-
-  <form id="searchForm" novalidate>
-
-    <label for="referenceInput">
-      الرقم المرجعي للحظر
-    </label>
-
-    <input
-      id="referenceInput"
-      type="text"
-      maxlength="12"
-      minlength="12"
-      autocomplete="off"
-      autocapitalize="characters"
-      spellcheck="false"
-      inputmode="text"
-      placeholder="XXXXXXXXXXXX"
-      aria-describedby="referenceHint"
-      required
-    >
-
-    <div class="hint" id="referenceHint">
-      أدخل الرقم المرجعي المكوّن من 12 حرفًا أو رقمًا سداسيًا.
-    </div>
-
-    <div class="actions">
-      <button id="searchBtn" type="submit">
+    <form id="blockForm">
+      <label class="field-label" for="blockReference">الرقم المرجعي للحظر</label>
+      <input
+        id="blockReference"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        maxlength="12"
+        placeholder="XXXXXXXXXXXX"
+        required
+      >
+      <button class="primary-btn" id="blockSubmit" type="submit">
         استعلام عن الحالة
       </button>
+    </form>
+
+    <div class="message" id="blockMessage" role="alert"></div>
+
+    <div class="result" id="blockResult" aria-live="polite">
+      <div class="result-head">
+        <strong>نتيجة الاستعلام</strong>
+        <span class="status neutral" id="blockStatus">—</span>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <small>الرقم المرجعي</small>
+          <strong class="reference" id="blockRefValue">—</strong>
+        </div>
+        <div class="info-item">
+          <small>نوع الحظر</small>
+          <strong id="blockType">—</strong>
+        </div>
+        <div class="info-item full">
+          <small>سبب الحظر</small>
+          <strong id="blockReason">—</strong>
+        </div>
+        <div class="info-item">
+          <small>مدة الحظر</small>
+          <strong id="blockDuration">—</strong>
+        </div>
+        <div class="info-item">
+          <small>آخر تحديث</small>
+          <strong id="blockUpdated">—</strong>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="secondary-btn" type="button" id="copyBlockRef">نسخ الرقم المرجعي</button>
+        <button class="secondary-btn" type="button" id="newBlockQuery">استعلام جديد</button>
+      </div>
     </div>
-
-  </form>
-
-  <div id="loading" class="loading" aria-live="polite">
-    <div class="spinner"></div>
-    جارٍ البحث عن حالة الحظر...
-  </div>
-
-  <div
-    id="message"
-    class="message"
-    role="status"
-    aria-live="polite"
-  ></div>
-
-  <section id="result" class="result">
-
-    <div id="statusBox" class="status">
-
-      <div id="statusIcon" class="status-icon">●</div>
-
-      <div>
-        <strong id="statusTitle">حالة الحظر</strong>
-        <small id="statusDescription"></small>
-      </div>
-
-    </div>
-
-    <div class="details">
-
-      <div class="item">
-        <div class="item-label">الرقم المرجعي</div>
-        <div class="item-value reference" id="referenceValue">—</div>
-      </div>
-
-      <div class="item">
-        <div class="item-label">نوع الحظر</div>
-        <div class="item-value" id="targetType">—</div>
-      </div>
-
-      <div class="item">
-        <div class="item-label">سبب الحظر</div>
-        <div class="item-value" id="reason">—</div>
-      </div>
-
-      <div class="item">
-        <div class="item-label">مدة الحظر</div>
-        <div class="item-value" id="duration">—</div>
-      </div>
-
-      <div class="item">
-        <div class="item-label">آخر تحديث</div>
-        <div class="item-value" id="updatedAt">—</div>
-      </div>
-
-    </div>
-
-    <div class="actions">
-
-      <button
-        id="copyReference"
-        class="secondary"
-        type="button"
-      >
-        نسخ الرقم المرجعي
-      </button>
-
-      <button
-        id="newSearch"
-        class="secondary"
-        type="button"
-      >
-        استعلام جديد
-      </button>
-
-    </div>
-
-    <div class="notice">
-      تعرض هذه الصفحة المعلومات العامة المرتبطة بالرقم المرجعي فقط.
-      لا تعرض البريد الإلكتروني أو بيانات الحساب أو المعلومات الإدارية.
-    </div>
-
   </section>
 
-  <a
-    class="secondary"
-    style="margin-top:17px"
-    href="https://id.alqurmanix.com/"
-  >
-    العودة إلى AQX Identity
-  </a>
+  <!-- متابعة الالتماس -->
+  <section class="panel" id="appealPanel" hidden>
+    <h2>متابعة الالتماس</h2>
+    <p class="description">
+      أدخل الرقم المرجعي الذي حصلت عليه بعد إرسال الالتماس لمعرفة حالة المراجعة والقرار الصادر بشأنه.
+    </p>
 
-</section>
+    <form id="appealForm">
+      <label class="field-label" for="appealReference">الرقم المرجعي للالتماس</label>
+      <input
+        id="appealReference"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        maxlength="40"
+        placeholder="AQX-APL-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        required
+      >
+      <button class="primary-btn" id="appealSubmit" type="submit">
+        متابعة الالتماس
+      </button>
+    </form>
 
-<footer class="footer">
-  AQX Identity · نظام الهوية الموحد
-</footer>
+    <div class="message" id="appealMessage" role="alert"></div>
+
+    <div class="result" id="appealResult" aria-live="polite">
+      <div class="result-head">
+        <strong>حالة الالتماس</strong>
+        <span class="status neutral" id="appealStatus">—</span>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item full">
+          <small>الرقم المرجعي للالتماس</small>
+          <strong class="reference" id="appealRefValue">—</strong>
+        </div>
+        <div class="info-item">
+          <small>تاريخ تقديم الالتماس</small>
+          <strong id="appealCreated">—</strong>
+        </div>
+        <div class="info-item">
+          <small>آخر تحديث</small>
+          <strong id="appealUpdated">—</strong>
+        </div>
+        <div class="info-item">
+          <small>تاريخ القرار</small>
+          <strong id="appealDecisionDate">لم يصدر قرار بعد</strong>
+        </div>
+        <div class="info-item full" id="appealReasonBox" hidden>
+          <small>سبب القرار أو ملاحظات المراجعة</small>
+          <strong id="appealReason">—</strong>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="secondary-btn" type="button" id="copyAppealRef">نسخ الرقم المرجعي</button>
+        <button class="secondary-btn" type="button" id="newAppealQuery">استعلام جديد</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    لا تعرض هذه الخدمة البريد الإلكتروني أو بيانات الحساب أو المعلومات الإدارية.
+    <br>
+    <a href="https://id.alqurmanix.com/">العودة إلى AQX Identity</a>
+  </footer>
 
 </main>
 
 <script>
-(function(){
 "use strict";
 
-/* AQX BLOCK STATUS API */
-const API_URL =
-"https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-block-status";
-
-const $ = id => document.getElementById(id);
-
-let currentReference = "";
-let requestController = null;
-
-const form = $("searchForm");
-const input = $("referenceInput");
-const button = $("searchBtn");
-const loading = $("loading");
-const result = $("result");
-const message = $("message");
-
-function showMessage(type,text){
-  message.className = "message " + type;
-  message.textContent = text;
-  message.style.display = "block";
-}
-
-function hideMessage(){
-  message.style.display = "none";
-  message.textContent = "";
-}
-
-function hideResult(){
-  result.style.display = "none";
-}
-
-function formatDate(value){
-  if(!value) return "غير محدد";
-
-  const date = new Date(value);
-
-  if(Number.isNaN(date.getTime())){
-    return "غير محدد";
-  }
-
-  return new Intl.DateTimeFormat("ar-EG",{
-    year:"numeric",
-    month:"long",
-    day:"numeric",
-    hour:"2-digit",
-    minute:"2-digit"
-  }).format(date);
-}
-
-function targetLabel(value){
-
-  const labels = {
-    account:"حظر حساب",
-    email:"حظر بريد إلكتروني",
-    domain:"حظر نطاق",
-    signup_email:"منع التسجيل بالبريد الإلكتروني",
-    signup_domain:"منع التسجيل بالنطاق",
-    disposable_domain:"نطاق بريد مؤقت"
+(function(){
+  const API = {
+    block: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-block-status",
+    appeal: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-appeal-status"
   };
 
-  return labels[value] || "حظر وصول";
-}
+  const $ = id => document.getElementById(id);
 
-function render(data){
+  const blockForm = $("blockForm");
+  const appealForm = $("appealForm");
 
-  if(!data || data.success !== true){
-    hideResult();
-    showMessage(
-      "error",
-      "لم يتم العثور على سجل حظر مرتبط بهذا الرقم المرجعي."
-    );
-    return;
+  function normalize(value){
+    return String(value || "").trim().toUpperCase();
   }
 
-  const status = String(data.status || "unknown").toLowerCase();
-
-  const states = {
-
-    active:{
-      title:"الحظر نشط",
-      description:"الحظر ما زال فعالًا وفق السجل الحالي.",
-      icon:"⛔",
-      className:"active"
-    },
-
-    expired:{
-      title:"انتهت مدة الحظر",
-      description:"انتهت مدة الحظر المسجلة.",
-      icon:"✓",
-      className:"expired"
-    },
-
-    lifted:{
-      title:"تم رفع الحظر",
-      description:"تم رفع الحظر المسجل.",
-      icon:"✓",
-      className:"lifted"
-    },
-
-    inactive:{
-      title:"الحظر غير نشط",
-      description:"الحظر غير نشط حاليًا.",
-      icon:"!",
-      className:"unknown"
-    }
-
-  };
-
-  const state = states[status] || {
-    title:"حالة غير محددة",
-    description:"تعذر تحديد الحالة الحالية.",
-    icon:"!",
-    className:"unknown"
-  };
-
-  $("statusBox").className =
-    "status " + state.className;
-
-  $("statusIcon").textContent = state.icon;
-  $("statusTitle").textContent = state.title;
-  $("statusDescription").textContent = state.description;
-
-  $("referenceValue").textContent =
-    data.reference || currentReference;
-
-  $("targetType").textContent =
-    targetLabel(data.target_type);
-
-  $("reason").textContent =
-    data.reason || "لا يوجد سبب تفصيلي متاح.";
-
-  $("duration").textContent =
-    data.permanent === true
-      ? "حظر دائم"
-      : data.expires_at
-        ? "ينتهي في: " + formatDate(data.expires_at)
-        : "غير محددة";
-
-  $("updatedAt").textContent =
-    formatDate(data.updated_at);
-
-  hideMessage();
-
-  result.style.display = "block";
-
-  result.scrollIntoView({
-    behavior:"smooth",
-    block:"nearest"
-  });
-}
-
-async function search(reference){
-
-  if(!/^[A-F0-9]{12}$/.test(reference)){
-    showMessage(
-      "error",
-      "الرقم المرجعي غير صحيح. يجب إدخال 12 خانة سداسية."
-    );
-    return;
+  function showMessage(id, text, type){
+    const el = $(id);
+    el.textContent = text;
+    el.className = "message show " + (type || "info");
   }
 
-  if(requestController){
-    requestController.abort();
+  function hideMessage(id){
+    const el = $(id);
+    el.textContent = "";
+    el.className = "message";
   }
 
-  requestController = new AbortController();
-
-  const controller = requestController;
-
-  const timeout = setTimeout(
-    ()=>controller.abort(),
-    20000
-  );
-
-  currentReference = reference;
-
-  hideResult();
-  hideMessage();
-
-  loading.style.display = "block";
-  button.disabled = true;
-  button.textContent = "جارٍ الاستعلام...";
-  input.disabled = true;
-
-  try{
-
-    const response = await fetch(API_URL,{
-      method:"POST",
-
-      headers:{
-        "Content-Type":"application/json",
-        "Accept":"application/json"
-      },
-
-      cache:"no-store",
-
-      credentials:"omit",
-
-      body:JSON.stringify({
-        reference:reference
-      }),
-
-      signal:controller.signal
-    });
-
-    const data = await response.json().catch(()=>null);
-
-    if(response.status === 404){
-      showMessage(
-        "error",
-        "لم يتم العثور على سجل بهذا الرقم المرجعي."
-      );
-      return;
-    }
-
-    if(response.status === 429){
-      showMessage(
-        "error",
-        "تم تجاوز عدد محاولات الاستعلام المسموح بها. حاول لاحقًا."
-      );
-      return;
-    }
-
-    if(response.status === 400){
-      showMessage(
-        "error",
-        "الرقم المرجعي غير صحيح أو غير مقبول."
-      );
-      return;
-    }
-
-    if(response.status === 403){
-      showMessage(
-        "error",
-        "الوصول إلى خدمة الاستعلام غير مسموح من هذا النطاق."
-      );
-      return;
-    }
-
-    if(response.status === 503){
-      showMessage(
-        "error",
-        "خدمة الاستعلام غير متاحة مؤقتًا. حاول مرة أخرى لاحقًا."
-      );
-      return;
-    }
-
-    if(!response.ok || !data){
-      throw new Error("server_error");
-    }
-
-    if(data.success !== true){
-      if(data.error === "not_found"){
-        showMessage(
-          "error",
-          "لم يتم العثور على سجل بهذا الرقم المرجعي."
-        );
-      }else{
-        showMessage(
-          "error",
-          "تعذر إتمام الاستعلام. تحقق من الرقم وحاول مجددًا."
-        );
-      }
-      return;
-    }
-
-    render(data);
-
-  }catch(error){
-
-    if(error.name === "AbortError"){
-      showMessage(
-        "error",
-        "انتهت مهلة الاتصال أو تم إلغاء الطلب. حاول مرة أخرى."
-      );
+  function setLoading(buttonId, loading, text){
+    const button = $(buttonId);
+    button.disabled = loading;
+    if(loading){
+      button.innerHTML = '<span class="loader"></span> جارٍ الاستعلام...';
     }else{
+      button.textContent = text;
+    }
+  }
+
+  function formatDate(value){
+    if(!value) return "غير متاح";
+    const date = new Date(value);
+    if(Number.isNaN(date.getTime())) return "غير متاح";
+    return new Intl.DateTimeFormat("ar-EG",{
+      year:"numeric",
+      month:"long",
+      day:"numeric",
+      hour:"2-digit",
+      minute:"2-digit"
+    }).format(date);
+  }
+
+  function safeText(value, fallback){
+    if(value === null || value === undefined || value === ""){
+      return fallback || "غير متاح";
+    }
+    return String(value);
+  }
+
+  function getPayload(data){
+    if(data && data.data && typeof data.data === "object"){
+      return data.data;
+    }
+    return data;
+  }
+
+  async function requestJSON(url, body){
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    try{
+      const response = await fetch(url,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Accept":"application/json"
+        },
+        body:JSON.stringify(body),
+        cache:"no-store",
+        signal:controller.signal
+      });
+
+      let data;
+      try{
+        data = await response.json();
+      }catch(_){
+        throw new Error("تعذر قراءة استجابة الخدمة.");
+      }
+
+      if(!response.ok){
+        const code = data && (data.error || data.code);
+        throw new Error(errorMessage(code, response.status));
+      }
+
+      if(data && data.success === false){
+        throw new Error(errorMessage(data.error || data.code, response.status));
+      }
+
+      return getPayload(data);
+    }catch(error){
+      if(error.name === "AbortError"){
+        throw new Error("انتهت مهلة الاتصال. حاول مرة أخرى.");
+      }
+      if(error instanceof TypeError){
+        throw new Error("تعذر الاتصال بالخدمة. تحقق من اتصال الإنترنت وحاول مجددًا.");
+      }
+      throw error;
+    }finally{
+      clearTimeout(timeout);
+    }
+  }
+
+  function errorMessage(code, httpStatus){
+    const messages = {
+      invalid_reference:"الرقم المرجعي غير صحيح.",
+      invalid_token:"الرقم المرجعي غير صالح.",
+      not_found:"لم يتم العثور على سجل مطابق لهذا الرقم المرجعي.",
+      rate_limited:"تم تجاوز عدد محاولات الاستعلام المسموح بها. حاول لاحقًا.",
+      service_unavailable:"الخدمة غير متاحة مؤقتًا. حاول مرة أخرى.",
+      invalid_json:"بيانات الطلب غير صحيحة.",
+      method_not_allowed:"طريقة الطلب غير مسموح بها."
+    };
+
+    if(code && messages[code]) return messages[code];
+    if(httpStatus === 429) return messages.rate_limited;
+    if(httpStatus >= 500) return messages.service_unavailable;
+    if(httpStatus === 404) return messages.not_found;
+    return "تعذر تنفيذ الاستعلام. حاول مرة أخرى.";
+  }
+
+  function setStatus(elementId, status, labels){
+    const el = $(elementId);
+    const key = String(status || "").toLowerCase();
+    const item = labels[key] || {
+      text:safeText(status,"غير محدد"),
+      className:"neutral"
+    };
+    el.textContent = item.text;
+    el.className = "status " + item.className;
+  }
+
+  const blockLabels = {
+    active:{text:"الحظر نشط",className:"danger"},
+    expired:{text:"انتهت مدة الحظر",className:"success"},
+    lifted:{text:"تم رفع الحظر",className:"success"},
+    inactive:{text:"غير نشط",className:"neutral"}
+  };
+
+  const appealLabels = {
+    pending:{text:"قيد الانتظار",className:"warning"},
+    in_review:{text:"قيد المراجعة",className:"warning"},
+    accepted:{text:"تم قبول الالتماس",className:"success"},
+    rejected:{text:"تم رفض الالتماس",className:"danger"},
+    more_information:{text:"مطلوب معلومات إضافية",className:"warning"}
+  };
+
+  // تبديل الخدمات داخل الصفحة نفسها
+  document.querySelectorAll(".tab").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const selected = button.dataset.tab;
+
+      document.querySelectorAll(".tab").forEach(tab=>{
+        tab.classList.toggle("active",tab === button);
+      });
+
+      $("blockPanel").hidden = selected !== "block";
+      $("appealPanel").hidden = selected !== "appeal";
+
+      hideMessage("blockMessage");
+      hideMessage("appealMessage");
+    });
+  });
+
+  // الاستعلام عن حالة الحظر
+  blockForm.addEventListener("submit",async event=>{
+    event.preventDefault();
+
+    const reference = normalize($("blockReference").value);
+
+    $("blockResult").classList.remove("show");
+    hideMessage("blockMessage");
+
+    if(!/^[A-F0-9]{12}$/.test(reference)){
       showMessage(
-        "error",
-        "تعذر الاتصال بخدمة الاستعلام. تحقق من اتصال الإنترنت وحاول مجددًا."
+        "blockMessage",
+        "أدخل رقم الحظر المرجعي المكوّن من 12 خانة سداسية عشرية.",
+        "error"
       );
+      return;
     }
 
-  }finally{
+    $("blockReference").value = reference;
+    setLoading("blockSubmit",true);
 
-    clearTimeout(timeout);
+    try{
+      const data = await requestJSON(API.block,{reference});
 
-    if(requestController === controller){
-      requestController = null;
-      loading.style.display = "none";
-      button.disabled = false;
-      button.textContent = "استعلام عن الحالة";
-      input.disabled = false;
+      if(!data || !data.status){
+        throw new Error("استجابة الخدمة لا تحتوي على حالة الحظر.");
+      }
+
+      $("blockRefValue").textContent = safeText(data.reference,reference);
+      $("blockType").textContent = safeText(data.target_type);
+      $("blockReason").textContent = safeText(data.reason);
+      $("blockDuration").textContent = data.permanent
+        ? "دائم"
+        : data.expires_at
+          ? "حتى " + formatDate(data.expires_at)
+          : "غير محددة";
+
+      $("blockUpdated").textContent = formatDate(data.updated_at);
+
+      setStatus("blockStatus",data.status,blockLabels);
+      $("blockResult").classList.add("show");
+
+    }catch(error){
+      showMessage("blockMessage",error.message || "حدث خطأ أثناء الاستعلام.","error");
+    }finally{
+      setLoading("blockSubmit",false,"استعلام عن الحالة");
+    }
+  });
+
+  // متابعة حالة الالتماس
+  appealForm.addEventListener("submit",async event=>{
+    event.preventDefault();
+
+    const reference = normalize($("appealReference").value);
+
+    $("appealResult").classList.remove("show");
+    $("appealReasonBox").hidden = true;
+    hideMessage("appealMessage");
+
+    if(!/^AQX-APL-[A-F0-9]{32}$/.test(reference)){
+      showMessage(
+        "appealMessage",
+        "الرقم المرجعي غير صحيح. يجب أن يبدأ بـ AQX-APL- ويتبعه 32 خانة سداسية عشرية.",
+        "error"
+      );
+      return;
     }
 
+    $("appealReference").value = reference;
+    setLoading("appealSubmit",true);
+
+    try{
+      const data = await requestJSON(API.appeal,{reference});
+
+      if(!data || !data.status){
+        throw new Error("استجابة الخدمة لا تحتوي على حالة الالتماس.");
+      }
+
+      $("appealRefValue").textContent = safeText(data.reference,reference);
+      $("appealCreated").textContent = formatDate(data.created_at);
+      $("appealUpdated").textContent = formatDate(data.updated_at);
+      $("appealDecisionDate").textContent = data.decision_at
+        ? formatDate(data.decision_at)
+        : "لم يصدر قرار بعد";
+
+      setStatus("appealStatus",data.status,appealLabels);
+
+      const reason = data.decision_reason;
+      if(reason){
+        $("appealReason").textContent = String(reason);
+        $("appealReasonBox").hidden = false;
+      }
+
+      $("appealResult").classList.add("show");
+
+    }catch(error){
+      showMessage("appealMessage",error.message || "حدث خطأ أثناء متابعة الالتماس.","error");
+    }finally{
+      setLoading("appealSubmit",false,"متابعة الالتماس");
+    }
+  });
+
+  // النسخ
+  async function copyReference(value){
+    try{
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(value);
+      }else{
+        const area = document.createElement("textarea");
+        area.value = value;
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        const copied = document.execCommand("copy");
+        area.remove();
+        if(!copied) throw new Error("copy_failed");
+      }
+      return true;
+    }catch(_){
+      return false;
+    }
   }
-}
 
-/* تنظيف الرقم المرجعي أثناء الإدخال */
-input.addEventListener("input",function(){
-
-  const value = this.value
-    .toUpperCase()
-    .replace(/[^A-F0-9]/g,"")
-    .slice(0,12);
-
-  this.value = value;
-
-});
-
-/* تنفيذ الاستعلام */
-form.addEventListener("submit",function(event){
-
-  event.preventDefault();
-
-  const reference = input.value
-    .trim()
-    .toUpperCase();
-
-  if(!/^[A-F0-9]{12}$/.test(reference)){
-    hideResult();
-
+  $("copyBlockRef").addEventListener("click",async()=>{
+    const value = $("blockRefValue").textContent;
+    const ok = await copyReference(value);
     showMessage(
-      "error",
-      "يرجى إدخال رقم مرجعي صحيح مكوّن من 12 خانة."
+      "blockMessage",
+      ok ? "تم نسخ الرقم المرجعي بنجاح." : "تعذر نسخ الرقم المرجعي.",
+      ok ? "success" : "error"
     );
+  });
 
-    input.focus();
-    return;
-  }
-
-  search(reference);
-
-});
-
-/* نسخ الرقم المرجعي */
-$("copyReference").addEventListener("click",async function(){
-
-  if(!currentReference) return;
-
-  try{
-
-    await navigator.clipboard.writeText(currentReference);
-
-    this.textContent = "تم نسخ الرقم المرجعي ✓";
-
-    setTimeout(()=>{
-      this.textContent = "نسخ الرقم المرجعي";
-    },2000);
-
-  }catch(_){
-
+  $("copyAppealRef").addEventListener("click",async()=>{
+    const value = $("appealRefValue").textContent;
+    const ok = await copyReference(value);
     showMessage(
-      "info",
-      "تعذر النسخ التلقائي. يمكنك تحديد الرقم ونسخه يدويًا."
+      "appealMessage",
+      ok ? "تم نسخ الرقم المرجعي بنجاح." : "تعذر نسخ الرقم المرجعي.",
+      ok ? "success" : "error"
     );
+  });
 
+  // إعادة الاستعلام
+  $("newBlockQuery").addEventListener("click",()=>{
+    $("blockReference").value = "";
+    $("blockResult").classList.remove("show");
+    hideMessage("blockMessage");
+    $("blockReference").focus();
+  });
+
+  $("newAppealQuery").addEventListener("click",()=>{
+    $("appealReference").value = "";
+    $("appealResult").classList.remove("show");
+    $("appealReasonBox").hidden = true;
+    hideMessage("appealMessage");
+    $("appealReference").focus();
+  });
+
+  // تنسيق المدخلات
+  $("blockReference").addEventListener("input",event=>{
+    event.target.value = normalize(event.target.value).replace(/[^A-F0-9]/g,"").slice(0,12);
+  });
+
+  $("appealReference").addEventListener("input",event=>{
+    let value = normalize(event.target.value).replace(/[^A-Z0-9-]/g,"");
+    event.target.value = value.slice(0,40);
+  });
+
+  // دعم فتح الصفحة برقم مرجعي في الرابط
+  const params = new URLSearchParams(window.location.search);
+  const appealFromUrl = params.get("appeal");
+  const blockFromUrl = params.get("reference");
+
+  if(appealFromUrl){
+    $("appealReference").value = normalize(appealFromUrl);
+    document.querySelector('[data-tab="appeal"]').click();
+  }else if(blockFromUrl){
+    $("blockReference").value = normalize(blockFromUrl);
   }
-
-});
-
-/* بدء استعلام جديد */
-$("newSearch").addEventListener("click",function(){
-
-  if(requestController){
-    requestController.abort();
-    requestController = null;
-  }
-
-  currentReference = "";
-
-  hideResult();
-  hideMessage();
-
-  loading.style.display = "none";
-
-  button.disabled = false;
-  button.textContent = "استعلام عن الحالة";
-
-  input.disabled = false;
-  input.value = "";
-
-  input.focus();
-
-});
-
-/* دعم فتح الصفحة برقم مرجعي في الرابط */
-const params = new URLSearchParams(location.search);
-const initialReference = params.get("reference");
-
-if(initialReference){
-
-  const normalized = initialReference
-    .toUpperCase()
-    .replace(/[^A-F0-9]/g,"");
-
-  if(/^[A-F0-9]{12}$/.test(normalized)){
-    input.value = normalized;
-    search(normalized);
-  }
-
-}
 
 })();
 </script>
-
 </body>
 </html>
-
