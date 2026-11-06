@@ -2,266 +2,502 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#071426">
-<title>إدارة روابط الإحالة | AQX</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071426">
+  <meta name="description" content="إدارة روابط الإحالة الخاصة بحساب AQX">
+  <title>إدارة روابط الإحالة | AQX</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-:root{
-  color-scheme:dark;
-  --bg:#071426;
-  --panel:#101f35;
-  --panel2:#142842;
-  --line:#263b56;
-  --text:#edf4ff;
-  --muted:#9aacc4;
-  --blue:#3c91ff;
-  --green:#20c997;
-  --red:#ff6577;
-  --yellow:#f6c85f;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  min-height:100vh;
-  background:radial-gradient(circle at top right,#142f50 0,transparent 35%),var(--bg);
-  color:var(--text);
-  font-family:Tahoma,Arial,sans-serif;
-}
-button,input{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-.container{width:min(1180px,94%);margin:28px auto}
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:15px;flex-wrap:wrap;margin-bottom:22px
-}
-.brand h1{margin:0;font-size:25px}
-.brand p{margin:8px 0 0;color:var(--muted);font-size:13px}
-.header-actions{display:flex;gap:9px;flex-wrap:wrap}
-.btn{
-  border:1px solid var(--line);background:var(--panel2);
-  color:var(--text);padding:10px 15px;border-radius:10px;
-  font-size:13px;transition:.2s
-}
-.btn:hover{filter:brightness(1.2)}
-.btn.primary{background:var(--blue);color:white;border-color:var(--blue)}
-.btn.danger{background:#572431;border-color:#873b4d;color:#ffdce2}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.statusbar{
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:12px;background:#0d1c30;
-  border:1px solid var(--line);border-radius:13px;
-  padding:13px 16px;margin-bottom:20px;font-size:13px
-}
-.status-item{display:flex;align-items:center;gap:8px}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--yellow)}
-.dot.online{background:var(--green)}
-.dot.offline{background:var(--red)}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
-.stat{
-  background:linear-gradient(145deg,#132944,#0e1d32);
-  border:1px solid var(--line);padding:19px;border-radius:14px
-}
-.stat small{color:var(--muted);font-size:12px}
-.stat strong{display:block;font-size:27px;margin-top:9px}
-.panel{
-  background:rgba(16,31,53,.94);border:1px solid var(--line);
-  border-radius:15px;padding:19px;margin-bottom:18px
-}
-.panel-title{
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:12px;margin-bottom:16px
-}
-.panel-title h2{font-size:17px;margin:0}
-.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}
-input{
-  background:#08172a;border:1px solid var(--line);border-radius:9px;
-  padding:11px 13px;color:white;outline:none;min-width:180px
-}
-input:focus{border-color:var(--blue)}
-.search{flex:1}
-.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px}
-table{width:100%;border-collapse:collapse;min-width:850px}
-th,td{
-  text-align:right;padding:14px 12px;border-bottom:1px solid var(--line);
-  font-size:12px;vertical-align:middle
-}
-th{background:#172b44;color:#b8cce5;font-weight:700}
-tr:last-child td{border-bottom:0}
-tbody tr:hover{background:#ffffff06}
-.muted{color:var(--muted)}
-.code{
-  font-family:monospace;direction:ltr;display:inline-block;
-  color:#9cc9ff;background:#07182c;padding:6px 8px;
-  border-radius:6px;user-select:all
-}
-.badge{
-  display:inline-block;border-radius:20px;padding:5px 9px;
-  font-size:11px;white-space:nowrap
-}
-.badge.active{color:#8ff0cf;background:#0c493b}
-.badge.disabled{color:#ffe1a0;background:#55431d}
-.badge.revoked{color:#ffb5bf;background:#572431}
-.actions{display:flex;gap:6px;flex-wrap:wrap}
-.actions .btn{padding:7px 9px;font-size:11px}
-.empty{padding:40px 15px;text-align:center;color:var(--muted)}
-.notice{
-  padding:13px 15px;border-radius:10px;margin-bottom:15px;
-  font-size:13px;line-height:1.8;display:none
-}
-.notice.show{display:block}
-.notice.error{color:#ffdce2;background:#542432;border:1px solid #874153}
-.notice.success{color:#a7f3d5;background:#103d34;border:1px solid #206e5b}
-.notice.info{color:#c6dcff;background:#142d4a;border:1px solid #294c72}
-.loading{text-align:center;padding:35px;color:var(--muted)}
-.pagination{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:12px
-}
-.footer{color:#748aa7;font-size:11px;text-align:center;padding:20px}
-.login-box{
-  max-width:470px;margin:100px auto;padding:30px;text-align:center;
-  background:var(--panel);border:1px solid var(--line);border-radius:16px
-}
-.login-box h2{margin-top:0}
-.login-box p{color:var(--muted);line-height:1.9;font-size:13px}
-@media(max-width:750px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .brand h1{font-size:21px}
-  .container{width:95%;margin:17px auto}
-  .panel{padding:13px}
-  .stat{padding:14px}
-}
-@media(max-width:390px){
-  .grid{gap:8px}
-  .stat strong{font-size:22px}
-}
-</style>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071426;
+      --panel: #0e2038;
+      --panel2: #132944;
+      --border: rgba(255,255,255,.09);
+      --text: #edf4ff;
+      --muted: #9aacc4;
+      --gold: #e9bd69;
+      --green: #43d39e;
+      --red: #ff6b78;
+      --blue: #65a9ff;
+      --radius: 17px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(38,91,150,.20), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
+    }
+
+    button, input { font: inherit; }
+
+    button {
+      cursor: pointer;
+      border: 0;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 30px));
+      margin: 0 auto;
+      padding: 24px 0 55px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #f0ce84, #b78335);
+      color: #102039;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 15px;
+      border-radius: 10px;
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      transition: .2s;
+    }
+
+    .btn:hover { filter: brightness(1.2); }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f0d18e, #c99b4e);
+      color: #17243a;
+      font-weight: bold;
+      border: 0;
+    }
+
+    .btn-danger {
+      color: #ff9ba3;
+      border-color: rgba(255,107,120,.3);
+      background: rgba(255,107,120,.08);
+    }
+
+    .btn-small {
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+
+    .hero {
+      padding: 25px;
+      background: linear-gradient(120deg, #142c49, #0c1d33);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: 23px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.9;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      font-size: 27px;
+      font-weight: bold;
+      margin-top: 9px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 19px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 17px;
+    }
+
+    .panel-head h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .search {
+      width: min(320px, 100%);
+      padding: 11px 13px;
+      background: #09192c;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: var(--blue);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: normal;
+      white-space: nowrap;
+    }
+
+    td { line-height: 1.7; }
+
+    .code {
+      direction: ltr;
+      display: inline-block;
+      background: #071426;
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+      border-radius: 7px;
+      font-family: monospace;
+      color: #c8dcff;
+      max-width: 170px;
+      overflow-wrap: anywhere;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 30px;
+      padding: 5px 10px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .status-active {
+      color: var(--green);
+      background: rgba(67,211,158,.10);
+    }
+
+    .status-revoked,
+    .status-disabled {
+      color: var(--red);
+      background: rgba(255,107,120,.10);
+    }
+
+    .status-unknown {
+      color: var(--muted);
+      background: rgba(255,255,255,.07);
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .empty {
+      padding: 35px 15px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 2;
+    }
+
+    .message {
+      display: none;
+      padding: 13px 15px;
+      margin-bottom: 16px;
+      border-radius: 11px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .message.error {
+      display: block;
+      color: #ffb4ba;
+      background: rgba(255,107,120,.10);
+      border: 1px solid rgba(255,107,120,.22);
+    }
+
+    .message.success {
+      display: block;
+      color: #8ce9c5;
+      background: rgba(67,211,158,.09);
+      border: 1px solid rgba(67,211,158,.2);
+    }
+
+    .message.info {
+      display: block;
+      color: #b8d7ff;
+      background: rgba(101,169,255,.09);
+      border: 1px solid rgba(101,169,255,.2);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 65px 15px;
+      color: var(--muted);
+      line-height: 2;
+    }
+
+    .spinner {
+      width: 29px;
+      height: 29px;
+      border: 3px solid rgba(255,255,255,.13);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 14px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .security-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.9;
+      margin-top: 15px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #71849d;
+      font-size: 11px;
+      padding: 18px 0;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media(max-width:760px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .hero { padding: 20px; }
+      .hero h2 { font-size: 20px; }
+      .stat { padding: 14px; }
+      .stat-value { font-size: 23px; }
+      .panel { padding: 14px; }
+    }
+
+    @media(max-width:380px) {
+      .stats { gap: 8px; }
+      .stat-value { font-size: 20px; }
+    }
+  </style>
 </head>
 
 <body>
 
-<div id="app" class="container hidden">
+  <div class="container">
 
-  <header class="header">
-    <div class="brand">
-      <h1>مركز إدارة روابط الإحالة</h1>
-      <p>AQX Identity · Personal Referral Links Management</p>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">AQX</div>
+        <div>
+          <h1>AQX Identity</h1>
+          <p>إدارة روابط الإحالة الخاصة بك</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn" id="refreshBtn" type="button">↻ تحديث البيانات</button>
+        <button class="btn" id="homeBtn" type="button">الرئيسية</button>
+        <button class="btn btn-danger" id="logoutBtn" type="button">تسجيل الخروج</button>
+      </div>
+    </header>
+
+    <div id="loadingScreen" class="loading">
+      <div class="spinner"></div>
+      جارٍ التحقق من جلسة AQX...
     </div>
 
-    <div class="header-actions">
-      <button class="btn primary" id="refreshBtn">↻ تحديث البيانات</button>
-      <button class="btn danger" id="logoutBtn">تسجيل الخروج</button>
-    </div>
-  </header>
+    <main id="app" hidden>
 
-  <div class="statusbar">
-    <div class="status-item">
-      <span class="dot" id="sessionDot"></span>
-      <span id="sessionStatus">التحقق من الجلسة...</span>
-    </div>
-    <div class="status-item">
-      <span class="muted">الحساب:</span>
-      <strong id="userEmail">—</strong>
-    </div>
-    <div class="status-item">
-      <span class="muted">آخر تحقق:</span>
-      <span id="lastCheck">—</span>
-    </div>
+      <section class="hero">
+        <h2>مركز إدارة روابط الإحالة</h2>
+        <p>
+          من هنا يمكنك مراجعة روابط الإحالة المرتبطة بحسابك،
+          متابعة حالتها، نسخ الروابط وفتحها أو إلغاء الرابط النشط.
+          جميع البيانات المعروضة تخص حسابك المسجل فقط.
+        </p>
+      </section>
+
+      <div id="messageBox" class="message"></div>
+
+      <section class="stats">
+        <div class="stat">
+          <div class="stat-label">إجمالي الروابط</div>
+          <div class="stat-value" id="totalCount">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">روابط نشطة</div>
+          <div class="stat-value" id="activeCount">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">روابط معطلة</div>
+          <div class="stat-value" id="disabledCount">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">روابط ملغاة</div>
+          <div class="stat-value" id="revokedCount">0</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h3>روابط الإحالة الخاصة بي</h3>
+          <input
+            class="search"
+            id="searchInput"
+            type="search"
+            placeholder="ابحث بالمنصة أو الاسم أو الكود..."
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>المنصة</th>
+                <th>اسم الرابط</th>
+                <th>كود الإحالة</th>
+                <th>الحالة</th>
+                <th>تاريخ الإنشاء</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="linksTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="empty" hidden>
+          لا توجد روابط إحالة مسجلة في حسابك حتى الآن.
+        </div>
+
+        <div class="security-note">
+          يتم جلب الروابط من قاعدة البيانات باستخدام هوية المستخدم المسجل.
+          لا يمكن اختيار حساب آخر أو عرض روابط مستخدم آخر من هذه الصفحة.
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h3>سوق الإحالات</h3>
+          <span class="status status-unknown">قريبًا</span>
+        </div>
+        <p class="security-note">
+          هذا القسم مخصص لخدمات سوق الإحالات المستقبلية.
+          الخدمات غير مفعلة حاليًا، ولن يتم تنفيذ أي عملية سوق من هذه الصفحة.
+        </p>
+      </section>
+
+      <div class="footer">
+        AQX — Unified Identity & Referral Services
+      </div>
+
+    </main>
   </div>
 
-  <div id="message" class="notice"></div>
-
-  <section class="grid">
-    <div class="stat">
-      <small>إجمالي روابطك</small>
-      <strong id="totalCount">0</strong>
-    </div>
-    <div class="stat">
-      <small>روابط نشطة</small>
-      <strong id="activeCount">0</strong>
-    </div>
-    <div class="stat">
-      <small>روابط معطلة</small>
-      <strong id="disabledCount">0</strong>
-    </div>
-    <div class="stat">
-      <small>روابط ملغاة</small>
-      <strong id="revokedCount">0</strong>
-    </div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-title">
-      <h2>روابط الإحالة المسجلة في حسابك</h2>
-      <span class="muted" id="resultCount">0 رابط</span>
-    </div>
-
-    <div class="toolbar">
-      <input id="searchInput" class="search" type="search"
-        placeholder="ابحث باسم الرابط أو المنصة أو الكود..."
-        autocomplete="off">
-      <button class="btn" id="clearSearch">مسح البحث</button>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>المنصة</th>
-            <th>اسم الرابط</th>
-            <th>كود الإحالة</th>
-            <th>الحالة</th>
-            <th>تاريخ الإنشاء</th>
-            <th>الإجراءات</th>
-          </tr>
-        </thead>
-        <tbody id="linksBody">
-          <tr><td colspan="6" class="loading">جارٍ تحميل الروابط...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="pagination">
-      <span id="visibleCount">—</span>
-      <span>تُعرض روابط حسابك فقط</span>
-    </div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-title">
-      <h2>حماية وإدارة الروابط</h2>
-    </div>
-    <p class="muted" style="font-size:13px;line-height:2">
-      يمكنك نسخ رابط الإحالة وفتحه، وإلغاء الرابط النشط عند الحاجة.
-      الإلغاء إجراء نهائي لا يمكن التراجع عنه من هذه الواجهة.
-      لا تعرض هذه الصفحة مكافآت أو نقاطًا أو أموالًا.
-    </p>
-  </section>
-
-  <footer class="footer">
-    AQX Identity · Referral Management
-  </footer>
-</div>
-
 <script>
-(() => {
 "use strict";
 
-/* =====================================
-   CONFIGURATION
-===================================== */
+/* =========================================
+   1. إعدادات النظام
+========================================= */
 
 const CONFIG = Object.freeze({
   SUPABASE_URL:
     "https://fkiokwwztbyztleeuwks.supabase.co",
 
   SUPABASE_KEY:
-    "sb_publishable_4DCXObCqPUoNnI8ANO8dA_nRAg0y5_",
+    "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
 
   IDENTITY_API:
     "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
@@ -270,422 +506,416 @@ const CONFIG = Object.freeze({
     "https://id.alqurmanix.com/",
 
   SESSION_CHECK_INTERVAL:
-    30000
+    45000,
+
+  REQUEST_TIMEOUT:
+    15000
 });
 
-const $ = id => document.getElementById(id);
+/* =========================================
+   2. العناصر الأساسية
+========================================= */
+
+const $ = (id) => document.getElementById(id);
+
+const loadingScreen = $("loadingScreen");
+const app = $("app");
+const messageBox = $("messageBox");
+const tableBody = $("linksTableBody");
+const emptyState = $("emptyState");
 
 let client = null;
+let currentLinks = [];
 let currentUser = null;
-let currentSession = null;
-let links = [];
-let filteredLinks = [];
-
-let sessionValid = false;
-let redirecting = false;
-let logoutInProgress = false;
 let checkingSession = false;
 let loadingLinks = false;
-let monitorTimer = null;
-let lastSessionCheck = 0;
+let logoutInProgress = false;
+let lastSuccessfulCheck = 0;
+let sessionTimer = null;
 
-/* =====================================
-   BASIC HELPERS
-===================================== */
+/* =========================================
+   3. أدوات عامة
+========================================= */
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[char]);
-}
-
-function formatDate(value) {
-  if (!value) return "—";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-
-  return date.toLocaleString("ar-EG", {
-    dateStyle:"medium",
-    timeStyle:"short"
-  });
-}
-
-function number(value) {
-  return Number(value || 0).toLocaleString("ar-EG");
-}
-
-function showMessage(message, type = "info") {
-  const box = $("message");
-  box.className = "notice show " + type;
-  box.textContent = message;
+function showMessage(text, type = "info") {
+  messageBox.textContent = text;
+  messageBox.className = "message " + type;
 }
 
 function clearMessage() {
-  $("message").className = "notice";
-  $("message").textContent = "";
+  messageBox.textContent = "";
+  messageBox.className = "message";
 }
 
-function setSessionStatus(message, state = "") {
-  $("sessionStatus").textContent = message;
-  $("sessionDot").className = "dot " + state;
+function showLoading(text) {
+  loadingScreen.hidden = false;
+  loadingScreen.innerHTML =
+    '<div class="spinner"></div>' + text;
 }
 
-function stopMonitor() {
-  if (monitorTimer) {
-    clearInterval(monitorTimer);
-    monitorTimer = null;
-  }
+function hideLoading() {
+  loadingScreen.hidden = true;
 }
 
-/* =====================================
-   IMMEDIATE SESSION TERMINATION
-===================================== */
-
-function forceHome(reason = "SESSION_INVALID") {
-  if (redirecting) return;
-
-  redirecting = true;
-  sessionValid = false;
-
-  stopMonitor();
-
-  links = [];
-  filteredLinks = [];
-
-  $("app").classList.add("hidden");
-
-  /*
-    Remove the invalid AQX session token.
-    The Supabase session is left for the
-    central identity homepage to handle.
-  */
-  try {
-    localStorage.removeItem("aqx_session_token");
-    sessionStorage.removeItem("aqx_session_token");
-  } catch (_) {}
-
-  console.warn("AQX access terminated:", reason);
-
+function goHome() {
   window.location.replace(CONFIG.HOME_URL);
 }
 
-/* =====================================
-   SUPABASE CLIENT
-===================================== */
-
-function createClient() {
-  if (
-    !window.supabase ||
-    typeof window.supabase.createClient !== "function"
-  ) {
-    throw new Error("SUPABASE_SDK_UNAVAILABLE");
-  }
-
-  return window.supabase.createClient(
-    CONFIG.SUPABASE_URL,
-    CONFIG.SUPABASE_KEY,
-    {
-      auth: {
-        persistSession:true,
-        autoRefreshToken:true,
-        detectSessionInUrl:true
-      }
-    }
-  );
-}
-
-/* =====================================
-   AQX SESSION TOKEN
-===================================== */
-
-function getAqxToken() {
+function getAqxSessionToken() {
   try {
     return (
       localStorage.getItem("aqx_session_token") ||
       sessionStorage.getItem("aqx_session_token") ||
       ""
     );
-  } catch (_) {
+  } catch {
     return "";
   }
 }
 
-/* =====================================
-   VERIFY SUPABASE AUTH WITH SERVER
-===================================== */
+function getSafeUrl(value) {
+  if (!value || typeof value !== "string") return null;
 
-async function verifySupabaseUser() {
-  const {data,error} = await client.auth.getSession();
+  try {
+    const url = new URL(value);
 
-  if (error) throw error;
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return null;
+    }
 
-  const session = data?.session;
-
-  if (!session?.access_token || !session?.user?.id) {
-    throw new Error("SUPABASE_SESSION_MISSING");
+    return url.href;
+  } catch {
+    return null;
   }
-
-  /*
-    getUser() validates the access token
-    against the Supabase Auth server.
-    It does not rely only on browser storage.
-  */
-  const {data:userData,error:userError} =
-    await client.auth.getUser(session.access_token);
-
-  if (userError || !userData?.user?.id) {
-    throw new Error("SUPABASE_USER_INVALID");
-  }
-
-  if (userData.user.id !== session.user.id) {
-    throw new Error("SUPABASE_USER_MISMATCH");
-  }
-
-  currentSession = session;
-  currentUser = userData.user;
-
-  return session;
 }
 
-/* =====================================
-   VERIFY AQX IDENTITY SESSION
-===================================== */
+function formatDate(value) {
+  if (!value) return "—";
 
-async function verifyAqxSession() {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return new Intl.DateTimeFormat("ar-EG", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }).format(date);
+}
+
+function normalizeStatus(status) {
+  return String(status || "").toLowerCase().trim();
+}
+
+function statusDetails(status) {
+  const value = normalizeStatus(status);
+
+  if (value === "active") {
+    return {
+      label: "نشط",
+      className: "status-active"
+    };
+  }
+
+  if (value === "revoked" || value === "cancelled") {
+    return {
+      label: "ملغي",
+      className: "status-revoked"
+    };
+  }
+
+  if (value === "disabled" || value === "inactive") {
+    return {
+      label: "معطل",
+      className: "status-disabled"
+    };
+  }
+
+  return {
+    label: status || "غير محدد",
+    className: "status-unknown"
+  };
+}
+
+/* =========================================
+   4. إنشاء اتصال Supabase
+   مهم: لا نفرض sessionStorage.
+   نستخدم التخزين الافتراضي المتوافق مع
+   إعدادات صفحة الدخول السابقة.
+========================================= */
+
+function initializeSupabase() {
+  if (!window.supabase || !window.supabase.createClient) {
+    throw new Error("تعذر تحميل مكتبة الاتصال بقاعدة البيانات.");
+  }
+
+  client = window.supabase.createClient(
+    CONFIG.SUPABASE_URL,
+    CONFIG.SUPABASE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      },
+      global: {
+        headers: {
+          "X-Client-Info": "AQX-Referral-Links"
+        }
+      }
+    }
+  );
+}
+
+/* =========================================
+   5. مهلة للطلبات
+========================================= */
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+
+  const timeout = setTimeout(
+    () => controller.abort(),
+    CONFIG.REQUEST_TIMEOUT
+  );
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/* =========================================
+   6. التحقق من مستخدم Supabase
+========================================= */
+
+async function verifySupabaseUser() {
+  const {
+    data: sessionData,
+    error: sessionError
+  } = await client.auth.getSession();
+
+  if (sessionError) {
+    throw new Error("تعذر قراءة جلسة تسجيل الدخول.");
+  }
+
+  const session = sessionData?.session;
+
+  if (!session || !session.access_token) {
+    return {
+      valid: false,
+      reason: "missing_supabase_session"
+    };
+  }
+
+  const {
+    data: userData,
+    error: userError
+  } = await client.auth.getUser(session.access_token);
+
+  if (userError) {
+    const status = userError.status;
+
+    if (status === 401 || status === 403) {
+      return {
+        valid: false,
+        reason: "invalid_supabase_session"
+      };
+    }
+
+    throw new Error("تعذر التحقق من حسابك بسبب مشكلة اتصال.");
+  }
+
+  if (!userData?.user?.id) {
+    return {
+      valid: false,
+      reason: "missing_user"
+    };
+  }
+
+  if (!userData.user.email_confirmed_at) {
+    return {
+      valid: false,
+      reason: "email_not_confirmed"
+    };
+  }
+
+  currentUser = userData.user;
+
+  return {
+    valid: true,
+    user: userData.user,
+    accessToken: session.access_token
+  };
+}
+
+/* =========================================
+   7. التحقق من جلسة AQX المركزية
+========================================= */
+
+async function verifyAqxSession(accessToken) {
+  const aqxToken = getAqxSessionToken();
+
+  if (!aqxToken) {
+    return {
+      valid: false,
+      reason: "missing_aqx_token"
+    };
+  }
+
+  let response;
+
+  try {
+    response = await fetchWithTimeout(
+      CONFIG.IDENTITY_API + "/v1/session/check",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": CONFIG.SUPABASE_KEY,
+          "Authorization": "Bearer " + accessToken,
+          "x-aqx-session": aqxToken
+        },
+        body: JSON.stringify({})
+      }
+    );
+  } catch (error) {
+    throw new Error(
+      "تعذر الاتصال بمحرك هوية AQX. تحقق من الإنترنت ثم أعد المحاولة."
+    );
+  }
+
+  let result = {};
+
+  try {
+    result = await response.json();
+  } catch {
+    result = {};
+  }
+
+  if (response.status === 401 || response.status === 403) {
+    return {
+      valid: false,
+      reason: "aqx_session_invalid"
+    };
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      result.error ||
+      "محرك الهوية لم يتمكن من إكمال التحقق. حاول مرة أخرى."
+    );
+  }
+
+  if (result.valid !== true) {
+    return {
+      valid: false,
+      reason: "aqx_session_invalid"
+    };
+  }
+
+  return {
+    valid: true
+  };
+}
+
+/* =========================================
+   8. التحقق الكامل من الجلسة
+========================================= */
+
+async function validateFullSession() {
   if (checkingSession) {
-    return sessionValid;
+    return false;
   }
 
   checkingSession = true;
 
   try {
-    const session = await verifySupabaseUser();
-    const aqxToken = getAqxToken();
+    const supabaseResult = await verifySupabaseUser();
 
-    if (!aqxToken || aqxToken.length < 30) {
-      throw new Error("AQX_SESSION_MISSING");
+    if (!supabaseResult.valid) {
+      goHome();
+      return false;
     }
 
-    const response = await fetch(
-      CONFIG.IDENTITY_API + "/v1/session/check",
-      {
-        method:"POST",
-        headers:{
-          "apikey":CONFIG.SUPABASE_KEY,
-          "Authorization":"Bearer " + session.access_token,
-          "Content-Type":"application/json",
-          "Accept":"application/json",
-          "x-aqx-session":aqxToken
-        },
-        body:JSON.stringify({}),
-        cache:"no-store",
-        credentials:"omit"
-      }
+    const aqxResult = await verifyAqxSession(
+      supabaseResult.accessToken
     );
 
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok || result?.valid !== true) {
-      throw new Error(
-        result?.error || "AQX_SESSION_INVALID"
-      );
+    if (!aqxResult.valid) {
+      goHome();
+      return false;
     }
 
-    sessionValid = true;
-    lastSessionCheck = Date.now();
-
-    $("userEmail").textContent =
-      currentUser.email || currentUser.id;
-
-    $("lastCheck").textContent =
-      new Date(lastSessionCheck).toLocaleTimeString("ar-EG");
-
-    setSessionStatus("جلسة AQX موثقة ونشطة","online");
+    lastSuccessfulCheck = Date.now();
 
     return true;
+
+  } catch (error) {
+    showMessage(
+      error.message || "تعذر التحقق من الجلسة.",
+      "error"
+    );
+
+    return false;
 
   } finally {
     checkingSession = false;
   }
 }
 
-/* =====================================
-   SESSION GUARD
-===================================== */
+/* =========================================
+   9. تحميل روابط المستخدم
+========================================= */
 
-async function enforceSession() {
-  if (redirecting || logoutInProgress) return false;
-
-  try {
-    const valid = await verifyAqxSession();
-
-    if (!valid) {
-      throw new Error("SESSION_NOT_VALID");
-    }
-
-    return true;
-
-  } catch (error) {
-    console.error("AQX session verification failed:",error);
-
-    setSessionStatus("الجلسة غير صالحة","offline");
-
-    forceHome(error.message || "SESSION_INVALID");
-
-    return false;
-  }
-}
-
-/* =====================================
-   SESSION MONITOR
-===================================== */
-
-function startMonitor() {
-  stopMonitor();
-
-  monitorTimer = setInterval(async () => {
-    if (document.hidden || redirecting || logoutInProgress) {
-      return;
-    }
-
-    await enforceSession();
-
-  }, CONFIG.SESSION_CHECK_INTERVAL);
-}
-
-/* =====================================
-   AUTH STATE MONITOR
-===================================== */
-
-function listenToAuthChanges() {
-  client.auth.onAuthStateChange((event, session) => {
-    if (redirecting || logoutInProgress) return;
-
-    if (
-      event === "SIGNED_OUT" ||
-      !session?.access_token
-    ) {
-      forceHome("SUPABASE_SIGNED_OUT");
-      return;
-    }
-
-    if (
-      event === "TOKEN_REFRESHED" ||
-      event === "USER_UPDATED"
-    ) {
-      setTimeout(() => {
-        enforceSession();
-      },0);
-    }
-  });
-}
-
-/* =====================================
-   RPC CALL
-===================================== */
-
-async function callRPC(name, params = {}) {
-  if (!sessionValid || !currentUser?.id) {
-    throw new Error("SESSION_NOT_VERIFIED");
-  }
-
-  /*
-    Verify again before every sensitive operation.
-  */
-  const valid = await enforceSession();
-
-  if (!valid || redirecting) {
-    throw new Error("SESSION_NOT_VERIFIED");
-  }
-
-  const {data,error} = await client.rpc(name,params);
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-/* =====================================
-   LOAD PERSONAL REFERRAL LINKS
-===================================== */
-
-async function loadLinks() {
-  if (loadingLinks || redirecting) return;
+async function loadMyLinks() {
+  if (loadingLinks) return;
 
   loadingLinks = true;
+
   $("refreshBtn").disabled = true;
 
-  $("linksBody").innerHTML =
-    '<tr><td colspan="6" class="loading">جارٍ تحميل روابطك...</td></tr>';
-
   try {
-    const valid = await enforceSession();
+    const sessionResult = await client.auth.getSession();
+    const accessToken = sessionResult?.data?.session?.access_token;
 
-    if (!valid || redirecting) return;
-
-    const result = await callRPC(
-      "aqx_referral_my_links",
-      {}
-    );
-
-    if (!Array.isArray(result)) {
-      throw new Error("INVALID_LINKS_RESPONSE");
+    if (!accessToken) {
+      goHome();
+      return;
     }
 
     /*
-      These fields match the actual SQL return:
-      link_id, platform_id, platform_name,
-      platform_url, code, referral_url,
-      label, status, created_at.
+      الدالة لا تستقبل معرف مستخدم.
+      قاعدة البيانات تحدد المالك من auth.uid().
     */
-    links = result.map(row => ({
-      link_id:row.link_id,
-      platform_id:row.platform_id,
-      platform_name:row.platform_name,
-      platform_url:row.platform_url,
-      code:row.code,
-      referral_url:row.referral_url,
-      label:row.label,
-      status:row.status,
-      created_at:row.created_at
-    }));
 
-    renderStats();
-    applySearch();
+    const { data, error } = await client.rpc(
+      "aqx_referral_my_links"
+    );
 
-    $("resultCount").textContent =
-      number(links.length) + " رابط";
+    if (error) {
+      throw new Error(
+        error.message || "تعذر تحميل روابط الإحالة."
+      );
+    }
+
+    currentLinks = Array.isArray(data) ? data : [];
+
+    renderStatistics();
+    renderLinks();
 
     clearMessage();
 
   } catch (error) {
-    console.error("AQX links loading:",error);
-
-    if (
-      error.message === "SESSION_NOT_VERIFIED" ||
-      error.message === "SUPABASE_SESSION_MISSING" ||
-      error.message === "SUPABASE_USER_INVALID" ||
-      error.message === "AQX_SESSION_INVALID"
-    ) {
-      forceHome(error.message);
-      return;
-    }
-
     showMessage(
-      "تعذر تحميل روابط الإحالة. " +
-      (error.message || "راجع الاتصال بالخادم."),
+      "تعذر تحميل الروابط: " +
+      (error.message || "خطأ غير معروف"),
       "error"
     );
-
-    $("linksBody").innerHTML =
-      '<tr><td colspan="6" class="empty">تعذر تحميل البيانات.</td></tr>';
 
   } finally {
     loadingLinks = false;
@@ -693,401 +923,478 @@ async function loadLinks() {
   }
 }
 
-/* =====================================
-   STATISTICS
-===================================== */
+/* =========================================
+   10. الإحصائيات
+========================================= */
 
-function renderStats() {
-  const active = links.filter(x => x.status === "active").length;
-  const disabled = links.filter(x => x.status === "disabled").length;
-  const revoked = links.filter(x => x.status === "revoked").length;
+function renderStatistics() {
+  const total = currentLinks.length;
 
-  $("totalCount").textContent = number(links.length);
-  $("activeCount").textContent = number(active);
-  $("disabledCount").textContent = number(disabled);
-  $("revokedCount").textContent = number(revoked);
+  const active = currentLinks.filter(
+    item => normalizeStatus(item.status) === "active"
+  ).length;
+
+  const revoked = currentLinks.filter(
+    item => ["revoked", "cancelled"].includes(
+      normalizeStatus(item.status)
+    )
+  ).length;
+
+  const disabled = currentLinks.filter(
+    item => ["disabled", "inactive"].includes(
+      normalizeStatus(item.status)
+    )
+  ).length;
+
+  $("totalCount").textContent = total;
+  $("activeCount").textContent = active;
+  $("disabledCount").textContent = disabled;
+  $("revokedCount").textContent = revoked;
 }
 
-/* =====================================
-   STATUS LABELS
-===================================== */
+/* =========================================
+   11. عرض الروابط
+========================================= */
 
-function statusHTML(status) {
-  const map = {
-    active:["نشط","active"],
-    disabled:["معطل","disabled"],
-    revoked:["ملغي نهائيًا","revoked"]
-  };
-
-  const item = map[status] || ["غير معروف","disabled"];
-
-  return '<span class="badge ' + item[1] + '">' +
-    escapeHTML(item[0]) +
-    '</span>';
+function createCell(text) {
+  const td = document.createElement("td");
+  td.textContent = text || "—";
+  return td;
 }
 
-/* =====================================
-   SEARCH
-===================================== */
+function createButton(text, className, action, linkId) {
+  const button = document.createElement("button");
 
-function applySearch() {
-  const query = $("searchInput").value.trim().toLowerCase();
+  button.type = "button";
+  button.textContent = text;
+  button.className = "btn btn-small " + className;
+  button.dataset.action = action;
+  button.dataset.id = linkId;
 
-  filteredLinks = links.filter(item => {
-    const values = [
+  return button;
+}
+
+function renderLinks() {
+  const query = $("searchInput").value
+    .trim()
+    .toLowerCase();
+
+  const filtered = currentLinks.filter(item => {
+    const searchable = [
       item.platform_name,
       item.label,
       item.code,
-      item.status,
-      item.link_id
-    ];
+      item.referral_url,
+      item.platform_url
+    ].join(" ").toLowerCase();
 
-    return values.some(value =>
-      String(value || "").toLowerCase().includes(query)
-    );
+    return searchable.includes(query);
   });
 
-  renderTable();
-}
+  tableBody.replaceChildren();
 
-/* =====================================
-   RENDER LINKS
-===================================== */
-
-function renderTable() {
-  const body = $("linksBody");
-
-  $("visibleCount").textContent =
-    "النتائج المعروضة: " + number(filteredLinks.length);
-
-  if (!filteredLinks.length) {
-    body.innerHTML =
-      '<tr><td colspan="6" class="empty">' +
-      (links.length
-        ? "لا توجد نتائج مطابقة للبحث."
-        : "لا توجد روابط إحالة مسجلة في حسابك حتى الآن.") +
-      '</td></tr>';
+  if (!filtered.length) {
+    emptyState.hidden = false;
+    emptyState.textContent = currentLinks.length
+      ? "لا توجد نتائج مطابقة لبحثك."
+      : "لا توجد روابط إحالة مسجلة في حسابك حتى الآن.";
 
     return;
   }
 
-  body.innerHTML = filteredLinks.map(item => {
-    const id = escapeHTML(item.link_id);
-    const code = escapeHTML(item.code);
-    const platform = escapeHTML(item.platform_name);
-    const label = escapeHTML(item.label || "بدون اسم");
-    const date = escapeHTML(formatDate(item.created_at));
+  emptyState.hidden = true;
 
-    const canRevoke = item.status === "active";
+  filtered.forEach((item, index) => {
+    const tr = document.createElement("tr");
 
-    return `
-      <tr>
-        <td>${platform}</td>
-        <td>${label}</td>
-        <td><span class="code">${code}</span></td>
-        <td>${statusHTML(item.status)}</td>
-        <td>${date}</td>
-        <td>
-          <div class="actions">
-            <button class="btn"
-              data-action="copy"
-              data-id="${id}">
-              نسخ
-            </button>
+    tr.appendChild(createCell(index + 1));
+    tr.appendChild(createCell(item.platform_name));
+    tr.appendChild(createCell(item.label));
 
-            <button class="btn"
-              data-action="open"
-              data-id="${id}">
-              فتح
-            </button>
+    const codeCell = document.createElement("td");
+    const code = document.createElement("span");
 
-            ${
-              canRevoke
-              ? `<button class="btn danger"
-                  data-action="revoke"
-                  data-id="${id}">
-                  إلغاء
-                </button>`
-              : ""
-            }
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join("");
-}
+    code.className = "code";
+    code.textContent = item.code || "—";
 
-/* =====================================
-   FIND LINK
-===================================== */
+    codeCell.appendChild(code);
+    tr.appendChild(codeCell);
 
-function findLink(id) {
-  return links.find(item => item.link_id === id);
-}
+    const statusCell = document.createElement("td");
+    const status = statusDetails(item.status);
+    const statusElement = document.createElement("span");
 
-/* =====================================
-   COPY REFERRAL LINK
-===================================== */
+    statusElement.className = "status " + status.className;
+    statusElement.textContent = status.label;
 
-async function copyLink(id) {
-  const valid = await enforceSession();
+    statusCell.appendChild(statusElement);
+    tr.appendChild(statusCell);
 
-  if (!valid || redirecting) return;
+    tr.appendChild(createCell(formatDate(item.created_at)));
 
-  const item = findLink(id);
+    const actionsCell = document.createElement("td");
+    const actions = document.createElement("div");
 
-  if (!item?.referral_url) {
-    showMessage("رابط الإحالة غير متاح.","error");
-    return;
-  }
+    actions.className = "actions";
 
-  try {
-    await navigator.clipboard.writeText(item.referral_url);
-    showMessage("تم نسخ رابط الإحالة بنجاح.","success");
-  } catch (_) {
-    showMessage("تعذر النسخ التلقائي. افتح الرابط وانسخه يدويًا.","error");
-  }
-}
+    const referralUrl = getSafeUrl(item.referral_url);
 
-/* =====================================
-   OPEN REFERRAL LINK
-===================================== */
+    if (referralUrl) {
+      actions.appendChild(
+        createButton("نسخ", "", "copy", item.link_id)
+      );
 
-async function openLink(id) {
-  const valid = await enforceSession();
-
-  if (!valid || redirecting) return;
-
-  const item = findLink(id);
-
-  if (!item?.referral_url) {
-    showMessage("رابط الإحالة غير متاح.","error");
-    return;
-  }
-
-  let url;
-
-  try {
-    url = new URL(item.referral_url);
-  } catch (_) {
-    showMessage("صيغة رابط الإحالة غير صالحة.","error");
-    return;
-  }
-
-  if (!["http:","https:"].includes(url.protocol)) {
-    showMessage("نوع الرابط غير مسموح.","error");
-    return;
-  }
-
-  window.open(url.href,"_blank","noopener,noreferrer");
-}
-
-/* =====================================
-   REVOKE LINK
-   Actual RPC:
-   aqx_referral_revoke_link(p_link_id uuid)
-===================================== */
-
-async function revokeLink(id) {
-  const valid = await enforceSession();
-
-  if (!valid || redirecting) return;
-
-  const item = findLink(id);
-
-  if (!item) {
-    showMessage("الرابط غير موجود.","error");
-    return;
-  }
-
-  if (item.status !== "active") {
-    showMessage("هذا الرابط ليس نشطًا.","error");
-    return;
-  }
-
-  const approved = confirm(
-    "هل تريد إلغاء رابط الإحالة نهائيًا؟\n\n" +
-    "المنصة: " + item.platform_name + "\n" +
-    "الكود: " + item.code + "\n\n" +
-    "لا يمكن التراجع عن هذا الإجراء."
-  );
-
-  if (!approved) return;
-
-  try {
-    const result = await callRPC(
-      "aqx_referral_revoke_link",
-      {p_link_id:id}
-    );
-
-    if (result !== true) {
-      throw new Error("LINK_NOT_REVOKED");
+      actions.appendChild(
+        createButton("فتح", "", "open", item.link_id)
+      );
     }
 
-    showMessage("تم إلغاء رابط الإحالة بنجاح.","success");
+    if (normalizeStatus(item.status) === "active") {
+      actions.appendChild(
+        createButton("إلغاء", "btn-danger", "revoke", item.link_id)
+      );
+    }
 
-    await loadLinks();
+    actionsCell.appendChild(actions);
+    tr.appendChild(actionsCell);
+
+    tableBody.appendChild(tr);
+  });
+}
+
+/* =========================================
+   12. البحث
+========================================= */
+
+$("searchInput").addEventListener("input", renderLinks);
+
+/* =========================================
+   13. العثور على الرابط من بيانات الحساب
+========================================= */
+
+function findMyLink(linkId) {
+  return currentLinks.find(
+    item => String(item.link_id) === String(linkId)
+  ) || null;
+}
+
+/* =========================================
+   14. نسخ الرابط
+========================================= */
+
+async function copyReferralLink(linkId) {
+  const item = findMyLink(linkId);
+
+  if (!item) {
+    showMessage("الرابط المطلوب غير موجود ضمن بيانات حسابك.", "error");
+    return;
+  }
+
+  const url = getSafeUrl(item.referral_url);
+
+  if (!url) {
+    showMessage("عنوان الرابط غير صالح.", "error");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(url);
+    showMessage("تم نسخ رابط الإحالة بنجاح.", "success");
+
+  } catch {
+    const input = document.createElement("textarea");
+
+    input.value = url;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+
+    document.body.appendChild(input);
+    input.select();
+
+    const copied = document.execCommand("copy");
+
+    input.remove();
+
+    if (copied) {
+      showMessage("تم نسخ الرابط بنجاح.", "success");
+    } else {
+      showMessage("تعذر النسخ تلقائيًا. حاول نسخ الرابط يدويًا.", "error");
+    }
+  }
+}
+
+/* =========================================
+   15. فتح الرابط
+========================================= */
+
+function openReferralLink(linkId) {
+  const item = findMyLink(linkId);
+
+  if (!item) {
+    showMessage("الرابط غير موجود ضمن حسابك.", "error");
+    return;
+  }
+
+  const url = getSafeUrl(item.referral_url);
+
+  if (!url) {
+    showMessage("عنوان الرابط غير صالح.", "error");
+    return;
+  }
+
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+/* =========================================
+   16. إلغاء رابط إحالة
+========================================= */
+
+async function revokeReferralLink(linkId) {
+  const item = findMyLink(linkId);
+
+  if (!item) {
+    showMessage("الرابط غير موجود ضمن حسابك.", "error");
+    return;
+  }
+
+  if (normalizeStatus(item.status) !== "active") {
+    showMessage("لا يمكن إلغاء رابط غير نشط.", "error");
+    return;
+  }
+
+  const confirmed = window.confirm(
+    "هل أنت متأكد من إلغاء رابط الإحالة هذا؟\n" +
+    "لن يتم إلغاء العملية من الصفحة إلا بعد تأكيد قاعدة البيانات."
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const valid = await validateFullSession();
+
+    if (!valid) return;
+
+    const { data, error } = await client.rpc(
+      "aqx_referral_revoke_link",
+      {
+        p_link_id: linkId
+      }
+    );
+
+    if (error) {
+      throw new Error(error.message || "تعذر إلغاء الرابط.");
+    }
+
+    if (data !== true) {
+      throw new Error(
+        "لم تؤكد قاعدة البيانات إلغاء الرابط. ربما تم إلغاؤه مسبقًا."
+      );
+    }
+
+    showMessage("تم إلغاء الرابط بنجاح.", "success");
+
+    await loadMyLinks();
 
   } catch (error) {
-    console.error("AQX revoke:",error);
-
-    if (redirecting) return;
-
     showMessage(
-      "تعذر إلغاء الرابط. " +
-      (error.message || "راجع صلاحية الحساب."),
+      error.message || "حدث خطأ أثناء إلغاء الرابط.",
       "error"
     );
   }
 }
 
-/* =====================================
-   LOGOUT
-===================================== */
+/* =========================================
+   17. التعامل مع أزرار الجدول
+========================================= */
 
-async function logout() {
-  if (logoutInProgress || redirecting) return;
-
-  if (!confirm("هل تريد تسجيل الخروج من AQX؟")) {
-    return;
-  }
-
-  logoutInProgress = true;
-  stopMonitor();
-
-  setSessionStatus("جارٍ إنهاء الجلسة...");
-
-  try {
-    const session = await verifySupabaseUser();
-    const token = getAqxToken();
-
-    if (token) {
-      await fetch(
-        CONFIG.IDENTITY_API + "/v1/session/logout",
-        {
-          method:"POST",
-          headers:{
-            "apikey":CONFIG.SUPABASE_KEY,
-            "Authorization":"Bearer " + session.access_token,
-            "Content-Type":"application/json",
-            "x-aqx-session":token
-          },
-          body:JSON.stringify({}),
-          cache:"no-store",
-          credentials:"omit"
-        }
-      );
-    }
-
-  } catch (error) {
-    console.warn("AQX logout request:",error);
-
-  } finally {
-    try {
-      localStorage.removeItem("aqx_session_token");
-      sessionStorage.removeItem("aqx_session_token");
-    } catch (_) {}
-
-    try {
-      await client.auth.signOut({scope:"local"});
-    } catch (error) {
-      console.warn("Supabase signout:",error);
-    }
-
-    forceHome("USER_LOGOUT");
-  }
-}
-
-/* =====================================
-   INITIALIZATION
-===================================== */
-
-async function initialize() {
-  try {
-    client = createClient();
-
-    /*
-      First verify actual Supabase user.
-      Then verify the AQX session with
-      the real Identity Edge Function.
-    */
-    const valid = await enforceSession();
-
-    if (!valid || redirecting) return;
-
-    $("app").classList.remove("hidden");
-
-    listenToAuthChanges();
-
-    await loadLinks();
-
-    if (!redirecting) {
-      startMonitor();
-    }
-
-  } catch (error) {
-    console.error("AQX page initialization:",error);
-    forceHome(error.message || "INITIALIZATION_FAILED");
-  }
-}
-
-/* =====================================
-   USER INTERACTIONS
-===================================== */
-
-$("refreshBtn").addEventListener("click",async () => {
-  const valid = await enforceSession();
-  if (valid && !redirecting) await loadLinks();
-});
-
-$("logoutBtn").addEventListener("click",logout);
-
-$("searchInput").addEventListener("input",applySearch);
-
-$("clearSearch").addEventListener("click",() => {
-  $("searchInput").value = "";
-  applySearch();
-});
-
-$("linksBody").addEventListener("click",event => {
+tableBody.addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-action]");
 
   if (!button) return;
 
   const action = button.dataset.action;
-  const id = button.dataset.id;
+  const linkId = button.dataset.id;
 
-  if (action === "copy") copyLink(id);
-  if (action === "open") openLink(id);
-  if (action === "revoke") revokeLink(id);
-});
+  if (!linkId) return;
 
-/* =====================================
-   PAGE VISIBILITY / RETURN
-===================================== */
+  if (action === "copy") {
+    await copyReferralLink(linkId);
+  }
 
-document.addEventListener("visibilitychange",() => {
-  if (!document.hidden && !redirecting && !logoutInProgress) {
-    enforceSession();
+  if (action === "open") {
+    openReferralLink(linkId);
+  }
+
+  if (action === "revoke") {
+    await revokeReferralLink(linkId);
   }
 });
 
-window.addEventListener("pageshow",() => {
-  if (!redirecting && !logoutInProgress) {
-    enforceSession();
+/* =========================================
+   18. تحديث البيانات
+========================================= */
+
+$("refreshBtn").addEventListener("click", async () => {
+  clearMessage();
+
+  const valid = await validateFullSession();
+
+  if (!valid) return;
+
+  await loadMyLinks();
+});
+
+/* =========================================
+   19. تسجيل الخروج
+========================================= */
+
+async function logout() {
+  if (logoutInProgress) return;
+
+  logoutInProgress = true;
+
+  $("logoutBtn").disabled = true;
+
+  try {
+    const sessionResult = await client.auth.getSession();
+    const accessToken = sessionResult?.data?.session?.access_token;
+    const aqxToken = getAqxSessionToken();
+
+    if (accessToken && aqxToken) {
+      try {
+        await fetchWithTimeout(
+          CONFIG.IDENTITY_API + "/v1/session/logout",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": CONFIG.SUPABASE_KEY,
+              "Authorization": "Bearer " + accessToken,
+              "x-aqx-session": aqxToken
+            },
+            body: JSON.stringify({})
+          }
+        );
+      } catch (error) {
+        console.warn("AQX logout request failed:", error);
+      }
+    }
+
+    await client.auth.signOut({
+      scope: "local"
+    });
+
+  } catch (error) {
+    console.error("Logout error:", error);
+
+  } finally {
+    goHome();
+  }
+}
+
+$("logoutBtn").addEventListener("click", logout);
+$("homeBtn").addEventListener("click", goHome);
+
+/* =========================================
+   20. مراقبة الجلسة دوريًا
+========================================= */
+
+async function monitorSession() {
+  if (document.hidden || logoutInProgress) return;
+
+  const valid = await validateFullSession();
+
+  if (!valid) return;
+}
+
+function startSessionMonitoring() {
+  if (sessionTimer) {
+    clearInterval(sessionTimer);
+  }
+
+  sessionTimer = setInterval(
+    monitorSession,
+    CONFIG.SESSION_CHECK_INTERVAL
+  );
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    monitorSession();
   }
 });
 
-window.addEventListener("pagehide",stopMonitor);
+window.addEventListener("pageshow", () => {
+  monitorSession();
+});
 
-/* =====================================
-   START
-===================================== */
+/* =========================================
+   21. متابعة تغير حالة Supabase
+========================================= */
 
-initialize();
+function watchAuthChanges() {
+  client.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") {
+      goHome();
+    }
+  });
+}
 
-})();
+/* =========================================
+   22. تشغيل الصفحة
+========================================= */
+
+async function startApplication() {
+  try {
+    initializeSupabase();
+
+    const valid = await validateFullSession();
+
+    if (!valid) {
+      hideLoading();
+      return;
+    }
+
+    await loadMyLinks();
+
+    hideLoading();
+    app.hidden = false;
+
+    watchAuthChanges();
+    startSessionMonitoring();
+
+  } catch (error) {
+    hideLoading();
+
+    showMessage(
+      error.message || "تعذر تشغيل مركز إدارة الإحالات.",
+      "error"
+    );
+
+    const retry = document.createElement("button");
+
+    retry.type = "button";
+    retry.className = "btn btn-gold";
+    retry.textContent = "إعادة المحاولة";
+    retry.style.marginTop = "12px";
+
+    retry.addEventListener("click", () => {
+      window.location.reload();
+    });
+
+    loadingScreen.hidden = false;
+    loadingScreen.replaceChildren();
+
+    const text = document.createElement("p");
+    text.textContent = error.message || "حدث خطأ أثناء التشغيل.";
+
+    loadingScreen.appendChild(text);
+    loadingScreen.appendChild(retry);
+  }
+}
+
+startApplication();
+
 </script>
-
 </body>
 </html>
