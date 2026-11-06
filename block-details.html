@@ -1,1 +1,457 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071426">
+<title>تفاصيل حالة الحظر | AQX Identity</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#071426;
+  --panel:#0d1e34;
+  --panel2:#102640;
+  --border:#203b59;
+  --text:#edf5ff;
+  --muted:#9db0c7;
+  --blue:#4da3ff;
+  --green:#27c58b;
+  --red:#ff6575;
+  --orange:#ffbd59;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Tahoma,Arial,sans-serif}
+body{
+  background:
+    radial-gradient(ellipse at 50% -15%,#173c65 0,transparent 55%),
+    var(--bg);
+  color:var(--text);
+  padding:24px 14px;
+}
+button,a{font:inherit}
+.container{width:100%;max-width:680px;margin:0 auto}
+.brand{text-align:center;padding:18px 10px 28px}
+.logo{
+  width:62px;height:62px;margin:0 auto 13px;
+  border-radius:19px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#267bd1,#12416f);
+  border:1px solid #579fe0;
+  box-shadow:0 10px 35px #0005;
+  font-size:25px;font-weight:900;letter-spacing:1px;
+}
+.brand h1{font-size:23px;margin:0 0 7px}
+.brand p{color:var(--muted);font-size:13px;margin:0}
+.card{
+  background:linear-gradient(155deg,#10243c,#0b1a2d);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 20px 60px #0004;
+}
+.card-title{font-size:19px;font-weight:bold;margin-bottom:8px}
+.subtitle{font-size:13px;color:var(--muted);line-height:1.8}
+.status{
+  display:flex;align-items:center;gap:12px;
+  padding:15px;margin:22px 0;
+  border:1px solid var(--border);
+  background:#07182a;border-radius:13px;
+}
+.status-icon{
+  width:43px;height:43px;border-radius:13px;
+  display:grid;place-items:center;font-size:21px;
+  background:#26364b;flex-shrink:0;
+}
+.status strong{display:block;font-size:15px;margin-bottom:5px}
+.status small{color:var(--muted);font-size:12px}
+.status.active .status-icon{background:#552b35;color:#ff8995}
+.status.expired .status-icon,
+.status.lifted .status-icon{background:#123e36;color:#54e2ae}
+.status.unknown .status-icon{background:#49391e;color:var(--orange)}
+.details{display:grid;gap:11px}
+.item{
+  background:#091a2c;border:1px solid #1c344e;
+  border-radius:12px;padding:15px;
+}
+.item-label{font-size:12px;color:var(--muted);margin-bottom:9px}
+.item-value{font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.reason{font-size:15px;line-height:2}
+.reference-row{display:flex;align-items:center;gap:10px}
+.reference-row .item-value{flex:1;direction:ltr;text-align:left;font-family:monospace}
+.copy{
+  border:1px solid #315578;background:#142e49;color:#cfe7ff;
+  border-radius:8px;padding:8px 11px;cursor:pointer;font-size:12px;
+}
+.copy:hover{background:#1b4268}
+.actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.btn{
+  flex:1;min-width:130px;padding:13px 16px;
+  border-radius:11px;border:1px solid transparent;
+  cursor:pointer;text-align:center;text-decoration:none;
+  font-size:13px;font-weight:bold;
+}
+.btn-primary{background:#2379cb;color:white}
+.btn-primary:hover{background:#318de4}
+.btn-secondary{background:#142a42;border-color:#294763;color:#dcecff}
+.btn-secondary:hover{background:#1b3857}
+.notice{
+  margin-top:18px;padding:14px;
+  border-radius:11px;background:#0b1b2d;
+  border:1px solid #1b344e;color:var(--muted);
+  font-size:12px;line-height:1.9;
+}
+.footer{text-align:center;color:#70869f;font-size:11px;padding:22px 8px}
+.loading,.error{text-align:center;padding:35px 10px}
+.spinner{
+  width:38px;height:38px;border:3px solid #284461;
+  border-top-color:#58aaff;border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 17px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-icon{font-size:37px;margin-bottom:13px}
+.error h2{font-size:18px;margin:0 0 10px}
+.error p{font-size:13px;color:var(--muted);line-height:1.9;margin:0}
+.hidden{display:none!important}
+@media(max-width:480px){
+  body{padding:12px 10px}
+  .card{padding:18px}
+  .brand{padding:14px 8px 22px}
+  .brand h1{font-size:20px}
+  .actions{flex-direction:column}
+  .btn{width:100%}
+}
+</style>
+</head>
+<body>
+<main class="container">
+
+  <header class="brand">
+    <div class="logo">AQX</div>
+    <h1>AQX Identity</h1>
+    <p>مركز الهوية والوصول الموحد</p>
+  </header>
+
+  <section class="card">
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <div>جارٍ التحقق من رابط تفاصيل الحظر...</div>
+      <p class="subtitle">يرجى الانتظار</p>
+    </div>
+
+    <div id="error" class="error hidden">
+      <div class="error-icon">⚠️</div>
+      <h2 id="errorTitle">تعذر عرض التفاصيل</h2>
+      <p id="errorMessage">حدث خطأ أثناء تحميل البيانات.</p>
+      <div class="actions">
+        <button class="btn btn-primary" id="retryBtn" type="button">إعادة المحاولة</button>
+        <a class="btn btn-secondary" href="https://id.alqurmanix.com/">العودة لتسجيل الدخول</a>
+      </div>
+    </div>
+
+    <div id="content" class="hidden">
+      <div class="card-title">تفاصيل حالة الوصول</div>
+      <p class="subtitle">المعلومات التالية توضح حالة الحظر المرتبطة بهذا الرابط.</p>
+
+      <div id="statusBox" class="status">
+        <div class="status-icon" id="statusIcon">●</div>
+        <div>
+          <strong id="statusTitle">حالة الوصول</strong>
+          <small id="statusDescription"></small>
+        </div>
+      </div>
+
+      <div class="details">
+
+        <div class="item">
+          <div class="item-label">الرقم المرجعي</div>
+          <div class="reference-row">
+            <div class="item-value" id="reference">—</div>
+            <button class="copy" id="copyBtn" type="button">نسخ</button>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="item-label">نوع الحظر</div>
+          <div class="item-value" id="targetType">—</div>
+        </div>
+
+        <div class="item">
+          <div class="item-label">سبب الحظر</div>
+          <div class="item-value reason" id="reason">—</div>
+        </div>
+
+        <div class="item">
+          <div class="item-label">مدة الحظر</div>
+          <div class="item-value" id="duration">—</div>
+        </div>
+
+        <div class="item">
+          <div class="item-label">تاريخ انتهاء رابط التفاصيل</div>
+          <div class="item-value" id="linkExpiry">—</div>
+        </div>
+
+        <div class="item hidden" id="updatedBox">
+          <div class="item-label">آخر تحديث للحالة</div>
+          <div class="item-value" id="updatedAt">—</div>
+        </div>
+
+      </div>
+
+      <div class="notice">
+        هذه الصفحة مخصصة لعرض تفاصيل حالة الوصول فقط.
+        لا تنشئ جلسة دخول، ولا تغير حالة الحظر، ولا تعرض بيانات الحساب أو البريد الإلكتروني.
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="refreshBtn" type="button">تحديث الحالة</button>
+        <a class="btn btn-secondary" href="https://id.alqurmanix.com/">العودة لتسجيل الدخول</a>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="footer">
+    AQX Identity · نظام الهوية الموحد
+  </footer>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+
+const API_URL =
+"https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-block-details";
+
+const $ = id => document.getElementById(id);
+
+const token = new URLSearchParams(location.search).get("token");
+
+let currentReference = "";
+
+function showLoading(){
+  $("loading").classList.remove("hidden");
+  $("error").classList.add("hidden");
+  $("content").classList.add("hidden");
+}
+
+function showError(title,message){
+  $("loading").classList.add("hidden");
+  $("content").classList.add("hidden");
+  $("error").classList.remove("hidden");
+  $("errorTitle").textContent = title;
+  $("errorMessage").textContent = message;
+}
+
+function showContent(){
+  $("loading").classList.add("hidden");
+  $("error").classList.add("hidden");
+  $("content").classList.remove("hidden");
+}
+
+function formatDate(value){
+  if(!value) return "غير محدد";
+
+  const date = new Date(value);
+  if(Number.isNaN(date.getTime())) return "غير محدد";
+
+  return new Intl.DateTimeFormat("ar-EG",{
+    year:"numeric",
+    month:"long",
+    day:"numeric",
+    hour:"2-digit",
+    minute:"2-digit"
+  }).format(date);
+}
+
+function targetLabel(value){
+  const labels = {
+    account:"حظر حساب",
+    email:"حظر بريد إلكتروني",
+    domain:"حظر نطاق",
+    signup_email:"منع التسجيل بالبريد الإلكتروني",
+    signup_domain:"منع التسجيل بالنطاق",
+    disposable_domain:"نطاق بريد مؤقت"
+  };
+
+  return labels[value] || "حظر وصول";
+}
+
+function render(data){
+
+  if(!data || data.success !== true){
+    showError(
+      "تعذر العثور على التفاصيل",
+      "الرابط غير صالح أو انتهت صلاحيته أو لم تعد البيانات متاحة."
+    );
+    return;
+  }
+
+  currentReference = data.reference || "";
+
+  const status = String(data.status || "unknown").toLowerCase();
+
+  const statusInfo = {
+    active:{
+      title:"الحظر نشط",
+      description:"الوصول موقوف وفق حالة الحظر المسجلة.",
+      icon:"⛔",
+      className:"active"
+    },
+    expired:{
+      title:"انتهت مدة الحظر",
+      description:"مدة الحظر المسجلة انتهت.",
+      icon:"✓",
+      className:"expired"
+    },
+    lifted:{
+      title:"تم رفع الحظر",
+      description:"لم يعد الحظر المسجل فعالًا.",
+      icon:"✓",
+      className:"lifted"
+    }
+  };
+
+  const info = statusInfo[status] || {
+    title:"حالة غير محددة",
+    description:"تعذر تحديد الحالة الحالية.",
+    icon:"!",
+    className:"unknown"
+  };
+
+  $("statusBox").className = "status " + info.className;
+  $("statusIcon").textContent = info.icon;
+  $("statusTitle").textContent = info.title;
+  $("statusDescription").textContent = info.description;
+
+  $("reference").textContent = currentReference || "غير متاح";
+  $("targetType").textContent = targetLabel(data.target_type);
+  $("reason").textContent = data.reason || "لم يتم تسجيل سبب تفصيلي.";
+
+  if(data.permanent === true){
+    $("duration").textContent = "حظر دائم";
+  }else if(data.expires_at){
+    $("duration").textContent = "ينتهي في: " + formatDate(data.expires_at);
+  }else{
+    $("duration").textContent = "غير محددة";
+  }
+
+  $("linkExpiry").textContent = formatDate(data.link_expires_at);
+
+  if(data.updated_at){
+    $("updatedBox").classList.remove("hidden");
+    $("updatedAt").textContent = formatDate(data.updated_at);
+  }else{
+    $("updatedBox").classList.add("hidden");
+  }
+
+  showContent();
+}
+
+async function loadDetails(){
+
+  if(!token || !/^[a-f0-9]{64}$/.test(token)){
+    showError(
+      "رابط التفاصيل غير صالح",
+      "لم يتم العثور على رمز تحقق صالح داخل الرابط. افتح رابط التفاصيل الأصلي الذي وصلك من نظام AQX."
+    );
+    return;
+  }
+
+  showLoading();
+
+  const controller = new AbortController();
+  const timeout = setTimeout(()=>controller.abort(),15000);
+
+  try{
+
+    const response = await fetch(
+      API_URL + "?token=" + encodeURIComponent(token),
+      {
+        method:"GET",
+        headers:{
+          "Accept":"application/json"
+        },
+        cache:"no-store",
+        signal:controller.signal
+      }
+    );
+
+    let data;
+
+    try{
+      data = await response.json();
+    }catch(_){
+      throw new Error("invalid_response");
+    }
+
+    if(!response.ok || !data || data.success !== true){
+
+      const code = data && data.error;
+
+      if(response.status === 404 || code === "invalid_or_expired_token"){
+        showError(
+          "الرابط غير صالح أو منتهي",
+          "تعذر العثور على تفاصيل مرتبطة بهذا الرابط. يرجى طلب رابط تفاصيل جديد من نظام AQX."
+        );
+        return;
+      }
+
+      if(response.status === 429){
+        showError(
+          "طلبات كثيرة",
+          "تم تجاوز عدد المحاولات المسموح به مؤقتًا. يرجى الانتظار قليلًا ثم إعادة المحاولة."
+        );
+        return;
+      }
+
+      throw new Error("server_error");
+    }
+
+    render(data);
+
+  }catch(error){
+
+    if(error.name === "AbortError"){
+      showError(
+        "انتهت مهلة الاتصال",
+        "استغرق الاتصال وقتًا أطول من المتوقع. تحقق من الإنترنت وحاول مرة أخرى."
+      );
+    }else{
+      showError(
+        "تعذر الاتصال بالخدمة",
+        "لم نتمكن من تحميل تفاصيل الحالة حاليًا. تحقق من اتصال الإنترنت ثم أعد المحاولة."
+      );
+    }
+
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+$("retryBtn").addEventListener("click",loadDetails);
+$("refreshBtn").addEventListener("click",loadDetails);
+
+$("copyBtn").addEventListener("click",async function(){
+
+  if(!currentReference) return;
+
+  try{
+    await navigator.clipboard.writeText(currentReference);
+    this.textContent = "تم النسخ ✓";
+    setTimeout(()=>this.textContent="نسخ",1800);
+  }catch(_){
+    this.textContent = "تعذر النسخ";
+    setTimeout(()=>this.textContent="نسخ",1800);
+  }
+
+});
+
+loadDetails();
+
+})();
+</script>
+</body>
+</html>
+
