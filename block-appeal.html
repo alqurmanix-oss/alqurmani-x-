@@ -1,1 +1,319 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071426">
+<title>تقديم التماس | AQX Identity</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#071426;
+  --panel:#0d1e34;
+  --border:#203b59;
+  --text:#edf5ff;
+  --muted:#9db0c7;
+  --blue:#4da3ff;
+  --green:#27c58b;
+  --red:#ff6575;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;padding:22px 13px;
+  font-family:Tahoma,Arial,sans-serif;color:var(--text);
+  background:radial-gradient(ellipse at 50% -15%,#173c65,transparent 55%),var(--bg);
+}
+.container{max-width:650px;margin:auto}
+.brand{text-align:center;padding:17px 8px 25px}
+.logo{
+  width:60px;height:60px;margin:0 auto 13px;
+  display:grid;place-items:center;border-radius:18px;
+  background:linear-gradient(145deg,#267bd1,#12416f);
+  border:1px solid #579fe0;font-size:25px;font-weight:900;
+}
+.brand h1{font-size:22px;margin:0 0 7px}
+.brand p{font-size:13px;color:var(--muted);margin:0}
+.card{
+  background:linear-gradient(155deg,#10243c,#0b1a2d);
+  border:1px solid var(--border);border-radius:19px;
+  padding:25px;box-shadow:0 20px 60px #0004;
+}
+.heading{font-size:19px;font-weight:bold;margin-bottom:9px}
+.description{font-size:13px;color:var(--muted);line-height:1.9}
+.info{
+  margin:19px 0;padding:14px;
+  background:#091a2c;border:1px solid #1c344e;
+  border-radius:11px;font-size:12px;color:#b8cce2;line-height:1.9;
+}
+.info strong{color:#eaf4ff}
+label{display:block;font-size:13px;margin:17px 0 9px}
+input,textarea{
+  display:block;width:100%;padding:14px;
+  color:var(--text);background:#08182a;
+  border:1px solid #29435e;border-radius:10px;
+  outline:none;font-family:inherit;font-size:14px;
+}
+input:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4da3ff18}
+textarea{min-height:155px;resize:vertical;line-height:1.9}
+.hint{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.7}
+.counter{text-align:left;font-size:11px;color:var(--muted);margin-top:6px}
+.check{
+  display:flex;gap:10px;align-items:flex-start;
+  margin:19px 0;font-size:12px;color:#c1d0e1;line-height:1.8;
+}
+.check input{width:17px;height:17px;margin:2px 0 0;flex-shrink:0;accent-color:#398ee3}
+button{
+  width:100%;padding:14px;border:0;border-radius:11px;
+  background:#2379cb;color:white;font-size:14px;
+  font-weight:bold;cursor:pointer;font-family:inherit;
+}
+button:hover{background:#318de4}
+button:disabled{opacity:.55;cursor:not-allowed}
+.secondary{
+  display:block;margin-top:11px;padding:13px;
+  text-align:center;text-decoration:none;
+  background:#142a42;border:1px solid #294763;
+  color:#dcecff;border-radius:10px;font-size:13px;
+}
+.message{
+  margin-top:16px;padding:14px;border-radius:10px;
+  font-size:13px;line-height:1.9;display:none;
+  overflow-wrap:anywhere;
+}
+.message.success{display:block;background:#10372e;border:1px solid #246b55;color:#a9f0d4}
+.message.error{display:block;background:#3c202b;border:1px solid #783d4a;color:#ffc1ca}
+.message.info{display:block;background:#102b48;border:1px solid #315578;color:#c7e3ff}
+.reference{
+  display:block;margin-top:9px;padding:12px;
+  direction:ltr;text-align:center;font-family:monospace;
+  font-size:15px;font-weight:bold;background:#071b2d;
+  border:1px solid #2a506f;border-radius:8px;color:#fff;
+}
+.footer{text-align:center;color:#70869f;font-size:11px;padding:22px 8px}
+.hidden{display:none!important}
+@media(max-width:480px){.card{padding:18px}.brand h1{font-size:20px}}
+</style>
+</head>
+<body>
+<main class="container">
+
+<header class="brand">
+  <div class="logo">AQX</div>
+  <h1>AQX Identity</h1>
+  <p>مركز الهوية والوصول الموحد</p>
+</header>
+
+<section class="card">
+
+  <div class="heading">تقديم التماس لمراجعة الحظر</div>
+  <div class="description">
+    يمكنك تقديم طلب رسمي لمراجعة قرار الحظر.
+    ستتم إحالة طلبك إلى فريق مراجعة منظومة AQX.
+  </div>
+
+  <div class="info">
+    <strong>قبل تقديم الالتماس:</strong><br>
+    • اشرح المشكلة بوضوح.<br>
+    • وضّح سبب اعتقادك أن الحظر صدر بالخطأ، إن كان ذلك ينطبق عليك.<br>
+    • لا ترسل كلمات المرور أو رموز التحقق أو أي بيانات سرية.
+  </div>
+
+  <form id="appealForm">
+
+    <label for="message">شرح الالتماس <span style="color:#ff8793">*</span></label>
+    <textarea id="message" maxlength="3000" minlength="20"
+      placeholder="اكتب تفاصيل اعتراضك وسبب طلب مراجعة الحظر..."
+      required></textarea>
+    <div class="hint">الحد الأدنى 20 حرفًا، والحد الأقصى 3000 حرف.</div>
+    <div class="counter"><span id="count">0</span> / 3000</div>
+
+    <label for="contact">وسيلة تواصل اختيارية</label>
+    <input id="contact" type="text" maxlength="200"
+      autocomplete="off"
+      placeholder="بريد إلكتروني أو وسيلة تواصل مناسبة">
+    <div class="hint">هذا الحقل اختياري، ولا يُطلب منك تسجيل الدخول.</div>
+
+    <div class="check">
+      <input id="confirm" type="checkbox" required>
+      <span>أقر بأن المعلومات التي قدمتها صحيحة، وأطلب مراجعة حالة الحظر وفقًا لما ورد في هذا الالتماس.</span>
+    </div>
+
+    <button id="submitBtn" type="submit">إرسال الالتماس</button>
+  </form>
+
+  <div id="result" class="message" role="status" aria-live="polite"></div>
+
+  <a class="secondary" href="https://id.alqurmanix.com/">
+    العودة إلى AQX Identity
+  </a>
+
+</section>
+
+<footer class="footer">
+  AQX Identity · منظومة الهوية الموحدة
+</footer>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+
+const API =
+"https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-block-appeals";
+
+const $ = id => document.getElementById(id);
+
+const params = new URLSearchParams(location.search);
+const token = params.get("token") || "";
+
+const form = $("appealForm");
+const button = $("submitBtn");
+const result = $("result");
+const message = $("message");
+
+let submitted = false;
+
+function show(type,text,reference){
+  result.className = "message " + type;
+  result.replaceChildren();
+
+  const paragraph = document.createElement("div");
+  paragraph.textContent = text;
+  result.appendChild(paragraph);
+
+  if(reference){
+    const ref = document.createElement("div");
+    ref.className = "reference";
+    ref.textContent = reference;
+    result.appendChild(ref);
+
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.style.marginTop = "10px";
+    copy.textContent = "نسخ الرقم المرجعي";
+    copy.addEventListener("click",async()=>{
+      try{
+        await navigator.clipboard.writeText(reference);
+        copy.textContent = "تم النسخ ✓";
+      }catch(_){
+        copy.textContent = "تعذر النسخ";
+      }
+    });
+    result.appendChild(copy);
+  }
+
+  result.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+$("count").textContent = "0";
+
+message.addEventListener("input",()=>{
+  $("count").textContent = message.value.length;
+});
+
+if(!/^[a-f0-9]{64}$/.test(token)){
+  form.classList.add("hidden");
+  show(
+    "error",
+    "رابط الالتماس غير صالح. افتح صفحة التفاصيل من رابط الحظر الأصلي ثم اختر تقديم التماس."
+  );
+}
+
+form.addEventListener("submit",async function(event){
+  event.preventDefault();
+
+  if(submitted) return;
+
+  const text = message.value.trim();
+  const contact = $("contact").value.trim();
+
+  if(!/^[a-f0-9]{64}$/.test(token)){
+    show("error","رابط الالتماس غير صالح أو غير مكتمل.");
+    return;
+  }
+
+  if(text.length < 20 || text.length > 3000){
+    show("error","يرجى كتابة شرح لا يقل عن 20 حرفًا ولا يتجاوز 3000 حرف.");
+    return;
+  }
+
+  if(!$("confirm").checked){
+    show("error","يرجى تأكيد صحة المعلومات قبل إرسال الالتماس.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "جارٍ إرسال الالتماس...";
+  show("info","يتم إرسال طلبك والتحقق من بيانات الحظر...");
+
+  try{
+    const response = await fetch(API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},
+      cache:"no-store",
+      body:JSON.stringify({
+        token:token,
+        message:text,
+        contact:contact || null
+      })
+    });
+
+    const data = await response.json().catch(()=>null);
+
+    if(data && data.success === true){
+      submitted = true;
+      form.classList.add("hidden");
+      show(
+        "success",
+        "تم استلام التماسك بنجاح. احتفظ بالرقم المرجعي لمتابعة طلبك.",
+        data.reference
+      );
+      return;
+    }
+
+    if(data && data.error === "appeal_already_submitted"){
+      submitted = true;
+      form.classList.add("hidden");
+      show(
+        "info",
+        "سبق تقديم التماس مرتبط بهذا الحظر. هذا هو رقمه المرجعي:",
+        data.reference
+      );
+      return;
+    }
+
+    const errors = {
+      invalid_or_expired_link:"رابط الالتماس غير صالح أو انتهت صلاحيته. ارجع إلى صفحة تفاصيل الحظر.",
+      appeal_not_available:"لا يمكن تقديم التماس لهذا الحظر لأن حالته لم تعد تسمح بذلك.",
+      invalid_message:"شرح الالتماس غير مستوفٍ للشروط المطلوبة.",
+      invalid_contact:"وسيلة التواصل المدخلة غير صالحة.",
+      rate_limited:"تم تجاوز عدد محاولات الإرسال المسموح بها. حاول لاحقًا.",
+      service_unavailable:"الخدمة غير متاحة مؤقتًا. حاول مرة أخرى لاحقًا."
+    };
+
+    show(
+      "error",
+      errors[data && data.error] ||
+      "تعذر إرسال الالتماس. يرجى المحاولة مرة أخرى."
+    );
+
+  }catch(_){
+    show(
+      "error",
+      "تعذر الاتصال بخدمة الالتماسات. تحقق من الإنترنت ثم حاول مجددًا."
+    );
+  }finally{
+    if(!submitted){
+      button.disabled = false;
+      button.textContent = "إرسال الالتماس";
+    }
+  }
+});
+
+})();
+</script>
+</body>
+</html>
+
