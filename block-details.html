@@ -9,70 +9,50 @@
 <style>
 :root{
   color-scheme:dark;
-  --bg:#071426;
-  --panel:#0d1e34;
-  --panel2:#102640;
-  --border:#203b59;
-  --text:#edf5ff;
-  --muted:#9db0c7;
-  --blue:#4da3ff;
-  --green:#27c58b;
-  --red:#ff6575;
+  --bg:#071426;--panel:#0d1e34;--panel2:#102640;
+  --border:#203b59;--text:#edf5ff;--muted:#9db0c7;
+  --blue:#4da3ff;--green:#27c58b;--red:#ff6575;
   --orange:#ffbd59;
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:Tahoma,Arial,sans-serif}
 body{
-  background:
-    radial-gradient(ellipse at 50% -15%,#173c65 0,transparent 55%),
-    var(--bg);
-  color:var(--text);
-  padding:24px 14px;
+  background:radial-gradient(ellipse at 50% -15%,#173c65 0,transparent 55%),var(--bg);
+  color:var(--text);padding:24px 14px;
 }
-button,a{font:inherit}
+button,a,input,textarea{font:inherit}
 .container{width:100%;max-width:680px;margin:0 auto}
 .brand{text-align:center;padding:18px 10px 28px}
 .logo{
-  width:62px;height:62px;margin:0 auto 13px;
-  border-radius:19px;display:grid;place-items:center;
-  background:linear-gradient(145deg,#267bd1,#12416f);
-  border:1px solid #579fe0;
-  box-shadow:0 10px 35px #0005;
+  width:62px;height:62px;margin:0 auto 13px;border-radius:19px;
+  display:grid;place-items:center;background:linear-gradient(145deg,#267bd1,#12416f);
+  border:1px solid #579fe0;box-shadow:0 10px 35px #0005;
   font-size:25px;font-weight:900;letter-spacing:1px;
 }
 .brand h1{font-size:23px;margin:0 0 7px}
 .brand p{color:var(--muted);font-size:13px;margin:0}
 .card{
   background:linear-gradient(155deg,#10243c,#0b1a2d);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:25px;
+  border:1px solid var(--border);border-radius:20px;padding:25px;
   box-shadow:0 20px 60px #0004;
 }
 .card-title{font-size:19px;font-weight:bold;margin-bottom:8px}
 .subtitle{font-size:13px;color:var(--muted);line-height:1.8}
 .status{
-  display:flex;align-items:center;gap:12px;
-  padding:15px;margin:22px 0;
-  border:1px solid var(--border);
-  background:#07182a;border-radius:13px;
+  display:flex;align-items:center;gap:12px;padding:15px;margin:22px 0;
+  border:1px solid var(--border);background:#07182a;border-radius:13px;
 }
 .status-icon{
-  width:43px;height:43px;border-radius:13px;
-  display:grid;place-items:center;font-size:21px;
-  background:#26364b;flex-shrink:0;
+  width:43px;height:43px;border-radius:13px;display:grid;
+  place-items:center;font-size:21px;background:#26364b;flex-shrink:0;
 }
 .status strong{display:block;font-size:15px;margin-bottom:5px}
 .status small{color:var(--muted);font-size:12px}
 .status.active .status-icon{background:#552b35;color:#ff8995}
-.status.expired .status-icon,
-.status.lifted .status-icon{background:#123e36;color:#54e2ae}
+.status.expired .status-icon,.status.lifted .status-icon{background:#123e36;color:#54e2ae}
 .status.unknown .status-icon{background:#49391e;color:var(--orange)}
 .details{display:grid;gap:11px}
-.item{
-  background:#091a2c;border:1px solid #1c344e;
-  border-radius:12px;padding:15px;
-}
+.item{background:#091a2c;border:1px solid #1c344e;border-radius:12px;padding:15px}
 .item-label{font-size:12px;color:var(--muted);margin-bottom:9px}
 .item-value{font-size:14px;line-height:1.8;overflow-wrap:anywhere}
 .reason{font-size:15px;line-height:2}
@@ -85,150 +65,209 @@ button,a{font:inherit}
 .copy:hover{background:#1b4268}
 .actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
 .btn{
-  flex:1;min-width:130px;padding:13px 16px;
-  border-radius:11px;border:1px solid transparent;
-  cursor:pointer;text-align:center;text-decoration:none;
-  font-size:13px;font-weight:bold;
+  flex:1;min-width:130px;padding:13px 16px;border-radius:11px;
+  border:1px solid transparent;cursor:pointer;text-align:center;
+  text-decoration:none;font-size:13px;font-weight:bold;
 }
 .btn-primary{background:#2379cb;color:white}
 .btn-primary:hover{background:#318de4}
 .btn-secondary{background:#142a42;border-color:#294763;color:#dcecff}
 .btn-secondary:hover{background:#1b3857}
+.btn:disabled{opacity:.55;cursor:not-allowed}
 .notice{
-  margin-top:18px;padding:14px;
-  border-radius:11px;background:#0b1b2d;
-  border:1px solid #1b344e;color:var(--muted);
-  font-size:12px;line-height:1.9;
+  margin-top:18px;padding:14px;border-radius:11px;background:#0b1b2d;
+  border:1px solid #1b344e;color:var(--muted);font-size:12px;line-height:1.9;
 }
 .footer{text-align:center;color:#70869f;font-size:11px;padding:22px 8px}
 .loading,.error{text-align:center;padding:35px 10px}
 .spinner{
-  width:38px;height:38px;border:3px solid #284461;
-  border-top-color:#58aaff;border-radius:50%;
-  animation:spin .8s linear infinite;margin:0 auto 17px;
+  width:38px;height:38px;border:3px solid #284461;border-top-color:#58aaff;
+  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 17px;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 .error-icon{font-size:37px;margin-bottom:13px}
 .error h2{font-size:18px;margin:0 0 10px}
 .error p{font-size:13px;color:var(--muted);line-height:1.9;margin:0}
 .hidden{display:none!important}
+.appeal-section{
+  margin-top:22px;padding:18px;background:#091a2c;
+  border:1px solid #315578;border-radius:14px;
+}
+.appeal-section h3{font-size:17px;margin:0 0 8px}
+.appeal-section p{font-size:12px;color:var(--muted);line-height:1.9;margin:0 0 15px}
+.field{margin-top:13px}
+.field label{display:block;font-size:13px;margin-bottom:8px;color:#dcecff}
+.field textarea{
+  width:100%;min-height:130px;resize:vertical;padding:13px;
+  background:#071426;border:1px solid #294763;border-radius:10px;
+  color:var(--text);outline:none;line-height:1.8;
+}
+.field textarea:focus{border-color:var(--blue)}
+.field small{display:block;color:var(--muted);font-size:11px;margin-top:6px}
+.appeal-result{
+  margin-top:14px;padding:14px;border-radius:10px;
+  background:#0b2634;border:1px solid #24634e;
+  color:#a7f1d1;font-size:13px;line-height:1.9;
+}
+.appeal-result.error-result{
+  background:#321c27;border-color:#713b49;color:#ffc1c8;
+}
+.appeal-ref{
+  display:flex;gap:8px;align-items:center;margin-top:10px;
+  direction:ltr;
+}
+.appeal-ref code{
+  flex:1;overflow-wrap:anywhere;background:#071426;
+  padding:10px;border-radius:8px;color:#fff;
+}
+.final-ban{
+  margin-top:22px;padding:17px;border-radius:13px;
+  background:#301b28;border:1px solid #713b49;
+  color:#ffc1c8;font-size:13px;line-height:2;
+}
 @media(max-width:480px){
-  body{padding:12px 10px}
-  .card{padding:18px}
-  .brand{padding:14px 8px 22px}
-  .brand h1{font-size:20px}
-  .actions{flex-direction:column}
-  .btn{width:100%}
+  body{padding:12px 10px}.card{padding:18px}
+  .brand{padding:14px 8px 22px}.brand h1{font-size:20px}
+  .actions{flex-direction:column}.btn{width:100%}
+  .appeal-ref{flex-wrap:wrap}
 }
 </style>
 </head>
 <body>
 <main class="container">
 
-  <header class="brand">
-    <div class="logo">AQX</div>
-    <h1>AQX Identity</h1>
-    <p>مركز الهوية والوصول الموحد</p>
-  </header>
+<header class="brand">
+  <div class="logo">AQX</div>
+  <h1>AQX Identity</h1>
+  <p>مركز الهوية والوصول الموحد</p>
+</header>
 
-  <section class="card">
+<section class="card">
 
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      <div>جارٍ التحقق من رابط تفاصيل الحظر...</div>
-      <p class="subtitle">يرجى الانتظار</p>
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <div>جارٍ التحقق من رابط تفاصيل الحظر...</div>
+    <p class="subtitle">يرجى الانتظار</p>
+  </div>
+
+  <div id="error" class="error hidden">
+    <div class="error-icon">⚠️</div>
+    <h2 id="errorTitle">تعذر عرض التفاصيل</h2>
+    <p id="errorMessage">حدث خطأ أثناء تحميل البيانات.</p>
+    <div class="actions">
+      <button class="btn btn-primary" id="retryBtn" type="button">إعادة المحاولة</button>
+      <a class="btn btn-secondary" href="https://id.alqurmanix.com/">العودة لتسجيل الدخول</a>
     </div>
+  </div>
 
-    <div id="error" class="error hidden">
-      <div class="error-icon">⚠️</div>
-      <h2 id="errorTitle">تعذر عرض التفاصيل</h2>
-      <p id="errorMessage">حدث خطأ أثناء تحميل البيانات.</p>
-      <div class="actions">
-        <button class="btn btn-primary" id="retryBtn" type="button">إعادة المحاولة</button>
-        <a class="btn btn-secondary" href="https://id.alqurmanix.com/">العودة لتسجيل الدخول</a>
-      </div>
-    </div>
+  <div id="content" class="hidden">
+    <div class="card-title">تفاصيل حالة الوصول</div>
+    <p class="subtitle">المعلومات التالية توضح حالة الحظر المرتبطة بهذا الرابط.</p>
 
-    <div id="content" class="hidden">
-      <div class="card-title">تفاصيل حالة الوصول</div>
-      <p class="subtitle">المعلومات التالية توضح حالة الحظر المرتبطة بهذا الرابط.</p>
-
-      <div id="statusBox" class="status">
-        <div class="status-icon" id="statusIcon">●</div>
-        <div>
-          <strong id="statusTitle">حالة الوصول</strong>
-          <small id="statusDescription"></small>
-        </div>
-      </div>
-
-      <div class="details">
-
-        <div class="item">
-          <div class="item-label">الرقم المرجعي</div>
-          <div class="reference-row">
-            <div class="item-value" id="reference">—</div>
-            <button class="copy" id="copyBtn" type="button">نسخ</button>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="item-label">نوع الحظر</div>
-          <div class="item-value" id="targetType">—</div>
-        </div>
-
-        <div class="item">
-          <div class="item-label">سبب الحظر</div>
-          <div class="item-value reason" id="reason">—</div>
-        </div>
-
-        <div class="item">
-          <div class="item-label">مدة الحظر</div>
-          <div class="item-value" id="duration">—</div>
-        </div>
-
-        <div class="item">
-          <div class="item-label">تاريخ انتهاء رابط التفاصيل</div>
-          <div class="item-value" id="linkExpiry">—</div>
-        </div>
-
-        <div class="item hidden" id="updatedBox">
-          <div class="item-label">آخر تحديث للحالة</div>
-          <div class="item-value" id="updatedAt">—</div>
-        </div>
-
-      </div>
-
-      <div class="notice">
-        هذه الصفحة مخصصة لعرض تفاصيل حالة الوصول فقط.
-        لا تنشئ جلسة دخول، ولا تغير حالة الحظر، ولا تعرض بيانات الحساب أو البريد الإلكتروني.
-      </div>
-
-      <div class="actions">
-        <button class="btn btn-primary" id="refreshBtn" type="button">تحديث الحالة</button>
-        <a class="btn btn-secondary" href="https://id.alqurmanix.com/">العودة لتسجيل الدخول</a>
+    <div id="statusBox" class="status">
+      <div class="status-icon" id="statusIcon">●</div>
+      <div>
+        <strong id="statusTitle">حالة الوصول</strong>
+        <small id="statusDescription"></small>
       </div>
     </div>
 
-  </section>
+    <div class="details">
+      <div class="item">
+        <div class="item-label">الرقم المرجعي</div>
+        <div class="reference-row">
+          <div class="item-value" id="reference">—</div>
+          <button class="copy" id="copyBtn" type="button">نسخ</button>
+        </div>
+      </div>
 
-  <footer class="footer">
-    AQX Identity · نظام الهوية الموحد
-  </footer>
+      <div class="item">
+        <div class="item-label">نوع الحظر</div>
+        <div class="item-value" id="targetType">—</div>
+      </div>
 
+      <div class="item">
+        <div class="item-label">سبب الحظر</div>
+        <div class="item-value reason" id="reason">—</div>
+      </div>
+
+      <div class="item">
+        <div class="item-label">مدة الحظر</div>
+        <div class="item-value" id="duration">—</div>
+      </div>
+
+      <div class="item">
+        <div class="item-label">تاريخ انتهاء رابط التفاصيل</div>
+        <div class="item-value" id="linkExpiry">—</div>
+      </div>
+
+      <div class="item hidden" id="updatedBox">
+        <div class="item-label">آخر تحديث للحالة</div>
+        <div class="item-value" id="updatedAt">—</div>
+      </div>
+    </div>
+
+    <div id="appealSection" class="appeal-section hidden">
+      <h3>تقديم التماس على الحظر</h3>
+      <p>
+        يمكنك إرسال التماس لمراجعة قرار الحظر.
+        اشرح سبب اعتراضك بوضوح، ويجب ألا تقل الرسالة عن 20 حرفًا.
+      </p>
+
+      <form id="appealForm">
+        <div class="field">
+          <label for="appealMessage">رسالة الالتماس</label>
+          <textarea id="appealMessage" minlength="20" maxlength="3000"
+            required placeholder="اكتب أسباب اعتراضك واطلب مراجعة القرار..."></textarea>
+          <small>من 20 إلى 3000 حرف.</small>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="submitAppealBtn" type="submit">
+            إرسال الالتماس
+          </button>
+        </div>
+      </form>
+
+      <div id="appealResult" class="appeal-result hidden" aria-live="polite"></div>
+    </div>
+
+    <div id="finalBanNotice" class="final-ban hidden">
+      <strong>هذا الحظر نهائي وغير قابل للالتماس.</strong>
+      <div>لا يمكن إرسال طلب التماس لهذا القرار وفق سياسة الحظر المسجلة.</div>
+    </div>
+
+    <div class="notice">
+      هذه الصفحة مخصصة لعرض تفاصيل حالة الوصول فقط.
+      لا تنشئ جلسة دخول، ولا تغير حالة الحظر، ولا تعرض بيانات الحساب أو البريد الإلكتروني.
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="refreshBtn" type="button">تحديث الحالة</button>
+      <a class="btn btn-secondary" href="https://id.alqurmanix.com/">العودة لتسجيل الدخول</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">AQX Identity · نظام الهوية الموحد</footer>
 </main>
 
 <script>
 (function(){
 "use strict";
 
-const API_URL =
+const DETAILS_API =
 "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-block-details";
 
-const $ = id => document.getElementById(id);
+const APPEALS_API =
+"https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-block-appeals";
 
+const $ = id => document.getElementById(id);
 const token = new URLSearchParams(location.search).get("token");
 
 let currentReference = "";
+let appealAllowed = false;
+let appealSubmitted = false;
 
 function showLoading(){
   $("loading").classList.remove("hidden");
@@ -252,16 +291,11 @@ function showContent(){
 
 function formatDate(value){
   if(!value) return "غير محدد";
-
   const date = new Date(value);
   if(Number.isNaN(date.getTime())) return "غير محدد";
-
   return new Intl.DateTimeFormat("ar-EG",{
-    year:"numeric",
-    month:"long",
-    day:"numeric",
-    hour:"2-digit",
-    minute:"2-digit"
+    year:"numeric",month:"long",day:"numeric",
+    hour:"2-digit",minute:"2-digit"
   }).format(date);
 }
 
@@ -274,21 +308,18 @@ function targetLabel(value){
     signup_domain:"منع التسجيل بالنطاق",
     disposable_domain:"نطاق بريد مؤقت"
   };
-
   return labels[value] || "حظر وصول";
 }
 
 function render(data){
-
   if(!data || data.success !== true){
-    showError(
-      "تعذر العثور على التفاصيل",
-      "الرابط غير صالح أو انتهت صلاحيته أو لم تعد البيانات متاحة."
-    );
+    showError("تعذر العثور على التفاصيل",
+      "الرابط غير صالح أو انتهت صلاحيته أو لم تعد البيانات متاحة.");
     return;
   }
 
   currentReference = data.reference || "";
+  appealAllowed = data.appeal_allowed === true;
 
   const status = String(data.status || "unknown").toLowerCase();
 
@@ -296,28 +327,24 @@ function render(data){
     active:{
       title:"الحظر نشط",
       description:"الوصول موقوف وفق حالة الحظر المسجلة.",
-      icon:"⛔",
-      className:"active"
+      icon:"⛔",className:"active"
     },
     expired:{
       title:"انتهت مدة الحظر",
       description:"مدة الحظر المسجلة انتهت.",
-      icon:"✓",
-      className:"expired"
+      icon:"✓",className:"expired"
     },
     lifted:{
       title:"تم رفع الحظر",
       description:"لم يعد الحظر المسجل فعالًا.",
-      icon:"✓",
-      className:"lifted"
+      icon:"✓",className:"lifted"
     }
   };
 
   const info = statusInfo[status] || {
     title:"حالة غير محددة",
     description:"تعذر تحديد الحالة الحالية.",
-    icon:"!",
-    className:"unknown"
+    icon:"!",className:"unknown"
   };
 
   $("statusBox").className = "status " + info.className;
@@ -346,16 +373,26 @@ function render(data){
     $("updatedBox").classList.add("hidden");
   }
 
+  // لا يظهر نموذج الالتماس إلا بموافقة صريحة من قاعدة البيانات.
+  const canAppeal = appealAllowed && status === "active";
+
+  $("appealSection").classList.toggle("hidden",!canAppeal);
+  $("finalBanNotice").classList.toggle("hidden",
+    status === "active" && !canAppeal);
+
+  if(!canAppeal){
+    $("appealForm").classList.add("hidden");
+  }else if(!appealSubmitted){
+    $("appealForm").classList.remove("hidden");
+  }
+
   showContent();
 }
 
 async function loadDetails(){
-
   if(!token || !/^[a-f0-9]{64}$/.test(token)){
-    showError(
-      "رابط التفاصيل غير صالح",
-      "لم يتم العثور على رمز تحقق صالح داخل الرابط. افتح رابط التفاصيل الأصلي الذي وصلك من نظام AQX."
-    );
+    showError("رابط التفاصيل غير صالح",
+      "لم يتم العثور على رمز تحقق صالح داخل الرابط. افتح رابط التفاصيل الأصلي الذي وصلك من نظام AQX.");
     return;
   }
 
@@ -365,78 +402,166 @@ async function loadDetails(){
   const timeout = setTimeout(()=>controller.abort(),15000);
 
   try{
-
     const response = await fetch(
-      API_URL + "?token=" + encodeURIComponent(token),
+      DETAILS_API + "?token=" + encodeURIComponent(token),
       {
         method:"GET",
-        headers:{
-          "Accept":"application/json"
-        },
+        headers:{"Accept":"application/json"},
         cache:"no-store",
         signal:controller.signal
       }
     );
 
-    let data;
-
-    try{
-      data = await response.json();
-    }catch(_){
-      throw new Error("invalid_response");
-    }
+    const data = await response.json().catch(()=>null);
 
     if(!response.ok || !data || data.success !== true){
-
-      const code = data && data.error;
-
-      if(response.status === 404 || code === "invalid_or_expired_token"){
-        showError(
-          "الرابط غير صالح أو منتهي",
-          "تعذر العثور على تفاصيل مرتبطة بهذا الرابط. يرجى طلب رابط تفاصيل جديد من نظام AQX."
-        );
+      if(response.status === 404 || data?.error === "INVALID_OR_EXPIRED_LINK"){
+        showError("الرابط غير صالح أو منتهي",
+          "تعذر العثور على تفاصيل مرتبطة بهذا الرابط. يرجى طلب رابط تفاصيل جديد من نظام AQX.");
         return;
       }
-
       if(response.status === 429){
-        showError(
-          "طلبات كثيرة",
-          "تم تجاوز عدد المحاولات المسموح به مؤقتًا. يرجى الانتظار قليلًا ثم إعادة المحاولة."
-        );
+        showError("طلبات كثيرة",
+          "تم تجاوز عدد المحاولات المسموح به مؤقتًا. يرجى الانتظار قليلًا ثم إعادة المحاولة.");
         return;
       }
-
       throw new Error("server_error");
     }
 
     render(data);
-
   }catch(error){
-
     if(error.name === "AbortError"){
-      showError(
-        "انتهت مهلة الاتصال",
-        "استغرق الاتصال وقتًا أطول من المتوقع. تحقق من الإنترنت وحاول مرة أخرى."
-      );
+      showError("انتهت مهلة الاتصال",
+        "استغرق الاتصال وقتًا أطول من المتوقع. تحقق من الإنترنت وحاول مرة أخرى.");
     }else{
-      showError(
-        "تعذر الاتصال بالخدمة",
-        "لم نتمكن من تحميل تفاصيل الحالة حاليًا. تحقق من اتصال الإنترنت ثم أعد المحاولة."
-      );
+      showError("تعذر الاتصال بالخدمة",
+        "لم نتمكن من تحميل تفاصيل الحالة حاليًا. تحقق من اتصال الإنترنت ثم أعد المحاولة.");
     }
-
   }finally{
     clearTimeout(timeout);
   }
 }
 
+function showAppealResult(message,isError,reference){
+  const box = $("appealResult");
+  box.classList.remove("hidden","error-result");
+  if(isError) box.classList.add("error-result");
+  box.replaceChildren();
+
+  const text = document.createElement("div");
+  text.textContent = message;
+  box.appendChild(text);
+
+  if(reference){
+    const row = document.createElement("div");
+    row.className = "appeal-ref";
+
+    const code = document.createElement("code");
+    code.textContent = reference;
+
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "copy";
+    copy.textContent = "نسخ الرقم";
+
+    copy.addEventListener("click",async()=>{
+      try{
+        await navigator.clipboard.writeText(reference);
+        copy.textContent = "تم النسخ ✓";
+      }catch(_){
+        copy.textContent = "تعذر النسخ";
+      }
+    });
+
+    row.append(code,copy);
+    box.appendChild(row);
+  }
+}
+
+async function submitAppeal(event){
+  event.preventDefault();
+
+  if(!appealAllowed || appealSubmitted || !token) return;
+
+  const message = $("appealMessage").value.trim();
+
+  if(message.length < 20 || message.length > 3000){
+    showAppealResult("يجب أن تكون رسالة الالتماس بين 20 و3000 حرف.",true);
+    return;
+  }
+
+  const button = $("submitAppealBtn");
+  button.disabled = true;
+  button.textContent = "جارٍ إرسال الالتماس...";
+
+  try{
+    const response = await fetch(APPEALS_API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},
+      cache:"no-store",
+      body:JSON.stringify({token,message})
+    });
+
+    const result = await response.json().catch(()=>null);
+
+    if(response.ok && result?.success === true){
+      appealSubmitted = true;
+      $("appealForm").classList.add("hidden");
+      showAppealResult(
+        "تم استلام الالتماس بنجاح. احتفظ بالرقم المرجعي لمتابعة الطلب.",
+        false,
+        result.reference
+      );
+      return;
+    }
+
+    const errors = {
+      appeal_not_allowed:"هذا الحظر نهائي وغير قابل للالتماس.",
+      appeal_not_available:"لم يعد هذا الحظر متاحًا لتقديم الالتماس.",
+      appeal_already_submitted:"سبق إرسال التماس لهذا الحظر.",
+      invalid_or_expired_link:"رابط الالتماس غير صالح أو انتهت صلاحيته.",
+      invalid_message:"رسالة الالتماس غير صحيحة.",
+      invalid_contact:"بيانات التواصل غير صحيحة.",
+      rate_limited:"تجاوزت عدد المحاولات المسموح به. حاول لاحقًا.",
+      service_unavailable:"الخدمة غير متاحة مؤقتًا. حاول لاحقًا."
+    };
+
+    const code = result?.error || "";
+    showAppealResult(errors[code] || "تعذر إرسال الالتماس. حاول مرة أخرى لاحقًا.",true);
+
+    if(code === "appeal_not_allowed" || code === "appeal_not_available"){
+      appealAllowed = false;
+      $("appealSection").classList.add("hidden");
+      $("finalBanNotice").classList.remove("hidden");
+    }
+
+    if(code === "appeal_already_submitted"){
+      $("appealForm").classList.add("hidden");
+      if(result?.reference){
+        showAppealResult(
+          "تم إرسال التماس سابقًا لهذا الحظر. هذا هو رقمه المرجعي.",
+          false,
+          result.reference
+        );
+      }
+    }
+
+  }catch(_){
+    showAppealResult("تعذر الاتصال بخدمة الالتماسات. تحقق من الإنترنت وحاول مجددًا.",true);
+  }finally{
+    if(!appealSubmitted){
+      button.disabled = false;
+      button.textContent = "إرسال الالتماس";
+    }
+  }
+}
+
 $("retryBtn").addEventListener("click",loadDetails);
 $("refreshBtn").addEventListener("click",loadDetails);
+$("appealForm").addEventListener("submit",submitAppeal);
 
 $("copyBtn").addEventListener("click",async function(){
-
   if(!currentReference) return;
-
   try{
     await navigator.clipboard.writeText(currentReference);
     this.textContent = "تم النسخ ✓";
@@ -445,13 +570,10 @@ $("copyBtn").addEventListener("click",async function(){
     this.textContent = "تعذر النسخ";
     setTimeout(()=>this.textContent="نسخ",1800);
   }
-
 });
 
 loadDetails();
-
 })();
 </script>
 </body>
 </html>
-
