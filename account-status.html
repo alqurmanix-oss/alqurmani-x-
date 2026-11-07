@@ -1,1 +1,929 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#081426">
+<title>حالة الحساب | AQX Identity</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --bg:#071426;
+  --panel:#101f35;
+  --panel2:#152943;
+  --line:#263b56;
+  --text:#edf3fb;
+  --muted:#9aabc0;
+  --gold:#d5b16c;
+  --red:#e46b70;
+  --green:#52c99a;
+  --blue:#69a9ed;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 50% -20%,#1d3b5e 0%,transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:Tahoma,Arial,sans-serif;
+  padding:24px 14px;
+}
+button,input,textarea{font:inherit}
+.container{max-width:760px;margin:30px auto}
+.header{text-align:center;margin-bottom:24px}
+.logo{
+  width:66px;height:66px;border-radius:20px;
+  display:grid;place-items:center;margin:auto;
+  background:linear-gradient(145deg,#e5c887,#9e773d);
+  color:#101b2a;font-size:25px;font-weight:bold;
+  box-shadow:0 12px 35px #0005;
+}
+.brand{font-size:23px;font-weight:bold;margin-top:14px}
+.subtitle{color:var(--muted);font-size:13px;margin-top:7px}
+.card{
+  background:linear-gradient(145deg,#12243b,#0d1a2d);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 18px 55px #0004;
+}
+.status-icon{
+  width:76px;height:76px;border-radius:50%;
+  margin:0 auto 18px;
+  display:grid;place-items:center;
+  background:#e46b7018;
+  border:1px solid #e46b7050;
+  color:var(--red);font-size:34px;
+}
+h1{font-size:23px;text-align:center;margin:0 0 12px}
+.description{
+  text-align:center;color:var(--muted);
+  line-height:2;font-size:14px;
+}
+.status-label{
+  display:inline-block;padding:8px 15px;
+  border-radius:30px;background:#e46b7018;
+  color:#f39b9e;font-size:12px;margin:15px 0;
+}
+.info{
+  background:#09172a;border:1px solid var(--line);
+  border-radius:13px;padding:15px;margin-top:18px;
+}
+.info-title{font-size:12px;color:var(--muted);margin-bottom:8px}
+.info-value{font-size:14px;line-height:1.9;overflow-wrap:anywhere}
+.actions{margin-top:22px}
+label{display:block;font-size:13px;margin:15px 0 8px;color:#d8e3f1}
+textarea{
+  width:100%;min-height:130px;resize:vertical;
+  padding:14px;border-radius:12px;
+  border:1px solid var(--line);
+  background:#09172a;color:var(--text);
+  outline:none;line-height:1.9;
+}
+textarea:focus{border-color:var(--gold)}
+button,.link-button{
+  display:block;width:100%;padding:14px;
+  border:0;border-radius:12px;
+  background:linear-gradient(135deg,#e3c47e,#b58c4d);
+  color:#142033;font-weight:bold;
+  cursor:pointer;text-align:center;
+  text-decoration:none;margin-top:12px;
+}
+button:disabled{opacity:.55;cursor:not-allowed}
+.secondary{
+  background:#172b45;color:#e7eef8;
+  border:1px solid var(--line);
+}
+.danger{
+  background:#a83e4c;color:white;
+}
+.message{
+  display:none;padding:13px;border-radius:11px;
+  margin-top:14px;font-size:13px;line-height:1.9;
+}
+.message.success{display:block;background:#1c594432;color:#8ce2bd}
+.message.error{display:block;background:#8d303432;color:#ffabad}
+.message.info{display:block;background:#27547c42;color:#9ecaff}
+.footer{
+  text-align:center;color:#71849d;
+  font-size:11px;margin:20px 0;
+}
+.spinner{
+  width:34px;height:34px;border-radius:50%;
+  border:3px solid #ffffff20;
+  border-top-color:var(--gold);
+  animation:spin .8s linear infinite;
+  margin:25px auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+a{color:#9fc8fa}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <header class="header">
+    <div class="logo">AQX</div>
+    <div class="brand">القرماني إكس</div>
+    <div class="subtitle">
+      AQX Identity · Account Status Center
+    </div>
+  </header>
+
+  <main class="card">
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <p class="description">جارٍ التحقق من هوية الحساب وحالته...</p>
+    </div>
+
+    <section id="notice" class="hidden">
+
+      <div class="status-icon" id="statusIcon">!</div>
+
+      <h1 id="statusTitle">حالة الحساب</h1>
+
+      <div style="text-align:center">
+        <span class="status-label" id="statusBadge">حساب مقيّد</span>
+      </div>
+
+      <p class="description" id="statusDescription"></p>
+
+      <div class="info">
+        <div class="info-title">تفاصيل الحالة</div>
+        <div class="info-value" id="statusReason"></div>
+      </div>
+
+      <div class="info" id="expiryBox">
+        <div class="info-title">تاريخ انتهاء القيد</div>
+        <div class="info-value" id="expiryValue"></div>
+      </div>
+
+      <div class="info">
+        <div class="info-title">معرّف الحساب</div>
+        <div class="info-value" id="userId"></div>
+      </div>
+
+      <div id="selfAction" class="actions hidden">
+        <button id="reactivateButton">
+          طلب إعادة التنشيط عبر البريد
+        </button>
+      </div>
+
+      <div id="adminAction" class="actions hidden">
+        <label for="requestText">
+          اكتب طلب إعادة تنشيط حسابك وأسباب المراجعة
+        </label>
+        <textarea
+          id="requestText"
+          maxlength="4000"
+          minlength="10"
+          placeholder="اكتب شرحًا واضحًا لطلبك..."
+        ></textarea>
+        <div class="description" style="text-align:right">
+          الحد الأدنى 10 أحرف والحد الأقصى 4000 حرف.
+        </div>
+        <button id="submitRequest">
+          إرسال طلب إعادة التنشيط
+        </button>
+      </div>
+
+      <div id="detailsAction" class="actions hidden">
+        <a id="detailsLink" class="link-button secondary"
+           target="_blank" rel="noopener noreferrer">
+          عرض تفاصيل القيد
+        </a>
+      </div>
+
+      <div id="generalAction" class="info hidden">
+        <div class="info-title">الإجراء المتاح</div>
+        <div class="info-value">
+          يمكنك مراجعة تفاصيل القيد أو التواصل مع إدارة AQX
+          وفق الإجراءات المتاحة لحالة حسابك.
+        </div>
+      </div>
+
+      <div id="feedback" class="message"></div>
+
+      <button id="logoutButton" class="secondary">
+        تسجيل الخروج
+      </button>
+
+    </section>
+
+    <section id="loginRequired" class="hidden">
+      <div class="status-icon">↗</div>
+      <h1>يلزم تسجيل الدخول</h1>
+      <p class="description">
+        لم نعثر على جلسة هوية صالحة.
+        سجّل الدخول أولًا حتى نتمكن من التحقق من حالة حسابك.
+      </p>
+      <a class="link-button" href="/">العودة إلى صفحة الدخول</a>
+    </section>
+
+    <section id="fatalError" class="hidden">
+      <div class="status-icon">!</div>
+      <h1>تعذر التحقق من الحساب</h1>
+      <p class="description" id="fatalText">
+        تعذر الاتصال بمحرك الهوية.
+      </p>
+      <button class="secondary" onclick="location.reload()">
+        إعادة المحاولة
+      </button>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    AQX Identity · نظام الهوية الموحدة
+    <br>
+    جميع الحقوق محفوظة © AQX
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* =========================================
+   AQX ACCOUNT STATUS CENTER
+   Configuration
+========================================= */
+
+const CONFIG = Object.freeze({
+  SUPABASE_URL:
+    "https://fkiokwwztbyztleeuwks.supabase.co",
+
+  SUPABASE_KEY:
+    "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+  API:
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+  LOGIN_URL:
+    "https://id.alqurmanix.com/",
+
+  NORMAL_SESSION_KEY:
+    "aqx_session_token",
+
+  LOGIN_PROOF_KEY:
+    "aqx_login_proof",
+
+  RESTRICTED_TOKEN_KEY:
+    "aqx_restricted_session_token",
+
+  RESTRICTION_DATA_KEY:
+    "aqx_restriction_data"
+});
+
+const supabase = window.supabase.createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_KEY,
+  {
+    auth:{
+      persistSession:true,
+      autoRefreshToken:true,
+      detectSessionInUrl:true
+    }
+  }
+);
+
+let currentUser = null;
+let currentRestriction = null;
+let restrictedToken = null;
+
+/* =========================================
+   Helpers
+========================================= */
+
+const $ = id => document.getElementById(id);
+
+function show(id){
+  $(id).classList.remove("hidden");
+}
+
+function hide(id){
+  $(id).classList.add("hidden");
+}
+
+function feedback(message,type="info"){
+  const box=$("feedback");
+  box.textContent=message;
+  box.className="message "+type;
+}
+
+function setLoading(value){
+  value ? show("loading") : hide("loading");
+}
+
+function formatDate(value){
+  if(!value) return "غير محدد";
+
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime())) return "غير محدد";
+
+  return new Intl.DateTimeFormat("ar-EG",{
+    dateStyle:"long",
+    timeStyle:"short"
+  }).format(d);
+}
+
+function safeDetailsUrl(value){
+  try{
+    const u=new URL(value);
+    if(
+      u.protocol==="https:" &&
+      u.hostname==="id.alqurmanix.com"
+    ) return u.href;
+  }catch(_){}
+  return null;
+}
+
+function getStatusInfo(type){
+  const map={
+    self_disabled:{
+      title:"الحساب معطّل ذاتيًا",
+      badge:"تعطيل بطلب صاحب الحساب",
+      description:
+        "تم تعطيل حسابك بناءً على طلبك. يمكنك طلب إعادة تنشيطه عبر البريد الإلكتروني المسجل.",
+      icon:"↻"
+    },
+
+    admin_disabled:{
+      title:"الحساب معطّل إداريًا",
+      badge:"تعطيل بقرار الإدارة",
+      description:
+        "تم تعطيل حسابك بقرار من إدارة AQX. يمكنك تقديم طلب رسمي لإعادة التنشيط، وسيخضع للمراجعة الإدارية.",
+      icon:"!"
+    },
+
+    frozen:{
+      title:"الحساب مجمّد",
+      badge:"تجميد الحساب",
+      description:
+        "حسابك مجمّد حاليًا. لن تتمكن من استخدام الخدمات المحمية حتى انتهاء القيد أو صدور قرار من الإدارة.",
+      icon:"❄"
+    },
+
+    review:{
+      title:"الحساب قيد المراجعة",
+      badge:"مراجعة أمنية",
+      description:
+        "حسابك يخضع حاليًا للمراجعة. ستظل الخدمات المحمية غير متاحة خلال فترة المراجعة.",
+      icon:"⌕"
+    },
+
+    banned:{
+      title:"الحساب محظور",
+      badge:"حظر أمني",
+      description:
+        "تم حظر الحساب وفق سياسات الأمان في AQX. يخضع رفع الحظر للإجراءات والقرارات المعتمدة.",
+      icon:"⛔"
+    },
+
+    account:{
+      title:"تقييد الوصول إلى الحساب",
+      badge:"قيد على الحساب",
+      description:
+        "تم تقييد الوصول إلى هذا الحساب وفق سياسة الأمان في AQX.",
+      icon:"!"
+    },
+
+    email:{
+      title:"تقييد البريد الإلكتروني",
+      badge:"قيد على البريد",
+      description:
+        "تم تقييد استخدام هذا البريد وفق سياسات AQX.",
+      icon:"!"
+    },
+
+    domain:{
+      title:"تقييد نطاق البريد",
+      badge:"قيد على النطاق",
+      description:
+        "تم تقييد استخدام نطاق البريد وفق سياسات AQX.",
+      icon:"!"
+    },
+
+    disposable_domain:{
+      title:"البريد غير مسموح",
+      badge:"نطاق بريد مؤقت",
+      description:
+        "هذا النوع من عناوين البريد المؤقتة غير مسموح به في منظومة AQX.",
+      icon:"!"
+    },
+
+    access_restricted:{
+      title:"الوصول مقيّد",
+      badge:"قيد أمني",
+      description:
+        "هناك قيد على الوصول إلى حسابك. يرجى مراجعة تفاصيل الحالة.",
+      icon:"!"
+    }
+  };
+
+  return map[type] || {
+    title:"الحساب مقيّد",
+    badge:"حالة وصول مقيّدة",
+    description:
+      "تم تقييد الوصول إلى الحساب. يرجى مراجعة تفاصيل الحالة.",
+    icon:"!"
+  };
+}
+
+/* =========================================
+   Authenticated API
+========================================= */
+
+async function getFreshSession(){
+  const {data,error}=await supabase.auth.getSession();
+
+  if(error) throw error;
+
+  if(!data.session?.access_token){
+    throw new Error("AUTH_REQUIRED");
+  }
+
+  return data.session;
+}
+
+async function api(path,body={},extraHeaders={}){
+  const session=await getFreshSession();
+
+  const response=await fetch(CONFIG.API+path,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "apikey":CONFIG.SUPABASE_KEY,
+      "Authorization":"Bearer "+session.access_token,
+      ...extraHeaders
+    },
+    body:JSON.stringify(body)
+  });
+
+  const data=await response.json().catch(()=>({}));
+
+  if(!response.ok){
+    const error=new Error(
+      data.message || data.error || "REQUEST_FAILED"
+    );
+    error.status=response.status;
+    error.data=data;
+    throw error;
+  }
+
+  return data;
+}
+
+/* =========================================
+   Existing session validation
+========================================= */
+
+async function checkExistingRestrictedSession(){
+  const token=sessionStorage.getItem(
+    CONFIG.RESTRICTED_TOKEN_KEY
+  );
+
+  if(!token) return null;
+
+  try{
+    const result=await api(
+      "/v1/restricted-session/check",
+      {},
+      {"x-aqx-restricted-session":token}
+    );
+
+    if(result.valid===true){
+      restrictedToken=token;
+
+      let saved=null;
+      try{
+        saved=JSON.parse(
+          sessionStorage.getItem(CONFIG.RESTRICTION_DATA_KEY)||"null"
+        );
+      }catch(_){}
+
+      return {
+        valid:true,
+        restriction:{
+          ...(saved||{}),
+          ...(result.restriction||{})
+        }
+      };
+    }
+  }catch(_){}
+
+  sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
+  sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
+
+  return null;
+}
+
+async function checkExistingNormalSession(){
+  const token=sessionStorage.getItem(
+    CONFIG.NORMAL_SESSION_KEY
+  );
+
+  if(!token) return false;
+
+  try{
+    const result=await api(
+      "/v1/session/check",
+      {},
+      {"x-aqx-session":token}
+    );
+
+    return result.valid===true;
+  }catch(_){
+    sessionStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
+    sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY);
+    return false;
+  }
+}
+
+/* =========================================
+   Start AQX session
+========================================= */
+
+async function startIdentitySession(){
+
+  // If a valid restricted session already exists,
+  // keep it instead of replacing it.
+  const existingRestricted=
+    await checkExistingRestrictedSession();
+
+  if(existingRestricted){
+    return existingRestricted;
+  }
+
+  // Existing normal sessions should not be recreated.
+  const existingNormal=
+    await checkExistingNormalSession();
+
+  if(existingNormal){
+    return {active:true};
+  }
+
+  const result=await api("/v1/session/start",{});
+
+  if(result.restricted===true){
+
+    if(!result.restricted_session_token){
+      throw new Error("RESTRICTED_TOKEN_MISSING");
+    }
+
+    restrictedToken=result.restricted_session_token;
+
+    currentRestriction=result.restriction||{};
+
+    sessionStorage.setItem(
+      CONFIG.RESTRICTED_TOKEN_KEY,
+      restrictedToken
+    );
+
+    sessionStorage.setItem(
+      CONFIG.RESTRICTION_DATA_KEY,
+      JSON.stringify(currentRestriction)
+    );
+
+    // Never save a restricted token as a normal AQX session.
+    sessionStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
+    sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY);
+
+    return {
+      restricted:true,
+      restriction:currentRestriction
+    };
+  }
+
+  if(result.success===true && result.aqx_session_token){
+
+    sessionStorage.setItem(
+      CONFIG.NORMAL_SESSION_KEY,
+      result.aqx_session_token
+    );
+
+    if(result.login_proof){
+      sessionStorage.setItem(
+        CONFIG.LOGIN_PROOF_KEY,
+        JSON.stringify(result.login_proof)
+      );
+    }
+
+    sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
+    sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
+
+    return {active:true};
+  }
+
+  throw new Error("SESSION_START_FAILED");
+}
+
+/* =========================================
+   Render account status
+========================================= */
+
+function renderRestriction(restriction){
+
+  currentRestriction=restriction||{};
+
+  const type=String(restriction?.type||"access_restricted");
+  const info=getStatusInfo(type);
+
+  $("statusIcon").textContent=info.icon;
+  $("statusTitle").textContent=info.title;
+  $("statusBadge").textContent=info.badge;
+  $("statusDescription").textContent=info.description;
+
+  $("statusReason").textContent=
+    restriction.reason || "لم يتم تحديد سبب تفصيلي.";
+
+  $("userId").textContent=
+    currentUser?.id || "غير متاح";
+
+  if(restriction.expires_at){
+    $("expiryValue").textContent=
+      formatDate(restriction.expires_at);
+    show("expiryBox");
+  }else{
+    hide("expiryBox");
+  }
+
+  hide("selfAction");
+  hide("adminAction");
+  hide("detailsAction");
+  hide("generalAction");
+
+  if(type==="self_disabled" &&
+     restriction.reactivation_allowed===true){
+
+    show("selfAction");
+  }
+  else if(type==="admin_disabled" &&
+          restriction.appeal_allowed===true){
+
+    show("adminAction");
+  }
+  else{
+    const details=safeDetailsUrl(restriction.details_url);
+
+    if(details){
+      $("detailsLink").href=details;
+      show("detailsAction");
+    }else{
+      show("generalAction");
+    }
+  }
+
+  hide("loading");
+  hide("loginRequired");
+  hide("fatalError");
+  show("notice");
+}
+
+/* =========================================
+   Self reactivation request
+========================================= */
+
+$("reactivateButton").addEventListener("click",async()=>{
+
+  const button=$("reactivateButton");
+
+  button.disabled=true;
+  button.textContent="جارٍ إرسال الطلب...";
+
+  try{
+
+    const result=await api(
+      "/v1/account/reactivation/request",
+      {}
+    );
+
+    feedback(
+      result.message ||
+      "إذا كان الحساب مؤهلًا لإعادة التنشيط فستصلك رسالة على بريدك المسجل.",
+      "success"
+    );
+
+  }catch(error){
+
+    feedback(
+      error.message==="AUTH_REQUIRED"
+        ?"انتهت جلسة الدخول. سجّل الدخول مجددًا."
+        :"تعذر إرسال طلب إعادة التنشيط. حاول لاحقًا.",
+      "error"
+    );
+
+  }finally{
+    button.disabled=false;
+    button.textContent="طلب إعادة التنشيط عبر البريد";
+  }
+
+});
+
+/* =========================================
+   Administrative reactivation request
+========================================= */
+
+$("submitRequest").addEventListener("click",async()=>{
+
+  const button=$("submitRequest");
+  const requestText=$("requestText").value.trim();
+
+  if(requestText.length<10){
+    feedback(
+      "يرجى كتابة تفاصيل الطلب في 10 أحرف على الأقل.",
+      "error"
+    );
+    return;
+  }
+
+  if(requestText.length>4000){
+    feedback("الطلب تجاوز الحد المسموح.", "error");
+    return;
+  }
+
+  button.disabled=true;
+  button.textContent="جارٍ إرسال الطلب...";
+
+  try{
+
+    const result=await api(
+      "/v1/account/admin-reactivation/request",
+      {request_text:requestText}
+    );
+
+    if(result.success===true){
+
+      $("adminAction").innerHTML=`
+        <div class="info">
+          <div class="info-title">تم استلام طلبك</div>
+          <div class="info-value">
+            تم تسجيل طلب إعادة التنشيط بنجاح.
+            طلبك الآن قيد المراجعة الإدارية.
+            لن يتم تنشيط الحساب إلا بعد صدور قرار من الإدارة.
+          </div>
+        </div>
+      `;
+
+      feedback(
+        "تم إرسال طلبك بنجاح وهو الآن قيد المراجعة.",
+        "success"
+      );
+
+    }else{
+      throw new Error(
+        result.error||"SUBMISSION_FAILED"
+      );
+    }
+
+  }catch(error){
+
+    const messages={
+      NOT_ADMIN_DISABLED:
+        "الحساب ليس في حالة تعطيل إداري تسمح بهذا الطلب.",
+
+      INVALID_REQUEST_TEXT:
+        "تفاصيل الطلب غير مكتملة.",
+
+      ADMIN_REACTIVATION_REQUEST_FAILED:
+        "تعذر تسجيل الطلب. حاول لاحقًا."
+    };
+
+    feedback(
+      messages[error.message] ||
+      "تعذر إرسال الطلب. تحقق من الاتصال وحاول مجددًا.",
+      "error"
+    );
+
+  }finally{
+    button.disabled=false;
+    button.textContent="إرسال طلب إعادة التنشيط";
+  }
+
+});
+
+/* =========================================
+   Logout
+========================================= */
+
+$("logoutButton").addEventListener("click",async()=>{
+
+  const button=$("logoutButton");
+  button.disabled=true;
+  button.textContent="جارٍ تسجيل الخروج...";
+
+  try{
+
+    if(restrictedToken){
+      await api(
+        "/v1/restricted-session/logout",
+        {},
+        {"x-aqx-restricted-session":restrictedToken}
+      ).catch(()=>null);
+    }
+
+    sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
+    sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
+    sessionStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
+    sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY);
+
+    await supabase.auth.signOut({scope:"local"});
+
+    location.replace(CONFIG.LOGIN_URL);
+
+  }catch(_){
+
+    location.replace(CONFIG.LOGIN_URL);
+
+  }
+
+});
+
+/* =========================================
+   Main initialization
+========================================= */
+
+async function initialize(){
+
+  setLoading(true);
+
+  try{
+
+    const {data,error}=await supabase.auth.getSession();
+
+    if(error) throw error;
+
+    if(!data.session){
+      setLoading(false);
+      show("loginRequired");
+      return;
+    }
+
+    const verified=await supabase.auth.getUser();
+
+    if(verified.error || !verified.data.user){
+      await supabase.auth.signOut({scope:"local"});
+      setLoading(false);
+      show("loginRequired");
+      return;
+    }
+
+    currentUser=verified.data.user;
+
+    if(!currentUser.email_confirmed_at){
+      throw new Error("EMAIL_NOT_VERIFIED");
+    }
+
+    const result=await startIdentitySession();
+
+    if(result.active===true){
+
+      // Active accounts go back to the main AQX Identity page.
+      location.replace(CONFIG.LOGIN_URL);
+      return;
+    }
+
+    if(result.restricted===true){
+      renderRestriction(result.restriction);
+      return;
+    }
+
+    throw new Error("UNKNOWN_SESSION_STATE");
+
+  }catch(error){
+
+    console.error("AQX Account Status:",error);
+
+    setLoading(false);
+
+    if(error.message==="AUTH_REQUIRED" ||
+       error.message==="INVALID_SESSION"){
+
+      show("loginRequired");
+      return;
+    }
+
+    $("fatalText").textContent=
+      error.message==="EMAIL_NOT_VERIFIED"
+        ?"يجب تأكيد البريد الإلكتروني قبل بدء جلسة AQX."
+        :"تعذر التحقق من حالة الحساب. حاول مرة أخرى.";
+
+    show("fatalError");
+  }
+}
+
+initialize();
+
+</script>
+</body>
+</html>
+
