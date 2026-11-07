@@ -42,7 +42,7 @@ a:hover{text-decoration:underline}
 .notice.show{display:block}.notice.error{border-color:#7d4149;background:#351d2a;color:#ffd8d8}.notice.success{border-color:#28694f;background:#123426;color:#d4ffeb}.notice.info{border-color:#4a6079;background:#132c46;color:#dcecff}
 .closed{display:none;text-align:center;padding:18px 14px;border:1px solid #765e36;border-radius:15px;background:#302817;color:#ffe5b2;line-height:2;margin:12px 0}
 .closed.show{display:block}.closed strong{display:block;font-size:17px;margin-bottom:5px}
-.captcha{margin:14px 0;display:flex;justify-content:center;min-height:0;overflow-x:auto}
+.captcha{margin:14px 0;display:flex;justify-content:center;min-height:0;overflow-x:auto;flex-wrap:wrap}.captcha-state{width:100%;font-size:12px;line-height:1.8;text-align:center;margin-top:8px;color:var(--muted)}
 .providers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .provider{height:45px;border-radius:11px;border:1px solid #3a526d;background:#122943;color:#eef4fa;cursor:pointer;font-size:13px}
 .provider:hover{border-color:var(--gold)}.provider:disabled{opacity:.5;cursor:wait}
@@ -86,6 +86,7 @@ noscript .notice{display:block}
         <label for="email">البريد الإلكتروني</label>
         <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="name@example.com" required>
         <div class="email-state" id="emailState" aria-live="polite">اكتب بريدك الإلكتروني وسيتم فحص حالته تلقائيًا.</div>
+        <button type="button" class="provider" id="emailRetry" style="display:none;width:100%;margin-top:7px">إعادة فحص البريد</button>
       </div>
 
       <div class="field">
@@ -108,6 +109,7 @@ noscript .notice{display:block}
       </label>
 
       <div class="captcha" id="captchaBox"></div>
+      <div class="captcha-state" id="captchaState" role="status" aria-live="polite">جارٍ تهيئة خدمة الحماية…</div>
       <input class="hp" type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button class="primary" id="submitBtn" type="submit" disabled>جارٍ التحقق من سياسة التسجيل…</button>
       <div class="small">بعد قبول التسجيل، تحقق من بريدك الإلكتروني لإتمام تفعيل الحساب.</div>
@@ -162,8 +164,9 @@ noscript .notice{display:block}
   const deviceId = getDeviceId();
 
   let policy = null;
-  let captchaEnabled = false;
+  let captchaConfigured = false;
   let captchaToken = "";
+  let emailCheckedValue = "";
   let captchaWidgetId = null;
   let emailStatus = "unknown";
   let emailTimer = null;
@@ -187,6 +190,13 @@ noscript .notice{display:block}
   function setEmailState(message, type) {
     $("emailState").textContent = message || "";
     $("emailState").className = "email-state " + (type || "");
+  }
+
+  function setCaptchaState(message, type) {
+    const el = $("captchaState");
+    if (!el) return;
+    el.textContent = message || "";
+    el.style.color = type === "good" ? "var(--ok)" : type === "bad" ? "var(--bad)" : type === "warning" ? "var(--warn)" : "var(--muted)";
   }
 
   function setPolicyBadge(text, color) {
@@ -275,42 +285,53 @@ noscript .notice{display:block}
     const email = $("email").value.trim().toLowerCase();
     const seq = ++emailRequestSeq;
     emailStatus = "unknown";
+    emailCheckedValue = "";
 
+    $("emailRetry").style.display = "none";
     if (!email) {
       setEmailState("اكتب بريدك الإلكتروني وسيتم فحص حالته تلقائيًا.", "");
-      return;
+      return false;
     }
     if (!validEmail(email)) {
       emailStatus = "invalid";
-      setEmailState("صيغة البريد الإلكتروني غير صحيحة.", "bad");
-      return;
+      setEmailState("✕ صيغة البريد الإلكتروني غير صحيحة. أدخل بريدًا صحيحًا.", "bad");
+      return false;
     }
 
-    setEmailState("جارٍ التحقق من حالة البريد…", "warning");
+    setEmailState("⏳ جارٍ الاتصال بخدمة فحص البريد والتحقق من حالته…", "warning");
     try {
       const data = await api("/v1/registration/email-status", {
         method: "POST",
         body: { email }
       });
-      if (seq !== emailRequestSeq) return;
+      if (seq !== emailRequestSeq) return false;
       emailStatus = data.status || "unknown";
+      emailCheckedValue = email;
       if (emailStatus === "available") {
-        setEmailState("✓ هذا البريد متاح ويمكنك متابعة التسجيل.", "good");
+        setEmailState("✓ البريد متاح بالفعل. يمكنك متابعة التسجيل.", "good");
+        return true;
       } else if (emailStatus === "registered") {
-        setEmailState("✕ هذا البريد مسجل بالفعل. استخدم تسجيل الدخول أو بريدًا آخر.", "bad");
+        setEmailState("✕ البريد مسجل بالفعل. استخدم تسجيل الدخول أو أدخل بريدًا آخر.", "bad");
       } else if (emailStatus === "reserved") {
-        setEmailState("✕ هذا البريد محجوز مؤقتًا ولا يمكن استخدامه الآن.", "bad");
+        setEmailState("✕ البريد محجوز مؤقتًا ولا يمكن استخدامه الآن.", "bad");
       } else if (emailStatus === "blocked") {
-        setEmailState("✕ هذا البريد أو نطاقه غير مسموح به وفق قائمة الحظر.", "bad");
+        setEmailState("✕ البريد أو نطاقه غير مسموح به وفق سياسة AQX.", "bad");
       } else if (emailStatus === "invalid") {
-        setEmailState("صيغة البريد الإلكتروني غير صحيحة.", "bad");
+        setEmailState("✕ صيغة البريد الإلكتروني غير صحيحة.", "bad");
       } else {
-        setEmailState("لم يتم تأكيد حالة البريد بعد. أعد الفحص قبل الإرسال.", "warning");
+        emailStatus = "unknown";
+        emailCheckedValue = "";
+        setEmailState("⚠ لم تُرجع خدمة الفحص حالة مؤكدة لهذا البريد. لن يُسمح بالتسجيل قبل نجاح الفحص.", "warning");
+        $("emailRetry").style.display = "block";
       }
+      return false;
     } catch (error) {
-      if (seq !== emailRequestSeq) return;
+      if (seq !== emailRequestSeq) return false;
       emailStatus = "unknown";
-      setEmailState(explainError(error.message), "warning");
+      emailCheckedValue = "";
+      setEmailState("⚠ " + explainError(error.message) + " لم يتم تأكيد أن البريد متاح، والتسجيل متوقف حتى إعادة الفحص بنجاح.", "warning");
+      $("emailRetry").style.display = "block";
+      return false;
     }
   }
 
@@ -348,39 +369,63 @@ noscript .notice{display:block}
   }
 
   function setupCaptcha(config) {
-    const siteKey = config && config.site_key ? config.site_key : "0x4AAAAAAF3T0LhduY-AjZNc";
-    captchaEnabled = !!siteKey;
+    const siteKey = config && config.site_key ? config.site_key : "";
+    const serverEnabled = config && config.enabled === true;
+    captchaConfigured = serverEnabled && !!siteKey;
+    captchaToken = "";
+    captchaWidgetId = null;
     $("captchaBox").replaceChildren();
-    if (!captchaEnabled) {
-      $("captchaBox").textContent = "خدمة اختبار الحماية غير مهيأة. لا يمكن إكمال التسجيل بأمان حاليًا.";
+
+    if (!captchaConfigured) {
+      setCaptchaState("✕ خدمة الحماية غير مهيأة على الخادم. لا يمكن إنشاء حساب حتى يكتمل إعداد Cloudflare Turnstile.", "bad");
+      $("captchaBox").textContent = "اختبار الحماية غير متاح حاليًا.";
       return;
     }
 
+    setCaptchaState("⏳ جارٍ تحميل اختبار الحماية من Cloudflare…", "warning");
     const render = () => {
-      if (!window.turnstile) {
-        $("captchaBox").textContent = "جارٍ تحميل اختبار الحماية…";
-        return;
-      }
+      if (!window.turnstile) return false;
       try {
         captchaWidgetId = window.turnstile.render("#captchaBox", {
           sitekey: siteKey,
           theme: "dark",
-          callback: token => { captchaToken = token; },
-          "expired-callback": () => { captchaToken = ""; },
-          "error-callback": () => { captchaToken = ""; }
+          callback: token => {
+            captchaToken = typeof token === "string" ? token : "";
+            setCaptchaState(captchaToken ? "✓ تم اجتياز اختبار الحماية بنجاح." : "⚠ لم يتم استلام رمز تحقق صالح.", captchaToken ? "good" : "warning");
+          },
+          "expired-callback": () => {
+            captchaToken = "";
+            setCaptchaState("⚠ انتهت صلاحية اختبار الحماية. أعد الاختبار.", "warning");
+          },
+          "error-callback": () => {
+            captchaToken = "";
+            setCaptchaState("✕ فشل الاتصال بخدمة Cloudflare Turnstile أو تعذر تحميل التحدي. تحقق من الاتصال أو مانع المحتوى ثم أعد تحميل الصفحة.", "bad");
+          }
         });
+        setCaptchaState("أكمل اختبار الحماية. لن يتم إرسال التسجيل بدونه.", "warning");
+        return true;
       } catch (error) {
         console.error("AQX Turnstile:", error);
-        $("captchaBox").textContent = "تعذر تحميل اختبار الحماية. أعد تحميل الصفحة.";
+        captchaToken = "";
+        setCaptchaState("✕ حدث خطأ أثناء تشغيل اختبار الحماية. التسجيل متوقف.", "bad");
+        return false;
       }
     };
 
     let attempts = 0;
     const waitForTurnstile = () => {
-      if (window.turnstile) return render();
+      if (window.turnstile) {
+        render();
+        return;
+      }
       attempts += 1;
-      if (attempts < 40) window.setTimeout(waitForTurnstile, 250);
-      else $("captchaBox").textContent = "تعذر تحميل اختبار الحماية. تحقق من اتصالك ثم أعد تحميل الصفحة.";
+      if (attempts < 40) {
+        window.setTimeout(waitForTurnstile, 250);
+      } else {
+        captchaToken = "";
+        setCaptchaState("✕ تعذر الاتصال بملف Cloudflare Turnstile بعد الانتظار. افحص اتصال الإنترنت أو إعدادات حجب السكربتات ثم أعد تحميل الصفحة.", "bad");
+        $("captchaBox").textContent = "تعذر تحميل اختبار الحماية.";
+      }
     };
     waitForTurnstile();
   }
@@ -460,7 +505,8 @@ noscript .notice{display:block}
     button.textContent = "جارٍ التحويل…";
     try {
       if (!$("terms").checked) throw new Error("TERMS_REQUIRED");
-      if (captchaEnabled && !captchaToken) throw new Error("CAPTCHA_REQUIRED_OR_INVALID");
+      if (!captchaConfigured) throw new Error("CAPTCHA_NOT_CONFIGURED");
+      if (!captchaToken) throw new Error("CAPTCHA_REQUIRED_OR_INVALID");
       const referral = readReferral();
       const check = await api("/v1/registration/oauth-check", {
         method: "POST",
@@ -559,8 +605,18 @@ noscript .notice{display:block}
     }
   }
 
+  $("emailRetry").addEventListener("click", () => {
+    window.clearTimeout(emailTimer);
+    checkEmail();
+  });
+
   $("email").addEventListener("input", () => {
     window.clearTimeout(emailTimer);
+    emailStatus = "unknown";
+    emailCheckedValue = "";
+    emailRequestSeq += 1;
+    $("emailRetry").style.display = "none";
+    setEmailState("تم تغيير البريد. يجب فحص العنوان الجديد قبل التسجيل.", "warning");
     emailTimer = window.setTimeout(checkEmail, 650);
   });
   $("email").addEventListener("blur", () => {
@@ -608,13 +664,20 @@ noscript .notice{display:block}
       showNotice("يجب الموافقة على الشروط والأحكام وسياسة الخصوصية.", "error");
       return;
     }
-    if (["registered", "reserved", "blocked", "invalid"].includes(emailStatus)) {
-      showNotice("لا يمكن التسجيل بهذا البريد. راجع حالة البريد الموضحة أسفل خانة البريد.", "error");
-      $("email").focus();
+    if (emailStatus !== "available" || emailCheckedValue !== email) {
+      const checked = await checkEmail();
+      if (!checked || emailStatus !== "available" || emailCheckedValue !== email) {
+        showNotice("لا يمكن متابعة التسجيل: يجب أن تظهر حالة (البريد متاح) بعد فحص ناجح وحديث لهذا البريد.", "error");
+        $("email").focus();
+        return;
+      }
+    }
+    if (!captchaConfigured) {
+      showNotice("التسجيل متوقف لأن خدمة الحماية غير مهيأة على الخادم. لا يمكن تجاوز هذا الشرط.", "error");
       return;
     }
-    if (captchaEnabled && !captchaToken) {
-      showNotice("أكمل اختبار الحماية قبل إنشاء الحساب.", "error");
+    if (!captchaToken) {
+      showNotice("لم يكتمل اختبار الحماية أو فشل الاتصال به. أعد اختبار Cloudflare قبل إنشاء الحساب.", "error");
       return;
     }
 
@@ -643,10 +706,12 @@ noscript .notice{display:block}
       $("registerForm").reset();
       captchaToken = "";
       emailStatus = "unknown";
+      emailCheckedValue = "";
       setEmailState("تم إرسال طلب التسجيل. راجع بريدك الإلكتروني.", "good");
       if (window.turnstile && captchaWidgetId !== null) {
         try { window.turnstile.reset(captchaWidgetId); } catch (_) {}
       }
+      setCaptchaState("أعد اختبار الحماية قبل أي محاولة تسجيل جديدة.", "warning");
       if (referral && data.referral_captured === true) {
         try { sessionStorage.removeItem("aqx_pending_referral"); } catch (_) {}
       }
