@@ -397,9 +397,11 @@ noscript .notice{display:block}
             captchaToken = "";
             setCaptchaState("⚠ انتهت صلاحية اختبار الحماية. أعد الاختبار.", "warning");
           },
-          "error-callback": () => {
+          "error-callback": errorCode => {
             captchaToken = "";
-            setCaptchaState("✕ فشل الاتصال بخدمة Cloudflare Turnstile أو تعذر تحميل التحدي. تحقق من الاتصال أو مانع المحتوى ثم أعد تحميل الصفحة.", "bad");
+            const code = typeof errorCode === "string" ? errorCode : "غير متاح";
+            console.error("AQX Turnstile challenge error:", code, "hostname:", location.hostname);
+            setCaptchaState("✕ تعذر اجتياز Cloudflare Turnstile. رمز الخطأ: " + code + " — النطاق الحالي: " + location.hostname + ". تحقق من ربط هذا النطاق بمفتاح الموقع ومن تطابق المفتاح العام مع المفتاح السري.", "bad");
           }
         });
         setCaptchaState("أكمل اختبار الحماية. لن يتم إرسال التسجيل بدونه.", "warning");
