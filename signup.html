@@ -5,1243 +5,1068 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#081426">
-<meta name="description" content="إنشاء حساب AQX Identity">
+<meta name="description" content="إنشاء حساب AQX Identity الموحد">
 <title>إنشاء حساب | AQX Identity</title>
 
 <style>
 :root{
-  --bg:#071323;
-  --panel:#10243b;
-  --field:#08192b;
-  --gold:#d7b46a;
-  --gold2:#f0d596;
-  --text:#f5f3ed;
-  --muted:#aab8c9;
-  --green:#4bd49a;
-  --red:#ff7777;
-  --blue:#83baff;
-  --line:rgba(215,180,106,.22);
+  --bg:#081426;
+  --panel:#101f35;
+  --panel2:#0c192c;
+  --gold:#d8b66a;
+  --gold2:#f0d797;
+  --text:#f4f6fa;
+  --muted:#9eabc0;
+  --line:#263954;
+  --green:#35c58b;
+  --red:#f07171;
+  --blue:#70aaff;
 }
-
 *{box-sizing:border-box}
-
+html{min-height:100%;background:var(--bg)}
 body{
   margin:0;
   min-height:100vh;
-  padding:24px 14px;
+  padding:28px 14px;
   display:flex;
-  align-items:center;
   justify-content:center;
-  font-family:Tahoma,Arial,sans-serif;
-  color:var(--text);
+  align-items:center;
   background:
-    radial-gradient(ellipse at 15% 10%,rgba(30,75,115,.25),transparent 38%),
-    radial-gradient(ellipse at 90% 90%,rgba(180,135,60,.10),transparent 35%),
-    linear-gradient(145deg,#06111f,#0a1b30 55%,#071323);
+    radial-gradient(ellipse at 50% 0%,#142b49 0%,transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:Tahoma,Arial,sans-serif;
 }
-
-button,input{font:inherit}
-button{cursor:pointer}
-
-.page{width:100%;max-width:510px;margin:auto}
-
+.container{width:100%;max-width:480px}
 .brand{text-align:center;margin-bottom:22px}
-
-.brand-mark{
-  width:62px;height:62px;margin:0 auto 12px;
+.brand-logo{
+  width:65px;height:65px;margin:auto auto 12px;
+  border:1px solid #9c8046;border-radius:19px;
   display:flex;align-items:center;justify-content:center;
-  border:1px solid rgba(215,180,106,.55);
-  border-radius:19px;color:var(--gold2);
-  background:linear-gradient(145deg,#18324e,#0c1c30);
-  font-size:27px;font-weight:bold;
+  color:var(--gold2);font-size:27px;font-weight:bold;
+  background:linear-gradient(145deg,#172b46,#0b1729);
+  box-shadow:0 8px 30px #0005;
 }
-
-.brand h1{margin:0;font-size:25px;color:var(--gold2)}
-.brand p{margin:8px 0 0;color:var(--muted);font-size:13px}
-
+.brand h1{font-size:25px;margin:0 0 7px;color:var(--gold2)}
+.brand p{font-size:13px;color:var(--muted);margin:0}
 .card{
-  padding:30px;
+  background:linear-gradient(160deg,#12223a,#0d1a2e);
   border:1px solid var(--line);
-  border-radius:22px;
-  background:linear-gradient(160deg,rgba(19,43,69,.97),rgba(10,27,46,.98));
-  box-shadow:0 24px 70px rgba(0,0,0,.35);
+  border-radius:19px;
+  padding:25px 22px;
+  box-shadow:0 20px 55px #0005;
 }
-
-.card-title{margin:0 0 8px;font-size:22px}
-.card-subtitle{margin:0 0 23px;color:var(--muted);font-size:13px;line-height:1.9}
-
+.card h2{font-size:21px;margin:0 0 7px}
+.subtitle{font-size:13px;color:var(--muted);margin:0 0 23px;line-height:1.8}
 .field{margin-bottom:17px}
-
-.field label{
-  display:block;margin-bottom:8px;
-  color:#e7eaf0;font-size:13px;font-weight:bold;
-}
-
-.field input{
+label{display:block;font-size:13px;margin-bottom:8px;color:#dce4f0}
+input[type=email],input[type=password]{
   width:100%;height:49px;padding:0 14px;
-  outline:none;color:#fff;background:var(--field);
-  border:1px solid rgba(170,190,215,.20);
-  border-radius:11px;direction:ltr;text-align:left;
-  transition:.2s;
+  border-radius:10px;border:1px solid #30445f;
+  background:#091629;color:white;font-size:14px;
+  outline:none;transition:.2s;
 }
-
-.field input:focus{
+input:focus{
   border-color:var(--gold);
-  box-shadow:0 0 0 3px rgba(215,180,106,.10);
+  box-shadow:0 0 0 3px #d8b66a18;
 }
-
-.field input::placeholder{color:#75869b}
-
-.password-wrap{position:relative}
-.password-wrap input{padding-left:75px}
-
-.toggle-password{
-  position:absolute;left:9px;top:50%;
-  transform:translateY(-50%);
-  border:0;color:var(--gold2);
-  background:transparent;font-size:12px;padding:7px;
+input::placeholder{color:#74839a}
+.email-status{
+  display:none;margin-top:8px;font-size:12px;
+  line-height:1.7;padding:9px 11px;border-radius:8px;
 }
-
-.hint{
-  display:block;min-height:18px;margin-top:6px;
-  color:var(--muted);font-size:11px;line-height:1.7;
+.email-status.show{display:block}
+.email-status.good{color:#71e0ae;background:#12372d;border:1px solid #23644c}
+.email-status.bad{color:#ffaaaa;background:#3b2028;border:1px solid #713742}
+.email-status.wait{color:#a9c9ff;background:#172c49;border:1px solid #2e4d75}
+.email-status.neutral{color:#c3ccda;background:#1b293d;border:1px solid #34465e}
+.password-hint{font-size:11px;color:var(--muted);margin-top:7px}
+.terms{
+  display:flex;align-items:flex-start;gap:9px;
+  color:#c6d0df;font-size:12px;line-height:1.8;
+  margin:18px 0;
 }
-
-.hint.success{color:var(--green)}
-.hint.error{color:var(--red)}
-.hint.info{color:var(--blue)}
-
-.email-result{
-  display:none;margin-top:9px;padding:11px 12px;
+.terms input{margin-top:4px;accent-color:var(--gold)}
+.terms a,.login-link a{color:var(--gold2);text-decoration:none}
+.primary{
+  width:100%;height:49px;border:0;border-radius:10px;
+  background:linear-gradient(110deg,#b9944e,#ead18e);
+  color:#172033;font-weight:bold;font-size:15px;
+  cursor:pointer;transition:.2s;
+}
+.primary:hover{filter:brightness(1.06)}
+.primary:disabled{opacity:.55;cursor:not-allowed}
+.notice{
+  display:none;margin-top:15px;padding:12px;
   border-radius:9px;font-size:12px;line-height:1.8;
 }
-
-.email-result.show{display:block}
-.email-result.success{
-  color:#a9f1d0;background:rgba(75,212,154,.08);
-  border:1px solid rgba(75,212,154,.25);
-}
-.email-result.error{
-  color:#ffc0c0;background:rgba(255,119,119,.08);
-  border:1px solid rgba(255,119,119,.25);
-}
-.email-result.info{
-  color:#c7ddf7;background:rgba(131,186,255,.08);
-  border:1px solid rgba(131,186,255,.25);
-}
-
-.message{
-  display:none;padding:13px 14px;margin:0 0 17px;
-  border-radius:10px;font-size:12px;line-height:1.9;
-  white-space:pre-line;
-}
-.message.show{display:block}
-.message.success{color:#a9f1d0;background:rgba(75,212,154,.08);border:1px solid rgba(75,212,154,.25)}
-.message.error{color:#ffc0c0;background:rgba(255,119,119,.08);border:1px solid rgba(255,119,119,.25)}
-.message.info{color:#c7ddf7;background:rgba(131,186,255,.08);border:1px solid rgba(131,186,255,.25)}
-
-.check-row{
-  display:flex;align-items:flex-start;gap:9px;
-  margin:17px 0;color:#cbd5e1;
-  font-size:12px;line-height:1.9;
-}
-.check-row input{
-  width:16px;height:16px;margin-top:3px;
-  accent-color:var(--gold);
-}
-.check-row a{color:var(--gold2);text-decoration:none}
-
-.primary-btn{
-  width:100%;min-height:50px;border:0;border-radius:11px;
-  color:#172235;
-  background:linear-gradient(110deg,#c49a4d,#f0d596);
-  font-weight:bold;font-size:15px;
-  transition:.2s;
-}
-.primary-btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
-.primary-btn:disabled{opacity:.55;cursor:not-allowed}
-
-.divider{
+.notice.show{display:block}
+.notice.error{background:#3b2028;color:#ffb2b2;border:1px solid #713742}
+.notice.success{background:#12372d;color:#8ce5b9;border:1px solid #23644c}
+.notice.info{background:#172c49;color:#b6d1ff;border:1px solid #2e4d75}
+.separator{
   display:flex;align-items:center;gap:12px;
-  margin:22px 0;color:#8292a6;font-size:11px;
+  color:#7f8da3;font-size:12px;margin:22px 0;
 }
-.divider:before,.divider:after{
-  content:"";height:1px;flex:1;background:rgba(170,190,215,.17);
+.separator:before,.separator:after{
+  content:"";height:1px;background:#2b3b52;flex:1
 }
-
-.providers{
-  display:none;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+.social-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.social-btn{
+  height:44px;border:1px solid #30445f;border-radius:9px;
+  background:#0b192c;color:#e7edf6;cursor:pointer;
+  font-size:13px;font-family:inherit;
 }
-.providers.show{display:grid}
-
-.provider-btn{
-  min-height:46px;border:1px solid rgba(170,190,215,.22);
-  border-radius:10px;background:#0b1b2e;
-  color:#e9edf4;font-size:12px;
+.social-btn:hover{border-color:var(--gold);background:#14253d}
+.social-btn:disabled{opacity:.5;cursor:not-allowed}
+.login-link{text-align:center;margin:22px 0 0;color:var(--muted);font-size:13px}
+.footer{text-align:center;color:#718098;font-size:11px;margin-top:19px}
+.hidden-field{
+  position:absolute!important;left:-10000px!important;
+  width:1px!important;height:1px!important;overflow:hidden!important;
 }
-.provider-btn:hover{border-color:var(--gold);background:#132b45}
-.provider-btn:disabled{opacity:.5;cursor:not-allowed}
-
-.bottom-link{
-  margin:23px 0 0;text-align:center;
-  color:var(--muted);font-size:13px;
-}
-.bottom-link a{color:var(--gold2);font-weight:bold;text-decoration:none}
-
-.footer{text-align:center;margin-top:18px;color:#718198;font-size:11px}
-
-.captcha-area{margin:14px 0}
-.captcha-area:empty{display:none}
-
-.honeypot{
-  position:absolute!important;width:1px!important;height:1px!important;
-  overflow:hidden!important;clip:rect(0,0,0,0)!important;
-}
-
-@media(max-width:520px){
-  body{padding:18px 12px}
-  .card{padding:23px 18px}
-  .brand h1{font-size:22px}
+.turnstile-wrap{margin:14px 0;display:flex;justify-content:center}
+.turnstile-wrap:empty{display:none}
+@media(max-width:390px){
+  .card{padding:21px 16px}
+  .social-list{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
-<main class="page">
+<main class="container">
 
   <header class="brand">
-    <div class="brand-mark">AQX</div>
+    <div class="brand-logo">AQX</div>
     <h1>AQX Identity</h1>
-    <p>الحساب الموحد لمنظومة القرماني إكس</p>
+    <p>حسابك الموحد لخدمات ومنصات AQX</p>
   </header>
 
   <section class="card">
+    <h2>إنشاء حساب جديد</h2>
+    <p class="subtitle">أنشئ حسابك الموحد للوصول إلى خدمات AQX.</p>
 
-    <h2 class="card-title">إنشاء حساب جديد</h2>
-    <p class="card-subtitle">
-      أنشئ حسابك الموحد للوصول إلى خدمات ومنصات AQX.
-    </p>
-
-    <div id="registrationNotice" class="message"></div>
-    <div id="formMessage" class="message"></div>
-
-    <form id="signupForm" novalidate>
-
-      <div class="honeypot" aria-hidden="true">
-        <label for="website">Website</label>
-        <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
-      </div>
+    <form id="signupForm" novalidate autocomplete="on">
 
       <div class="field">
         <label for="email">البريد الإلكتروني</label>
         <input
           id="email"
+          name="email"
           type="email"
-          placeholder="example@email.com"
+          placeholder="name@example.com"
           autocomplete="email"
           maxlength="254"
           required
         >
-
-        <small id="emailHint" class="hint">
-          أدخل بريدك الإلكتروني.
-        </small>
-
-        <div id="emailResult" class="email-result"></div>
+        <div id="emailStatus" class="email-status" aria-live="polite"></div>
       </div>
 
       <div class="field">
-        <label for="password">كلمة المرور</label>
-
-        <div class="password-wrap">
-          <input
-            id="password"
-            type="password"
-            placeholder="8 أحرف على الأقل"
-            autocomplete="new-password"
-            minlength="8"
-            maxlength="128"
-            required
-          >
-          <button class="toggle-password" type="button" data-target="password">إظهار</button>
-        </div>
-
-        <small id="passwordHint" class="hint">
-          يجب ألا تقل كلمة المرور عن 8 أحرف.
-        </small>
+        <label for="password">كلمة السر</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="أدخل كلمة السر"
+          autocomplete="new-password"
+          minlength="8"
+          maxlength="128"
+          required
+        >
+        <div class="password-hint">يجب ألا تقل كلمة السر عن 8 أحرف.</div>
       </div>
 
       <div class="field">
-        <label for="confirmPassword">تأكيد كلمة المرور</label>
-
-        <div class="password-wrap">
-          <input
-            id="confirmPassword"
-            type="password"
-            placeholder="أعد كتابة كلمة المرور"
-            autocomplete="new-password"
-            required
-          >
-          <button class="toggle-password" type="button" data-target="confirmPassword">إظهار</button>
-        </div>
-
-        <small id="confirmHint" class="hint"></small>
+        <label for="confirmPassword">تأكيد كلمة السر</label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          placeholder="أعد كتابة كلمة السر"
+          autocomplete="new-password"
+          minlength="8"
+          maxlength="128"
+          required
+        >
       </div>
 
-      <div id="captchaArea" class="captcha-area"></div>
+      <div class="hidden-field" aria-hidden="true">
+        <label for="website">اترك هذا الحقل فارغًا</label>
+        <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+      </div>
 
-      <label class="check-row">
+      <div class="terms">
         <input id="terms" type="checkbox" required>
-        <span>
+        <label for="terms">
           أوافق على
-          <a href="https://id.alqurmanix.com/terms.html" target="_blank" rel="noopener">
-            الشروط والأحكام
-          </a>
-          وسياسة استخدام منظومة AQX.
-        </span>
-      </label>
+          <a href="terms.html" target="_blank" rel="noopener">الشروط والأحكام</a>
+          و
+          <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a>.
+        </label>
+      </div>
 
-      <button id="submitButton" class="primary-btn" type="submit">
+      <div id="turnstileContainer" class="turnstile-wrap"></div>
+
+      <button id="submitBtn" class="primary" type="submit">
         إنشاء الحساب
       </button>
 
+      <div id="formNotice" class="notice" role="status" aria-live="polite"></div>
     </form>
 
-    <div id="providerSection" hidden>
-      <div class="divider">أو التسجيل باستخدام</div>
-      <div id="providers" class="providers"></div>
+    <div id="socialSection" hidden>
+      <div class="separator">أو التسجيل باستخدام</div>
+      <div id="socialList" class="social-list"></div>
     </div>
 
-    <p class="bottom-link">
+    <div class="login-link">
       لديك حساب بالفعل؟
-      <a href="https://id.alqurmanix.com/login.html">
-        سجل دخول
-      </a>
-    </p>
-
+      <a href="login.html">سجل دخول</a>
+    </div>
   </section>
 
   <footer class="footer">
-    AQX Identity · Unified Digital Identity System
+    AQX Identity — Unified Account System
   </footer>
-
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
-
 <script>
-(() => {
 "use strict";
 
-/* =========================================
-   إعدادات AQX Identity
-========================================= */
+/* ==========================================
+   AQX IDENTITY - REGISTRATION PAGE
+   Connected to the existing AQX Identity API
+========================================== */
 
-const CFG = {
-  URL: "https://fkiokwwztbyztleeuwks.supabase.co",
-  KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+const CFG = Object.freeze({
+  API: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+  SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
+  PUBLISHABLE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+  CONFIRMATION_URL: "https://id.alqurmanix.com/confirmed.html",
+  LOGIN_URL: "login.html"
+});
 
-  STATUS: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity/v1/registration/status",
-
-  EMAIL: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity/v1/registration/email-status",
-
-  SIGNUP: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity/v1/registration/signup",
-
-  OAUTH: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity/v1/registration/oauth-check",
-
-  LOGIN: "https://id.alqurmanix.com/login.html",
-  CONFIRMED: "https://id.alqurmanix.com/confirmed.html",
-
-  TIMEOUT: 15000
+const PROVIDERS = {
+  google: {
+    label: "Google",
+    provider: "google"
+  },
+  github: {
+    label: "GitHub",
+    provider: "github"
+  },
+  microsoft: {
+    label: "Microsoft",
+    provider: "azure"
+  },
+  apple: {
+    label: "Apple",
+    provider: "apple"
+  },
+  facebook: {
+    label: "Facebook",
+    provider: "facebook"
+  },
+  discord: {
+    label: "Discord",
+    provider: "discord"
+  },
+  linkedin: {
+    label: "LinkedIn",
+    provider: "linkedin_oidc"
+  }
 };
 
 const $ = id => document.getElementById(id);
 
+const form = $("signupForm");
+const emailInput = $("email");
+const passwordInput = $("password");
+const confirmInput = $("confirmPassword");
+const emailStatusBox = $("emailStatus");
+const submitBtn = $("submitBtn");
+const formNotice = $("formNotice");
+const socialSection = $("socialSection");
+const socialList = $("socialList");
+
 const state = {
   policy: null,
   policyLoaded: false,
-  policyBusy: false,
-
-  emailTimer: null,
-  emailRequest: 0,
-  emailChecked: "",
-  emailStatus: "",
-  emailBusy: false,
-
-  submitting: false,
-  oauthBusy: false,
-
-  captchaRequired: false,
-  captchaSiteKey: "",
+  policyLoading: false,
+  emailStatus: "unchecked",
+  emailCheckedFor: "",
+  emailChecking: false,
+  emailRequestNumber: 0,
+  emailSignupEnabled: true,
+  registrationOpen: true,
+  formStartedAt: Date.now(),
+  captchaEnabled: false,
+  captchaSiteKey: null,
   captchaToken: "",
-  captchaWidget: null,
-
-  startedAt: Date.now()
+  turnstileRendered: false,
+  submitting: false
 };
 
-/* =========================================
-   أدوات عامة
-========================================= */
+/* ---------- General helpers ---------- */
 
-function showMessage(id, type, text) {
-  const el = $(id);
-  el.className = "message show " + type;
-  el.textContent = text;
+function showNotice(message, type) {
+  formNotice.textContent = message;
+  formNotice.className = "notice show " + (type || "info");
 }
 
-function hideMessage(id) {
-  const el = $(id);
-  el.className = "message";
-  el.textContent = "";
+function hideNotice() {
+  formNotice.textContent = "";
+  formNotice.className = "notice";
 }
 
-function setHint(id, text, type = "") {
-  const el = $(id);
-  el.textContent = text;
-  el.className = "hint" + (type ? " " + type : "");
+function showEmailStatus(message, type) {
+  emailStatusBox.textContent = message;
+  emailStatusBox.className = "email-status show " + (type || "neutral");
 }
 
-function showEmailResult(type, text) {
-  const el = $("emailResult");
-  el.className = "email-result show " + type;
-  el.textContent = text;
+function clearEmailStatus() {
+  emailStatusBox.textContent = "";
+  emailStatusBox.className = "email-status";
 }
 
-function hideEmailResult() {
-  const el = $("emailResult");
-  el.className = "email-result";
-  el.textContent = "";
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
 }
 
-async function requestJSON(url, options = {}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), CFG.TIMEOUT);
+function validEmailSyntax(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
+}
 
+async function apiRequest(path, options = {}) {
+  const response = await fetch(CFG.API + path, {
+    method: options.method || "GET",
+    headers: {
+      "apikey": CFG.PUBLISHABLE_KEY,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined,
+    cache: "no-store",
+    credentials: "omit"
+  });
+
+  let data = null;
   try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-      cache: "no-store",
-      headers: {
-        apikey: CFG.KEY,
-        "Content-Type": "application/json",
-        ...(options.headers || {})
-      }
-    });
-
-    const data = await response.json().catch(() => null);
-
-    return {
-      ok: response.ok,
-      status: response.status,
-      data
-    };
-  } finally {
-    clearTimeout(timer);
+    data = await response.json();
+  } catch (_) {
+    data = null;
   }
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    data
+  };
 }
 
-function validEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) &&
-    value.length <= 254;
-}
+function providerEnabled(settings, name) {
+  const value = settings && settings[name];
 
-function providerEnabled(methods, name) {
-  const item = methods?.[name];
+  if (value === true) return true;
 
-  if (item === true) return true;
-
-  if (item && typeof item === "object") {
-    return item.signup_enabled === true || item.enabled === true;
+  if (value && typeof value === "object") {
+    return value.signup_enabled === true || value.enabled === true;
   }
 
   return false;
 }
 
-function getReferral() {
-  const params = new URLSearchParams(location.search);
+/* ---------- Registration policy ---------- */
 
-  const platform = params.get("platform_id") || "";
+async function loadRegistrationPolicy() {
+  if (state.policyLoading) return;
+
+  state.policyLoading = true;
+
+  try {
+    const result = await apiRequest("/v1/registration/status");
+
+    if (!result.ok || !result.data || result.data.success !== true) {
+      return;
+    }
+
+    const policy = result.data;
+
+    state.policy = policy;
+    state.policyLoaded = true;
+    state.registrationOpen = policy.registration_open === true;
+    state.emailSignupEnabled = providerEnabled(
+      policy.signup_methods,
+      "email"
+    );
+
+    state.captchaEnabled = policy.captcha?.enabled === true;
+    state.captchaSiteKey = policy.captcha?.site_key || null;
+
+    updateRegistrationAvailability();
+    renderSocialProviders(policy.signup_methods || {});
+    setupCaptcha();
+
+  } catch (_) {
+    /*
+      الصفحة تظل ظاهرة عند تعذر تحميل الإعدادات.
+      المحرك الخلفي هو صاحب القرار النهائي عند التسجيل.
+    */
+  } finally {
+    state.policyLoading = false;
+  }
+}
+
+function updateRegistrationAvailability() {
+  if (state.policyLoaded && !state.registrationOpen) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "التسجيل غير متاح حاليًا";
+
+    showNotice(
+      "التسجيل غير متاح حاليًا.",
+      "info"
+    );
+
+    return;
+  }
+
+  if (state.policyLoaded && !state.emailSignupEnabled) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "التسجيل بالبريد غير متاح";
+
+    return;
+  }
+
+  if (!state.submitting) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "إنشاء الحساب";
+  }
+}
+
+/* ---------- Email status ---------- */
+
+function emailStatusMessage(status) {
+  switch (status) {
+    case "registered":
+      return {
+        message: "هذا البريد مسجل بالفعل",
+        type: "bad"
+      };
+
+    case "reserved":
+      return {
+        message: "هذا البريد محجوز مؤقتًا ولا يمكن استخدامه حاليًا.",
+        type: "bad"
+      };
+
+    case "blocked":
+      return {
+        message: "لا يمكن التسجيل بهذا البريد.",
+        type: "bad"
+      };
+
+    case "available":
+      return {
+        message: "هذا البريد متاح للتسجيل.",
+        type: "good"
+      };
+
+    case "invalid":
+      return {
+        message: "البريد غير صحيح.",
+        type: "bad"
+      };
+
+    default:
+      return {
+        message: "تعذر التحقق من البريد حاليًا. يمكنك المحاولة مرة أخرى.",
+        type: "neutral"
+      };
+  }
+}
+
+function updateSubmitAvailability() {
+  if (state.submitting) return;
+
+  if (state.policyLoaded && !state.registrationOpen) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "التسجيل غير متاح حاليًا";
+    return;
+  }
+
+  if (state.policyLoaded && !state.emailSignupEnabled) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "التسجيل بالبريد غير متاح";
+    return;
+  }
+
+  const status = state.emailStatus;
+
+  if (
+    status === "registered" ||
+    status === "reserved" ||
+    status === "blocked"
+  ) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "تعذر استخدام هذا البريد";
+    return;
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "إنشاء الحساب";
+}
+
+async function checkEmailStatus(force = false) {
+  const email = normalizeEmail(emailInput.value);
+
+  if (!email) {
+    state.emailStatus = "unchecked";
+    state.emailCheckedFor = "";
+    clearEmailStatus();
+    updateSubmitAvailability();
+    return;
+  }
+
+  if (!validEmailSyntax(email)) {
+    state.emailStatus = "invalid";
+    state.emailCheckedFor = email;
+
+    showEmailStatus(
+      "البريد غير صحيح.",
+      "bad"
+    );
+
+    updateSubmitAvailability();
+    return;
+  }
+
+  if (
+    !force &&
+    state.emailCheckedFor === email &&
+    ["registered", "reserved", "blocked", "available"].includes(state.emailStatus)
+  ) {
+    updateSubmitAvailability();
+    return;
+  }
+
+  const requestNumber = ++state.emailRequestNumber;
+
+  state.emailChecking = true;
+  state.emailCheckedFor = email;
+  state.emailStatus = "checking";
+
+  showEmailStatus(
+    "جارٍ التحقق من البريد...",
+    "wait"
+  );
+
+  updateSubmitAvailability();
+
+  try {
+    const result = await apiRequest(
+      "/v1/registration/email-status",
+      {
+        method: "POST",
+        body: { email }
+      }
+    );
+
+    if (requestNumber !== state.emailRequestNumber) return;
+
+    if (
+      !result.ok ||
+      !result.data ||
+      result.data.success !== true
+    ) {
+      state.emailStatus = "unknown";
+
+      showEmailStatus(
+        "تعذر التحقق من البريد حاليًا. حاول مرة أخرى.",
+        "neutral"
+      );
+
+      updateSubmitAvailability();
+      return;
+    }
+
+    const returnedStatus = String(result.data.status || "unknown");
+
+    state.emailStatus = returnedStatus;
+
+    const display = emailStatusMessage(returnedStatus);
+
+    showEmailStatus(display.message, display.type);
+
+    updateSubmitAvailability();
+
+  } catch (_) {
+    if (requestNumber !== state.emailRequestNumber) return;
+
+    state.emailStatus = "unknown";
+
+    showEmailStatus(
+      "تعذر التحقق من البريد حاليًا. حاول مرة أخرى.",
+      "neutral"
+    );
+
+    updateSubmitAvailability();
+
+  } finally {
+    if (requestNumber === state.emailRequestNumber) {
+      state.emailChecking = false;
+    }
+  }
+}
+
+/*
+  المطلوب:
+  بمجرد مغادرة خانة البريد أو الانتقال إلى كلمة السر
+  يتم فحص البريد وتظهر النتيجة أسفل خانة البريد.
+*/
+emailInput.addEventListener("blur", () => {
+  checkEmailStatus(true);
+});
+
+passwordInput.addEventListener("focus", () => {
+  checkEmailStatus(false);
+});
+
+emailInput.addEventListener("input", () => {
+  state.emailRequestNumber++;
+  state.emailStatus = "unchecked";
+  state.emailCheckedFor = "";
+
+  clearEmailStatus();
+  updateSubmitAvailability();
+});
+
+/* ---------- Social providers ---------- */
+
+function renderSocialProviders(settings) {
+  socialList.innerHTML = "";
+
+  const enabledProviders = Object.keys(PROVIDERS).filter(name =>
+    providerEnabled(settings, name)
+  );
+
+  if (enabledProviders.length === 0) {
+    socialSection.hidden = true;
+    return;
+  }
+
+  socialSection.hidden = false;
+
+  enabledProviders.forEach(name => {
+    const config = PROVIDERS[name];
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "social-btn";
+    button.textContent = "المتابعة باستخدام " + config.label;
+
+    button.addEventListener("click", () => {
+      startSocialSignup(name, button);
+    });
+
+    socialList.appendChild(button);
+  });
+}
+
+async function startSocialSignup(name, button) {
+  const config = PROVIDERS[name];
+
+  if (!config) return;
+
+  button.disabled = true;
+
+  try {
+    const check = await apiRequest(
+      "/v1/registration/oauth-check",
+      {
+        method: "POST",
+        body: { provider: name }
+      }
+    );
+
+    if (
+      !check.ok ||
+      !check.data ||
+      check.data.success !== true
+    ) {
+      if (check.data?.error === "PROVIDER_SIGNUP_DISABLED") {
+        showNotice("التسجيل باستخدام هذا المزود غير متاح حاليًا.", "error");
+      } else if (check.data?.error === "REGISTRATION_POLICY_UNAVAILABLE") {
+        showNotice("تعذر إتمام العملية حاليًا. حاول مرة أخرى.", "error");
+      } else {
+        showNotice("تعذر بدء التسجيل باستخدام هذا المزود.", "error");
+      }
+
+      return;
+    }
+
+    const redirectTo = encodeURIComponent(CFG.CONFIRMATION_URL);
+
+    const oauthUrl =
+      CFG.SUPABASE_URL +
+      "/auth/v1/authorize?provider=" +
+      encodeURIComponent(config.provider) +
+      "&redirect_to=" +
+      redirectTo;
+
+    window.location.assign(oauthUrl);
+
+  } catch (_) {
+    showNotice("تعذر الاتصال بالخدمة. حاول مرة أخرى.", "error");
+
+  } finally {
+    button.disabled = false;
+  }
+}
+
+/* ---------- Referral data ---------- */
+
+function getReferralData() {
+  const params = new URLSearchParams(window.location.search);
+
+  const platformId = params.get("platform_id") || "";
   const code = (
     params.get("ref") ||
     params.get("code") ||
     ""
   ).toLowerCase();
 
-  if (
-    /^[0-9a-f-]{36}$/i.test(platform) &&
-    /^[0-9a-f]{32}$/.test(code)
-  ) {
-    return {
-      platform_id: platform,
-      code
-    };
+  const validPlatform = /^[0-9a-f-]{36}$/i.test(platformId);
+  const validCode = /^[0-9a-f]{32}$/.test(code);
+
+  if (!validPlatform || !validCode) {
+    return null;
   }
 
-  return null;
+  return {
+    platform_id: platformId,
+    code: code
+  };
 }
 
-/* =========================================
-   سياسة التسجيل
-   لا تؤثر على ظهور الصفحة
-========================================= */
+/* ---------- CAPTCHA / Turnstile ---------- */
 
-async function loadPolicy() {
-  if (state.policyBusy) return;
-
-  state.policyBusy = true;
-
-  try {
-    const result = await requestJSON(CFG.STATUS, {
-      method: "GET"
-    });
-
-    if (!result.ok || result.data?.success !== true) {
-      throw new Error("POLICY_UNAVAILABLE");
-    }
-
-    const policy = result.data;
-    state.policy = policy;
-    state.policyLoaded = true;
-
-    const methods = policy.signup_methods || {};
-    const open = policy.registration_open === true;
-
-    if (!open) {
-      showMessage(
-        "registrationNotice",
-        "error",
-        policy.closed_reason || "التسجيل مغلق حاليًا."
-      );
-
-      $("submitButton").disabled = true;
-      renderProviders({});
+function loadTurnstileScript() {
+  return new Promise((resolve, reject) => {
+    if (window.turnstile) {
+      resolve();
       return;
     }
 
-    hideMessage("registrationNotice");
+    const existing = document.querySelector(
+      'script[data-aqx-turnstile="1"]'
+    );
 
-    $("submitButton").disabled =
-      !providerEnabled(methods, "email");
-
-    if (!providerEnabled(methods, "email")) {
-      showMessage(
-        "registrationNotice",
-        "info",
-        "التسجيل بالبريد الإلكتروني غير متاح حاليًا."
-      );
+    if (existing) {
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+      return;
     }
 
-    renderProviders(methods);
+    const script = document.createElement("script");
 
-    state.captchaRequired = policy.captcha?.enabled === true;
-    state.captchaSiteKey = policy.captcha?.site_key || "";
+    script.src =
+      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
-    if (state.captchaRequired && state.captchaSiteKey) {
-      loadCaptcha();
-    }
+    script.async = true;
+    script.defer = true;
+    script.dataset.aqxTurnstile = "1";
 
-  } catch (error) {
-    /*
-      لا نعرض تفاصيل الاتصال للزائر.
-      لا نخفي النموذج.
-      يظل الخادم هو صاحب القرار النهائي.
-    */
-    console.warn("AQX policy request failed:", error);
-  } finally {
-    state.policyBusy = false;
-  }
-}
+    script.onload = resolve;
+    script.onerror = reject;
 
-/* =========================================
-   مزودات التسجيل
-   لا يظهر إلا المزود المفعّل
-========================================= */
-
-const PROVIDERS = [
-  {key:"google", name:"Google", oauth:"google"},
-  {key:"github", name:"GitHub", oauth:"github"},
-  {key:"microsoft", name:"Microsoft", oauth:"azure"},
-  {key:"apple", name:"Apple", oauth:"apple"},
-  {key:"facebook", name:"Facebook", oauth:"facebook"},
-  {key:"discord", name:"Discord", oauth:"discord"},
-  {key:"linkedin", name:"LinkedIn", oauth:"linkedin_oidc"}
-];
-
-function renderProviders(methods) {
-  const container = $("providers");
-  const section = $("providerSection");
-
-  container.replaceChildren();
-
-  const active = PROVIDERS.filter(item =>
-    providerEnabled(methods, item.key)
-  );
-
-  if (!active.length) {
-    section.hidden = true;
-    container.classList.remove("show");
-    return;
-  }
-
-  active.forEach(item => {
-    const button = document.createElement("button");
-
-    button.type = "button";
-    button.className = "provider-btn";
-    button.textContent = item.name;
-    button.dataset.provider = item.key;
-    button.dataset.oauth = item.oauth;
-
-    button.addEventListener("click", () => {
-      startOAuth(item);
-    });
-
-    container.appendChild(button);
+    document.head.appendChild(script);
   });
-
-  section.hidden = false;
-  container.classList.add("show");
 }
 
-/* =========================================
-   فحص البريد
-   يتم عند مغادرة خانة البريد
-   ويظهر قبل كتابة كلمة المرور
-========================================= */
-
-function normalizeEmailStatus(data) {
-  const status = String(data?.status || "").toLowerCase();
-
-  if (status === "registered") return "registered";
-  if (status === "reserved") return "reserved";
-  if (status === "blocked") return "blocked";
-  if (status === "available") return "available";
-  if (status === "invalid") return "invalid";
-
-  return "unknown";
-}
-
-function displayEmailStatus(status) {
-  state.emailStatus = status;
-
-  if (status === "registered") {
-    showEmailResult(
-      "error",
-      "هذا البريد موجود بالفعل ومسجل في AQX. استخدم تسجيل الدخول."
-    );
-    setHint("emailHint", "البريد مسجل بالفعل.", "error");
+async function setupCaptcha() {
+  if (!state.captchaEnabled || !state.captchaSiteKey) {
     return;
   }
 
-  if (status === "reserved") {
-    showEmailResult(
-      "error",
-      "هذا البريد محجوز حاليًا ولا يمكن استخدامه للتسجيل."
-    );
-    setHint("emailHint", "البريد محجوز.", "error");
-    return;
-  }
-
-  if (status === "blocked") {
-    showEmailResult(
-      "error",
-      "هذا البريد محظور وغير مسموح بالتسجيل به."
-    );
-    setHint("emailHint", "البريد محظور.", "error");
-    return;
-  }
-
-  if (status === "invalid") {
-    showEmailResult(
-      "error",
-      "صيغة البريد الإلكتروني غير صحيحة."
-    );
-    setHint("emailHint", "البريد غير صحيح.", "error");
-    return;
-  }
-
-  if (status === "available") {
-    showEmailResult(
-      "success",
-      "هذا البريد متاح ويمكنك متابعة التسجيل."
-    );
-    setHint("emailHint", "البريد متاح.", "success");
-    return;
-  }
-
-  showEmailResult(
-    "info",
-    "تعذر تحديد حالة البريد حاليًا. يمكنك المتابعة وسيعيد المحرك التحقق عند التسجيل."
-  );
-  setHint("emailHint", "لم يتم تأكيد حالة البريد.", "info");
-}
-
-async function checkEmail() {
-  const email = $("email").value.trim().toLowerCase();
-
-  if (!email) {
-    state.emailChecked = "";
-    state.emailStatus = "";
-    hideEmailResult();
-    setHint("emailHint", "أدخل بريدك الإلكتروني.");
-    return;
-  }
-
-  if (!validEmail(email)) {
-    state.emailChecked = "";
-    state.emailStatus = "invalid";
-    displayEmailStatus("invalid");
-    return;
-  }
-
-  if (state.emailChecked === email && state.emailStatus) {
-    return;
-  }
-
-  const requestNumber = ++state.emailRequest;
-
-  state.emailBusy = true;
-  state.emailStatus = "";
-  state.emailChecked = "";
-
-  showEmailResult("info", "جارٍ فحص البريد...");
-  setHint("emailHint", "يتم فحص البريد الإلكتروني.", "info");
+  if (state.turnstileRendered) return;
 
   try {
-    const result = await requestJSON(CFG.EMAIL, {
-      method: "POST",
-      body: JSON.stringify({email})
-    });
+    await loadTurnstileScript();
 
-    if (requestNumber !== state.emailRequest) return;
+    if (!window.turnstile) return;
 
-    if (!result.ok || result.data?.success !== true) {
-      throw new Error("EMAIL_CHECK_FAILED");
-    }
+    window.turnstile.render("#turnstileContainer", {
+      sitekey: state.captchaSiteKey,
 
-    const status = normalizeEmailStatus(result.data);
+      callback: token => {
+        state.captchaToken = token || "";
+      },
 
-    state.emailChecked = email;
-    displayEmailStatus(status);
+      "expired-callback": () => {
+        state.captchaToken = "";
+      },
 
-  } catch (error) {
-    if (requestNumber !== state.emailRequest) return;
-
-    state.emailChecked = email;
-    state.emailStatus = "unknown";
-
-    showEmailResult(
-      "info",
-      "تعذر فحص البريد الآن. سيعيد المحرك التحقق عند التسجيل."
-    );
-
-    setHint(
-      "emailHint",
-      "تعذر تأكيد حالة البريد.",
-      "info"
-    );
-
-  } finally {
-    if (requestNumber === state.emailRequest) {
-      state.emailBusy = false;
-    }
-  }
-}
-
-$("email").addEventListener("input", () => {
-  clearTimeout(state.emailTimer);
-
-  state.emailRequest++;
-  state.emailChecked = "";
-  state.emailStatus = "";
-  state.emailBusy = false;
-
-  hideEmailResult();
-
-  const value = $("email").value.trim();
-
-  if (!value) {
-    setHint("emailHint", "أدخل بريدك الإلكتروني.");
-    return;
-  }
-
-  if (!validEmail(value)) {
-    setHint("emailHint", "صيغة البريد غير صحيحة.", "error");
-    return;
-  }
-
-  setHint("emailHint", "سيتم فحص البريد عند الانتقال إلى كلمة المرور.");
-});
-
-/*
-  عند مغادرة البريد يبدأ الفحص.
-  وعند دخول المستخدم إلى كلمة المرور نضمن بدء الفحص فورًا.
-*/
-$("email").addEventListener("blur", () => {
-  clearTimeout(state.emailTimer);
-  checkEmail();
-});
-
-$("password").addEventListener("focus", () => {
-  const email = $("email").value.trim().toLowerCase();
-
-  if (
-    validEmail(email) &&
-    state.emailChecked !== email &&
-    !state.emailBusy
-  ) {
-    checkEmail();
-  }
-});
-
-/* =========================================
-   التحقق من كلمات المرور
-========================================= */
-
-function validatePasswords() {
-  const password = $("password").value;
-  const confirm = $("confirmPassword").value;
-
-  if (password.length < 8) {
-    setHint(
-      "passwordHint",
-      "كلمة المرور يجب ألا تقل عن 8 أحرف.",
-      "error"
-    );
-  } else {
-    setHint(
-      "passwordHint",
-      "كلمة المرور مناسبة.",
-      "success"
-    );
-  }
-
-  if (!confirm) {
-    setHint("confirmHint", "");
-    return false;
-  }
-
-  if (password !== confirm) {
-    setHint(
-      "confirmHint",
-      "كلمتا المرور غير متطابقتين.",
-      "error"
-    );
-    return false;
-  }
-
-  setHint(
-    "confirmHint",
-    "كلمتا المرور متطابقتان.",
-    "success"
-  );
-
-  return password.length >= 8;
-}
-
-$("password").addEventListener("input", validatePasswords);
-$("confirmPassword").addEventListener("input", validatePasswords);
-
-document.querySelectorAll(".toggle-password").forEach(button => {
-  button.addEventListener("click", () => {
-    const input = $(button.dataset.target);
-    const visible = input.type === "text";
-
-    input.type = visible ? "password" : "text";
-    button.textContent = visible ? "إظهار" : "إخفاء";
-  });
-});
-
-/* =========================================
-   Turnstile
-========================================= */
-
-function loadCaptcha() {
-  if (!state.captchaSiteKey || window.turnstile) {
-    if (window.turnstile) renderCaptcha();
-    return;
-  }
-
-  if ($("turnstileScript")) return;
-
-  window.aqxCaptchaLoaded = renderCaptcha;
-
-  const script = document.createElement("script");
-  script.id = "turnstileScript";
-  script.src =
-    "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=aqxCaptchaLoaded&render=explicit";
-  script.async = true;
-  script.defer = true;
-
-  document.head.appendChild(script);
-}
-
-function renderCaptcha() {
-  if (!window.turnstile || !state.captchaSiteKey) return;
-  if (state.captchaWidget !== null) return;
-
-  try {
-    state.captchaWidget = window.turnstile.render(
-      $("captchaArea"),
-      {
-        sitekey: state.captchaSiteKey,
-        theme: "dark",
-
-        callback: token => {
-          state.captchaToken = token;
-        },
-
-        "expired-callback": () => {
-          state.captchaToken = "";
-        },
-
-        "error-callback": () => {
-          state.captchaToken = "";
-        }
+      "error-callback": () => {
+        state.captchaToken = "";
       }
-    );
-  } catch (error) {
-    console.error("AQX captcha error:", error);
+    });
+
+    state.turnstileRendered = true;
+
+  } catch (_) {
+    state.captchaToken = "";
   }
 }
 
-/* =========================================
-   التسجيل بالبريد
-========================================= */
+/* ---------- Signup error messages ---------- */
 
-function errorMessage(code) {
+function signupErrorMessage(error) {
   const messages = {
+    INVALID_INPUT:
+      "يرجى مراجعة البيانات المدخلة.",
+
+    INVALID_EMAIL:
+      "البريد غير صحيح.",
+
+    PASSWORD_POLICY_FAILED:
+      "كلمة السر يجب ألا تقل عن 8 أحرف.",
+
     REGISTRATION_CLOSED:
       "التسجيل مغلق حاليًا.",
 
     EMAIL_SIGNUP_DISABLED:
-      "التسجيل بالبريد الإلكتروني غير متاح حاليًا.",
-
-    INVALID_EMAIL:
-      "صيغة البريد الإلكتروني غير صحيحة.",
-
-    PASSWORD_POLICY_FAILED:
-      "كلمة المرور يجب أن تكون 8 أحرف على الأقل.",
-
-    EMAIL_NOT_ALLOWED:
-      "هذا البريد غير مسموح به.",
-
-    EMAIL_REUSE_HOLD:
-      "هذا البريد محجوز وفق سياسة حماية الحسابات.",
-
-    DISPOSABLE_EMAIL_NOT_ALLOWED:
-      "البريد المؤقت غير مسموح به.",
-
-    SIGNUP_RATE_LIMITED:
-      "تم تجاوز عدد محاولات التسجيل. حاول لاحقًا.",
-
-    CAPTCHA_REQUIRED_OR_INVALID:
-      "أكمل اختبار التحقق الأمني أولًا.",
-
-    CAPTCHA_NOT_CONFIGURED:
-      "خدمة التحقق الأمني غير متاحة حاليًا.",
+      "التسجيل باستخدام البريد الإلكتروني غير متاح حاليًا.",
 
     TERMS_REQUIRED:
       "يجب الموافقة على الشروط والأحكام.",
 
-    FORM_SUBMITTED_TOO_FAST:
-      "انتظر لحظة ثم أعد المحاولة.",
+    SIGNUP_RATE_LIMITED:
+      "تم تجاوز عدد المحاولات المسموح بها. حاول لاحقًا.",
+
+    CAPTCHA_NOT_CONFIGURED:
+      "تعذر إتمام التحقق الأمني حاليًا.",
+
+    CAPTCHA_REQUIRED_OR_INVALID:
+      "يرجى إكمال التحقق الأمني ثم المحاولة مرة أخرى.",
+
+    EMAIL_REUSE_HOLD:
+      "هذا البريد محجوز مؤقتًا ولا يمكن استخدامه حاليًا.",
+
+    DISPOSABLE_EMAIL_NOT_ALLOWED:
+      "لا يمكن التسجيل باستخدام هذا البريد.",
+
+    EMAIL_NOT_ALLOWED:
+      "لا يمكن التسجيل بهذا البريد.",
 
     SIGNUP_REJECTED:
-      "تعذر قبول طلب التسجيل. راجع البيانات وحاول مرة أخرى.",
+      "تعذر قبول التسجيل بهذا البريد. راجع البيانات وحاول مرة أخرى.",
+
+    FORM_SUBMITTED_TOO_FAST:
+      "يرجى الانتظار قليلًا ثم المحاولة مرة أخرى.",
 
     SIGNUP_SERVICE_UNAVAILABLE:
-      "خدمة التسجيل غير متاحة مؤقتًا.",
-
-    REGISTRATION_POLICY_UNAVAILABLE:
-      "تعذر التحقق من سياسة التسجيل حاليًا."
+      "الخدمة غير متاحة مؤقتًا. حاول مرة أخرى."
   };
 
-  return messages[code] || "تعذر إتمام التسجيل. حاول مرة أخرى.";
+  return messages[error] || "تعذر إتمام التسجيل حاليًا. حاول مرة أخرى.";
 }
 
-function validateForm() {
-  const email = $("email").value.trim().toLowerCase();
-  const password = $("password").value;
-  const confirm = $("confirmPassword").value;
+/* ---------- Submit registration ---------- */
 
-  if (!validEmail(email)) {
-    showMessage("formMessage", "error", "أدخل بريدًا إلكترونيًا صحيحًا.");
-    $("email").focus();
-    return false;
-  }
-
-  /*
-    لا نمنع التسجيل بسبب حالة بريد مجهولة أو فشل الفحص.
-    نمنعه فقط إذا رجع المحرك بحالة مؤكدة مانعة.
-  */
-  if (
-    state.emailChecked === email &&
-    ["registered", "reserved", "blocked", "invalid"].includes(state.emailStatus)
-  ) {
-    showMessage(
-      "formMessage",
-      "error",
-      "لا يمكن استخدام هذا البريد. راجع حالة البريد الموضحة أسفل خانته."
-    );
-    $("email").focus();
-    return false;
-  }
-
-  if (password.length < 8 || password.length > 128) {
-    showMessage("formMessage", "error", "كلمة المرور يجب أن تكون من 8 إلى 128 حرفًا.");
-    $("password").focus();
-    return false;
-  }
-
-  if (password !== confirm) {
-    showMessage("formMessage", "error", "كلمتا المرور غير متطابقتين.");
-    $("confirmPassword").focus();
-    return false;
-  }
-
-  if (!$("terms").checked) {
-    showMessage("formMessage", "error", "يجب الموافقة على الشروط والأحكام.");
-    return false;
-  }
-
-  if (state.captchaRequired && !state.captchaToken) {
-    showMessage("formMessage", "error", "أكمل اختبار التحقق الأمني.");
-    return false;
-  }
-
-  return true;
-}
-
-$("signupForm").addEventListener("submit", async event => {
+form.addEventListener("submit", async event => {
   event.preventDefault();
+  hideNotice();
 
   if (state.submitting) return;
 
-  hideMessage("formMessage");
+  const email = normalizeEmail(emailInput.value);
+  const password = passwordInput.value;
+  const confirmPassword = confirmInput.value;
 
-  if (!validateForm()) return;
+  if (!validEmailSyntax(email)) {
+    state.emailStatus = "invalid";
+    showEmailStatus("البريد غير صحيح.", "bad");
+    emailInput.focus();
+    updateSubmitAvailability();
+    return;
+  }
+
+  if (password.length < 8 || password.length > 128) {
+    showNotice("كلمة السر يجب ألا تقل عن 8 أحرف.", "error");
+    passwordInput.focus();
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    showNotice("كلمتا السر غير متطابقتين.", "error");
+    confirmInput.focus();
+    return;
+  }
+
+  if (!$("terms").checked) {
+    showNotice("يجب الموافقة على الشروط والأحكام.", "error");
+    $("terms").focus();
+    return;
+  }
+
+  if (state.emailCheckedFor !== email) {
+    await checkEmailStatus(true);
+  }
+
+  /*
+    لا نسمح بالبريد المسجل أو المحجوز أو المحظور.
+    أما فشل الفحص بسبب انقطاع الشبكة فلا يتحول إلى
+    رسالة بريد غير صحيح، والمحرك الخلفي يعيد الفحص النهائي.
+  */
+  if (
+    state.emailStatus === "registered" ||
+    state.emailStatus === "reserved" ||
+    state.emailStatus === "blocked"
+  ) {
+    const display = emailStatusMessage(state.emailStatus);
+    showEmailStatus(display.message, display.type);
+    emailInput.focus();
+    updateSubmitAvailability();
+    return;
+  }
+
+  if (state.policyLoaded && !state.registrationOpen) {
+    showNotice("التسجيل مغلق حاليًا.", "error");
+    return;
+  }
+
+  if (state.policyLoaded && !state.emailSignupEnabled) {
+    showNotice("التسجيل باستخدام البريد الإلكتروني غير متاح حاليًا.", "error");
+    return;
+  }
+
+  if (state.captchaEnabled && !state.captchaToken) {
+    showNotice("يرجى إكمال التحقق الأمني.", "error");
+    return;
+  }
+
+  const referral = getReferralData();
+
+  const payload = {
+    email: email,
+    password: password,
+    terms_accepted: $("terms").checked,
+    form_started_at: state.formStartedAt,
+    website: $("website").value,
+    captcha_token: state.captchaToken || "",
+    referral: referral || {}
+  };
 
   state.submitting = true;
-
-  const button = $("submitButton");
-  const oldText = button.textContent;
-
-  button.disabled = true;
-  button.textContent = "جارٍ إنشاء الحساب...";
+  submitBtn.disabled = true;
+  submitBtn.textContent = "جارٍ إنشاء الحساب...";
 
   try {
-    const email = $("email").value.trim().toLowerCase();
-
-    const payload = {
-      email,
-      password: $("password").value,
-      terms_accepted: $("terms").checked,
-      form_started_at: state.startedAt,
-      website: $("website").value.trim(),
-      captcha_token: state.captchaToken || ""
-    };
-
-    const referral = getReferral();
-    if (referral) payload.referral = referral;
-
-    const result = await requestJSON(CFG.SIGNUP, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    const result = await apiRequest(
+      "/v1/registration/signup",
+      {
+        method: "POST",
+        body: payload
+      }
+    );
 
     const data = result.data || {};
 
     if (!result.ok || data.success !== true) {
-      throw new Error(data.error || "SIGNUP_SERVICE_UNAVAILABLE");
-    }
+      const error = data.error || "SIGNUP_SERVICE_UNAVAILABLE";
 
-    if (data.email_confirmation_required === false && data.session) {
-      showMessage(
-        "formMessage",
-        "success",
-        "تم إنشاء الحساب بنجاح. سيتم تحويلك إلى تسجيل الدخول."
-      );
+      if (error === "EMAIL_NOT_ALLOWED") {
+        state.emailStatus = "blocked";
+        showEmailStatus("لا يمكن التسجيل بهذا البريد.", "bad");
 
-      setTimeout(() => {
-        location.href = CFG.LOGIN;
-      }, 1800);
+      } else if (error === "EMAIL_REUSE_HOLD") {
+        state.emailStatus = "reserved";
+        showEmailStatus(
+          "هذا البريد محجوز مؤقتًا ولا يمكن استخدامه حاليًا.",
+          "bad"
+        );
 
+      } else if (error === "INVALID_EMAIL") {
+        state.emailStatus = "invalid";
+        showEmailStatus("البريد غير صحيح.", "bad");
+
+      } else if (error === "SIGNUP_REJECTED") {
+        /*
+          رفض إنشاء الحساب لا يعني بالضرورة أن صيغة البريد خاطئة.
+          لا نعرض رسالة "البريد غير صحيح" في هذه الحالة.
+        */
+        showNotice(
+          "تعذر قبول التسجيل بهذا البريد. حاول مرة أخرى أو استخدم بريدًا آخر.",
+          "error"
+        );
+
+      } else {
+        showNotice(signupErrorMessage(error), "error");
+      }
+
+      updateSubmitAvailability();
       return;
     }
 
-    showMessage(
-      "formMessage",
-      "success",
-      "تم استلام طلب التسجيل بنجاح.\n\nإذا كان البريد مؤهلًا، ستصلك رسالة تأكيد. افتح الرسالة واضغط رابط التفعيل لإكمال إنشاء الحساب."
+    if (data.session?.access_token) {
+      showNotice(
+        "تم إنشاء الحساب بنجاح. جارٍ تحويلك...",
+        "success"
+      );
+
+      window.location.assign(CFG.CONFIRMATION_URL);
+      return;
+    }
+
+    showNotice(
+      "تم استلام طلب التسجيل. إذا كان البريد مؤهلًا فستصلك رسالة تأكيد لتفعيل الحساب.",
+      "success"
     );
 
-    $("signupForm").reset();
+    form.reset();
 
-    state.emailChecked = "";
-    state.emailStatus = "";
+    state.emailStatus = "unchecked";
+    state.emailCheckedFor = "";
     state.captchaToken = "";
-    state.startedAt = Date.now();
+    state.formStartedAt = Date.now();
 
-    hideEmailResult();
+    clearEmailStatus();
 
-    setHint("emailHint", "أدخل بريدك الإلكتروني.");
-    setHint("passwordHint", "يجب ألا تقل كلمة المرور عن 8 أحرف.");
-    setHint("confirmHint", "");
-
-    if (window.turnstile && state.captchaWidget !== null) {
-      window.turnstile.reset(state.captchaWidget);
+    if (state.captchaEnabled && window.turnstile) {
+      try {
+        window.turnstile.reset();
+      } catch (_) {}
     }
 
-  } catch (error) {
-    const code = error.message || "SIGNUP_SERVICE_UNAVAILABLE";
-
-    showMessage(
-      "formMessage",
-      "error",
-      errorMessage(code)
+  } catch (_) {
+    showNotice(
+      "تعذر الاتصال بالخدمة حاليًا. حاول مرة أخرى.",
+      "error"
     );
-
-    if (code === "REGISTRATION_CLOSED") {
-      showMessage(
-        "registrationNotice",
-        "error",
-        errorMessage(code)
-      );
-      button.disabled = true;
-    }
-
-    if (code === "EMAIL_SIGNUP_DISABLED") {
-      showMessage(
-        "registrationNotice",
-        "info",
-        errorMessage(code)
-      );
-      button.disabled = true;
-    }
-
-    if (
-      code === "CAPTCHA_REQUIRED_OR_INVALID" &&
-      window.turnstile &&
-      state.captchaWidget !== null
-    ) {
-      state.captchaToken = "";
-      window.turnstile.reset(state.captchaWidget);
-    }
 
   } finally {
     state.submitting = false;
-    button.textContent = oldText;
-
-    if (
-      !state.policy ||
-      state.policy.registration_open !== false
-    ) {
-      button.disabled = false;
-    }
+    updateSubmitAvailability();
   }
 });
 
-/* =========================================
-   التسجيل الاجتماعي
-========================================= */
+/* ---------- Initialize ---------- */
 
-async function startOAuth(item) {
-  if (state.oauthBusy) return;
-
-  hideMessage("formMessage");
-
-  if (!window.supabase?.createClient) {
-    showMessage(
-      "formMessage",
-      "error",
-      "تعذر بدء تسجيل الدخول الاجتماعي. حاول مرة أخرى."
-    );
-    return;
-  }
-
-  state.oauthBusy = true;
-
-  const buttons = $("providers").querySelectorAll("button");
-  buttons.forEach(button => button.disabled = true);
-
-  try {
-    const check = await requestJSON(CFG.OAUTH, {
-      method: "POST",
-      body: JSON.stringify({provider:item.key})
-    });
-
-    if (!check.ok || check.data?.success !== true) {
-      throw new Error(check.data?.error || "PROVIDER_SIGNUP_DISABLED");
-    }
-
-    const client = window.supabase.createClient(
-      CFG.URL,
-      CFG.KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          flowType: "pkce"
-        }
-      }
-    );
-
-    const {error} = await client.auth.signInWithOAuth({
-      provider: item.oauth,
-      options: {
-        redirectTo: CFG.CONFIRMED
-      }
-    });
-
-    if (error) throw new Error("OAUTH_START_FAILED");
-
-  } catch (error) {
-    const code = error.message || "OAUTH_START_FAILED";
-
-    showMessage(
-      "formMessage",
-      "error",
-      code === "PROVIDER_SIGNUP_DISABLED"
-        ? "التسجيل بهذا المزود غير متاح حاليًا."
-        : code === "SIGNUP_RATE_LIMITED"
-          ? "تم تجاوز عدد محاولات التسجيل. حاول لاحقًا."
-          : "تعذر بدء التسجيل الاجتماعي. حاول مرة أخرى."
-    );
-
-    state.oauthBusy = false;
-
-    buttons.forEach(button => {
-      button.disabled = false;
-    });
-  }
-}
-
-/* =========================================
-   تشغيل الصفحة
-========================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  loadRegistrationPolicy();
+});
 
 /*
-  الواجهة موجودة بالفعل.
-  لا توجد شاشة انتظار.
-  لا توجد دولة معروضة.
-  لا توجد رسائل تقنية للزائر.
+  تحديث إعدادات التسجيل تلقائيًا.
+  عند تفعيل مزود من لوحة الإدارة يظهر تلقائيًا،
+  وعند تعطيله يختفي دون تعديل الصفحة.
 */
-
-loadPolicy();
-
 setInterval(() => {
-  if (!state.submitting && !state.oauthBusy) {
-    loadPolicy();
-  }
+  loadRegistrationPolicy();
 }, 30000);
 
-})();
 </script>
-
 </body>
 </html>
