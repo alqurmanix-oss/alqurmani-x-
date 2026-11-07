@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,7 +7,9 @@
 <meta name="theme-color" content="#10131b">
 <meta name="description" content="بوابة الهوية والحساب الموحد AQX">
 <title>تسجيل الدخول | AQX Identity</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+
 <style>
 :root{
   --bg:#10131b;--panel:#191e29;--panel2:#202737;
@@ -117,17 +120,26 @@ a:hover{text-decoration:underline}
   animation:spin .8s linear infinite;margin:15px auto;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* حقل مكافحة الإرسال الآلي */
 .bot-field{
   position:absolute!important;width:1px!important;height:1px!important;
   overflow:hidden!important;clip:rect(0,0,0,0)!important;
   white-space:nowrap!important;opacity:0!important;pointer-events:none!important;
 }
-.captcha-box{
-  margin:18px 0;padding:13px;border:1px solid var(--line);
-  background:#111722;border-radius:12px;min-height:90px;
+
+/* Turnstile غير مرئي: لا يظهر مربع تحقق داخل التصميم */
+#turnstileWidget{
+  position:fixed!important;
+  left:-10000px!important;
+  top:0!important;
+  width:1px!important;
+  height:1px!important;
+  overflow:visible!important;
+  z-index:-1!important;
+  pointer-events:none!important;
 }
-.captcha-title{font-size:12px;color:var(--muted);margin-bottom:12px}
-#turnstileWidget{display:flex;justify-content:center;min-height:65px}
+
 @media(max-width:390px){
   .card{padding:20px}
   .providers{grid-template-columns:1fr}
@@ -179,10 +191,8 @@ a:hover{text-decoration:underline}
     </button>
   </form>
 
-  <div class="captcha-box">
-    <div class="captcha-title">فحص الحماية والتحقق من أنك لست روبوتًا</div>
-    <div id="turnstileWidget"></div>
-  </div>
+  <!-- عنصر Turnstile غير المرئي -->
+  <div id="turnstileWidget" aria-hidden="true"></div>
 
   <button id="oauthContinueButton" class="primary hidden" type="button">
     متابعة تسجيل الدخول
@@ -238,6 +248,10 @@ a:hover{text-decoration:underline}
 (() => {
 "use strict";
 
+/* =========================================
+   1. الإعدادات الأساسية
+========================================= */
+
 const CONFIG = Object.freeze({
   SUPABASE_URL:"https://fkiokwwztbyztleeuwks.supabase.co",
   SUPABASE_KEY:"sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
@@ -257,7 +271,9 @@ const CONFIG = Object.freeze({
   OAUTH_PENDING_KEY:"aqx_oauth_login_pending",
 
   LOGIN_COOLDOWN_MS:1800,
-  ACTION_COOLDOWN_MS:5000
+  ACTION_COOLDOWN_MS:5000,
+  CAPTCHA_TIMEOUT_MS:45000,
+  OAUTH_REDIRECT_DELAY_MS:1800
 });
 
 const PROVIDERS = {
@@ -269,6 +285,10 @@ const PROVIDERS = {
   microsoft:{label:"Microsoft",icon:"▦",provider:"azure"},
   linkedin:{label:"LinkedIn",icon:"in",provider:"linkedin_oidc"}
 };
+
+/* =========================================
+   2. التحقق من المكتبات
+========================================= */
 
 const $=id=>document.getElementById(id);
 
@@ -291,19 +311,33 @@ const supabase=window.supabase.createClient(
   }
 );
 
+/* =========================================
+   3. الحالة الداخلية
+========================================= */
+
 let busy=false;
 let loginCompleting=false;
 let oauthFinishing=false;
+let policyReady=false;
 let redirectTarget=null;
+
 let lastLoginAttempt=0;
 let lastRecoveryAttempt=0;
 let lastResendAttempt=0;
+
 let captchaToken="";
 let captchaWidgetId=null;
-let captchaReady=false;
 let captchaEnabled=false;
 let captchaLoadPromise=null;
+let captchaResolver=null;
+let captchaRejecter=null;
+let captchaTimer=null;
+
 let providerPolicy=null;
+
+/* =========================================
+   4. الرسائل والتحكم
+========================================= */
 
 function showMessage(message,type="info"){
   $("message").textContent=String(message||"").slice(0,600);
@@ -317,26 +351,21 @@ function clearMessage(){
 
 function setBusy(value){
   busy=value;
+
   $("loginButton").disabled=value;
-  $("loginButton").textContent=value?"جارٍ التحقق...":"تسجيل الدخول";
+  $("loginButton").textContent=
+    value?"جارٍ التحقق...":"تسجيل الدخول";
+
   $("forgotButton").disabled=value;
   $("resendButton").disabled=value;
+
+  document.querySelectorAll(".provider").forEach(button=>{
+    button.disabled=value;
+  });
 }
 
 function cooldownAllowed(last,interval){
   return Date.now()-last>=interval;
-}
-
-function clearLoginProof(){
-  sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY);
-}
-
-function clearAqxTokens(){
-  localStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
-  localStorage.removeItem(CONFIG.SESSION_ID_KEY);
-  sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
-  sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
-  clearLoginProof();
 }
 
 function normalizeEmail(){
@@ -348,8 +377,46 @@ function isValidEmail(email){
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+/* =========================================
+   5. إدارة مفاتيح جلسات AQX
+========================================= */
+
+function clearLoginProof(){
+  sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY);
+}
+
+function clearAqxTokens(){
+  localStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
+  localStorage.removeItem(CONFIG.SESSION_ID_KEY);
+
+  sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
+  sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
+
+  clearLoginProof();
+}
+
+function clearNormalSession(){
+  localStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
+  localStorage.removeItem(CONFIG.SESSION_ID_KEY);
+  clearLoginProof();
+}
+
+function clearRestrictedSession(){
+  sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
+  sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
+}
+
+/* =========================================
+   6. رسائل الأخطاء
+========================================= */
+
 function safeErrorMessage(error){
-  const raw=String(error?.message||error?.code||"");
+  const raw=String(
+    error?.message||
+    error?.code||
+    error||
+    ""
+  );
 
   if(/invalid login credentials/i.test(raw))
     return "بيانات الدخول غير صحيحة. راجع البريد وكلمة المرور.";
@@ -363,28 +430,72 @@ function safeErrorMessage(error){
   if(/login_rate_limited/i.test(raw))
     return "تم تجاوز عدد محاولات الدخول. حاول لاحقًا.";
 
-  if(/captcha_required_or_invalid/i.test(raw))
-    return "فشل فحص الحماية. أعد إكمال التحقق.";
+  if(/captcha_required_or_invalid|captcha/i.test(raw))
+    return "تعذر إتمام فحص الحماية. أعد المحاولة.";
 
   if(/captcha_not_configured/i.test(raw))
     return "خدمة فحص الحماية غير مهيأة على الخادم.";
 
+  if(/provider_not_enabled/i.test(raw))
+    return "طريقة تسجيل الدخول هذه غير مفعّلة حاليًا.";
+
   if(/network|fetch/i.test(raw))
     return "تعذر الاتصال بالخدمة. تحقق من الإنترنت وحاول مجددًا.";
+
+  if(/email_not_verified/i.test(raw))
+    return "يجب تأكيد البريد الإلكتروني قبل الدخول.";
 
   return "تعذر إكمال العملية. حاول مجددًا أو تواصل مع دعم AQX.";
 }
 
-function getCaptchaToken(){
-  if(!captchaEnabled)throw new Error("CAPTCHA_NOT_CONFIGURED");
-  if(!captchaToken)throw new Error("CAPTCHA_REQUIRED_OR_INVALID");
-  return captchaToken;
+/* =========================================
+   7. الإحالات
+========================================= */
+
+function setupSignupLink(){
+  const params=new URLSearchParams(location.search);
+  const allowed=["ref","referral","invite"];
+  const output=new URLSearchParams();
+
+  allowed.forEach(key=>{
+    const value=params.get(key);
+
+    if(value&&/^[A-Za-z0-9_-]{3,100}$/.test(value)){
+      output.set(key,value);
+    }
+  });
+
+  $("signupLink").href=CONFIG.SIGNUP_URL+
+    (output.toString()?"?"+output.toString():"");
 }
+
+function getSignupRedirectURL(){
+  return $("signupLink").href||CONFIG.SIGNUP_URL;
+}
+
+/* =========================================
+   8. Turnstile Invisible
+========================================= */
 
 function resetCaptcha(){
   captchaToken="";
-  if(window.turnstile && captchaWidgetId!==null){
-    try{window.turnstile.reset(captchaWidgetId);}catch(_){}
+
+  if(captchaTimer){
+    clearTimeout(captchaTimer);
+    captchaTimer=null;
+  }
+
+  if(captchaRejecter){
+    const reject=captchaRejecter;
+    captchaRejecter=null;
+    captchaResolver=null;
+    reject(new Error("CAPTCHA_RESET"));
+  }
+
+  if(window.turnstile&&captchaWidgetId!==null){
+    try{
+      window.turnstile.reset(captchaWidgetId);
+    }catch(_){}
   }
 }
 
@@ -393,13 +504,20 @@ function loadTurnstile(siteKey){
 
   captchaLoadPromise=new Promise((resolve,reject)=>{
     if(window.turnstile){
-      renderTurnstile(siteKey);
-      resolve();
+      try{
+        renderTurnstile(siteKey);
+        resolve();
+      }catch(error){
+        reject(error);
+      }
       return;
     }
 
     const script=document.createElement("script");
-    script.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+    script.src=
+      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
     script.async=true;
     script.defer=true;
 
@@ -407,10 +525,15 @@ function loadTurnstile(siteKey){
       try{
         renderTurnstile(siteKey);
         resolve();
-      }catch(error){reject(error);}
+      }catch(error){
+        reject(error);
+      }
     };
 
-    script.onerror=()=>reject(new Error("TURNSTILE_LOAD_FAILED"));
+    script.onerror=()=>{
+      reject(new Error("TURNSTILE_LOAD_FAILED"));
+    };
+
     document.head.appendChild(script);
   });
 
@@ -418,7 +541,9 @@ function loadTurnstile(siteKey){
 }
 
 function renderTurnstile(siteKey){
-  if(!window.turnstile)throw new Error("TURNSTILE_NOT_AVAILABLE");
+  if(!window.turnstile){
+    throw new Error("TURNSTILE_NOT_AVAILABLE");
+  }
 
   if(captchaWidgetId!==null)return;
 
@@ -426,36 +551,122 @@ function renderTurnstile(siteKey){
     sitekey:siteKey,
     theme:"dark",
     language:"ar",
+    size:"invisible",
+    execution:"execute",
+    appearance:"interaction-only",
+
     callback:token=>{
       captchaToken=token;
-      captchaReady=true;
-      if(sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY)){
-        $("oauthContinueButton").classList.remove("hidden");
+
+      if(captchaResolver){
+        const resolve=captchaResolver;
+
+        captchaResolver=null;
+        captchaRejecter=null;
+
+        if(captchaTimer){
+          clearTimeout(captchaTimer);
+          captchaTimer=null;
+        }
+
+        resolve(token);
       }
     },
+
     "expired-callback":()=>{
       captchaToken="";
-      captchaReady=false;
-      showMessage("انتهت صلاحية فحص الحماية. أعد التحقق.","info");
+
+      if(captchaRejecter){
+        const reject=captchaRejecter;
+
+        captchaResolver=null;
+        captchaRejecter=null;
+
+        if(captchaTimer){
+          clearTimeout(captchaTimer);
+          captchaTimer=null;
+        }
+
+        reject(new Error("CAPTCHA_EXPIRED"));
+      }
     },
+
     "error-callback":()=>{
       captchaToken="";
-      captchaReady=false;
-      showMessage("تعذر إتمام فحص الحماية. أعد تحميل الصفحة وحاول.","error");
+
+      if(captchaRejecter){
+        const reject=captchaRejecter;
+
+        captchaResolver=null;
+        captchaRejecter=null;
+
+        if(captchaTimer){
+          clearTimeout(captchaTimer);
+          captchaTimer=null;
+        }
+
+        reject(new Error("CAPTCHA_FAILED"));
+      }
     }
   });
 }
 
-async function getPolicy(){
-  const response=await fetch(CONFIG.API+"/v1/registration/status",{
-    method:"GET",
-    headers:{
-      "apikey":CONFIG.SUPABASE_KEY,
-      "Accept":"application/json"
-    },
-    cache:"no-store",
-    credentials:"omit"
+async function requestCaptchaToken(){
+  if(!captchaEnabled){
+    throw new Error("CAPTCHA_NOT_CONFIGURED");
+  }
+
+  if(!window.turnstile||captchaWidgetId===null){
+    throw new Error("TURNSTILE_NOT_AVAILABLE");
+  }
+
+  resetCaptcha();
+
+  return new Promise((resolve,reject)=>{
+    captchaResolver=resolve;
+    captchaRejecter=reject;
+
+    captchaTimer=setTimeout(()=>{
+      captchaResolver=null;
+      captchaRejecter=null;
+      captchaTimer=null;
+
+      reject(new Error("CAPTCHA_TIMEOUT"));
+    },CONFIG.CAPTCHA_TIMEOUT_MS);
+
+    try{
+      window.turnstile.execute(captchaWidgetId);
+    }catch(error){
+      if(captchaTimer){
+        clearTimeout(captchaTimer);
+        captchaTimer=null;
+      }
+
+      captchaResolver=null;
+      captchaRejecter=null;
+
+      reject(error);
+    }
   });
+}
+
+/* =========================================
+   9. قراءة سياسة المحرك
+========================================= */
+
+async function getPolicy(){
+  const response=await fetch(
+    CONFIG.API+"/v1/registration/status",
+    {
+      method:"GET",
+      headers:{
+        "apikey":CONFIG.SUPABASE_KEY,
+        "Accept":"application/json"
+      },
+      cache:"no-store",
+      credentials:"omit"
+    }
+  );
 
   const data=await response.json().catch(()=>null);
 
@@ -466,6 +677,10 @@ async function getPolicy(){
   return data;
 }
 
+/* =========================================
+   10. مزودو الدخول
+========================================= */
+
 function renderProviders(methods){
   const host=$("providers");
   host.replaceChildren();
@@ -475,6 +690,7 @@ function renderProviders(methods){
 
   enabled.forEach(key=>{
     const item=PROVIDERS[key];
+
     const button=document.createElement("button");
     button.type="button";
     button.className="provider";
@@ -488,16 +704,24 @@ function renderProviders(methods){
     label.textContent=item.label;
 
     button.append(symbol,label);
-    button.addEventListener("click",()=>startOAuth(key));
+
+    button.addEventListener("click",()=>{
+      startOAuth(key);
+    });
+
     host.append(button);
   });
 
-  $("oauthSection").classList.toggle("hidden",enabled.length===0);
+  $("oauthSection").classList.toggle(
+    "hidden",
+    enabled.length===0
+  );
 }
 
 async function loadProviders(){
   try{
     const policy=await getPolicy();
+
     providerPolicy=policy;
 
     const captcha=policy.captcha||{};
@@ -515,10 +739,18 @@ async function loadProviders(){
     await loadTurnstile(captcha.site_key);
 
     renderProviders(policy.login_methods||[]);
+
     $("providerLoading").classList.add("hidden");
+
+    policyReady=true;
+
+    $("loginButton").disabled=false;
 
   }catch(error){
     console.error("AQX login policy:",error);
+
+    captchaEnabled=false;
+    policyReady=false;
 
     $("loginButton").disabled=true;
     $("oauthSection").classList.add("hidden");
@@ -530,24 +762,113 @@ async function loadProviders(){
   }
 }
 
-function setupSignupLink(){
-  const params=new URLSearchParams(location.search);
-  const allowed=["ref","referral","invite"];
-  const output=new URLSearchParams();
+/* =========================================
+   11. معالجة رفض إنشاء حساب OAuth
+========================================= */
 
-  allowed.forEach(key=>{
-    const value=params.get(key);
-    if(value&&/^[A-Za-z0-9_-]{3,100}$/.test(value)){
-      output.set(key,value);
-    }
+function getOAuthRedirectError(){
+  const values={};
+
+  const query=new URLSearchParams(location.search);
+  const hash=new URLSearchParams(
+    location.hash.startsWith("#")
+      ?location.hash.slice(1)
+      :location.hash
+  );
+
+  [
+    "error",
+    "error_code",
+    "error_description",
+    "error_uri"
+  ].forEach(key=>{
+    values[key]=query.get(key)||hash.get(key)||"";
   });
 
-  $("signupLink").href=CONFIG.SIGNUP_URL+
-    (output.toString()?"?"+output.toString():"");
+  return values;
 }
+
+function isOAuthSignupRejected(errorData){
+  const pending=sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY);
+
+  if(!pending)return false;
+
+  const text=[
+    errorData.error,
+    errorData.error_code,
+    errorData.error_description
+  ].join(" ").toLowerCase();
+
+  const rejectionPatterns=[
+    /database error saving new user/,
+    /user creation/,
+    /create.*user/,
+    /new user/,
+    /signup.*disabled/,
+    /sign.?up.*not allowed/,
+    /provider.*not enabled/,
+    /hook.*reject/,
+    /إنشاء الحسابات/,
+    /إنشاء حساب جديد/,
+    /غير متاح/
+  ];
+
+  return rejectionPatterns.some(pattern=>pattern.test(text));
+}
+
+function clearOAuthPending(){
+  sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
+}
+
+function redirectToSignupAfterOAuthRejection(){
+  clearOAuthPending();
+
+  clearLoginProof();
+
+  showMessage(
+    "لا يمكن إنشاء حساب جديد باستخدام Google أو GitHub. لإنشاء حساب جديد، يُرجى استخدام التسجيل بالبريد الإلكتروني.",
+    "error"
+  );
+
+  setTimeout(()=>{
+    location.replace(getSignupRedirectURL());
+  },CONFIG.OAUTH_REDIRECT_DELAY_MS);
+}
+
+function handleOAuthRedirectError(){
+  const pending=sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY);
+
+  if(!pending)return false;
+
+  const errorData=getOAuthRedirectError();
+
+  if(!errorData.error&&!errorData.error_description&&
+     !errorData.error_code){
+    return false;
+  }
+
+  if(isOAuthSignupRejected(errorData)){
+    redirectToSignupAfterOAuthRejection();
+    return true;
+  }
+
+  clearOAuthPending();
+
+  showMessage(
+    "تعذر إكمال تسجيل الدخول عبر مزود الخدمة. حاول مجددًا أو استخدم البريد الإلكتروني.",
+    "error"
+  );
+
+  return true;
+}
+
+/* =========================================
+   12. فحص جلسة Supabase
+========================================= */
 
 async function getAuthenticatedSession(){
   const {data,error}=await supabase.auth.getSession();
+
   if(error)throw error;
 
   if(!data.session?.access_token){
@@ -560,51 +881,74 @@ async function getAuthenticatedSession(){
     throw new Error("USER_VERIFICATION_FAILED");
   }
 
-  return {session:data.session,user:verified.data.user};
+  return {
+    session:data.session,
+    user:verified.data.user
+  };
 }
 
-async function startAqxSession(session){
-  const token=getCaptchaToken();
+/* =========================================
+   13. إصدار جلسة AQX
+========================================= */
 
-  const response=await fetch(CONFIG.API+"/v1/session/start",{
-    method:"POST",
-    headers:{
-      "apikey":CONFIG.SUPABASE_KEY,
-      "Authorization":"Bearer "+session.access_token,
-      "Content-Type":"application/json",
-      "Accept":"application/json"
-    },
-    body:JSON.stringify({captcha_token:token}),
-    cache:"no-store",
-    credentials:"omit"
-  });
+async function startAqxSession(session){
+  if(!captchaToken){
+    throw new Error("CAPTCHA_REQUIRED_OR_INVALID");
+  }
+
+  const token=captchaToken;
+
+  const response=await fetch(
+    CONFIG.API+"/v1/session/start",
+    {
+      method:"POST",
+      headers:{
+        "apikey":CONFIG.SUPABASE_KEY,
+        "Authorization":"Bearer "+session.access_token,
+        "Content-Type":"application/json",
+        "Accept":"application/json"
+      },
+      body:JSON.stringify({
+        captcha_token:token
+      }),
+      cache:"no-store",
+      credentials:"omit"
+    }
+  );
 
   const data=await response.json().catch(()=>({}));
 
-  // The Turnstile response is single-use.
+  // رمز Turnstile أحادي الاستخدام.
   resetCaptcha();
 
   if(!response.ok||data.success!==true){
-    const error=new Error(data.message||data.error||"SESSION_START_FAILED");
+    const error=new Error(
+      data.message||data.error||"SESSION_START_FAILED"
+    );
+
     error.code=data.error;
     error.status=response.status;
+
     throw error;
   }
+
+  /* الجلسة المقيّدة */
 
   if(data.restricted===true){
     const restrictedToken=data.restricted_session_token;
 
     if(typeof restrictedToken!=="string"||
-       restrictedToken.length<30||
-       restrictedToken.length>100){
+       restrictedToken.length<1){
       throw new Error("RESTRICTED_TOKEN_INVALID");
     }
 
-    localStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
-    localStorage.removeItem(CONFIG.SESSION_ID_KEY);
-    clearLoginProof();
+    clearNormalSession();
 
-    sessionStorage.setItem(CONFIG.RESTRICTED_TOKEN_KEY,restrictedToken);
+    sessionStorage.setItem(
+      CONFIG.RESTRICTED_TOKEN_KEY,
+      restrictedToken
+    );
+
     sessionStorage.setItem(
       CONFIG.RESTRICTION_DATA_KEY,
       JSON.stringify(data.restriction||{})
@@ -613,47 +957,63 @@ async function startAqxSession(session){
     return {mode:"restricted"};
   }
 
+  /* الجلسة العادية */
+
   const normalToken=data.aqx_session_token;
 
   if(typeof normalToken!=="string"||
-     normalToken.length<30||
-     normalToken.length>100){
+     normalToken.length<1){
     throw new Error("NORMAL_SESSION_TOKEN_INVALID");
   }
 
   const proof=data.login_proof;
 
-  if(!proof||
-     typeof proof.token!=="string"||
-     proof.token.length<30||
-     proof.token.length>100||
-     proof.purpose!=="dashboard_access"||
-     proof.single_use!==true||
-     !proof.expires_at||
-     !Number.isFinite(Date.parse(proof.expires_at))||
-     Date.parse(proof.expires_at)<=Date.now()){
+  if(
+    !proof||
+    typeof proof.token!=="string"||
+    !proof.token||
+    proof.purpose!=="dashboard_access"||
+    proof.single_use!==true||
+    !proof.expires_at||
+    !Number.isFinite(Date.parse(proof.expires_at))||
+    Date.parse(proof.expires_at)<=Date.now()
+  ){
     throw new Error("LOGIN_PROOF_INVALID");
   }
 
-  sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
-  sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
+  clearRestrictedSession();
 
-  localStorage.setItem(CONFIG.NORMAL_SESSION_KEY,normalToken);
+  localStorage.setItem(
+    CONFIG.NORMAL_SESSION_KEY,
+    normalToken
+  );
 
   if(data.session_id){
-    localStorage.setItem(CONFIG.SESSION_ID_KEY,data.session_id);
+    localStorage.setItem(
+      CONFIG.SESSION_ID_KEY,
+      data.session_id
+    );
   }else{
     localStorage.removeItem(CONFIG.SESSION_ID_KEY);
   }
 
-  sessionStorage.setItem(CONFIG.LOGIN_PROOF_KEY,proof.token);
+  sessionStorage.setItem(
+    CONFIG.LOGIN_PROOF_KEY,
+    proof.token
+  );
 
   return {mode:"normal"};
 }
 
+/* =========================================
+   14. نافذة نجاح الدخول والتوجيه
+========================================= */
+
 function showSuccessModal(target){
   redirectTarget=target;
+
   $("successModal").classList.remove("hidden");
+
   $("successText").textContent=
     target==="restricted"
     ?"تم التحقق من هويتك. سيتم تحويلك إلى مركز حالة الحساب."
@@ -662,33 +1022,47 @@ function showSuccessModal(target){
 
 function performRedirect(){
   if(!redirectTarget)return;
+
   const target=redirectTarget;
   redirectTarget=null;
-  location.replace(target==="restricted"?CONFIG.STATUS_URL:CONFIG.SECURITY_URL);
+
+  location.replace(
+    target==="restricted"
+      ?CONFIG.STATUS_URL
+      :CONFIG.SECURITY_URL
+  );
 }
 
-$("continueButton").addEventListener("click",performRedirect);
+$("continueButton").addEventListener(
+  "click",
+  performRedirect
+);
 
-async function completeLogin(){
+/* =========================================
+   15. إكمال عملية الدخول
+========================================= */
+
+async function completeLogin(options={}){
   if(loginCompleting)return;
-
-  if(!captchaToken){
-    showMessage(
-      "أكمل فحص الحماية أولًا، ثم اضغط متابعة تسجيل الدخول.",
-      "info"
-    );
-    $("oauthContinueButton").classList.remove("hidden");
-    return;
-  }
 
   loginCompleting=true;
   oauthFinishing=true;
+
   setBusy(true);
   clearLoginProof();
 
-  showMessage("تم التحقق من المصادقة. جارٍ إنشاء جلسة AQX...","info");
-
   try{
+    if(!options.captchaPrepared){
+      showMessage("جارٍ إتمام فحص الحماية...","info");
+
+      await requestCaptchaToken();
+    }
+
+    showMessage(
+      "تم اجتياز فحص الحماية. جارٍ إنشاء جلسة AQX...",
+      "info"
+    );
+
     const {session,user}=await getAuthenticatedSession();
 
     if(!user.email_confirmed_at){
@@ -697,14 +1071,21 @@ async function completeLogin(){
 
     const result=await startAqxSession(session);
 
-    sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
+    clearOAuthPending();
+
     $("oauthContinueButton").classList.add("hidden");
 
     clearMessage();
-    showSuccessModal(result.mode==="restricted"?"restricted":"normal");
+
+    showSuccessModal(
+      result.mode==="restricted"
+        ?"restricted"
+        :"normal"
+    );
 
   }catch(error){
     console.error("AQX login completion:",error);
+
     resetCaptcha();
     clearLoginProof();
 
@@ -713,173 +1094,293 @@ async function completeLogin(){
         "يجب تأكيد بريدك الإلكتروني قبل بدء جلسة AQX. استخدم زر إعادة إرسال رسالة التفعيل.",
         "error"
       );
+    }else if(error.message==="CAPTCHA_RESET"){
+      showMessage(
+        "أعد محاولة فحص الحماية.",
+        "info"
+      );
     }else{
-      showMessage(safeErrorMessage(error),"error");
+      showMessage(
+        safeErrorMessage(error),
+        "error"
+      );
     }
 
     loginCompleting=false;
     oauthFinishing=false;
+
     setBusy(false);
   }
 }
 
-$("loginForm").addEventListener("submit",async event=>{
-  event.preventDefault();
+/* =========================================
+   16. تسجيل الدخول بالبريد وكلمة المرور
+========================================= */
 
-  if(busy)return;
+$("loginForm").addEventListener(
+  "submit",
+  async event=>{
+    event.preventDefault();
 
-  if(!cooldownAllowed(lastLoginAttempt,CONFIG.LOGIN_COOLDOWN_MS)){
-    showMessage("انتظر لحظة قبل إعادة المحاولة.","info");
-    return;
+    if(busy)return;
+
+    if(!policyReady||!captchaEnabled){
+      showMessage(
+        "خدمة تسجيل الدخول غير جاهزة حاليًا. حاول لاحقًا.",
+        "error"
+      );
+      return;
+    }
+
+    if(!cooldownAllowed(
+      lastLoginAttempt,
+      CONFIG.LOGIN_COOLDOWN_MS
+    )){
+      showMessage(
+        "انتظر لحظة قبل إعادة المحاولة.",
+        "info"
+      );
+      return;
+    }
+
+    lastLoginAttempt=Date.now();
+
+    if($("website").value.trim()!==""){
+      showMessage("تعذر إكمال الطلب.","error");
+      return;
+    }
+
+    const email=normalizeEmail();
+    const password=$("password").value;
+
+    if(!isValidEmail(email)){
+      showMessage(
+        "أدخل بريدًا إلكترونيًا صحيحًا.",
+        "error"
+      );
+      return;
+    }
+
+    if(password.length<8||password.length>128){
+      showMessage(
+        "تحقق من كلمة المرور.",
+        "error"
+      );
+      return;
+    }
+
+    clearMessage();
+    clearLoginProof();
+
+    setBusy(true);
+
+    try{
+      // فحص حماية جديد لكل محاولة دخول.
+      showMessage(
+        "جارٍ إتمام فحص الحماية...",
+        "info"
+      );
+
+      await requestCaptchaToken();
+
+      const {data,error}=await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if(error)throw error;
+
+      if(!data?.session){
+        throw new Error("AUTH_SESSION_NOT_CREATED");
+      }
+
+      await completeLogin({
+        captchaPrepared:true
+      });
+
+    }catch(error){
+      console.error("AQX password login:",error);
+
+      resetCaptcha();
+      clearLoginProof();
+
+      showMessage(
+        safeErrorMessage(error),
+        "error"
+      );
+
+      setBusy(false);
+
+      loginCompleting=false;
+      oauthFinishing=false;
+    }
   }
+);
 
-  lastLoginAttempt=Date.now();
+/* =========================================
+   17. متابعة OAuth
+========================================= */
 
-  if($("website").value.trim()!==""){
-    showMessage("تعذر إكمال الطلب.","error");
-    return;
-  }
-
-  const email=normalizeEmail();
-  const password=$("password").value;
-
-  if(!isValidEmail(email)){
-    showMessage("أدخل بريدًا إلكترونيًا صحيحًا.","error");
-    return;
-  }
-
-  if(password.length<8||password.length>128){
-    showMessage("تحقق من كلمة المرور.","error");
-    return;
-  }
-
-  if(!captchaEnabled){
-    showMessage("فحص الحماية غير متاح. لا يمكن بدء تسجيل الدخول.","error");
-    return;
-  }
-
-  if(!captchaToken){
-    showMessage("أكمل فحص الحماية قبل تسجيل الدخول.","info");
-    return;
-  }
-
-  clearMessage();
-  clearLoginProof();
-  setBusy(true);
-
-  try{
-    const {data,error}=await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if(error)throw error;
-    if(!data?.session)throw new Error("AUTH_SESSION_NOT_CREATED");
+$("oauthContinueButton").addEventListener(
+  "click",
+  async()=>{
+    if(!sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY)){
+      return;
+    }
 
     await completeLogin();
-
-  }catch(error){
-    console.error("AQX password login:",error);
-    resetCaptcha();
-    clearLoginProof();
-    showMessage(safeErrorMessage(error),"error");
-    setBusy(false);
-    loginCompleting=false;
-    oauthFinishing=false;
   }
-});
+);
 
-$("oauthContinueButton").addEventListener("click",async()=>{
-  if(!sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY))return;
-  await completeLogin();
-});
+/* =========================================
+   18. استعادة كلمة المرور
+========================================= */
 
-$("forgotButton").addEventListener("click",async()=>{
-  if(busy)return;
+$("forgotButton").addEventListener(
+  "click",
+  async()=>{
+    if(busy)return;
 
-  if(!cooldownAllowed(lastRecoveryAttempt,CONFIG.ACTION_COOLDOWN_MS)){
-    showMessage("انتظر قليلًا قبل طلب رسالة أخرى.","info");
-    return;
+    if(!cooldownAllowed(
+      lastRecoveryAttempt,
+      CONFIG.ACTION_COOLDOWN_MS
+    )){
+      showMessage(
+        "انتظر قليلًا قبل طلب رسالة أخرى.",
+        "info"
+      );
+      return;
+    }
+
+    const email=normalizeEmail();
+
+    if(!isValidEmail(email)){
+      showMessage(
+        "اكتب بريدك الإلكتروني بصورة صحيحة أولًا.",
+        "info"
+      );
+      $("email").focus();
+      return;
+    }
+
+    lastRecoveryAttempt=Date.now();
+
+    $("forgotButton").disabled=true;
+
+    try{
+      const {error}=await supabase.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo:CONFIG.RECOVERY_URL
+        }
+      );
+
+      if(error)throw error;
+
+      showMessage(
+        "إذا كان البريد مسجلًا ومؤهلًا للاسترداد، فستصلك رسالة لإعادة تعيين كلمة المرور. تحقق من صندوق الوارد والرسائل غير المرغوب فيها.",
+        "success"
+      );
+
+    }catch(error){
+      console.error("AQX recovery:",error);
+
+      showMessage(
+        safeErrorMessage(error),
+        "error"
+      );
+
+    }finally{
+      setTimeout(()=>{
+        $("forgotButton").disabled=false;
+      },CONFIG.ACTION_COOLDOWN_MS);
+    }
   }
+);
 
-  const email=normalizeEmail();
+/* =========================================
+   19. إعادة إرسال رسالة تفعيل البريد
+========================================= */
 
-  if(!isValidEmail(email)){
-    showMessage("اكتب بريدك الإلكتروني بصورة صحيحة أولًا.","info");
-    $("email").focus();
-    return;
+$("resendButton").addEventListener(
+  "click",
+  async()=>{
+    if(busy)return;
+
+    if(!cooldownAllowed(
+      lastResendAttempt,
+      CONFIG.ACTION_COOLDOWN_MS
+    )){
+      showMessage(
+        "انتظر قليلًا قبل طلب إعادة الإرسال.",
+        "info"
+      );
+      return;
+    }
+
+    const email=normalizeEmail();
+
+    if(!isValidEmail(email)){
+      showMessage(
+        "اكتب بريدك الإلكتروني بصورة صحيحة أولًا.",
+        "info"
+      );
+      $("email").focus();
+      return;
+    }
+
+    lastResendAttempt=Date.now();
+
+    $("resendButton").disabled=true;
+
+    try{
+      const {error}=await supabase.auth.resend({
+        type:"signup",
+        email,
+        options:{
+          emailRedirectTo:CONFIG.LOGIN_URL
+        }
+      });
+
+      if(error)throw error;
+
+      showMessage(
+        "إذا كان الحساب يحتاج إلى تأكيد البريد، فستصلك رسالة جديدة. تحقق من صندوق الوارد والرسائل غير المرغوب فيها.",
+        "success"
+      );
+
+    }catch(error){
+      console.error("AQX resend confirmation:",error);
+
+      showMessage(
+        safeErrorMessage(error),
+        "error"
+      );
+
+    }finally{
+      setTimeout(()=>{
+        $("resendButton").disabled=false;
+      },CONFIG.ACTION_COOLDOWN_MS);
+    }
   }
+);
 
-  lastRecoveryAttempt=Date.now();
-  $("forgotButton").disabled=true;
-
-  try{
-    const {error}=await supabase.auth.resetPasswordForEmail(email,{
-      redirectTo:CONFIG.RECOVERY_URL
-    });
-
-    if(error)throw error;
-
-    showMessage(
-      "إذا كان البريد مسجلًا ومؤهلًا للاسترداد، فستصلك رسالة لإعادة تعيين كلمة المرور. تحقق من صندوق الوارد والرسائل غير المرغوب فيها.",
-      "success"
-    );
-  }catch(error){
-    console.error("AQX recovery:",error);
-    showMessage(safeErrorMessage(error),"error");
-  }finally{
-    setTimeout(()=>{$("forgotButton").disabled=false;},CONFIG.ACTION_COOLDOWN_MS);
-  }
-});
-
-$("resendButton").addEventListener("click",async()=>{
-  if(busy)return;
-
-  if(!cooldownAllowed(lastResendAttempt,CONFIG.ACTION_COOLDOWN_MS)){
-    showMessage("انتظر قليلًا قبل طلب إعادة الإرسال.","info");
-    return;
-  }
-
-  const email=normalizeEmail();
-
-  if(!isValidEmail(email)){
-    showMessage("اكتب بريدك الإلكتروني بصورة صحيحة أولًا.","info");
-    $("email").focus();
-    return;
-  }
-
-  lastResendAttempt=Date.now();
-  $("resendButton").disabled=true;
-
-  try{
-    const {error}=await supabase.auth.resend({
-      type:"signup",
-      email,
-      options:{emailRedirectTo:CONFIG.LOGIN_URL}
-    });
-
-    if(error)throw error;
-
-    showMessage(
-      "إذا كان الحساب يحتاج إلى تأكيد البريد، فستصلك رسالة جديدة. تحقق من صندوق الوارد والرسائل غير المرغوب فيها.",
-      "success"
-    );
-  }catch(error){
-    console.error("AQX resend confirmation:",error);
-    showMessage(safeErrorMessage(error),"error");
-  }finally{
-    setTimeout(()=>{$("resendButton").disabled=false;},CONFIG.ACTION_COOLDOWN_MS);
-  }
-});
+/* =========================================
+   20. بدء تسجيل الدخول بمزود خارجي
+========================================= */
 
 async function startOAuth(key){
   if(busy)return;
 
   const item=PROVIDERS[key];
+
   if(!item)return;
 
-  if(!captchaEnabled){
-    showMessage("خدمة فحص الحماية غير مهيأة.","error");
+  if(!policyReady||!captchaEnabled){
+    showMessage(
+      "خدمة تسجيل الدخول غير جاهزة حاليًا.",
+      "error"
+    );
     return;
   }
 
@@ -890,18 +1391,26 @@ async function startOAuth(key){
   try{
     const policy=await getPolicy();
 
-    if(!Array.isArray(policy.login_methods)||
-       !policy.login_methods.includes(key)){
+    if(
+      !Array.isArray(policy.login_methods)||
+      !policy.login_methods.includes(key)
+    ){
       throw new Error("PROVIDER_NOT_ENABLED");
     }
 
-    sessionStorage.setItem(CONFIG.OAUTH_PENDING_KEY,key);
+    sessionStorage.setItem(
+      CONFIG.OAUTH_PENDING_KEY,
+      key
+    );
 
     const {error}=await supabase.auth.signInWithOAuth({
       provider:item.provider,
       options:{
         redirectTo:CONFIG.LOGIN_URL,
-        queryParams:key==="google"?{prompt:"select_account"}:undefined
+
+        ...(key==="google"
+          ?{queryParams:{prompt:"select_account"}}
+          :{})
       }
     });
 
@@ -909,63 +1418,106 @@ async function startOAuth(key){
 
   }catch(error){
     console.error("AQX OAuth start:",error);
-    sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
+
+    clearOAuthPending();
+
     showMessage(
       error.message==="PROVIDER_NOT_ENABLED"
-      ?"طريقة تسجيل الدخول هذه غير مفعّلة حاليًا."
-      :safeErrorMessage(error),
+        ?"طريقة تسجيل الدخول هذه غير مفعّلة حاليًا."
+        :safeErrorMessage(error),
       "error"
     );
+
     setBusy(false);
   }
 }
 
-async function finishExplicitOAuth(){
-  const pending=sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY);
+/* =========================================
+   21. إكمال العودة من OAuth
+========================================= */
 
-  if(!pending||oauthFinishing||loginCompleting)return;
+async function finishExplicitOAuth(){
+  const pending=sessionStorage.getItem(
+    CONFIG.OAUTH_PENDING_KEY
+  );
+
+  if(
+    !pending||
+    oauthFinishing||
+    loginCompleting||
+    !policyReady
+  ){
+    return;
+  }
+
+  if(handleOAuthRedirectError()){
+    return;
+  }
 
   try{
     const {data,error}=await supabase.auth.getSession();
+
     if(error)throw error;
 
-    if(!data?.session)throw new Error("OAUTH_SESSION_NOT_FOUND");
-
-    // OAuth redirects to a new page load. The user must solve
-    // a fresh Turnstile challenge before AQX session issuance.
-    if(!captchaToken){
-      showMessage(
-        "تمت المصادقة لدى مزود الخدمة. أكمل فحص الحماية ثم اضغط متابعة تسجيل الدخول.",
-        "info"
-      );
-      $("oauthContinueButton").classList.remove("hidden");
-      setBusy(false);
-      return;
+    if(!data?.session){
+      throw new Error("OAUTH_SESSION_NOT_FOUND");
     }
 
+    // لا نستخدم رمز Turnstile قديمًا من قبل التحويل.
+    // يتم طلب رمز جديد بعد العودة من مزود الخدمة.
     await completeLogin();
 
   }catch(error){
     console.error("AQX OAuth callback:",error);
-    sessionStorage.removeItem(CONFIG.OAUTH_PENDING_KEY);
+
     resetCaptcha();
-    showMessage(safeErrorMessage(error),"error");
+
+    showMessage(
+      safeErrorMessage(error),
+      "error"
+    );
+
     oauthFinishing=false;
     loginCompleting=false;
+
     setBusy(false);
   }
 }
 
-supabase.auth.onAuthStateChange((event,session)=>{
-  if(event==="SIGNED_IN"&&session&&
-     sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY)){
-    queueMicrotask(finishExplicitOAuth);
+/* =========================================
+   22. مراقبة حالة المصادقة
+========================================= */
+
+supabase.auth.onAuthStateChange(
+  (event,session)=>{
+    if(
+      event==="SIGNED_IN"&&
+      session&&
+      sessionStorage.getItem(CONFIG.OAUTH_PENDING_KEY)
+    ){
+      setTimeout(()=>{
+        finishExplicitOAuth();
+      },0);
+    }
   }
-});
+);
+
+/* =========================================
+   23. التشغيل الأولي
+========================================= */
 
 async function initialize(){
   setupSignupLink();
+
+  // معالجة رفض إنشاء حساب OAuth قبل أي محاولة متابعة.
+  if(handleOAuthRedirectError()){
+    return;
+  }
+
   await loadProviders();
+
+  if(!policyReady)return;
+
   await finishExplicitOAuth();
 }
 
