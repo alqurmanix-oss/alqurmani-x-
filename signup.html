@@ -1,1283 +1,1623 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#081426">
-  <meta name="description" content="إنشاء حساب AQX موحد للوصول إلى خدمات ومنصات AQX.">
-  <title>إنشاء حساب | AQX Identity</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#081426">
+<meta name="description" content="إنشاء حساب AQX موحد للوصول إلى خدمات ومنصات AQX.">
+<title>إنشاء حساب | AQX Identity</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
 
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #071323;
-      --panel: #101f33;
-      --panel2: #14263d;
-      --line: rgba(255,255,255,.10);
-      --text: #f3f6fb;
-      --muted: #9eacc0;
-      --gold: #d5b16b;
-      --gold2: #f0d59a;
-      --green: #40c58a;
-      --red: #ff7079;
-      --blue: #77baff;
-      --radius: 18px;
-    }
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#071323;
+  --panel:#101f33;
+  --panel2:#14263d;
+  --line:rgba(255,255,255,.10);
+  --text:#f3f6fb;
+  --muted:#9eacc0;
+  --gold:#d5b16b;
+  --gold2:#f0d59a;
+  --green:#40c58a;
+  --red:#ff7079;
+  --blue:#77baff;
+}
 
-    * { box-sizing: border-box; }
+* { box-sizing:border-box; }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 28px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "Cairo", Tahoma, Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 15% 10%, rgba(40,91,142,.24), transparent 32%),
-        radial-gradient(circle at 90% 90%, rgba(174,133,58,.12), transparent 34%),
-        var(--bg);
-    }
+[hidden] { display:none !important; }
 
-    button, input { font: inherit; }
+body {
+  margin:0;
+  min-height:100vh;
+  padding:28px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:"Cairo",Tahoma,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 10%,rgba(40,91,142,.24),transparent 32%),
+    radial-gradient(circle at 90% 90%,rgba(174,133,58,.12),transparent 34%),
+    var(--bg);
+}
 
-    .page {
-      width: 100%;
-      max-width: 480px;
-      margin: auto;
-    }
+button,input { font:inherit; }
 
-    .brand {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+.page {
+  width:100%;
+  max-width:480px;
+  margin:auto;
+}
 
-    .brand-mark {
-      width: 62px;
-      height: 62px;
-      margin: 0 auto 10px;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(213,177,107,.48);
-      border-radius: 19px;
-      color: var(--gold2);
-      background: linear-gradient(145deg, #1b3049, #0b192b);
-      box-shadow: 0 10px 35px rgba(0,0,0,.22);
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: -2px;
-    }
+.brand {
+  text-align:center;
+  margin-bottom:20px;
+}
 
-    .brand h1 {
-      margin: 0;
-      font-size: 25px;
-      font-weight: 900;
-      letter-spacing: .4px;
-    }
+.brand-mark {
+  width:62px;
+  height:62px;
+  margin:0 auto 10px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(213,177,107,.48);
+  border-radius:19px;
+  color:var(--gold2);
+  background:linear-gradient(145deg,#1b3049,#0b192b);
+  box-shadow:0 10px 35px rgba(0,0,0,.22);
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:-2px;
+}
 
-    .brand p {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+.brand h1 {
+  margin:0;
+  font-size:25px;
+  font-weight:900;
+}
 
-    .card {
-      padding: 27px;
-      border: 1px solid var(--line);
-      border-radius: 23px;
-      background: linear-gradient(155deg, rgba(20,38,61,.98), rgba(11,25,43,.98));
-      box-shadow: 0 24px 70px rgba(0,0,0,.30);
-    }
+.brand p {
+  margin:3px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
 
-    .card-heading {
-      margin-bottom: 20px;
-    }
+.card {
+  padding:27px;
+  border:1px solid var(--line);
+  border-radius:23px;
+  background:linear-gradient(155deg,rgba(20,38,61,.98),rgba(11,25,43,.98));
+  box-shadow:0 24px 70px rgba(0,0,0,.30);
+}
 
-    .card-heading h2 {
-      margin: 0 0 5px;
-      font-size: 21px;
-      font-weight: 800;
-    }
+.card-heading { margin-bottom:20px; }
 
-    .card-heading p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }
+.card-heading h2 {
+  margin:0 0 5px;
+  font-size:21px;
+  font-weight:800;
+}
 
-    .field { margin-bottom: 16px; }
+.card-heading p {
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+}
 
-    .field label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #dce5f1;
-    }
+.field { margin-bottom:16px; }
 
-    .input-wrap { position: relative; }
+.field label {
+  display:block;
+  margin-bottom:7px;
+  font-size:13px;
+  font-weight:700;
+  color:#dce5f1;
+}
 
-    .field input {
-      width: 100%;
-      height: 49px;
-      padding: 0 14px;
-      outline: none;
-      color: white;
-      background: rgba(4,14,27,.58);
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 11px;
-      transition: .2s;
-      direction: ltr;
-      text-align: left;
-    }
+.input-wrap { position:relative; }
 
-    .field input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(213,177,107,.11);
-    }
+.field input {
+  width:100%;
+  height:49px;
+  padding:0 14px;
+  outline:none;
+  color:white;
+  background:rgba(4,14,27,.58);
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:11px;
+  transition:.2s;
+  direction:ltr;
+  text-align:left;
+}
 
-    .field input::placeholder {
-      color: #708198;
-    }
+.field input:focus {
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(213,177,107,.11);
+}
 
-    .password-input { padding-right: 48px !important; }
+.field input::placeholder { color:#708198; }
 
-    .toggle-password {
-      position: absolute;
-      right: 8px;
-      top: 7px;
-      width: 35px;
-      height: 35px;
-      border: 0;
-      color: var(--muted);
-      background: transparent;
-      cursor: pointer;
-    }
+.password-input { padding-right:48px !important; }
 
-    .email-status {
-      display: none;
-      margin-top: 8px;
-      padding: 8px 11px;
-      border-radius: 9px;
-      font-size: 12px;
-      line-height: 1.7;
-      border: 1px solid transparent;
-    }
+.toggle-password {
+  position:absolute;
+  right:8px;
+  top:7px;
+  width:35px;
+  height:35px;
+  border:0;
+  color:var(--muted);
+  background:transparent;
+  cursor:pointer;
+}
 
-    .email-status.show { display: block; }
+.email-status {
+  display:none;
+  margin-top:8px;
+  padding:8px 11px;
+  border-radius:9px;
+  font-size:12px;
+  line-height:1.7;
+  border:1px solid transparent;
+}
 
-    .email-status.checking {
-      display: block;
-      color: #b9d9ff;
-      background: rgba(65,143,220,.10);
-      border-color: rgba(65,143,220,.25);
-    }
+.email-status.show { display:block; }
 
-    .email-status.available {
-      color: #8be2b7;
-      background: rgba(47,183,119,.10);
-      border-color: rgba(47,183,119,.27);
-    }
+.email-status.checking {
+  display:block;
+  color:#b9d9ff;
+  background:rgba(65,143,220,.10);
+  border-color:rgba(65,143,220,.25);
+}
 
-    .email-status.registered,
-    .email-status.reserved,
-    .email-status.blocked,
-    .email-status.invalid,
-    .email-status.error {
-      color: #ff9da3;
-      background: rgba(226,76,88,.10);
-      border-color: rgba(226,76,88,.25);
-    }
+.email-status.available {
+  color:#8be2b7;
+  background:rgba(47,183,119,.10);
+  border-color:rgba(47,183,119,.27);
+}
 
-    .hint {
-      margin-top: 6px;
-      color: #8292a8;
-      font-size: 11px;
-    }
+.email-status.registered,
+.email-status.reserved,
+.email-status.blocked,
+.email-status.invalid,
+.email-status.error {
+  color:#ff9da3;
+  background:rgba(226,76,88,.10);
+  border-color:rgba(226,76,88,.25);
+}
 
-    .terms {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      margin: 14px 0 18px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.8;
-    }
+.hint {
+  margin-top:6px;
+  color:#8292a8;
+  font-size:11px;
+}
 
-    .terms input {
-      margin-top: 5px;
-      accent-color: var(--gold);
-    }
+.terms {
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  margin:14px 0 18px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.8;
+}
 
-    .terms a {
-      color: var(--gold2);
-      text-decoration: none;
-    }
+.terms input {
+  margin-top:5px;
+  accent-color:var(--gold);
+}
 
-    .primary-btn {
-      width: 100%;
-      min-height: 49px;
-      border: 0;
-      border-radius: 11px;
-      color: #172235;
-      background: linear-gradient(110deg, var(--gold), var(--gold2));
-      font-weight: 900;
-      cursor: pointer;
-      transition: .2s;
-    }
+.primary-btn {
+  width:100%;
+  min-height:49px;
+  border:0;
+  border-radius:11px;
+  color:#172235;
+  background:linear-gradient(110deg,var(--gold),var(--gold2));
+  font-weight:900;
+  cursor:pointer;
+  transition:.2s;
+}
 
-    .primary-btn:hover { filter: brightness(1.06); }
+.primary-btn:hover { filter:brightness(1.06); }
 
-    .primary-btn:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
+.primary-btn:disabled {
+  opacity:.55;
+  cursor:not-allowed;
+}
 
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 20px 0;
-      color: #8796aa;
-      font-size: 11px;
-    }
+.divider {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:20px 0;
+  color:#8796aa;
+  font-size:11px;
+}
 
-    .divider::before, .divider::after {
-      content: "";
-      height: 1px;
-      flex: 1;
-      background: var(--line);
-    }
+.divider::before,
+.divider::after {
+  content:"";
+  height:1px;
+  flex:1;
+  background:var(--line);
+}
 
-    .oauth-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
-    }
+.oauth-list {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
 
-    .oauth-btn {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-height: 43px;
-      padding: 8px;
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 10px;
-      color: #e5edf8;
-      background: rgba(255,255,255,.045);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 700;
-      transition: .2s;
-    }
+.oauth-btn {
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:43px;
+  padding:8px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:10px;
+  color:#e5edf8;
+  background:rgba(255,255,255,.045);
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+  transition:.2s;
+}
 
-    .oauth-btn.visible { display: flex; }
+.oauth-btn.visible { display:flex; }
 
-    .oauth-btn:hover {
-      border-color: rgba(213,177,107,.55);
-      background: rgba(255,255,255,.08);
-    }
+.oauth-btn:hover {
+  border-color:rgba(213,177,107,.55);
+  background:rgba(255,255,255,.08);
+}
 
-    .oauth-btn:disabled {
-      opacity: .5;
-      cursor: wait;
-    }
+.oauth-btn:disabled {
+  opacity:.5;
+  cursor:wait;
+}
 
-    .oauth-icon {
-      font-size: 15px;
-      font-weight: 900;
-    }
+.oauth-icon {
+  font-size:15px;
+  font-weight:900;
+}
 
-    .message {
-      display: none;
-      margin: 0 0 15px;
-      padding: 11px 13px;
-      border-radius: 10px;
-      font-size: 12px;
-      line-height: 1.8;
-    }
+.message {
+  display:none;
+  margin:0 0 15px;
+  padding:11px 13px;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.8;
+}
 
-    .message.show { display: block; }
+.message.show { display:block; }
 
-    .message.error {
-      color: #ffadb2;
-      background: rgba(220,65,76,.12);
-      border: 1px solid rgba(220,65,76,.25);
-    }
+.message.error {
+  color:#ffadb2;
+  background:rgba(220,65,76,.12);
+  border:1px solid rgba(220,65,76,.25);
+}
 
-    .message.success {
-      color: #9ce7c1;
-      background: rgba(47,183,119,.11);
-      border: 1px solid rgba(47,183,119,.25);
-    }
+.message.success {
+  color:#9ce7c1;
+  background:rgba(47,183,119,.11);
+  border:1px solid rgba(47,183,119,.25);
+}
 
-    .message.info {
-      color: #b9d9ff;
-      background: rgba(65,143,220,.11);
-      border: 1px solid rgba(65,143,220,.25);
-    }
+.message.info {
+  color:#b9d9ff;
+  background:rgba(65,143,220,.11);
+  border:1px solid rgba(65,143,220,.25);
+}
 
-    .footer {
-      margin-top: 19px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
+.footer {
+  margin-top:19px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
 
-    .footer a {
-      color: var(--gold2);
-      text-decoration: none;
-      font-weight: 800;
-    }
+.footer a {
+  color:var(--gold2);
+  text-decoration:none;
+  font-weight:800;
+}
 
-    .system-status {
-      margin-top: 15px;
-      text-align: center;
-      color: #8191a7;
-      font-size: 10px;
-    }
+.system-status {
+  margin-top:15px;
+  text-align:center;
+  color:#8191a7;
+  font-size:10px;
+}
 
-    .system-status span {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin-left: 5px;
-      border-radius: 50%;
-      background: var(--green);
-    }
+.system-status .dot {
+  display:inline-block;
+  width:7px;
+  height:7px;
+  margin-left:5px;
+  border-radius:50%;
+  background:var(--green);
+}
 
-    .system-status.offline span { background: var(--red); }
+.system-status.offline .dot { background:var(--red); }
 
-    .honeypot {
-      position: absolute !important;
-      left: -99999px !important;
-      opacity: 0 !important;
-      height: 1px !important;
-      width: 1px !important;
-    }
+.honeypot {
+  position:absolute !important;
+  left:-99999px !important;
+  opacity:0 !important;
+  height:1px !important;
+  width:1px !important;
+}
 
-    #captchaContainer {
-      display: flex;
-      justify-content: center;
-      margin: 12px 0;
-    }
+#captchaContainer {
+  display:flex;
+  justify-content:center;
+  margin:12px 0;
+}
 
-    @media (max-width: 520px) {
-      body { padding: 18px 12px; }
-      .card { padding: 21px 17px; }
-      .brand h1 { font-size: 23px; }
-    }
-  </style>
+@media(max-width:520px) {
+  body { padding:18px 12px; }
+  .card { padding:21px 17px; }
+  .brand h1 { font-size:23px; }
+}
+</style>
 </head>
 
 <body>
-  <main class="page">
+<main class="page">
 
-    <header class="brand">
-      <div class="brand-mark">AQX</div>
-      <h1>AQX Identity</h1>
-      <p data-i18n="brandSubtitle">حسابك الموحد لجميع خدمات AQX</p>
-    </header>
+  <header class="brand">
+    <div class="brand-mark">AQX</div>
+    <h1>AQX Identity</h1>
+    <p data-i18n="brandSubtitle">حسابك الموحد لجميع خدمات AQX</p>
+  </header>
 
-    <section class="card">
+  <section class="card">
 
-      <div class="card-heading">
-        <h2 data-i18n="title">إنشاء حساب جديد</h2>
-        <p data-i18n="subtitle">أنشئ حساب AQX واحدًا للوصول إلى خدمات ومنصات المنظومة.</p>
+    <div class="card-heading">
+      <h2 data-i18n="title">إنشاء حساب جديد</h2>
+      <p data-i18n="subtitle">أنشئ حساب AQX واحدًا للوصول إلى خدمات ومنصات المنظومة.</p>
+    </div>
+
+    <div id="mainMessage" class="message" role="alert" aria-live="polite"></div>
+
+    <form id="signupForm" novalidate>
+
+      <div class="field">
+        <label for="email" data-i18n="emailLabel">البريد الإلكتروني</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          maxlength="254"
+          autocomplete="email"
+          inputmode="email"
+          placeholder="name@example.com"
+          dir="ltr"
+          required>
+        <div id="emailStatus" class="email-status" aria-live="polite"></div>
+        <div class="hint" data-i18n="emailHint">
+          سيتم فحص البريد تلقائيًا عند الانتقال إلى الحقل التالي.
+        </div>
       </div>
 
-      <div id="mainMessage" class="message" role="alert" aria-live="polite"></div>
-
-      <form id="signupForm" novalidate>
-
-        <div class="field">
-          <label for="fullName" data-i18n="nameLabel">الاسم</label>
+      <div class="field">
+        <label for="password" data-i18n="passwordLabel">كلمة المرور</label>
+        <div class="input-wrap">
           <input
-            id="fullName"
-            name="fullName"
-            type="text"
-            maxlength="100"
-            autocomplete="name"
-            placeholder="اسمك"
-            data-i18n-placeholder="namePlaceholder">
-        </div>
-
-        <div class="field">
-          <label for="email" data-i18n="emailLabel">البريد الإلكتروني</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            maxlength="254"
-            autocomplete="email"
-            inputmode="email"
-            placeholder="name@example.com"
-            dir="ltr"
-            required>
-          <div id="emailStatus" class="email-status" aria-live="polite"></div>
-          <div class="hint" data-i18n="emailHint">سيتم فحص البريد تلقائيًا عند الانتقال إلى الحقل التالي.</div>
-        </div>
-
-        <div class="field">
-          <label for="password" data-i18n="passwordLabel">كلمة المرور</label>
-          <div class="input-wrap">
-            <input
-              id="password"
-              class="password-input"
-              name="password"
-              type="password"
-              minlength="8"
-              maxlength="128"
-              autocomplete="new-password"
-              placeholder="8 أحرف على الأقل"
-              data-i18n-placeholder="passwordPlaceholder"
-              dir="ltr"
-              required>
-            <button class="toggle-password" id="togglePassword" type="button" aria-label="Show password">◉</button>
-          </div>
-          <div class="hint" data-i18n="passwordHint">يجب ألا تقل كلمة المرور عن 8 أحرف.</div>
-        </div>
-
-        <div class="field">
-          <label for="passwordConfirm" data-i18n="confirmLabel">تأكيد كلمة المرور</label>
-          <input
-            id="passwordConfirm"
-            name="passwordConfirm"
+            id="password"
+            class="password-input"
+            name="password"
             type="password"
+            minlength="8"
             maxlength="128"
             autocomplete="new-password"
-            placeholder="أعد كتابة كلمة المرور"
-            data-i18n-placeholder="confirmPlaceholder"
+            placeholder="8 أحرف على الأقل"
+            data-i18n-placeholder="passwordPlaceholder"
             dir="ltr"
             required>
+          <button
+            class="toggle-password"
+            id="togglePassword"
+            type="button"
+            aria-label="Show password">◉</button>
         </div>
-
-        <label class="terms" id="termsRow">
-          <input type="checkbox" id="termsAccepted">
-          <span data-i18n="termsText">أوافق على الشروط والأحكام وسياسة الخصوصية.</span>
-        </label>
-
-        <input class="honeypot" id="website" name="website" type="text" tabindex="-1" autocomplete="off">
-
-        <div id="captchaContainer"></div>
-
-        <button class="primary-btn" id="submitBtn" type="submit">
-          <span data-i18n="submit">إنشاء حساب</span>
-        </button>
-      </form>
-
-      <div class="divider" id="oauthDivider">
-        <span data-i18n="or">أو التسجيل باستخدام</span>
+        <div class="hint" data-i18n="passwordHint">
+          يجب ألا تقل كلمة المرور عن 8 أحرف.
+        </div>
       </div>
 
-      <div class="oauth-list" id="oauthList">
-        <button class="oauth-btn" type="button" data-provider="google">
-          <span class="oauth-icon">G</span><span>Google</span>
-        </button>
-        <button class="oauth-btn" type="button" data-provider="github">
-          <span class="oauth-icon">⌘</span><span>GitHub</span>
-        </button>
-        <button class="oauth-btn" type="button" data-provider="apple">
-          <span class="oauth-icon">●</span><span>Apple</span>
-        </button>
-        <button class="oauth-btn" type="button" data-provider="facebook">
-          <span class="oauth-icon">f</span><span>Facebook</span>
-        </button>
-        <button class="oauth-btn" type="button" data-provider="discord">
-          <span class="oauth-icon">◈</span><span>Discord</span>
-        </button>
-        <button class="oauth-btn" type="button" data-provider="linkedin">
-          <span class="oauth-icon">in</span><span>LinkedIn</span>
-        </button>
-        <button class="oauth-btn" type="button" data-provider="microsoft">
-          <span class="oauth-icon">▦</span><span>Microsoft</span>
-        </button>
+      <div class="field">
+        <label for="passwordConfirm" data-i18n="confirmLabel">تأكيد كلمة المرور</label>
+        <input
+          id="passwordConfirm"
+          name="passwordConfirm"
+          type="password"
+          maxlength="128"
+          autocomplete="new-password"
+          placeholder="أعد كتابة كلمة المرور"
+          data-i18n-placeholder="confirmPlaceholder"
+          dir="ltr"
+          required>
       </div>
 
-      <div class="footer">
-        <span data-i18n="haveAccount">لديك حساب بالفعل؟</span>
-        <a href="https://id.alqurmanix.com/login.html" data-i18n="login">تسجيل الدخول</a>
-      </div>
+      <label class="terms" id="termsRow" hidden>
+        <input type="checkbox" id="termsAccepted">
+        <span data-i18n="termsText">أوافق على الشروط والأحكام وسياسة الخصوصية.</span>
+      </label>
 
-      <div class="system-status" id="systemStatus">
-        <span></span><span data-i18n="loading">جارٍ الاتصال بمحرك AQX...</span>
-      </div>
+      <input
+        class="honeypot"
+        id="website"
+        name="website"
+        type="text"
+        tabindex="-1"
+        autocomplete="off">
 
-    </section>
-  </main>
+      <div id="captchaContainer"></div>
+
+      <button class="primary-btn" id="submitBtn" type="submit" disabled>
+        <span data-i18n="submit">إنشاء حساب</span>
+      </button>
+    </form>
+
+    <div class="divider" id="oauthDivider" hidden>
+      <span data-i18n="or">أو التسجيل باستخدام</span>
+    </div>
+
+    <div class="oauth-list" id="oauthList">
+      <button class="oauth-btn" type="button" data-provider="google">
+        <span class="oauth-icon">G</span><span>Google</span>
+      </button>
+      <button class="oauth-btn" type="button" data-provider="github">
+        <span class="oauth-icon">⌘</span><span>GitHub</span>
+      </button>
+      <button class="oauth-btn" type="button" data-provider="apple">
+        <span class="oauth-icon">●</span><span>Apple</span>
+      </button>
+      <button class="oauth-btn" type="button" data-provider="facebook">
+        <span class="oauth-icon">f</span><span>Facebook</span>
+      </button>
+      <button class="oauth-btn" type="button" data-provider="discord">
+        <span class="oauth-icon">◈</span><span>Discord</span>
+      </button>
+      <button class="oauth-btn" type="button" data-provider="linkedin">
+        <span class="oauth-icon">in</span><span>LinkedIn</span>
+      </button>
+      <button class="oauth-btn" type="button" data-provider="microsoft">
+        <span class="oauth-icon">▦</span><span>Microsoft</span>
+      </button>
+    </div>
+
+    <div class="footer">
+      <span data-i18n="haveAccount">لديك حساب بالفعل؟</span>
+      <a href="https://id.alqurmanix.com/login.html" data-i18n="login">تسجيل الدخول</a>
+    </div>
+
+    <div class="system-status" id="systemStatus" aria-live="polite">
+      <span class="dot"></span>
+      <span id="systemStatusText">جارٍ الاتصال بمحرك AQX...</span>
+    </div>
+
+  </section>
+</main>
 
 <script>
 (() => {
-  "use strict";
+"use strict";
 
-  /* =========================================================
-     AQX IDENTITY CONFIGURATION
-     ========================================================= */
+/* =========================================================
+   AQX IDENTITY - CONFIGURATION
+   ========================================================= */
 
-  const CONFIG = Object.freeze({
-    SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
-    SUPABASE_PUBLISHABLE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
-    API_BASE: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
-    CONFIRMED_URL: "https://id.alqurmanix.com/confirmed.html",
-    LOGIN_URL: "https://id.alqurmanix.com/login.html",
-    EMAIL_CACHE_MS: 30000,
-    STATUS_REFRESH_MS: 20000
+const CONFIG = Object.freeze({
+  SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+  API_BASE:
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+  CONFIRMED_URL:
+    "https://id.alqurmanix.com/confirmed.html",
+
+  LOGIN_URL:
+    "https://id.alqurmanix.com/login.html",
+
+  EMAIL_CACHE_MS: 25000,
+  STATUS_REFRESH_MS: 20000
+});
+
+const $ = id => document.getElementById(id);
+
+/* =========================================================
+   GLOBAL STATE
+   ========================================================= */
+
+let currentPolicy = null;
+let formStartedAt = Date.now();
+
+let emailCache = new Map();
+let emailSequence = 0;
+let emailCheckLastResult = null;
+
+let captchaWidgetId = null;
+let captchaToken = "";
+let captchaLoaded = false;
+
+let supabaseClient = null;
+let isSubmitting = false;
+let isOAuthStarting = false;
+
+/* =========================================================
+   LANGUAGE
+   ========================================================= */
+
+const translations = {
+  ar: {
+    brandSubtitle:"حسابك الموحد لجميع خدمات AQX",
+    title:"إنشاء حساب جديد",
+    subtitle:"أنشئ حساب AQX واحدًا للوصول إلى خدمات ومنصات المنظومة.",
+    emailLabel:"البريد الإلكتروني",
+    emailHint:"سيتم فحص البريد تلقائيًا عند الانتقال إلى الحقل التالي.",
+    passwordLabel:"كلمة المرور",
+    passwordPlaceholder:"8 أحرف على الأقل",
+    passwordHint:"يجب ألا تقل كلمة المرور عن 8 أحرف.",
+    confirmLabel:"تأكيد كلمة المرور",
+    confirmPlaceholder:"أعد كتابة كلمة المرور",
+    termsText:"أوافق على الشروط والأحكام وسياسة الخصوصية.",
+    submit:"إنشاء حساب",
+    submitting:"جارٍ إنشاء الحساب...",
+    or:"أو التسجيل باستخدام",
+    haveAccount:"لديك حساب بالفعل؟",
+    login:"تسجيل الدخول",
+    loading:"جارٍ الاتصال بمحرك AQX...",
+    ready:"محرك التسجيل متصل",
+    unavailable:"تعذر الاتصال بمحرك التسجيل",
+    emailChecking:"جارٍ فحص البريد الإلكتروني...",
+    emailAvailable:"هذا البريد متاح للتسجيل لأول مرة.",
+    emailRegistered:"هذا البريد مسجل بالفعل. استخدم تسجيل الدخول بدلًا من إنشاء حساب جديد.",
+    emailReserved:"هذا البريد محجوز مؤقتًا ولا يمكن استخدامه حاليًا.",
+    emailBlocked:"هذا البريد غير مؤهل للتسجيل في منظومة AQX.",
+    emailInvalid:"يرجى إدخال بريد إلكتروني صحيح.",
+    emailError:"تعذر التحقق من البريد الآن. حاول مرة أخرى بعد قليل.",
+    emailRate:"وصلت إلى الحد المسموح لفحص البريد. انتظر قليلًا ثم حاول مجددًا.",
+    required:"يرجى إدخال البريد الإلكتروني.",
+    invalidEmail:"صيغة البريد الإلكتروني غير صحيحة.",
+    passwordShort:"كلمة المرور يجب أن تكون 8 أحرف على الأقل.",
+    passwordMismatch:"كلمتا المرور غير متطابقتين.",
+    termsRequired:"يرجى الموافقة على الشروط والأحكام.",
+    signupSuccess:"تم استلام طلب التسجيل. إذا كان البريد مؤهلًا فستصلك رسالة تأكيد.",
+    signupSuccessSession:"تم إنشاء الحساب بنجاح.",
+    registrationClosed:"التسجيل مغلق حاليًا.",
+    emailDisabled:"التسجيل بالبريد الإلكتروني غير متاح حاليًا.",
+    disposable:"هذا البريد المؤقت غير مسموح به.",
+    emailHold:"هذا البريد محجوز مؤقتًا ولا يمكن إعادة استخدامه الآن.",
+    rateLimited:"محاولات كثيرة. يرجى الانتظار قليلًا قبل المحاولة مجددًا.",
+    captcha:"تعذر التحقق الأمني. أعد المحاولة.",
+    termsServer:"يجب الموافقة على الشروط لإكمال التسجيل.",
+    signupFailed:"تعذر إتمام التسجيل. حاول مرة أخرى.",
+    oauthDisabled:"طريقة التسجيل هذه غير متاحة حاليًا.",
+    oauthFailed:"تعذر بدء التسجيل بهذه الخدمة. حاول مرة أخرى.",
+    genericError:"حدث خطأ غير متوقع. حاول مرة أخرى.",
+    sessionWarning:"تم إنشاء الحساب، لكن تعذر حفظ جلسة الدخول في هذا المتصفح. يمكنك تسجيل الدخول الآن."
+  },
+
+  en: {
+    brandSubtitle:"One account for all AQX services",
+    title:"Create your account",
+    subtitle:"Create one AQX account to access the ecosystem.",
+    emailLabel:"Email address",
+    emailHint:"Your email is checked automatically when you leave this field.",
+    passwordLabel:"Password",
+    passwordPlaceholder:"At least 8 characters",
+    passwordHint:"Password must be at least 8 characters.",
+    confirmLabel:"Confirm password",
+    confirmPlaceholder:"Re-enter your password",
+    termsText:"I agree to the Terms and Privacy Policy.",
+    submit:"Create account",
+    submitting:"Creating account...",
+    or:"Or continue with",
+    haveAccount:"Already have an account?",
+    login:"Sign in",
+    loading:"Connecting to AQX Identity...",
+    ready:"Registration engine connected",
+    unavailable:"Registration engine unavailable",
+    emailChecking:"Checking email address...",
+    emailAvailable:"This email is available for registration.",
+    emailRegistered:"This email is already registered. Please sign in instead.",
+    emailReserved:"This email is temporarily reserved.",
+    emailBlocked:"This email is not eligible for AQX registration.",
+    emailInvalid:"Please enter a valid email address.",
+    emailError:"Unable to check this email right now. Please try again.",
+    emailRate:"Email check limit reached. Please wait before trying again.",
+    required:"Please enter your email address.",
+    invalidEmail:"Invalid email address.",
+    passwordShort:"Password must be at least 8 characters.",
+    passwordMismatch:"Passwords do not match.",
+    termsRequired:"Please accept the terms and conditions.",
+    signupSuccess:"Your registration request was received. A confirmation email will be sent if eligible.",
+    signupSuccessSession:"Your account was created successfully.",
+    registrationClosed:"Registration is currently closed.",
+    emailDisabled:"Email registration is currently unavailable.",
+    disposable:"Temporary email addresses are not allowed.",
+    emailHold:"This email is temporarily reserved.",
+    rateLimited:"Too many attempts. Please wait and try again.",
+    captcha:"Security verification failed. Please try again.",
+    termsServer:"You must accept the terms to continue.",
+    signupFailed:"Registration could not be completed. Please try again.",
+    oauthDisabled:"This registration method is currently unavailable.",
+    oauthFailed:"Unable to start registration with this provider.",
+    genericError:"An unexpected error occurred.",
+    sessionWarning:"Account created, but the browser could not save the session. Please sign in."
+  },
+
+  es: {
+    brandSubtitle:"Una cuenta para todos los servicios AQX",
+    title:"Crear una cuenta",
+    subtitle:"Crea una cuenta AQX para acceder a todo el ecosistema.",
+    emailLabel:"Correo electrónico",
+    emailHint:"El correo se comprobará automáticamente al salir del campo.",
+    passwordLabel:"Contraseña",
+    passwordPlaceholder:"Al menos 8 caracteres",
+    passwordHint:"La contraseña debe tener al menos 8 caracteres.",
+    confirmLabel:"Confirmar contraseña",
+    confirmPlaceholder:"Repite tu contraseña",
+    termsText:"Acepto los términos y la política de privacidad.",
+    submit:"Crear cuenta",
+    submitting:"Creando cuenta...",
+    or:"O continuar con",
+    haveAccount:"¿Ya tienes una cuenta?",
+    login:"Iniciar sesión",
+    loading:"Conectando con AQX Identity...",
+    ready:"Motor de registro conectado",
+    unavailable:"Motor de registro no disponible",
+    emailChecking:"Comprobando correo...",
+    emailAvailable:"Este correo está disponible.",
+    emailRegistered:"Este correo ya está registrado. Inicia sesión.",
+    emailReserved:"Este correo está reservado temporalmente.",
+    emailBlocked:"Este correo no cumple los requisitos de AQX.",
+    emailInvalid:"Introduce un correo válido.",
+    emailError:"No se pudo comprobar el correo. Inténtalo de nuevo.",
+    emailRate:"Límite de comprobaciones alcanzado. Espera un momento.",
+    required:"Introduce tu correo electrónico.",
+    invalidEmail:"Correo electrónico no válido.",
+    passwordShort:"La contraseña debe tener al menos 8 caracteres.",
+    passwordMismatch:"Las contraseñas no coinciden.",
+    termsRequired:"Acepta los términos para continuar.",
+    signupSuccess:"Solicitud recibida. Si el correo es válido, recibirás un mensaje de confirmación.",
+    signupSuccessSession:"Cuenta creada correctamente.",
+    registrationClosed:"El registro está cerrado actualmente.",
+    emailDisabled:"El registro por correo no está disponible.",
+    disposable:"No se permiten correos temporales.",
+    emailHold:"Este correo está reservado temporalmente.",
+    rateLimited:"Demasiados intentos. Espera antes de volver a intentarlo.",
+    captcha:"Falló la verificación de seguridad.",
+    termsServer:"Debes aceptar los términos.",
+    signupFailed:"No se pudo completar el registro.",
+    oauthDisabled:"Este método de registro no está disponible.",
+    oauthFailed:"No se pudo iniciar el registro con este proveedor.",
+    genericError:"Ocurrió un error inesperado.",
+    sessionWarning:"Cuenta creada, pero no se pudo guardar la sesión. Inicia sesión."
+  }
+};
+
+function detectLanguage() {
+  const browser = (navigator.language || "ar").toLowerCase();
+
+  if (browser.startsWith("es")) return "es";
+  if (browser.startsWith("en")) return "en";
+
+  return "ar";
+}
+
+let language = detectLanguage();
+
+function t(key) {
+  return translations[language]?.[key] ||
+         translations.ar[key] ||
+         key;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = language;
+  document.documentElement.dir =
+    language === "ar" ? "rtl" : "ltr";
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    el.textContent = t(key);
   });
 
-  const $ = id => document.getElementById(id);
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    el.placeholder = t(key);
+  });
+}
 
-  const supabaseClient = window.supabase.createClient(
+applyLanguage();
+
+/* =========================================================
+   SUPABASE CLIENT
+   لا يتم إنشاؤه إلا عند الحاجة.
+   ========================================================= */
+
+function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+
+  if (!window.supabase || !window.supabase.createClient) {
+    throw new Error("SUPABASE_LIBRARY_UNAVAILABLE");
+  }
+
+  supabaseClient = window.supabase.createClient(
     CONFIG.SUPABASE_URL,
     CONFIG.SUPABASE_PUBLISHABLE_KEY,
     {
       auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: "implicit"
+        autoRefreshToken:true,
+        persistSession:true,
+        detectSessionInUrl:true,
+        flowType:"implicit"
       }
     }
   );
 
-  let currentPolicy = null;
-  let formStartedAt = Date.now();
-  let emailCheckCache = new Map();
-  let emailCheckSequence = 0;
-  let emailCheckLastResult = null;
-  let captchaWidgetId = null;
-  let captchaToken = "";
-  let captchaLoaded = false;
+  return supabaseClient;
+}
 
-  /* =========================================================
-     LANGUAGE
-     ========================================================= */
+/* =========================================================
+   API
+   ========================================================= */
 
-  const translations = {
-    ar: {
-      brandSubtitle: "حسابك الموحد لجميع خدمات AQX",
-      title: "إنشاء حساب جديد",
-      subtitle: "أنشئ حساب AQX واحدًا للوصول إلى خدمات ومنصات المنظومة.",
-      nameLabel: "الاسم",
-      namePlaceholder: "اسمك",
-      emailLabel: "البريد الإلكتروني",
-      emailHint: "سيتم فحص البريد تلقائيًا عند الانتقال إلى الحقل التالي.",
-      passwordLabel: "كلمة المرور",
-      passwordPlaceholder: "8 أحرف على الأقل",
-      passwordHint: "يجب ألا تقل كلمة المرور عن 8 أحرف.",
-      confirmLabel: "تأكيد كلمة المرور",
-      confirmPlaceholder: "أعد كتابة كلمة المرور",
-      termsText: "أوافق على الشروط والأحكام وسياسة الخصوصية.",
-      submit: "إنشاء حساب",
-      submitting: "جارٍ إنشاء الحساب...",
-      or: "أو التسجيل باستخدام",
-      haveAccount: "لديك حساب بالفعل؟",
-      login: "تسجيل الدخول",
-      loading: "جارٍ الاتصال بمحرك AQX...",
-      ready: "محرك التسجيل متصل",
-      unavailable: "تعذر الاتصال بمحرك التسجيل",
-      emailChecking: "جارٍ فحص البريد الإلكتروني...",
-      emailAvailable: "هذا البريد متاح للتسجيل لأول مرة.",
-      emailRegistered: "هذا البريد مسجل بالفعل. استخدم تسجيل الدخول بدلًا من إنشاء حساب جديد.",
-      emailReserved: "هذا البريد محجوز مؤقتًا ولا يمكن استخدامه حاليًا.",
-      emailBlocked: "هذا البريد غير مؤهل للتسجيل في منظومة AQX.",
-      emailInvalid: "يرجى إدخال بريد إلكتروني صحيح.",
-      emailError: "تعذر التحقق من البريد الآن. حاول مرة أخرى بعد قليل.",
-      emailRate: "وصلت إلى الحد المسموح لفحص البريد. انتظر قليلًا ثم حاول مجددًا.",
-      required: "يرجى إدخال البريد الإلكتروني.",
-      invalidEmail: "صيغة البريد الإلكتروني غير صحيحة.",
-      passwordShort: "كلمة المرور يجب أن تكون 8 أحرف على الأقل.",
-      passwordMismatch: "كلمتا المرور غير متطابقتين.",
-      termsRequired: "يرجى الموافقة على الشروط والأحكام.",
-      signupSuccess: "تم استلام طلب التسجيل. إذا كان البريد مؤهلًا فستصلك رسالة تأكيد.",
-      signupSuccessSession: "تم إنشاء الحساب بنجاح. يمكنك المتابعة إلى تسجيل الدخول.",
-      registrationClosed: "التسجيل مغلق حاليًا.",
-      emailDisabled: "التسجيل بالبريد الإلكتروني غير متاح حاليًا.",
-      disposable: "هذا البريد المؤقت غير مسموح به.",
-      emailHold: "هذا البريد محجوز مؤقتًا ولا يمكن إعادة استخدامه الآن.",
-      rateLimited: "محاولات كثيرة. يرجى الانتظار قليلًا قبل المحاولة مجددًا.",
-      captcha: "تعذر التحقق الأمني. أعد المحاولة.",
-      termsServer: "يجب الموافقة على الشروط لإكمال التسجيل.",
-      signupFailed: "تعذر إتمام التسجيل. حاول مرة أخرى.",
-      oauthDisabled: "طريقة التسجيل هذه غير متاحة حاليًا.",
-      oauthFailed: "تعذر بدء التسجيل بهذه الخدمة. حاول مرة أخرى.",
-      nameOptional: "الاسم اختياري",
-      genericError: "حدث خطأ غير متوقع. حاول مرة أخرى."
-    },
+async function api(path, options = {}) {
+  const controller = new AbortController();
 
-    en: {
-      brandSubtitle: "One account for all AQX services",
-      title: "Create your account",
-      subtitle: "Create one AQX account to access the ecosystem.",
-      nameLabel: "Name",
-      namePlaceholder: "Your name",
-      emailLabel: "Email address",
-      emailHint: "Your email is checked automatically when you leave this field.",
-      passwordLabel: "Password",
-      passwordPlaceholder: "At least 8 characters",
-      passwordHint: "Password must be at least 8 characters.",
-      confirmLabel: "Confirm password",
-      confirmPlaceholder: "Re-enter your password",
-      termsText: "I agree to the Terms and Privacy Policy.",
-      submit: "Create account",
-      submitting: "Creating account...",
-      or: "Or continue with",
-      haveAccount: "Already have an account?",
-      login: "Sign in",
-      loading: "Connecting to AQX Identity...",
-      ready: "Registration engine connected",
-      unavailable: "Registration engine unavailable",
-      emailChecking: "Checking email address...",
-      emailAvailable: "This email is available for registration.",
-      emailRegistered: "This email is already registered. Please sign in instead.",
-      emailReserved: "This email is temporarily reserved and cannot be used now.",
-      emailBlocked: "This email is not eligible for AQX registration.",
-      emailInvalid: "Please enter a valid email address.",
-      emailError: "Unable to check this email right now. Please try again.",
-      emailRate: "Email check limit reached. Please wait before trying again.",
-      required: "Please enter your email address.",
-      invalidEmail: "Invalid email address.",
-      passwordShort: "Password must be at least 8 characters.",
-      passwordMismatch: "Passwords do not match.",
-      termsRequired: "Please accept the terms and conditions.",
-      signupSuccess: "Your registration request was received. If eligible, a confirmation email will be sent.",
-      signupSuccessSession: "Your account was created successfully. You can now sign in.",
-      registrationClosed: "Registration is currently closed.",
-      emailDisabled: "Email registration is currently unavailable.",
-      disposable: "Temporary email addresses are not allowed.",
-      emailHold: "This email is temporarily reserved and cannot be reused.",
-      rateLimited: "Too many attempts. Please wait and try again.",
-      captcha: "Security verification failed. Please try again.",
-      termsServer: "You must accept the terms to continue.",
-      signupFailed: "Registration could not be completed. Please try again.",
-      oauthDisabled: "This registration method is currently unavailable.",
-      oauthFailed: "Unable to start registration with this provider.",
-      nameOptional: "Name is optional",
-      genericError: "An unexpected error occurred. Please try again."
-    },
+  const timeout = window.setTimeout(
+    () => controller.abort(),
+    options.timeout || 20000
+  );
 
-    es: {
-      brandSubtitle: "Una cuenta para todos los servicios AQX",
-      title: "Crear una cuenta",
-      subtitle: "Crea una cuenta AQX para acceder a todo el ecosistema.",
-      nameLabel: "Nombre",
-      namePlaceholder: "Tu nombre",
-      emailLabel: "Correo electrónico",
-      emailHint: "El correo se comprobará automáticamente al salir del campo.",
-      passwordLabel: "Contraseña",
-      passwordPlaceholder: "Al menos 8 caracteres",
-      passwordHint: "La contraseña debe tener al menos 8 caracteres.",
-      confirmLabel: "Confirmar contraseña",
-      confirmPlaceholder: "Repite tu contraseña",
-      termsText: "Acepto los términos y la política de privacidad.",
-      submit: "Crear cuenta",
-      submitting: "Creando cuenta...",
-      or: "O continuar con",
-      haveAccount: "¿Ya tienes una cuenta?",
-      login: "Iniciar sesión",
-      loading: "Conectando con AQX Identity...",
-      ready: "Motor de registro conectado",
-      unavailable: "Motor de registro no disponible",
-      emailChecking: "Comprobando correo...",
-      emailAvailable: "Este correo está disponible.",
-      emailRegistered: "Este correo ya está registrado. Inicia sesión.",
-      emailReserved: "Este correo está reservado temporalmente.",
-      emailBlocked: "Este correo no cumple los requisitos de AQX.",
-      emailInvalid: "Introduce un correo válido.",
-      emailError: "No se pudo comprobar el correo. Inténtalo de nuevo.",
-      emailRate: "Límite de comprobaciones alcanzado. Espera un momento.",
-      required: "Introduce tu correo electrónico.",
-      invalidEmail: "Correo electrónico no válido.",
-      passwordShort: "La contraseña debe tener al menos 8 caracteres.",
-      passwordMismatch: "Las contraseñas no coinciden.",
-      termsRequired: "Acepta los términos para continuar.",
-      signupSuccess: "Solicitud recibida. Si el correo es válido, recibirás un mensaje de confirmación.",
-      signupSuccessSession: "Cuenta creada correctamente. Ya puedes iniciar sesión.",
-      registrationClosed: "El registro está cerrado actualmente.",
-      emailDisabled: "El registro por correo no está disponible.",
-      disposable: "No se permiten correos temporales.",
-      emailHold: "Este correo está reservado temporalmente.",
-      rateLimited: "Demasiados intentos. Espera antes de volver a intentarlo.",
-      captcha: "Falló la verificación de seguridad.",
-      termsServer: "Debes aceptar los términos.",
-      signupFailed: "No se pudo completar el registro.",
-      oauthDisabled: "Este método de registro no está disponible.",
-      oauthFailed: "No se pudo iniciar el registro con este proveedor.",
-      nameOptional: "El nombre es opcional",
-      genericError: "Ocurrió un error inesperado."
-    }
-  };
-
-  function detectLanguage() {
-    const browser = (navigator.language || "ar").toLowerCase();
-    if (browser.startsWith("es")) return "es";
-    if (browser.startsWith("en")) return "en";
-    return "ar";
-  }
-
-  let language = detectLanguage();
-
-  function t(key) {
-    return translations[language]?.[key] || translations.ar[key] || key;
-  }
-
-  function applyLanguage() {
-    document.documentElement.lang = language;
-    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
-
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.dataset.i18n;
-      if (t(key)) el.textContent = t(key);
-    });
-
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-      const key = el.dataset.i18nPlaceholder;
-      if (t(key)) el.placeholder = t(key);
-    });
-  }
-
-  applyLanguage();
-
-  /* =========================================================
-     API HELPERS
-     ========================================================= */
-
-  async function api(path, options = {}) {
+  try {
     const response = await fetch(CONFIG.API_BASE + path, {
-      method: options.method || "GET",
-      headers: {
-        "Content-Type": "application/json",
+      method:options.method || "GET",
+      headers:{
+        "Content-Type":"application/json",
         ...(options.headers || {})
       },
-      body: options.body ? JSON.stringify(options.body) : undefined,
-      cache: "no-store"
+      body:options.body
+        ? JSON.stringify(options.body)
+        : undefined,
+      cache:"no-store",
+      signal:controller.signal
     });
 
     const payload = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      const error = new Error(payload.error || "REQUEST_FAILED");
+      const error = new Error(
+        payload.error || "REQUEST_FAILED"
+      );
+
       error.status = response.status;
       error.payload = payload;
+
       throw error;
     }
 
     return payload;
+
+  } finally {
+    clearTimeout(timeout);
   }
+}
 
-  function showMessage(type, message) {
-    const box = $("mainMessage");
-    box.className = "message show " + type;
-    box.textContent = message;
-  }
+/* =========================================================
+   MESSAGES
+   ========================================================= */
 
-  function clearMessage() {
-    const box = $("mainMessage");
-    box.className = "message";
-    box.textContent = "";
-  }
+function showMessage(type, message) {
+  const box = $("mainMessage");
 
-  function setSystemStatus(online) {
-    const box = $("systemStatus");
-    box.classList.toggle("offline", !online);
-    box.querySelector("[data-i18n]").textContent = online ? t("ready") : t("unavailable");
-  }
+  box.className = "message show " + type;
+  box.textContent = message;
+}
 
-  function validEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
-  }
+function clearMessage() {
+  const box = $("mainMessage");
 
-  /* =========================================================
-     EMAIL AVAILABILITY CHECK
-     ========================================================= */
+  box.className = "message";
+  box.textContent = "";
+}
 
-  function setEmailStatus(type, message) {
-    const box = $("emailStatus");
-    box.className = "email-status show " + type;
-    box.textContent = message;
-  }
+function setSystemStatus(online) {
+  $("systemStatus").classList.toggle("offline", !online);
 
-  function clearEmailStatus() {
-    const box = $("emailStatus");
-    box.className = "email-status";
-    box.textContent = "";
-    emailCheckLastResult = null;
-  }
+  $("systemStatusText").textContent =
+    online ? t("ready") : t("unavailable");
+}
 
-  function applyEmailStatus(status) {
-    emailCheckLastResult = status;
+/* =========================================================
+   EMAIL VALIDATION
+   ========================================================= */
 
-    switch (status) {
-      case "available":
-        setEmailStatus("available", "✓ " + t("emailAvailable"));
-        return true;
+function validEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+         email.length <= 254;
+}
 
-      case "registered":
-        setEmailStatus("registered", "✕ " + t("emailRegistered"));
-        return false;
+function setEmailStatus(type, message) {
+  const box = $("emailStatus");
 
-      case "reserved":
-        setEmailStatus("reserved", "✕ " + t("emailReserved"));
-        return false;
+  box.className = "email-status show " + type;
+  box.textContent = message;
+}
 
-      case "blocked":
-        setEmailStatus("blocked", "✕ " + t("emailBlocked"));
-        return false;
+function clearEmailStatus() {
+  const box = $("emailStatus");
 
-      case "invalid":
-        setEmailStatus("invalid", "✕ " + t("emailInvalid"));
-        return false;
+  box.className = "email-status";
+  box.textContent = "";
 
-      default:
-        setEmailStatus("error", t("emailError"));
-        return false;
-    }
-  }
+  emailCheckLastResult = null;
+}
 
-  async function checkEmailAvailability(force = false) {
-    const email = $("email").value.trim().toLowerCase();
+function applyEmailStatus(status) {
+  emailCheckLastResult = status;
 
-    if (!email) {
-      clearEmailStatus();
+  switch (status) {
+    case "available":
+      setEmailStatus(
+        "available",
+        "✓ " + t("emailAvailable")
+      );
+      return true;
+
+    case "registered":
+      setEmailStatus(
+        "registered",
+        "✕ " + t("emailRegistered")
+      );
       return false;
-    }
 
-    if (!validEmail(email)) {
-      applyEmailStatus("invalid");
+    case "reserved":
+      setEmailStatus(
+        "reserved",
+        "✕ " + t("emailReserved")
+      );
       return false;
-    }
 
-    const cached = emailCheckCache.get(email);
-
-    if (!force && cached && Date.now() - cached.time < CONFIG.EMAIL_CACHE_MS) {
-      return applyEmailStatus(cached.status);
-    }
-
-    const sequence = ++emailCheckSequence;
-
-    setEmailStatus("checking", "◌ " + t("emailChecking"));
-
-    try {
-      const result = await api("/v1/registration/email-status", {
-        method: "POST",
-        body: { email }
-      });
-
-      if (sequence !== emailCheckSequence) return false;
-      if ($("email").value.trim().toLowerCase() !== email) return false;
-
-      const status = result.status || (result.valid === true ? "available" : "invalid");
-
-      emailCheckCache.set(email, {
-        status,
-        time: Date.now()
-      });
-
-      return applyEmailStatus(status);
-
-    } catch (error) {
-      if (sequence !== emailCheckSequence) return false;
-
-      if (error.status === 429 || error.payload?.error === "EMAIL_STATUS_RATE_LIMITED") {
-        setEmailStatus("error", t("emailRate"));
-      } else {
-        setEmailStatus("error", t("emailError"));
-      }
-
-      emailCheckLastResult = "error";
+    case "blocked":
+      setEmailStatus(
+        "blocked",
+        "✕ " + t("emailBlocked")
+      );
       return false;
-    }
+
+    case "invalid":
+      setEmailStatus(
+        "invalid",
+        "✕ " + t("emailInvalid")
+      );
+      return false;
+
+    default:
+      setEmailStatus(
+        "error",
+        t("emailError")
+      );
+      return false;
   }
+}
 
-  $("email").addEventListener("blur", () => {
-    checkEmailAvailability();
-  });
+async function checkEmailAvailability(force = false) {
+  const email = $("email").value.trim().toLowerCase();
 
-  $("email").addEventListener("input", () => {
-    emailCheckSequence++;
-    emailCheckLastResult = null;
+  if (!email) {
     clearEmailStatus();
-  });
+    return false;
+  }
 
-  $("email").addEventListener("change", () => {
-    checkEmailAvailability();
-  });
+  if (!validEmail(email)) {
+    applyEmailStatus("invalid");
+    return false;
+  }
 
-  /* =========================================================
-     REGISTRATION POLICY AND PROVIDER VISIBILITY
-     ========================================================= */
+  const cached = emailCache.get(email);
 
-  function methodEnabled(methods, method) {
-    const value = methods?.[method];
+  if (
+    !force &&
+    cached &&
+    Date.now() - cached.time < CONFIG.EMAIL_CACHE_MS
+  ) {
+    return applyEmailStatus(cached.status);
+  }
 
-    if (value === true) return true;
+  const sequence = ++emailSequence;
 
-    if (value && typeof value === "object") {
-      return value.signup_enabled === true || value.enabled === true;
+  setEmailStatus(
+    "checking",
+    "◌ " + t("emailChecking")
+  );
+
+  try {
+    const result = await api(
+      "/v1/registration/email-status",
+      {
+        method:"POST",
+        body:{ email }
+      }
+    );
+
+    // تجاهل أي نتيجة قديمة وصلت بعد تغيير البريد.
+    if (sequence !== emailSequence) return false;
+
+    if (
+      $("email").value.trim().toLowerCase() !== email
+    ) {
+      return false;
+    }
+
+    const status =
+      typeof result.status === "string"
+        ? result.status
+        : result.valid === true
+          ? "available"
+          : "invalid";
+
+    emailCache.set(email, {
+      status,
+      time:Date.now()
+    });
+
+    return applyEmailStatus(status);
+
+  } catch (error) {
+    if (sequence !== emailSequence) return false;
+
+    emailCheckLastResult = "error";
+
+    if (
+      error.status === 429 ||
+      error.payload?.error === "EMAIL_STATUS_RATE_LIMITED"
+    ) {
+      setEmailStatus("error", t("emailRate"));
+    } else {
+      setEmailStatus("error", t("emailError"));
     }
 
     return false;
   }
+}
 
-  function renderRegistrationPolicy(policy) {
-    currentPolicy = policy;
+/*
+  الفحص عند مغادرة خانة البريد.
+  لا نضيف change listener حتى لا نرسل فحصين متتاليين
+  لنفس البريد عند بعض المتصفحات.
+*/
 
-    const registrationOpen = policy?.registration_open === true;
-    const emailEnabled = methodEnabled(policy?.signup_methods, "email");
+$("email").addEventListener("blur", () => {
+  checkEmailAvailability(false);
+});
 
-    $("signupForm").style.display = registrationOpen && emailEnabled ? "block" : "none";
+$("email").addEventListener("input", () => {
+  emailSequence++;
+  emailCheckLastResult = null;
+  clearEmailStatus();
+});
 
-    if (!registrationOpen) {
-      showMessage("info", policy.closed_reason || t("registrationClosed"));
-    } else if (!emailEnabled) {
-      showMessage("info", t("emailDisabled"));
-    } else {
-      clearMessage();
-    }
+/* =========================================================
+   REGISTRATION POLICY
+   ========================================================= */
 
-    document.querySelectorAll("[data-provider]").forEach(button => {
-      const provider = button.dataset.provider;
-      const enabled = registrationOpen && methodEnabled(policy?.signup_methods, provider);
-      button.classList.toggle("visible", enabled);
-    });
+function methodEnabled(methods, method) {
+  const value = methods?.[method];
 
-    const anyOAuth = [...document.querySelectorAll("[data-provider]")]
-      .some(button => button.classList.contains("visible"));
+  if (value === true) return true;
 
-    $("oauthDivider").style.display = anyOAuth ? "flex" : "none";
-    $("oauthList").style.display = anyOAuth ? "grid" : "none";
-
-    const termsRequired = policy?.terms_required === true;
-    $("termsRow").style.display = termsRequired ? "flex" : "none";
-    $("termsAccepted").required = termsRequired;
-
-    if (policy?.captcha?.enabled && policy?.captcha?.site_key) {
-      loadTurnstile(policy.captcha.site_key);
-    }
+  if (value && typeof value === "object") {
+    return value.signup_enabled === true ||
+           value.enabled === true;
   }
 
-  async function loadRegistrationStatus() {
-    try {
-      const policy = await api("/v1/registration/status");
-      renderRegistrationPolicy(policy);
-      setSystemStatus(true);
-    } catch (error) {
-      console.error("AQX registration status:", error);
-      setSystemStatus(false);
-    }
-  }
+  return false;
+}
 
-  /* =========================================================
-     OPTIONAL CLOUDFLARE TURNSTILE
-     ========================================================= */
+function renderRegistrationPolicy(policy) {
+  currentPolicy = policy;
 
-  function loadTurnstile(siteKey) {
-    if (captchaLoaded) return;
-    captchaLoaded = true;
+  const registrationOpen =
+    policy?.registration_open === true;
 
-    const script = document.createElement("script");
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
+  const emailEnabled =
+    methodEnabled(policy?.signup_methods, "email");
 
-    script.onload = () => {
-      if (!window.turnstile) return;
+  const canRegister =
+    registrationOpen && emailEnabled;
 
-      captchaWidgetId = window.turnstile.render("#captchaContainer", {
-        sitekey: siteKey,
-        callback: token => { captchaToken = token; },
-        "expired-callback": () => { captchaToken = ""; },
-        "error-callback": () => { captchaToken = ""; }
-      });
-    };
+  $("signupForm").hidden = !canRegister;
+  $("submitBtn").disabled = !canRegister || isSubmitting;
 
-    script.onerror = () => {
-      captchaLoaded = false;
-      console.error("Turnstile script failed to load");
-    };
-
-    document.head.appendChild(script);
-  }
-
-  /* =========================================================
-     PASSWORD VISIBILITY
-     ========================================================= */
-
-  $("togglePassword").addEventListener("click", () => {
-    const input = $("password");
-    input.type = input.type === "password" ? "text" : "password";
-  });
-
-  /* =========================================================
-     REFERRAL ATTRIBUTION
-     ========================================================= */
-
-  function getReferralData() {
-    const params = new URLSearchParams(window.location.search);
-
-    const platformId =
-      params.get("aqx_platform") ||
-      params.get("platform_id") ||
-      "";
-
-    const code =
-      params.get("aqx_ref") ||
-      params.get("ref") ||
-      "";
-
-    if (
-      /^[0-9a-f-]{36}$/i.test(platformId) &&
-      /^[0-9a-f]{32}$/i.test(code)
-    ) {
-      return {
-        platform_id: platformId,
-        code: code.toLowerCase()
-      };
-    }
-
-    return null;
-  }
-
-  function getOAuthRedirect() {
-    const url = new URL(CONFIG.CONFIRMED_URL);
-    const referral = getReferralData();
-
-    if (referral) {
-      url.searchParams.set("aqx_platform", referral.platform_id);
-      url.searchParams.set("aqx_ref", referral.code);
-    }
-
-    return url.toString();
-  }
-
-  /* =========================================================
-     EMAIL SIGNUP
-     ========================================================= */
-
-  function errorMessage(errorCode) {
-    const map = {
-      REGISTRATION_CLOSED: "registrationClosed",
-      EMAIL_SIGNUP_DISABLED: "emailDisabled",
-      INVALID_EMAIL: "invalidEmail",
-      PASSWORD_POLICY_FAILED: "passwordShort",
-      TERMS_REQUIRED: "termsServer",
-      EMAIL_REUSE_HOLD: "emailHold",
-      DISPOSABLE_EMAIL_NOT_ALLOWED: "disposable",
-      SIGNUP_RATE_LIMITED: "rateLimited",
-      CAPTCHA_REQUIRED_OR_INVALID: "captcha",
-      CAPTCHA_NOT_CONFIGURED: "captcha",
-      SIGNUP_REJECTED: "signupFailed",
-      EMAIL_NOT_ALLOWED: "emailBlocked",
-      FORM_SUBMITTED_TOO_FAST: "rateLimited"
-    };
-
-    return t(map[errorCode] || "signupFailed");
-  }
-
-  $("signupForm").addEventListener("submit", async event => {
-    event.preventDefault();
+  if (!registrationOpen) {
+    showMessage(
+      "info",
+      policy?.closed_reason || t("registrationClosed")
+    );
+  } else if (!emailEnabled) {
+    showMessage("info", t("emailDisabled"));
+  } else {
     clearMessage();
-
-    const email = $("email").value.trim().toLowerCase();
-    const password = $("password").value;
-    const passwordConfirm = $("passwordConfirm").value;
-    const termsAccepted = $("termsAccepted").checked;
-    const name = $("fullName").value.trim();
-
-    if (!email) {
-      showMessage("error", t("required"));
-      $("email").focus();
-      return;
-    }
-
-    if (!validEmail(email)) {
-      applyEmailStatus("invalid");
-      $("email").focus();
-      return;
-    }
-
-    if (password.length < 8 || password.length > 128) {
-      showMessage("error", t("passwordShort"));
-      $("password").focus();
-      return;
-    }
-
-    if (password !== passwordConfirm) {
-      showMessage("error", t("passwordMismatch"));
-      $("passwordConfirm").focus();
-      return;
-    }
-
-    if (currentPolicy?.terms_required === true && !termsAccepted) {
-      showMessage("error", t("termsRequired"));
-      return;
-    }
-
-    if (currentPolicy?.registration_open !== true) {
-      showMessage("error", t("registrationClosed"));
-      return;
-    }
-
-    if (!methodEnabled(currentPolicy?.signup_methods, "email")) {
-      showMessage("error", t("emailDisabled"));
-      return;
-    }
-
-    const submitButton = $("submitBtn");
-    submitButton.disabled = true;
-    submitButton.querySelector("span").textContent = t("submitting");
-
-    try {
-      // لا يسمح بإرسال التسجيل قبل الحصول على نتيجة فحص صالحة وحديثة.
-      const emailAvailable = await checkEmailAvailability();
-
-      if (!emailAvailable) {
-        $("email").focus();
-
-        if (emailCheckLastResult === "registered") {
-          showMessage("error", t("emailRegistered"));
-        } else if (emailCheckLastResult === "reserved") {
-          showMessage("error", t("emailReserved"));
-        } else if (emailCheckLastResult === "blocked") {
-          showMessage("error", t("emailBlocked"));
-        } else if (emailCheckLastResult === "error") {
-          showMessage("error", t("emailError"));
-        }
-
-        return;
-      }
-
-      if (currentPolicy?.captcha?.enabled && !captchaToken) {
-        showMessage("error", t("captcha"));
-        return;
-      }
-
-      const referral = getReferralData();
-
-      const payload = {
-        email,
-        password,
-        name: name || undefined,
-        terms_accepted: termsAccepted,
-        website: $("website").value,
-        form_started_at: formStartedAt,
-        captcha_token: captchaToken || "",
-        referral: referral || undefined
-      };
-
-      const result = await api("/v1/registration/signup", {
-        method: "POST",
-        body: payload
-      });
-
-      if (result.success === true && result.accepted === true) {
-        if (result.session?.access_token) {
-          // التسجيل الذي أعاد جلسة: نترك التأكيد/تسجيل الدخول للمسار المعتمد.
-          showMessage("success", t("signupSuccessSession"));
-        } else {
-          showMessage("success", result.message || t("signupSuccess"));
-        }
-
-        $("signupForm").reset();
-        clearEmailStatus();
-        emailCheckCache.clear();
-
-        if (window.turnstile && captchaWidgetId !== null) {
-          window.turnstile.reset(captchaWidgetId);
-          captchaToken = "";
-        }
-      } else {
-        throw new Error("SIGNUP_REJECTED");
-      }
-
-    } catch (error) {
-      console.error("AQX signup error:", error);
-      showMessage("error", errorMessage(error.payload?.error || error.message));
-    } finally {
-      submitButton.disabled = false;
-      submitButton.querySelector("span").textContent = t("submit");
-    }
-  });
-
-  /* =========================================================
-     OAUTH SIGNUP
-     ========================================================= */
-
-  async function startOAuth(provider, button) {
-    clearMessage();
-
-    if (!currentPolicy?.registration_open ||
-        !methodEnabled(currentPolicy?.signup_methods, provider)) {
-      showMessage("error", t("oauthDisabled"));
-      return;
-    }
-
-    button.disabled = true;
-
-    try {
-      await api("/v1/registration/oauth-check", {
-        method: "POST",
-        body: { provider }
-      });
-
-      const { error } = await supabaseClient.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: getOAuthRedirect()
-        }
-      });
-
-      if (error) throw error;
-
-    } catch (error) {
-      console.error("AQX OAuth error:", provider, error);
-
-      if (error.status === 403 || error.payload?.error === "PROVIDER_SIGNUP_DISABLED") {
-        showMessage("error", t("oauthDisabled"));
-      } else {
-        showMessage("error", t("oauthFailed"));
-      }
-
-      button.disabled = false;
-    }
   }
 
   document.querySelectorAll("[data-provider]").forEach(button => {
-    button.addEventListener("click", () => {
-      startOAuth(button.dataset.provider, button);
-    });
+    const provider = button.dataset.provider;
+
+    const enabled =
+      registrationOpen &&
+      methodEnabled(policy?.signup_methods, provider);
+
+    button.classList.toggle("visible", enabled);
   });
 
-  /* =========================================================
-     INITIALIZATION
-     ========================================================= */
+  const anyOAuth = [
+    ...document.querySelectorAll("[data-provider]")
+  ].some(button => button.classList.contains("visible"));
 
-  async function initialize() {
-    if (!window.supabase?.createClient) {
-      setSystemStatus(false);
-      showMessage("error", t("unavailable"));
+  $("oauthDivider").hidden = !anyOAuth;
+  $("oauthList").hidden = !anyOAuth;
+
+  const termsRequired =
+    policy?.terms_required === true;
+
+  $("termsRow").hidden = !termsRequired;
+  $("termsAccepted").required = termsRequired;
+
+  if (
+    policy?.captcha?.enabled === true &&
+    typeof policy.captcha.site_key === "string" &&
+    policy.captcha.site_key
+  ) {
+    loadTurnstile(policy.captcha.site_key);
+  }
+}
+
+async function loadRegistrationStatus() {
+  try {
+    const policy = await api(
+      "/v1/registration/status"
+    );
+
+    if (policy.success === false) {
+      throw new Error("REGISTRATION_STATUS_UNAVAILABLE");
+    }
+
+    renderRegistrationPolicy(policy);
+    setSystemStatus(true);
+
+  } catch (error) {
+    console.error(
+      "AQX registration status:",
+      error
+    );
+
+    setSystemStatus(false);
+
+    $("submitBtn").disabled = true;
+
+    showMessage(
+      "error",
+      t("unavailable")
+    );
+  }
+}
+
+/* =========================================================
+   CLOUDFLARE TURNSTILE
+   ========================================================= */
+
+function loadTurnstile(siteKey) {
+  if (captchaLoaded) return;
+
+  captchaLoaded = true;
+
+  const script = document.createElement("script");
+
+  script.src =
+    "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+  script.async = true;
+  script.defer = true;
+
+  script.onload = () => {
+    if (!window.turnstile) {
+      captchaLoaded = false;
       return;
     }
 
-    await loadRegistrationStatus();
+    captchaWidgetId = window.turnstile.render(
+      "#captchaContainer",
+      {
+        sitekey:siteKey,
 
-    // تحديث السياسة دوريًا حتى تظهر تغييرات الإدارة دون إعادة تحميل الصفحة.
-    window.setInterval(loadRegistrationStatus, CONFIG.STATUS_REFRESH_MS);
+        callback:token => {
+          captchaToken = token;
+        },
+
+        "expired-callback":() => {
+          captchaToken = "";
+        },
+
+        "error-callback":() => {
+          captchaToken = "";
+        }
+      }
+    );
+  };
+
+  script.onerror = () => {
+    captchaLoaded = false;
+    console.error("Turnstile failed to load");
+  };
+
+  document.head.appendChild(script);
+}
+
+/* =========================================================
+   PASSWORD VISIBILITY
+   ========================================================= */
+
+$("togglePassword").addEventListener("click", () => {
+  const input = $("password");
+
+  input.type =
+    input.type === "password"
+      ? "text"
+      : "password";
+});
+
+/* =========================================================
+   REFERRAL
+   ========================================================= */
+
+function getReferralData() {
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  const platformId =
+    params.get("aqx_platform") ||
+    params.get("platform_id") ||
+    "";
+
+  const code =
+    params.get("aqx_ref") ||
+    params.get("ref") ||
+    "";
+
+  if (
+    /^[0-9a-f-]{36}$/i.test(platformId) &&
+    /^[0-9a-f]{32}$/i.test(code)
+  ) {
+    return {
+      platform_id:platformId,
+      code:code.toLowerCase()
+    };
   }
 
-  initialize();
+  return null;
+}
+
+function getOAuthRedirect() {
+  const url = new URL(CONFIG.CONFIRMED_URL);
+
+  const referral = getReferralData();
+
+  if (referral) {
+    url.searchParams.set(
+      "aqx_platform",
+      referral.platform_id
+    );
+
+    url.searchParams.set(
+      "aqx_ref",
+      referral.code
+    );
+  }
+
+  return url.toString();
+}
+
+/* =========================================================
+   ERROR TRANSLATION
+   ========================================================= */
+
+function errorMessage(errorCode) {
+  const map = {
+    REGISTRATION_CLOSED:"registrationClosed",
+    EMAIL_SIGNUP_DISABLED:"emailDisabled",
+    INVALID_EMAIL:"invalidEmail",
+    PASSWORD_POLICY_FAILED:"passwordShort",
+    TERMS_REQUIRED:"termsServer",
+    EMAIL_REUSE_HOLD:"emailHold",
+    DISPOSABLE_EMAIL_NOT_ALLOWED:"disposable",
+    SIGNUP_RATE_LIMITED:"rateLimited",
+    CAPTCHA_REQUIRED_OR_INVALID:"captcha",
+    CAPTCHA_NOT_CONFIGURED:"captcha",
+    SIGNUP_REJECTED:"signupFailed",
+    EMAIL_NOT_ALLOWED:"emailBlocked",
+    FORM_SUBMITTED_TOO_FAST:"rateLimited",
+    SIGNUP_SERVICE_UNAVAILABLE:"signupFailed"
+  };
+
+  return t(map[errorCode] || "signupFailed");
+}
+
+/* =========================================================
+   EMAIL SIGNUP
+   ========================================================= */
+
+async function saveReturnedSession(session) {
+  if (
+    !session ||
+    !session.access_token ||
+    !session.refresh_token
+  ) {
+    return true;
+  }
+
+  try {
+    const client = getSupabaseClient();
+
+    const { error } = await client.auth.setSession({
+      access_token:session.access_token,
+      refresh_token:session.refresh_token
+    });
+
+    if (error) throw error;
+
+    return true;
+
+  } catch (error) {
+    console.error(
+      "AQX session persistence error:",
+      error
+    );
+
+    return false;
+  }
+}
+
+$("signupForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (isSubmitting) return;
+
+  clearMessage();
+
+  const email =
+    $("email").value.trim().toLowerCase();
+
+  const password =
+    $("password").value;
+
+  const passwordConfirm =
+    $("passwordConfirm").value;
+
+  const termsAccepted =
+    $("termsAccepted").checked;
+
+  if (!email) {
+    showMessage("error", t("required"));
+    $("email").focus();
+    return;
+  }
+
+  if (!validEmail(email)) {
+    applyEmailStatus("invalid");
+    $("email").focus();
+    return;
+  }
+
+  if (
+    password.length < 8 ||
+    password.length > 128
+  ) {
+    showMessage("error", t("passwordShort"));
+    $("password").focus();
+    return;
+  }
+
+  if (password !== passwordConfirm) {
+    showMessage("error", t("passwordMismatch"));
+    $("passwordConfirm").focus();
+    return;
+  }
+
+  if (
+    currentPolicy?.terms_required === true &&
+    !termsAccepted
+  ) {
+    showMessage("error", t("termsRequired"));
+    $("termsAccepted").focus();
+    return;
+  }
+
+  if (currentPolicy?.registration_open !== true) {
+    showMessage("error", t("registrationClosed"));
+    return;
+  }
+
+  if (
+    !methodEnabled(
+      currentPolicy?.signup_methods,
+      "email"
+    )
+  ) {
+    showMessage("error", t("emailDisabled"));
+    return;
+  }
+
+  isSubmitting = true;
+
+  const submitButton = $("submitBtn");
+
+  submitButton.disabled = true;
+
+  submitButton.querySelector("span").textContent =
+    t("submitting");
+
+  try {
+    /*
+      إذا لم تكن هناك نتيجة حديثة، نفحص البريد.
+      أما النتيجة المتاحة حديثًا فتُستخدم لتقليل
+      استهلاك حد الفحص، والخادم يعيد التحقق عند التسجيل.
+    */
+
+    const emailAvailable =
+      await checkEmailAvailability(false);
+
+    if (!emailAvailable) {
+      $("email").focus();
+
+      if (emailCheckLastResult === "registered") {
+        showMessage("error", t("emailRegistered"));
+      } else if (emailCheckLastResult === "reserved") {
+        showMessage("error", t("emailReserved"));
+      } else if (emailCheckLastResult === "blocked") {
+        showMessage("error", t("emailBlocked"));
+      } else if (emailCheckLastResult === "error") {
+        showMessage("error", t("emailError"));
+      }
+
+      return;
+    }
+
+    if (
+      currentPolicy?.captcha?.enabled === true &&
+      !captchaToken
+    ) {
+      showMessage("error", t("captcha"));
+      return;
+    }
+
+    const referral = getReferralData();
+
+    const payload = {
+      email,
+      password,
+
+      terms_accepted:termsAccepted,
+
+      website:$("website").value,
+
+      form_started_at:formStartedAt,
+
+      captcha_token:captchaToken || "",
+
+      referral:referral || undefined
+    };
+
+    const result = await api(
+      "/v1/registration/signup",
+      {
+        method:"POST",
+        body:payload,
+        timeout:30000
+      }
+    );
+
+    if (
+      result.success !== true ||
+      result.accepted !== true
+    ) {
+      throw new Error(
+        result.error || "SIGNUP_REJECTED"
+      );
+    }
+
+    let successText =
+      result.message || t("signupSuccess");
+
+    if (result.session?.access_token) {
+      const sessionSaved =
+        await saveReturnedSession(result.session);
+
+      if (sessionSaved) {
+        successText = t("signupSuccessSession");
+      } else {
+        successText = t("sessionWarning");
+      }
+    }
+
+    showMessage("success", successText);
+
+    $("signupForm").reset();
+
+    clearEmailStatus();
+
+    emailCache.clear();
+
+    emailSequence++;
+    emailCheckLastResult = null;
+
+    if (
+      window.turnstile &&
+      captchaWidgetId !== null
+    ) {
+      window.turnstile.reset(captchaWidgetId);
+      captchaToken = "";
+    }
+
+  } catch (error) {
+    console.error("AQX signup error:", error);
+
+    showMessage(
+      "error",
+      errorMessage(
+        error.payload?.error || error.message
+      )
+    );
+
+  } finally {
+    isSubmitting = false;
+
+    const canRegister =
+      currentPolicy?.registration_open === true &&
+      methodEnabled(
+        currentPolicy?.signup_methods,
+        "email"
+      );
+
+    submitButton.disabled = !canRegister;
+
+    submitButton.querySelector("span").textContent =
+      t("submit");
+  }
+});
+
+/* =========================================================
+   OAUTH SIGNUP
+   ========================================================= */
+
+async function startOAuth(provider, button) {
+  if (isOAuthStarting) return;
+
+  clearMessage();
+
+  if (
+    currentPolicy?.registration_open !== true ||
+    !methodEnabled(
+      currentPolicy?.signup_methods,
+      provider
+    )
+  ) {
+    showMessage("error", t("oauthDisabled"));
+    return;
+  }
+
+  isOAuthStarting = true;
+
+  button.disabled = true;
+
+  try {
+    await api(
+      "/v1/registration/oauth-check",
+      {
+        method:"POST",
+        body:{ provider }
+      }
+    );
+
+    const client = getSupabaseClient();
+
+    const { error } =
+      await client.auth.signInWithOAuth({
+        provider,
+
+        options:{
+          redirectTo:getOAuthRedirect()
+        }
+      });
+
+    if (error) throw error;
+
+  } catch (error) {
+    console.error(
+      "AQX OAuth error:",
+      provider,
+      error
+    );
+
+    if (
+      error.status === 403 ||
+      error.payload?.error === "PROVIDER_SIGNUP_DISABLED"
+    ) {
+      showMessage("error", t("oauthDisabled"));
+    } else if (
+      error.message === "SUPABASE_LIBRARY_UNAVAILABLE"
+    ) {
+      showMessage("error", t("oauthFailed"));
+    } else {
+      showMessage(
+        "error",
+        error.payload?.error
+          ? errorMessage(error.payload.error)
+          : t("oauthFailed")
+      );
+    }
+
+    button.disabled = false;
+
+  } finally {
+    isOAuthStarting = false;
+  }
+}
+
+document.querySelectorAll("[data-provider]").forEach(button => {
+  button.addEventListener("click", () => {
+    startOAuth(
+      button.dataset.provider,
+      button
+    );
+  });
+});
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+async function initialize() {
+  // نتأكد من أن مكتبة Supabase متاحة لعمليات OAuth،
+  // لكن غيابها لا يمنع عرض الصفحة أو فحص البريد والتسجيل.
+
+  await loadRegistrationStatus();
+
+  window.setInterval(
+    loadRegistrationStatus,
+    CONFIG.STATUS_REFRESH_MS
+  );
+}
+
+initialize().catch(error => {
+  console.error("AQX initialization error:", error);
+
+  setSystemStatus(false);
+
+  $("submitBtn").disabled = true;
+
+  showMessage("error", t("unavailable"));
+});
 
 })();
 </script>
+
 </body>
 </html>
