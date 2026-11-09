@@ -1,1 +1,699 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة المستخدم | AQX Identity</title>
+
+<style>
+:root{
+ --bg:#0b1220;
+ --panel:#142137;
+ --line:#2b3c58;
+ --text:#f1f5ff;
+ --muted:#9aabc4;
+ --blue:#63a5ff;
+ --red:#ff647c;
+ --green:#45d6a0;
+ --amber:#ffc46b;
+}
+
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ min-height:100vh;
+ background:radial-gradient(ellipse at top,#1b304d,#0b1220 65%);
+ color:var(--text);
+ font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+main{
+ max-width:900px;
+ margin:auto;
+ padding:22px 15px 45px;
+}
+
+.hidden{display:none!important}
+
+.top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ margin-bottom:20px;
+}
+
+.brand{
+ font-weight:900;
+ letter-spacing:1px;
+}
+
+.status{
+ color:var(--green);
+ border:1px solid #28634f;
+ border-radius:30px;
+ padding:7px 12px;
+ font-size:12px;
+}
+
+.card{
+ background:linear-gradient(145deg,#172740,#101a2b);
+ border:1px solid var(--line);
+ border-radius:18px;
+ padding:20px;
+ margin:14px 0;
+ box-shadow:0 12px 35px #0003;
+}
+
+.profile{
+ display:flex;
+ align-items:center;
+ gap:16px;
+}
+
+.avatar{
+ width:76px;
+ height:76px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#263650;
+ border:2px solid #45658d;
+}
+
+.name{
+ font-size:21px;
+ font-weight:800;
+}
+
+.sub{
+ color:var(--muted);
+ font-size:13px;
+ margin-top:6px;
+}
+
+h2{
+ font-size:16px;
+ margin:0 0 15px;
+}
+
+.big{
+ font-size:36px;
+ font-weight:900;
+ font-variant-numeric:tabular-nums;
+}
+
+.muted{
+ color:var(--muted);
+}
+
+.small{
+ font-size:12px;
+ color:var(--muted);
+ line-height:1.8;
+}
+
+.notice{
+ display:none;
+ background:#382b18;
+ border:1px solid #77582b;
+ color:#ffe0aa;
+ border-radius:12px;
+ padding:13px;
+ margin:12px 0;
+}
+
+button{
+ border:0;
+ border-radius:12px;
+ padding:14px 18px;
+ font:inherit;
+ font-weight:800;
+ cursor:pointer;
+}
+
+.logout{
+ width:100%;
+ background:var(--red);
+ color:#250912;
+}
+
+@media(max-width:550px){
+ .card{padding:16px}
+ .big{font-size:30px}
+}
+</style>
+</head>
+
+<body>
+
+<main id="app" class="hidden">
+
+ <div class="top">
+  <div class="brand">AQX IDENTITY</div>
+  <div class="status" id="liveStatus">● جاري التحقق</div>
+ </div>
+
+ <!-- بيانات الحساب -->
+ <section class="card profile">
+  <img id="avatar" class="avatar" alt="صورة الحساب">
+  <div>
+   <div id="displayName" class="name">—</div>
+   <div id="accountId" class="sub">الحساب الموحد</div>
+  </div>
+ </section>
+
+ <div id="warning" class="notice"></div>
+
+ <!-- عداد الخمول -->
+ <section class="card">
+  <h2>مراقبة الجلسة</h2>
+  <div class="big" id="idleClock">15:00</div>
+  <div class="small">
+   الوقت المتبقي قبل انتهاء الجلسة بسبب الخمول.
+   مهلة الخمول المعتمدة: 15 دقيقة.
+  </div>
+ </section>
+
+ <!-- آخر ظهور -->
+ <section class="card">
+  <h2>آخر ظهور فعلي</h2>
+  <div id="lastSeenValue" class="muted">
+   غير متاح حاليًا
+  </div>
+  <div id="lastSeenElapsed" class="small">
+   يتطلب واجهة خادمية مستقلة لقراءة آخر ظهور سابق.
+  </div>
+ </section>
+
+ <!-- الأحداث -->
+ <section class="card">
+  <h2>سجل النشاط والأحداث الأمنية</h2>
+  <div id="eventsValue" class="muted">
+   واجهة سجل الأحداث غير مفعّلة بعد.
+  </div>
+  <div class="small">
+   لن يتم عرض سجلات غير حقيقية.
+  </div>
+ </section>
+
+ <!-- تسجيل الخروج -->
+ <section class="card">
+  <button class="logout" id="logoutBtn">
+   تسجيل الخروج وإنهاء الجلسة
+  </button>
+ </section>
+
+</main>
+
+<script>
+"use strict";
+
+/* إعدادات AQX */
+const API =
+"https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity";
+
+const SECURE_URL =
+"https://id.alqurmanix.com/secure-aqx.html";
+
+const IDLE_LIMIT = 15 * 60 * 1000;
+const WARNING_LIMIT = 2 * 60 * 1000;
+
+/* متغيرات الجلسة */
+let accessToken = "";
+let aqxSession = "";
+let serviceToken = "";
+let profile = null;
+
+let lastActivity = Date.now();
+let timer = null;
+let verifying = false;
+let activityTimer = null;
+
+/* عناصر الصفحة */
+const $ = id => document.getElementById(id);
+
+/* استخراج جلسة Supabase */
+function getAccessToken(){
+
+ const keys = [
+  "sb-fkiokwwztbyztleeuwks-auth-token",
+  ...Object.keys(localStorage).filter(
+   k => /^sb-.+-auth-token$/.test(k)
+  )
+ ];
+
+ for(const key of keys){
+
+  try{
+
+   const data = JSON.parse(localStorage.getItem(key));
+
+   if(data?.access_token)
+    return data.access_token;
+
+   if(data?.currentSession?.access_token)
+    return data.currentSession.access_token;
+
+  }catch(error){}
+ }
+
+ return "";
+}
+
+/* استخراج رمز AQX */
+function getToken(storages, names){
+
+ for(const storage of storages){
+
+  for(const name of names){
+
+   try{
+
+    const value = storage.getItem(name);
+
+    if(value && value.length > 20)
+     return value;
+
+   }catch(error){}
+
+  }
+ }
+
+ return "";
+}
+
+/* العودة للفحص الأمني */
+function rejectAccess(reason){
+
+ try{
+  $("app").classList.add("hidden");
+ }catch(error){}
+
+ location.replace(
+  SECURE_URL + "?reason=" + encodeURIComponent(reason)
+ );
+
+}
+
+/* طلبات الخادم */
+async function request(path, options={}){
+
+ const headers = {
+  "Content-Type":"application/json",
+  ...(options.headers || {})
+ };
+
+ if(options.bearer !== false){
+  headers.Authorization = "Bearer " + accessToken;
+ }
+
+ const response = await fetch(API + path,{
+  method:"POST",
+  headers,
+  body:JSON.stringify(options.body || {}),
+  cache:"no-store",
+  credentials:"omit"
+ });
+
+ let data={};
+
+ try{
+  data=await response.json();
+ }catch(error){}
+
+ return {
+  ok:response.ok,
+  status:response.status,
+  data
+ };
+
+}
+
+/* التحقق من الجلسة والتصريح والحساب */
+async function verifySession(){
+
+ if(verifying) return false;
+
+ verifying=true;
+
+ try{
+
+  /* تصريح المرور من الفحص الأمني */
+  const service = await request(
+   "/v1/service/session/check",
+   {
+    bearer:false,
+    headers:{
+     "x-aqx-service-session":serviceToken
+    }
+   }
+  );
+
+  if(!service.ok || service.data.valid !== true)
+   return false;
+
+  /* التحقق من جلسة AQX الأساسية */
+  const session = await request(
+   "/v1/session/check",
+   {
+    headers:{
+     "x-aqx-session":aqxSession
+    }
+   }
+  );
+
+  if(!session.ok || session.data.valid !== true)
+   return false;
+
+  /* التحقق من حالة الحساب */
+  const status = await request("/v1/me/status");
+
+  if(!status.ok || status.data.success !== true){
+
+   rejectAccess(
+    status.data?.account_status ||
+    status.data?.error ||
+    "ACCOUNT_RESTRICTED"
+   );
+
+   return false;
+  }
+
+  /* بيانات الحساب */
+  const me = await request("/v1/me");
+
+  if(!me.ok || me.data.success !== true || !me.data.profile)
+   return false;
+
+  profile = me.data.profile;
+
+  return true;
+
+ }catch(error){
+
+  return false;
+
+ }finally{
+
+  verifying=false;
+
+ }
+
+}
+
+/* صورة الحساب والاسم */
+function renderProfile(){
+
+ let metadata={};
+
+ for(const key of Object.keys(localStorage)){
+
+  if(!/^sb-.+-auth-token$/.test(key))
+   continue;
+
+  try{
+
+   const data=JSON.parse(localStorage.getItem(key));
+   const user=data?.user || data?.currentSession?.user;
+
+   if(user){
+    metadata=user.user_metadata || {};
+    break;
+   }
+
+  }catch(error){}
+
+ }
+
+ const name =
+  metadata.full_name ||
+  metadata.name ||
+  metadata.display_name ||
+  profile?.username ||
+  profile?.display_name ||
+  profile?.aqx_id ||
+  "مستخدم AQX";
+
+ const picture =
+  metadata.avatar_url ||
+  metadata.picture ||
+  metadata.photo_url ||
+  "";
+
+ $("displayName").textContent=name;
+
+ $("accountId").textContent=
+  profile?.aqx_id
+   ? "AQX ID: "+profile.aqx_id
+   : (profile?.primary_email || "الحساب الموحد");
+
+ $("avatar").src=picture ||
+  "data:image/svg+xml,"+
+  encodeURIComponent(
+   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'+
+   '<rect width="100" height="100" rx="50" fill="#263b59"/>'+
+   '<circle cx="50" cy="37" r="18" fill="#9db6d6"/>'+
+   '<path d="M16 94c3-22 17-33 34-33s31 11 34 33" fill="#9db6d6"/>'+
+   '</svg>'
+  );
+
+}
+
+/* عرض العداد */
+function formatTime(ms){
+
+ const seconds=Math.max(0,Math.floor(ms/1000));
+
+ const minutes=Math.floor(seconds/60);
+ const remainder=seconds%60;
+
+ return String(minutes).padStart(2,"0")+":"+
+        String(remainder).padStart(2,"0");
+
+}
+
+/* عداد الخمول */
+function updateIdleClock(){
+
+ const remaining =
+  IDLE_LIMIT - (Date.now()-lastActivity);
+
+ $("idleClock").textContent=formatTime(remaining);
+
+ if(remaining <= WARNING_LIMIT && remaining > 0){
+
+  $("warning").style.display="block";
+
+  $("warning").textContent=
+   "تنبيه: ستنتهي الجلسة بسبب الخمول خلال "+
+   formatTime(remaining);
+
+ }
+
+ if(remaining <= 0){
+
+  clearInterval(timer);
+
+  terminateSession("idle_timeout");
+
+ }
+
+}
+
+/* النشاط الحقيقي */
+async function onUserActivity(){
+
+ if(Date.now()-lastActivity >= IDLE_LIMIT){
+
+  terminateSession("idle_timeout");
+  return;
+
+ }
+
+ lastActivity=Date.now();
+
+ $("warning").style.display="none";
+
+ const valid=await verifySession();
+
+ if(!valid){
+
+  terminateSession("session_invalid");
+
+ }
+
+}
+
+/* مراقبة التفاعل */
+[
+ "pointerdown",
+ "keydown",
+ "touchstart",
+ "wheel"
+].forEach(eventName=>{
+
+ document.addEventListener(eventName,()=>{
+
+  clearTimeout(activityTimer);
+
+  activityTimer=setTimeout(
+   onUserActivity,
+   700
+  );
+
+ },{passive:true});
+
+});
+
+/* إنهاء الجلسة */
+async function terminateSession(reason){
+
+ clearInterval(timer);
+
+ $("app").classList.add("hidden");
+
+ /*
+  * لا يتم إبطال الجلسة الأساسية عند انتهاء الخمول
+  * لأن الخادم أنهى صلاحيتها بالفعل.
+  */
+
+ if(reason !== "idle_timeout" && accessToken && aqxSession){
+
+  try{
+
+   await request("/v1/session/logout",{
+    headers:{
+     "x-aqx-session":aqxSession
+    }
+   });
+
+  }catch(error){}
+
+ }
+
+ try{
+
+  sessionStorage.removeItem("aqx_service_session_token");
+  sessionStorage.removeItem("service_session_token");
+  sessionStorage.removeItem("aqx_redirect_ticket");
+
+  localStorage.removeItem("aqx_session_token");
+  sessionStorage.removeItem("aqx_session_token");
+
+ }catch(error){}
+
+ rejectAccess(reason);
+
+}
+
+/* منع الرجوع في الواجهة */
+function protectHistory(){
+
+ history.replaceState(
+  {aqx:true},
+  "",
+  location.href
+ );
+
+ history.pushState(
+  {aqx:true},
+  "",
+  location.href
+ );
+
+ window.addEventListener("popstate",()=>{
+
+  history.pushState(
+   {aqx:true},
+   "",
+   location.href
+  );
+
+ });
+
+}
+
+/* بدء اللوحة */
+async function initialize(){
+
+ accessToken=getAccessToken();
+
+ aqxSession=getToken(
+  [sessionStorage,localStorage],
+  ["aqx_session_token"]
+ );
+
+ /*
+  * تصريح الخدمة يجب أن يكون في sessionStorage
+  * ولا يقبل من localStorage.
+  */
+ serviceToken=getToken(
+  [sessionStorage],
+  [
+   "aqx_service_session_token",
+   "service_session_token"
+  ]
+ );
+
+ if(!accessToken || !aqxSession || !serviceToken){
+
+  rejectAccess("MISSING_SECURITY_CREDENTIALS");
+  return;
+
+ }
+
+ /* لا تظهر البيانات قبل نجاح التحقق */
+ const valid=await verifySession();
+
+ if(!valid){
+
+  rejectAccess("SECURITY_VERIFICATION_FAILED");
+  return;
+
+ }
+
+ renderProfile();
+
+ $("app").classList.remove("hidden");
+
+ $("liveStatus").textContent="● الجلسة موثقة";
+
+ $("logoutBtn").addEventListener(
+  "click",
+  ()=>terminateSession("user_logout")
+ );
+
+ protectHistory();
+
+ window.addEventListener("pageshow",async event=>{
+
+  if(event.persisted){
+
+   const stillValid=await verifySession();
+
+   if(!stillValid)
+    terminateSession("PAGE_RESTORED_INVALID");
+
+  }
+
+ });
+
+ lastActivity=Date.now();
+
+ timer=setInterval(updateIdleClock,250);
+
+ updateIdleClock();
+
+}
+
+initialize();
+
+</script>
+
+</body>
+</html>
+
