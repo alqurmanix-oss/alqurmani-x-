@@ -1,293 +1,151 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101827">
-<meta name="robots" content="noindex,nofollow">
-<meta name="description" content="AQX Identity - لوحة إدارة ومراقبة الهوية والجلسات">
-<title>لوحة التحكم | AQX Identity</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
+<!-- ======================================================
+     AQX IDENTITY - UNIVERSAL INTERNAL PAGE GUARD
+     يوضع مباشرة بعد <body>
+====================================================== -->
 
 <style>
-:root {
-  color-scheme: dark;
-  --bg:#0b1120;
-  --panel:#111c30;
-  --panel2:#17243a;
-  --border:#263750;
-  --text:#edf3ff;
-  --muted:#9aabc4;
-  --blue:#3985ff;
-  --green:#22c58b;
-  --red:#ef626c;
-  --yellow:#e9b84e;
+body.aqx-locked > :not(#aqxGuard) {
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Tahoma,Arial,sans-serif;min-height:100vh;
+
+#aqxGuard {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #0b1120;
+  color: #edf3ff;
+  font-family: Tahoma, Arial, sans-serif;
+  direction: rtl;
 }
-button{font:inherit;cursor:pointer}
-.container{width:min(1150px,94%);margin:25px auto}
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:15px;flex-wrap:wrap;margin-bottom:22px
+
+#aqxGuard .aqx-card {
+  width: min(440px, 100%);
+  background: #111c30;
+  border: 1px solid #263750;
+  border-radius: 17px;
+  padding: 25px;
+  text-align: center;
 }
-.brand{display:flex;align-items:center;gap:12px}
-.logo{
-  width:46px;height:46px;border-radius:14px;
-  display:grid;place-items:center;background:#1b3b70;
-  color:#fff;font-size:20px;font-weight:bold
+
+#aqxGuard .aqx-logo {
+  width: 48px;
+  height: 48px;
+  margin: auto auto 15px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #1b3b70;
+  font-weight: bold;
 }
-h1{font-size:21px;margin:0 0 5px}
-.subtitle{color:var(--muted);font-size:12px}
-.panel{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:16px;padding:19px;margin-bottom:16px
+
+#aqxGuard .aqx-message {
+  color: #aebed5;
+  font-size: 13px;
+  line-height: 1.9;
+  margin: 12px 0;
 }
-.panel h2{font-size:16px;margin:0 0 16px}
-.grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:13px
+
+#aqxGuard .aqx-spinner {
+  width: 29px;
+  height: 29px;
+  border: 3px solid #344762;
+  border-top-color: #3985ff;
+  border-radius: 50%;
+  animation: aqxspin .8s linear infinite;
+  margin: 17px auto;
 }
-.stat{
-  background:var(--panel2);border:1px solid var(--border);
-  border-radius:13px;padding:15px;min-height:95px
+
+@keyframes aqxspin {
+  to { transform: rotate(360deg); }
 }
-.stat small{display:block;color:var(--muted);margin-bottom:12px}
-.stat strong{font-size:17px;overflow-wrap:anywhere}
-.row{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:12px;flex-wrap:wrap
+
+#aqxGuard .aqx-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 20px;
+  color: white;
+  background: #3985ff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
 }
-.muted{color:var(--muted)}
-.status{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:7px 11px;border-radius:30px;font-size:12px;
-  background:#273247;color:#dbe7fa
-}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--yellow)}
-.status.ok .dot{background:var(--green)}
-.status.bad .dot{background:var(--red)}
-.status.wait .dot{background:var(--yellow)}
-.actions{display:flex;gap:9px;flex-wrap:wrap}
-.btn{
-  border:0;border-radius:10px;padding:11px 16px;
-  color:white;background:var(--blue);font-weight:bold
-}
-.btn.secondary{background:#293a54}
-.btn.danger{background:#a93645}
-.btn:disabled{opacity:.55;cursor:not-allowed}
-.notice{
-  padding:13px 15px;border-radius:11px;margin:12px 0;
-  font-size:13px;line-height:1.8;display:none
-}
-.notice.show{display:block}
-.notice.info{background:#172f50;border:1px solid #28558b}
-.notice.warn{background:#44391e;border:1px solid #806329}
-.notice.error{background:#48242b;border:1px solid #8b3c48}
-.notice.success{background:#163c32;border:1px solid #28745e}
-.list{display:grid;gap:9px}
-.item{
-  padding:12px;background:var(--panel2);
-  border:1px solid var(--border);border-radius:10px;
-  display:flex;justify-content:space-between;gap:12px;
-  flex-wrap:wrap;font-size:13px
-}
-.item time{color:var(--muted);font-size:11px}
-#bootScreen{
-  position:fixed;inset:0;background:var(--bg);z-index:10;
-  display:grid;place-items:center;padding:20px
-}
-.bootCard{
-  width:min(430px,100%);background:var(--panel);
-  border:1px solid var(--border);border-radius:17px;
-  padding:25px;text-align:center
-}
-.spinner{
-  width:30px;height:30px;border:3px solid #344762;
-  border-top-color:var(--blue);border-radius:50%;
-  animation:spin .8s linear infinite;margin:15px auto
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.hidden{display:none!important}
-footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
-@media(max-width:550px){
-  .container{width:93%;margin:15px auto}
-  .panel{padding:14px}
-  h1{font-size:18px}
+
+#aqxGuard .aqx-hidden {
+  display: none !important;
 }
 </style>
-</head>
 
-<body>
-
-<div id="bootScreen">
-  <div class="bootCard">
-    <div class="logo" style="margin:auto">AQX</div>
-    <h2>التحقق من الهوية</h2>
-    <div class="spinner" id="bootSpinner"></div>
-    <p id="bootMessage" class="muted">جارٍ الاتصال بخدمات الهوية...</p>
-    <button id="retryBoot" class="btn hidden" onclick="boot()">إعادة المحاولة</button>
+<div id="aqxGuard">
+  <div class="aqx-card">
+    <div class="aqx-logo">AQX</div>
+    <h3 id="aqxGuardTitle">التحقق الأمني</h3>
+    <div class="aqx-spinner" id="aqxGuardSpinner"></div>
+    <div class="aqx-message" id="aqxGuardMessage">
+      جارٍ التحقق من الهوية وصلاحية الجلسة...
+    </div>
+    <button
+      class="aqx-button aqx-hidden"
+      id="aqxGuardRetry"
+      type="button"
+    >إعادة المحاولة</button>
   </div>
 </div>
 
-<main class="container hidden" id="dashboard">
-
-<header>
-  <div class="brand">
-    <div class="logo">AQX</div>
-    <div>
-      <h1>لوحة تحكم AQX Identity</h1>
-      <div class="subtitle">إدارة الحساب الموحد ومراقبة الجلسات</div>
-    </div>
-  </div>
-  <div class="actions">
-    <span class="status wait" id="mainStatus">
-      <span class="dot"></span><span id="mainStatusText">جارٍ التحقق</span>
-    </span>
-    <button class="btn secondary" id="refreshButton" onclick="refreshAll()">تحديث البيانات</button>
-    <button class="btn danger" id="logoutButton" onclick="manualLogout()">تسجيل الخروج</button>
-  </div>
-</header>
-
-<div id="globalNotice" class="notice"></div>
-
-<section class="panel">
-  <h2>ملخص الحساب</h2>
-  <div class="grid">
-    <div class="stat">
-      <small>البريد الإلكتروني</small>
-      <strong id="userEmail">—</strong>
-    </div>
-    <div class="stat">
-      <small>معرّف المستخدم</small>
-      <strong id="userId">—</strong>
-    </div>
-    <div class="stat">
-      <small>حالة الهوية</small>
-      <strong id="identityStatus">بانتظار التحقق</strong>
-    </div>
-    <div class="stat">
-      <small>حالة الجلسة</small>
-      <strong id="sessionStatus">بانتظار التحقق</strong>
-    </div>
-  </div>
-</section>
-
-<section class="panel">
-  <h2>مراقبة الجلسة</h2>
-  <div class="grid">
-    <div class="stat">
-      <small>الوقت المتبقي حسب الخادم</small>
-      <strong id="remainingTime">—</strong>
-    </div>
-    <div class="stat">
-      <small>آخر تحقق ناجح</small>
-      <strong id="lastCheck">—</strong>
-    </div>
-    <div class="stat">
-      <small>آخر نشاط محلي</small>
-      <strong id="lastActivity">—</strong>
-    </div>
-    <div class="stat">
-      <small>مراقبة الجلسة</small>
-      <strong id="monitorState">نشطة</strong>
-    </div>
-  </div>
-  <div class="notice info show" id="monitorNotice">
-    تتم مراجعة حالة الجلسة دوريًا. أخطاء الشبكة المؤقتة لا تؤدي إلى تسجيل الخروج.
-  </div>
-</section>
-
-<section class="panel">
-  <div class="row">
-    <h2>بيانات الهوية من المحرك</h2>
-    <span class="muted" id="engineState">لم يتم التحقق بعد</span>
-  </div>
-  <div class="grid">
-    <div class="stat">
-      <small>مصدر التحقق</small>
-      <strong>AQX Identity Engine</strong>
-    </div>
-    <div class="stat">
-      <small>آخر استجابة للمحرك</small>
-      <strong id="engineResponse">—</strong>
-    </div>
-    <div class="stat">
-      <small>معرّف الجلسة</small>
-      <strong id="sessionId">—</strong>
-    </div>
-    <div class="stat">
-      <small>حالة الاتصال</small>
-      <strong id="connectionState">غير محدد</strong>
-    </div>
-  </div>
-</section>
-
-<section class="panel">
-  <div class="row">
-    <h2>سجل الأحداث</h2>
-    <button class="btn secondary" onclick="clearEvents()">مسح السجل المحلي</button>
-  </div>
-  <div id="eventList" class="list">
-    <div class="item">لا توجد أحداث حتى الآن.</div>
-  </div>
-</section>
-
-<footer>
-  AQX Identity — لوحة إدارة الهوية والجلسات
-</footer>
-</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 
 <script>
+(() => {
 "use strict";
 
-/* =========================================================
-   1) إعدادات المشروع
-   ========================================================= */
+/* ======================================================
+   1. إعدادات AQX
+====================================================== */
 
-const CONFIG = Object.freeze({
-  SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
+const AQX = Object.freeze({
 
-  // Publishable key فقط. لا تضع service_role أو secret key هنا.
-  SUPABASE_PUBLIC_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+  SUPABASE_URL:
+    "https://fkiokwwztbyztleeuwks.supabase.co",
 
-  // رابط خدمة الهوية الحالية.
-  SERVICE_ORIGIN: "https://id.alqurmanix.com",
+  PUBLIC_KEY:
+    "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
 
-  // رابط Edge Function الحالي.
-  EDGE_FUNCTION_URL:
+  IDENTITY_URL:
     "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
 
-  SECURE_PAGE: "/secure-aqx.html",
+  SOC_URL:
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-soc",
 
-  SNAPSHOT_RPC: "aqx_dashboard_snapshot",
-  REVOKE_RPC: "aqx_dashboard_revoke_service",
+  LOGIN_PAGE: "/secure-aqx.html",
+
+  RESTRICTED_PAGE: "/account-status.html",
 
   CHECK_INTERVAL: 30000,
-  ACTIVITY_INTERVAL: 60000,
+
+  SOC_INTERVAL: 60000,
+
   REQUEST_TIMEOUT: 12000,
-  IDLE_LIMIT: 15 * 60 * 1000,
 
-  SESSION_KEYS: [
-    "aqx_session_token",
-    "aqx_session_id",
-    "aqx_service_session_token",
-    "aqx_login_proof"
-  ],
-
-  RESTRICTED_KEYS: [
-    "aqx_restricted_session",
-    "aqx_restricted_session_token"
-  ]
+  LOCK_NAME: "aqx-internal-page-lock"
 });
 
-const supabase = window.supabase.createClient(
-  CONFIG.SUPABASE_URL,
-  CONFIG.SUPABASE_PUBLIC_KEY,
+
+/* ======================================================
+   2. تهيئة Supabase
+====================================================== */
+
+if (!window.supabase?.createClient) {
+  showFailure("تعذر تحميل مكتبة الاتصال بخدمات الهوية.");
+  return;
+}
+
+const sb = window.supabase.createClient(
+  AQX.SUPABASE_URL,
+  AQX.PUBLIC_KEY,
   {
     auth: {
       persistSession: true,
@@ -297,631 +155,565 @@ const supabase = window.supabase.createClient(
   }
 );
 
-/* =========================================================
-   2) الحالة الداخلية
-   ========================================================= */
+
+/* ======================================================
+   3. حالة الحماية
+====================================================== */
 
 const state = {
   user: null,
+  authSession: null,
   accessToken: null,
-  session: null,
-  snapshot: null,
-  profile: null,
 
-  remaining: null,
-  lastActivity: Date.now(),
-  lastVerified: null,
+  identityToken: null,
+  restrictedToken: null,
 
-  busy: false,
+  restricted: false,
+  authorized: false,
   stopped: false,
-  loggingOut: false,
-  booted: false,
-  monitorRunning: false,
-
-  checkTimer: null,
-  activityTimer: null,
-  countdownTimer: null,
+  checking: false,
 
   lockRelease: null,
-  lockName: "aqx-identity-dashboard-lock",
   lockOwned: false,
 
-  lastError: null
+  checkTimer: null,
+  socTimer: null,
+  heartbeatTimer: null,
+
+  lastActivity: Date.now(),
+  activityCount: 0,
+  clickCount: 0,
+  navigationCount: 0,
+  hiddenSince: null,
+  hiddenDuration: 0,
+
+  lastSOCCheck: 0,
+  lastIdentityCheck: 0
 };
 
-const INVALID_SESSION_CODES = new Set([
-  "IDLE_TIMEOUT",
-  "SESSION_NOT_FOUND",
-  "SERVICE_SESSION_INVALID",
-  "AQX_SESSION_INVALID",
-  "DASHBOARD_SESSION_INVALID",
-  "SESSION_REVOKED",
-  "INVALID_CREDENTIALS"
-]);
+const guard = document.getElementById("aqxGuard");
+const title = document.getElementById("aqxGuardTitle");
+const message = document.getElementById("aqxGuardMessage");
+const spinner = document.getElementById("aqxGuardSpinner");
+const retryButton = document.getElementById("aqxGuardRetry");
 
-/* =========================================================
-   3) أدوات عامة
-   ========================================================= */
+document.body.classList.add("aqx-locked");
 
-const $ = id => document.getElementById(id);
 
-function nowText() {
-  return new Date().toLocaleString("ar-EG");
+/* ======================================================
+   4. واجهة رسائل الحماية
+====================================================== */
+
+function showMessage(text, heading = "التحقق الأمني") {
+  title.textContent = heading;
+  message.textContent = text;
+  spinner.classList.remove("aqx-hidden");
+  retryButton.classList.add("aqx-hidden");
+  guard.classList.remove("aqx-hidden");
 }
 
-function safeText(value, fallback = "—") {
-  if (value === null || value === undefined || value === "") {
-    return fallback;
-  }
-  if (typeof value === "object") return fallback;
-  return String(value);
+function showFailure(text, heading = "تعذر التحقق") {
+  title.textContent = heading;
+  message.textContent = text;
+  spinner.classList.add("aqx-hidden");
+  retryButton.classList.remove("aqx-hidden");
+  guard.classList.remove("aqx-hidden");
 }
 
-function addEvent(message, type = "info") {
-  const list = $("eventList");
-  const empty = list.querySelector(".empty-event");
-  if (empty) empty.remove();
+function releaseContent() {
+  state.authorized = true;
+  guard.classList.add("aqx-hidden");
+  document.body.classList.remove("aqx-locked");
+}
 
-  const item = document.createElement("div");
-  item.className = "item";
+function blockContent(text, heading = "تم إيقاف الوصول") {
+  state.authorized = false;
+  stopMonitoring();
+  document.body.classList.add("aqx-locked");
+  showFailure(text, heading);
+}
 
-  const label = document.createElement("span");
-  label.textContent = message;
 
-  const time = document.createElement("time");
-  time.textContent = nowText();
+/* ======================================================
+   5. أدوات الاتصال
+====================================================== */
 
-  item.append(label, time);
-  list.prepend(item);
-
-  while (list.children.length > 40) {
-    list.lastElementChild.remove();
-  }
-
+function getStored(key, storage = localStorage) {
   try {
-    const events = JSON.parse(
-      sessionStorage.getItem("aqx_dashboard_events") || "[]"
-    );
-    events.unshift({ message, time: nowText(), type });
-    sessionStorage.setItem(
-      "aqx_dashboard_events",
-      JSON.stringify(events.slice(0, 40))
-    );
-  } catch (_) {}
-}
-
-function showNotice(message, type = "info") {
-  const box = $("globalNotice");
-  box.textContent = message;
-  box.className = "notice show " + type;
-}
-
-function hideNotice() {
-  $("globalNotice").className = "notice";
-}
-
-function setMainStatus(text, type = "wait") {
-  $("mainStatusText").textContent = text;
-  $("mainStatus").className = "status " + type;
-}
-
-function setBootMessage(message, retry = false) {
-  $("bootMessage").textContent = message;
-  $("bootSpinner").classList.toggle("hidden", retry);
-  $("retryBoot").classList.toggle("hidden", !retry);
-}
-
-function showDashboard() {
-  $("bootScreen").classList.add("hidden");
-  $("dashboard").classList.remove("hidden");
-}
-
-function showBoot() {
-  $("dashboard").classList.add("hidden");
-  $("bootScreen").classList.remove("hidden");
-}
-
-function getStoredValue(key) {
-  try {
-    return localStorage.getItem(key);
+    return storage.getItem(key);
   } catch (_) {
     return null;
   }
 }
 
-function getIdentityToken() {
-  return (
-    getStoredValue("aqx_service_session_token") ||
-    getStoredValue("aqx_session_token") ||
-    ""
-  );
-}
-
-function getIdentitySessionId() {
-  return getStoredValue("aqx_session_id") || "";
-}
-
 function isNetworkError(error) {
-  const message = String(error?.message || "").toLowerCase();
+  const m = String(error?.message || "").toLowerCase();
 
   return (
     error?.name === "AbortError" ||
-    message.includes("failed to fetch") ||
-    message.includes("network") ||
-    message.includes("timeout") ||
-    message.includes("load failed") ||
-    message.includes("fetch")
+    m.includes("failed to fetch") ||
+    m.includes("network") ||
+    m.includes("timeout") ||
+    m.includes("load failed")
   );
 }
 
-function getErrorCode(data, error) {
-  return String(
-    data?.code ||
-    data?.error_code ||
-    data?.error?.code ||
-    error?.code ||
-    ""
-  ).toUpperCase();
-}
-
-function explicitSessionInvalid(data, error) {
-  const code = getErrorCode(data, error);
-
-  if (INVALID_SESSION_CODES.has(code)) return true;
-
-  if (data && typeof data === "object") {
-    if (data.valid === false) return true;
-    if (data.active === false) return true;
-
-    if (data.session && typeof data.session === "object") {
-      if (data.session.valid === false) return true;
-      if (data.session.active === false) return true;
-    }
-  }
-
-  return false;
-}
-
-function normalizeObject(data) {
-  if (Array.isArray(data)) return data[0] || {};
-  if (data && typeof data === "object") return data;
-  return {};
-}
-
-/* =========================================================
-   4) تحديث رمز Supabase
-   ========================================================= */
-
-async function getFreshAuth() {
-  const result = await supabase.auth.getSession();
-
-  if (result.error) throw result.error;
-
-  const session = result.data?.session;
-
-  if (!session?.access_token || !session?.user?.id) {
-    const error = new Error("لا توجد جلسة Supabase نشطة.");
-    error.code = "NO_AUTH_SESSION";
-    throw error;
-  }
-
-  state.session = session;
-  state.user = session.user;
-  state.accessToken = session.access_token;
-
-  return session;
-}
-
-/* =========================================================
-   5) طلبات المحرك
-   ========================================================= */
-
-async function requestJSON(url, options = {}) {
+async function fetchJSON(url, options = {}) {
   const controller = new AbortController();
-  const timeout = setTimeout(
+
+  const timer = setTimeout(
     () => controller.abort(),
-    CONFIG.REQUEST_TIMEOUT
+    AQX.REQUEST_TIMEOUT
   );
 
   try {
     const response = await fetch(url, {
       ...options,
-      signal: controller.signal,
       cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        ...(options.headers || {})
-      }
+      signal: controller.signal
     });
 
     const raw = await response.text();
+
     let data = {};
 
     try {
       data = raw ? JSON.parse(raw) : {};
     } catch (_) {
-      data = { raw_response: raw };
+      throw new Error("استجابة الخادم ليست JSON صالحًا.");
     }
 
     if (!response.ok) {
       const error = new Error(
-        data?.message ||
-        data?.error_description ||
-        data?.error ||
-        `HTTP ${response.status}`
+        data.message ||
+        data.error_description ||
+        data.error ||
+        "HTTP " + response.status
       );
 
       error.status = response.status;
-      error.code = getErrorCode(data, error);
+      error.code = String(
+        data.code ||
+        data.error_code ||
+        data.error?.code ||
+        ""
+      ).toUpperCase();
+
       error.data = data;
 
       throw error;
     }
 
-    return { data, response };
+    return data;
+
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(timer);
   }
 }
 
-async function engineRequest(path, options = {}) {
-  const session = await getFreshAuth();
 
-  const identityToken = getIdentityToken();
-  const identitySessionId = getIdentitySessionId();
+/* ======================================================
+   6. الحصول على جلسة Supabase الفعلية
+====================================================== */
 
-  const headers = {
-    Authorization: "Bearer " + session.access_token,
-    apikey: CONFIG.SUPABASE_PUBLIC_KEY,
-    "Content-Type": "application/json",
-    ...(identityToken
-      ? { "X-AQX-Session": identityToken }
-      : {}),
-    ...(identitySessionId
-      ? { "X-AQX-Session-ID": identitySessionId }
-      : {}),
-    ...(options.headers || {})
-  };
+async function getAuthenticatedUser() {
 
-  return requestJSON(
-    CONFIG.SERVICE_ORIGIN.replace(/\/$/, "") + path,
-    {
-      method: options.method || "GET",
-      headers,
-      body: options.body
-        ? JSON.stringify(options.body)
-        : undefined
-    }
-  );
-}
-
-/* =========================================================
-   6) التحقق من الجلسة
-   ========================================================= */
-
-async function checkIdentitySession() {
-  const token = getIdentityToken();
-
-  if (!token) {
-    const error = new Error("رمز جلسة الهوية غير موجود.");
-    error.code = "IDENTITY_TOKEN_MISSING";
-    throw error;
-  }
-
-  const result = await engineRequest("/v1/session/check", {
-    method: "POST",
-    body: {
-      session_token: token,
-      session_id: getIdentitySessionId()
-    }
-  });
-
-  const data = normalizeObject(result.data);
-
-  if (explicitSessionInvalid(data, null)) {
-    const error = new Error(
-      data.message || "الخادم أكد أن جلسة الهوية غير صالحة."
-    );
-    error.code = getErrorCode(data, error) || "AQX_SESSION_INVALID";
-    error.data = data;
-    throw error;
-  }
-
-  // الرد الناقص لا يعني أن الجلسة ملغاة.
-  if (
-    data.valid === undefined &&
-    data.active === undefined &&
-    data.status === undefined &&
-    data.session_status === undefined
-  ) {
-    throw new Error("رد المحرك لا يحتوي على حالة جلسة واضحة.");
-  }
-
-  const inactiveStatuses = [
-    "revoked",
-    "expired",
-    "invalid",
-    "terminated"
-  ];
-
-  const status = String(
-    data.status || data.session_status || ""
-  ).toLowerCase();
-
-  if (inactiveStatuses.includes(status)) {
-    const error = new Error("المحرك أكد انتهاء أو إبطال الجلسة.");
-    error.code = "SESSION_REVOKED";
-    throw error;
-  }
-
-  if (data.valid === true || data.active === true) {
-    return data;
-  }
-
-  if (status === "active" || status === "valid") {
-    return data;
-  }
-
-  throw new Error("تعذر تأكيد صلاحية الجلسة من رد المحرك.");
-}
-
-/* =========================================================
-   7) جلب بيانات الحساب
-   ========================================================= */
-
-async function loadProfile() {
-  const result = await engineRequest("/v1/me", {
-    method: "GET"
-  });
-
-  state.profile = normalizeObject(result.data);
-  renderProfile(state.profile);
-
-  return state.profile;
-}
-
-async function loadIdentityStatus() {
-  const result = await engineRequest("/v1/me/status", {
-    method: "GET"
-  });
-
-  const data = normalizeObject(result.data);
-
-  if (explicitSessionInvalid(data, null)) {
-    const error = new Error("المحرك أكد عدم صلاحية الهوية.");
-    error.code = getErrorCode(data, error) || "AQX_SESSION_INVALID";
-    throw error;
-  }
-
-  return data;
-}
-
-/* =========================================================
-   8) لقطة لوحة التحكم من قاعدة البيانات
-   ========================================================= */
-
-async function loadSnapshot() {
-  await getFreshAuth();
-
-  const result = await supabase.rpc(CONFIG.SNAPSHOT_RPC);
+  const result = await sb.auth.getSession();
 
   if (result.error) {
-    // فشل RPC ليس دليلًا على انتهاء الجلسة.
     throw result.error;
   }
 
-  const data = normalizeObject(result.data);
+  const session = result.data?.session;
 
-  // لا نحول undefined أو الرد الناقص إلى valid:false.
-  if (data.valid === false || data.active === false) {
-    const error = new Error(
-      data.message || "لقطة الخادم تؤكد أن الجلسة غير نشطة."
-    );
-    error.code = getErrorCode(data, error) || "SESSION_REVOKED";
+  if (!session?.access_token) {
+    const error = new Error("جلسة تسجيل الدخول غير موجودة.");
+    error.code = "AUTH_SESSION_MISSING";
     throw error;
   }
 
-  state.snapshot = data;
-  renderSnapshot(data);
+  // التحقق من المستخدم عن طريق خادم Supabase نفسه.
+  const verified = await sb.auth.getUser(
+    session.access_token
+  );
+
+  if (verified.error || !verified.data?.user) {
+    const error = new Error(
+      "تعذر تأكيد المستخدم من خادم المصادقة."
+    );
+
+    error.code = "AUTH_USER_INVALID";
+    throw error;
+  }
+
+  state.authSession = session;
+  state.accessToken = session.access_token;
+  state.user = verified.data.user;
+
+  return verified.data.user;
+}
+
+
+/* ======================================================
+   7. تحديد نوع جلسة AQX
+====================================================== */
+
+function readIdentitySession() {
+
+  const normal = getStored("aqx_session_token");
+
+  const restricted = getStored(
+    "aqx_restricted_session_token",
+    sessionStorage
+  );
+
+  state.identityToken = normal || null;
+  state.restrictedToken = restricted || null;
+
+  state.restricted = !normal && !!restricted;
+
+  if (!normal && !restricted) {
+    const error = new Error(
+      "رمز جلسة AQX غير موجود."
+    );
+
+    error.code = "AQX_SESSION_MISSING";
+    throw error;
+  }
+}
+
+
+/* ======================================================
+   8. رؤوس الاتصال
+====================================================== */
+
+function identityHeaders() {
+
+  const headers = {
+    "apikey": AQX.PUBLIC_KEY,
+    "Authorization": "Bearer " + state.accessToken,
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  };
+
+  if (state.restricted) {
+    headers["x-aqx-restricted-session"] =
+      state.restrictedToken;
+  } else {
+    headers["x-aqx-session"] =
+      state.identityToken;
+  }
+
+  return headers;
+}
+
+
+/* ======================================================
+   9. التحقق من جلسة الهوية
+====================================================== */
+
+async function verifyIdentity() {
+
+  readIdentitySession();
+
+  const endpoint = state.restricted
+    ? "/v1/restricted-session/check"
+    : "/v1/session/check";
+
+  const data = await fetchJSON(
+    AQX.IDENTITY_URL + endpoint,
+    {
+      method: "POST",
+      headers: identityHeaders(),
+      body: JSON.stringify({})
+    }
+  );
+
+  if (data.valid === false) {
+    const error = new Error(
+      data.message || "جلسة الهوية غير صالحة."
+    );
+
+    error.code = data.code || "AQX_SESSION_INVALID";
+    error.data = data;
+
+    throw error;
+  }
+
+  if (data.valid !== true) {
+    throw new Error(
+      "رد المحرك لا يؤكد صلاحية جلسة الهوية."
+    );
+  }
+
+  if (state.restricted && data.restricted !== true) {
+    throw new Error(
+      "استجابة الجلسة المقيّدة غير مكتملة."
+    );
+  }
+
+  state.lastIdentityCheck = Date.now();
 
   return data;
 }
 
-/* =========================================================
-   9) عرض البيانات
-   ========================================================= */
 
-function renderProfile(profile) {
-  const user = state.user || {};
+/* ======================================================
+   10. مراقبة AQX-SOC
+====================================================== */
 
-  $("userEmail").textContent = safeText(
-    profile.email || profile.user?.email || user.email
-  );
+function collectTelemetry() {
 
-  $("userId").textContent = safeText(
-    profile.id || profile.user_id || user.id
-  );
+  const screenInfo = {
+    width: screen.width,
+    height: screen.height,
+    pixelRatio: window.devicePixelRatio || 1
+  };
 
-  $("sessionId").textContent = safeText(
-    profile.session_id ||
-    profile.session?.id ||
-    getIdentitySessionId()
-  );
+  return {
+    user_agent: navigator.userAgent,
+    language: navigator.language,
+    platform: navigator.platform,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 
-  $("identityStatus").textContent = safeText(
-    profile.identity_status ||
-    profile.status ||
-    profile.account_status,
-    "تم استلام البيانات"
-  );
+    screen: screenInfo,
+
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight
+    },
+
+    online: navigator.onLine,
+    visible: document.visibilityState === "visible",
+    focused: document.hasFocus(),
+
+    webdriver: navigator.webdriver === true,
+
+    activity_count: state.activityCount,
+    click_count: state.clickCount,
+    navigation_count: state.navigationCount,
+
+    page_age_seconds: Math.floor(
+      (Date.now() - PAGE_STARTED_AT) / 1000
+    ),
+
+    hidden_duration_seconds: Math.floor(
+      state.hiddenDuration / 1000
+    ),
+
+    page_path: location.pathname
+  };
 }
 
-function renderSnapshot(snapshot) {
-  const remaining =
-    snapshot.remaining_seconds ??
-    snapshot.remaining ??
-    snapshot.session?.remaining_seconds;
+const PAGE_STARTED_AT = Date.now();
 
-  if (Number.isFinite(Number(remaining))) {
-    state.remaining = Math.max(0, Number(remaining));
-    renderRemaining();
+async function verifyBehavior() {
+
+  if (state.restricted) {
+    // الجلسة المقيّدة لا تستخدم مسار SOC الخاص بالجلسة العادية.
+    return true;
   }
 
-  const sessionState =
-    snapshot.session_status ||
-    snapshot.status ||
-    snapshot.session?.status;
+  const data = await fetchJSON(
+    AQX.SOC_URL + "/v1/check",
+    {
+      method: "POST",
 
-  $("sessionStatus").textContent = safeText(
-    sessionState,
-    "تم استلام لقطة الخادم"
+      headers: {
+        "apikey": AQX.PUBLIC_KEY,
+
+        "Authorization":
+          "Bearer " + state.accessToken,
+
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+
+        "x-aqx-session": state.identityToken
+      },
+
+      body: JSON.stringify({
+        action: "dashboard_access",
+        client_telemetry: collectTelemetry()
+      })
+    }
   );
-
-  $("lastCheck").textContent = nowText();
-}
-
-function renderRemaining() {
-  if (state.remaining === null) {
-    $("remainingTime").textContent = "غير متاح";
-    return;
-  }
-
-  const seconds = Math.max(0, Math.floor(state.remaining));
-  const minutes = Math.floor(seconds / 60);
-  const rest = seconds % 60;
-
-  $("remainingTime").textContent =
-    `${minutes} دقيقة و ${rest} ثانية`;
-}
-
-/* =========================================================
-   10) التحقق الشامل
-   ========================================================= */
-
-async function verifyEverything() {
-  const session = await getFreshAuth();
-
-  $("userEmail").textContent = safeText(session.user.email);
-  $("userId").textContent = safeText(session.user.id);
-
-  const identity = await checkIdentitySession();
-
-  state.lastVerified = Date.now();
-  $("lastCheck").textContent = nowText();
-  $("engineState").textContent = "تم التحقق";
-  $("engineResponse").textContent = "استجابة ناجحة";
-  $("connectionState").textContent = "متصل";
-  $("identityStatus").textContent = "صالحة";
-  $("sessionStatus").textContent = "نشطة";
-
-  const status = await loadIdentityStatus();
 
   if (
-    status.valid === false ||
-    status.active === false
+    data.success === true &&
+    data.decision === "allow"
   ) {
-    const error = new Error("حالة الهوية غير نشطة حسب الخادم.");
-    error.code = getErrorCode(status, error) || "AQX_SESSION_INVALID";
+    state.lastSOCCheck = Date.now();
+    return true;
+  }
+
+  if (
+    data.decision === "deny" ||
+    data.success === false
+  ) {
+    const error = new Error(
+      data.message ||
+      "محرك الأمن لم يسمح بالوصول."
+    );
+
+    error.code = data.code || "SOC_ACCESS_DENIED";
+    error.securityDenied = true;
+
     throw error;
   }
 
-  await loadProfile();
-  await loadSnapshot();
-
-  setMainStatus("الجلسة نشطة", "ok");
-  $("monitorState").textContent = "نشطة";
-  hideNotice();
-
-  return { identity, status };
+  throw new Error(
+    "استجابة محرك SOC غير حاسمة."
+  );
 }
 
-/* =========================================================
-   11) التعامل مع الأخطاء
-   ========================================================= */
 
-async function handleVerificationError(error, source = "التحقق") {
-  console.error("[AQX]", source, error);
+/* ======================================================
+   11. التحقق الشامل
+====================================================== */
 
-  const code = getErrorCode(error?.data, error);
+async function verifyAll() {
+
+  if (state.checking || state.stopped) return;
+
+  state.checking = true;
+
+  try {
+
+    await getAuthenticatedUser();
+
+    await verifyIdentity();
+
+    if (state.restricted) {
+
+      const currentPage =
+        location.pathname.split("/").pop();
+
+      if (
+        currentPage.toLowerCase() !==
+        "account-status.html"
+      ) {
+        location.replace(AQX.RESTRICTED_PAGE);
+        return;
+      }
+
+      releaseContent();
+      startMonitoring();
+      return;
+    }
+
+    await verifyBehavior();
+
+    releaseContent();
+
+    startMonitoring();
+
+  } finally {
+    state.checking = false;
+  }
+}
+
+
+/* ======================================================
+   12. تصنيف الأخطاء
+====================================================== */
+
+const INVALID_CODES = new Set([
+  "SESSION_NOT_FOUND",
+  "SESSION_REVOKED",
+  "SESSION_EXPIRED",
+  "AQX_SESSION_INVALID",
+  "SERVICE_SESSION_INVALID",
+  "DASHBOARD_SESSION_INVALID",
+  "IDLE_TIMEOUT",
+  "INVALID_CREDENTIALS"
+]);
+
+async function handleError(error) {
+
+  console.error("[AQX PAGE GUARD]", error);
+
+  const code = String(error?.code || "").toUpperCase();
 
   if (
-    error?.code === "NO_AUTH_SESSION" ||
-    error?.code === "IDENTITY_TOKEN_MISSING"
+    code === "AUTH_SESSION_MISSING" ||
+    code === "AUTH_USER_INVALID"
   ) {
-    setMainStatus("بيانات الدخول غير مكتملة", "bad");
-    showNotice(
-      "لا توجد بيانات جلسة مكتملة. ارجع إلى صفحة تسجيل الدخول وأعد الدخول.",
-      "warn"
+    stopMonitoring();
+
+    location.replace(AQX.LOGIN_PAGE);
+    return;
+  }
+
+  if (
+    code === "AQX_SESSION_MISSING" ||
+    INVALID_CODES.has(code) ||
+    (error?.status === 401 && !isNetworkError(error))
+  ) {
+    stopMonitoring();
+
+    blockContent(
+      "انتهت جلسة الهوية أو أكد الخادم عدم صلاحيتها. ارجع إلى تسجيل الدخول.",
+      "جلسة الهوية غير صالحة"
     );
-    $("identityStatus").textContent = "بيانات ناقصة";
-    $("sessionStatus").textContent = "لم يتم التحقق";
-    addEvent("بيانات جلسة الدخول غير مكتملة", "warn");
+
+    location.replace(AQX.LOGIN_PAGE);
     return;
   }
 
-  if (INVALID_SESSION_CODES.has(code)) {
-    addEvent("الخادم أكد إبطال الجلسة: " + code, "error");
-    await forceLogout("أكد الخادم انتهاء أو إبطال جلسة الهوية.");
-    return;
-  }
+  if (error?.securityDenied) {
 
-  // 401 لا يُعامل منفردًا كدليل قاطع إلا إذا حمل رمز إبطال معروفًا.
-  // 403 قد يعني تقييد الحساب، وليس إبطال الجلسة.
-  if (error?.status === 403) {
-    setMainStatus("الحساب يحتاج مراجعة", "wait");
-    showNotice(
-      "المحرك رفض العملية. قد يكون الحساب مقيّدًا أو لا يملك الصلاحية المطلوبة. لم يتم تسجيل خروجك.",
-      "warn"
+    blockContent(
+      "محرك AQX-SOC لم يسمح بالوصول إلى هذه الصفحة. تم حجب المحتوى.",
+      "رفض أمني"
     );
-    $("connectionState").textContent = "الخادم متصل";
-    addEvent("رفض صلاحية من الخادم - لم يتم تسجيل الخروج", "warn");
+
     return;
   }
 
-  if (isNetworkError(error) || error?.status >= 500) {
-    $("connectionState").textContent = "تعذر الاتصال مؤقتًا";
-    $("engineState").textContent = "تعذر التحقق مؤقتًا";
-    setMainStatus("مشكلة اتصال مؤقتة", "wait");
-    showNotice(
-      "تعذر الاتصال بخدمة الهوية حاليًا. جلستك لم تُمسح ولم يتم تسجيل خروجك. ستتم إعادة المحاولة تلقائيًا.",
-      "warn"
-    );
-    addEvent("تعذر الاتصال مؤقتًا - الجلسة محفوظة", "warn");
-    return;
-  }
-
-  $("connectionState").textContent = "تعذر التحقق";
-  $("engineState").textContent = "رد غير مكتمل";
-  setMainStatus("تعذر تأكيد الحالة", "wait");
-  showNotice(
-    "لم يصل رد واضح من المحرك. لم يتم اعتبار الجلسة ملغاة، ولم يتم تسجيل خروجك. يمكنك إعادة المحاولة.",
-    "warn"
+  // الشبكة و5xx والردود غير المكتملة لا تمسح الجلسة.
+  blockContent(
+    "تعذر إكمال التحقق من المحرك الأمني. لم يتم مسح جلسة الدخول أو تسجيل الخروج. أعد المحاولة.",
+    "تعذر التحقق مؤقتًا"
   );
-  addEvent("فشل تحقق غير حاسم - الجلسة محفوظة", "warn");
 }
 
-/* =========================================================
-   12) إدارة القفل بين التبويبات
-   ========================================================= */
+
+/* ======================================================
+   13. منع فتح أكثر من تبويب
+====================================================== */
+
+let fallbackHeartbeat = null;
 
 async function acquireTabLock() {
-  if (navigator.locks?.request) {
-    let resolveAcquired;
-    let rejectAcquired;
 
-    const acquired = new Promise((resolve, reject) => {
+  const name =
+    AQX.LOCK_NAME + "-" + state.user.id;
+
+  if (navigator.locks?.request) {
+
+    let resolveAcquired;
+
+    const acquired = new Promise(resolve => {
       resolveAcquired = resolve;
-      rejectAcquired = reject;
     });
+
+    let release;
 
     const hold = new Promise(resolve => {
-      state.lockRelease = resolve;
+      release = resolve;
     });
 
+    state.lockRelease = release;
+
     navigator.locks.request(
-      state.lockName,
-      { mode: "exclusive", ifAvailable: true },
+      name,
+      {
+        mode: "exclusive",
+        ifAvailable: true
+      },
+
       async lock => {
+
         if (!lock) {
           resolveAcquired(false);
           return;
@@ -929,397 +721,360 @@ async function acquireTabLock() {
 
         state.lockOwned = true;
         resolveAcquired(true);
+
         await hold;
+
         state.lockOwned = false;
       }
-    ).catch(rejectAcquired);
+
+    ).catch(error => {
+      resolveAcquired(false);
+      console.error("AQX tab lock:", error);
+    });
 
     return acquired;
   }
 
-  // بديل آمن: لا يحذف الجلسة ولا يسجل الخروج عند وجود تبويب آخر.
-  const key = "aqx_dashboard_tab_owner";
-  const current = getStoredValue(key);
+  // بديل للمتصفحات التي لا تدعم Web Locks.
+  const key = "aqx_active_internal_tab";
   const now = Date.now();
 
-  if (current) {
-    try {
+  try {
+
+    const current = localStorage.getItem(key);
+
+    if (current) {
       const owner = JSON.parse(current);
+
       if (
         owner.id !== TAB_ID &&
-        now - Number(owner.time || 0) < 45000
+        now - owner.time < 15000
       ) {
         return false;
       }
-    } catch (_) {}
-  }
+    }
 
-  try {
     localStorage.setItem(
       key,
-      JSON.stringify({ id: TAB_ID, time: now })
+      JSON.stringify({
+        id: TAB_ID,
+        time: now
+      })
     );
-  } catch (_) {
-    // لا نمنع المستخدم ولا نمسح الجلسة إذا تعذر التخزين.
-  }
 
-  state.lockOwned = true;
-  state.lockRelease = () => {
-    try {
-      const owner = JSON.parse(
-        localStorage.getItem(key) || "{}"
+    const verify = JSON.parse(
+      localStorage.getItem(key) || "{}"
+    );
+
+    if (verify.id !== TAB_ID) return false;
+
+    state.lockOwned = true;
+
+    fallbackHeartbeat = setInterval(() => {
+      if (!state.lockOwned) return;
+
+      localStorage.setItem(
+        key,
+        JSON.stringify({
+          id: TAB_ID,
+          time: Date.now()
+        })
       );
-      if (owner.id === TAB_ID) {
-        localStorage.removeItem(key);
-      }
-    } catch (_) {}
-    state.lockOwned = false;
-  };
+    }, 5000);
 
-  return true;
+    state.lockRelease = () => {
+      clearInterval(fallbackHeartbeat);
+
+      try {
+        const owner = JSON.parse(
+          localStorage.getItem(key) || "{}"
+        );
+
+        if (owner.id === TAB_ID) {
+          localStorage.removeItem(key);
+        }
+      } catch (_) {}
+
+      state.lockOwned = false;
+    };
+
+    return true;
+
+  } catch (_) {
+    // إذا تعذر التخزين لا نمسح الجلسة.
+    return true;
+  }
 }
 
 const TAB_ID =
   "aqx-" + Math.random().toString(36).slice(2);
 
 function releaseTabLock() {
+
   if (state.lockRelease) {
     state.lockRelease();
     state.lockRelease = null;
   }
 }
 
-/* =========================================================
-   13) النشاط والخمول
-   ========================================================= */
 
-function recordActivity() {
+/* ======================================================
+   14. مراقبة النشاط دون تسجيل ضغطات المفاتيح
+====================================================== */
+
+function activity(event) {
+
+  if (!state.authorized) return;
+
   state.lastActivity = Date.now();
-  $("lastActivity").textContent = nowText();
-}
+  state.activityCount++;
 
-[
-  "click",
-  "keydown",
-  "pointerdown",
-  "touchstart",
-  "scroll"
-].forEach(eventName => {
-  document.addEventListener(
-    eventName,
-    recordActivity,
-    { passive: true }
-  );
-});
-
-async function checkIdleWithServer() {
-  const localIdle = Date.now() - state.lastActivity;
-
-  if (localIdle < CONFIG.IDLE_LIMIT) return;
-
-  // لا نسجل الخروج بالعداد المحلي وحده.
-  // نطلب تأكيد حالة الجلسة من الخادم.
-  try {
-    await verifyEverything();
-    recordActivity();
-  } catch (error) {
-    await handleVerificationError(error, "فحص الخمول");
+  if (event?.type === "click") {
+    state.clickCount++;
   }
 }
 
-function startTimers() {
-  stopTimers();
+document.addEventListener(
+  "click",
+  activity,
+  { passive: true }
+);
+
+document.addEventListener(
+  "pointerdown",
+  activity,
+  { passive: true }
+);
+
+document.addEventListener(
+  "scroll",
+  activity,
+  { passive: true }
+);
+
+document.addEventListener(
+  "keydown",
+  activity,
+  { passive: true }
+);
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (document.hidden) {
+      state.hiddenSince = Date.now();
+    } else if (state.hiddenSince) {
+
+      state.hiddenDuration +=
+        Date.now() - state.hiddenSince;
+
+      state.hiddenSince = null;
+    }
+  }
+);
+
+
+/* ======================================================
+   15. منع الرجوع للخلف
+====================================================== */
+
+function installBackGuard() {
+
+  history.pushState(
+    { aqx_internal_guard: true },
+    "",
+    location.href
+  );
+
+  window.addEventListener("popstate", () => {
+
+    if (!state.authorized) return;
+
+    state.navigationCount++;
+
+    history.pushState(
+      { aqx_internal_guard: true },
+      "",
+      location.href
+    );
+
+  });
+
+}
+
+installBackGuard();
+
+
+/* ======================================================
+   16. الفحص الدوري
+====================================================== */
+
+function startMonitoring() {
+
+  if (state.checkTimer || state.restricted) return;
 
   state.checkTimer = setInterval(async () => {
-    if (state.busy || state.stopped) return;
 
-    state.busy = true;
     try {
-      await verifyEverything();
+      await getAuthenticatedUser();
+      await verifyIdentity();
+
     } catch (error) {
-      await handleVerificationError(error, "الفحص الدوري");
-    } finally {
-      state.busy = false;
+      await handleError(error);
     }
-  }, CONFIG.CHECK_INTERVAL);
 
-  state.activityTimer = setInterval(async () => {
-    if (state.busy || state.stopped) return;
+  }, AQX.CHECK_INTERVAL);
 
-    await checkIdleWithServer();
-  }, CONFIG.ACTIVITY_INTERVAL);
 
-  state.countdownTimer = setInterval(() => {
-    if (state.remaining === null) return;
+  state.socTimer = setInterval(async () => {
 
-    state.remaining = Math.max(0, state.remaining - 1);
-    renderRemaining();
+    if (state.restricted) return;
 
-    // عند وصول العداد للصفر لا يتم تسجيل الخروج محليًا.
-    if (state.remaining <= 0 && !state.busy) {
-      refreshAll();
+    try {
+
+      await getAuthenticatedUser();
+
+      await verifyBehavior();
+
+    } catch (error) {
+      await handleError(error);
     }
-  }, 1000);
 
-  state.monitorRunning = true;
+  }, AQX.SOC_INTERVAL);
+
 }
 
-function stopTimers() {
+function stopMonitoring() {
+
   clearInterval(state.checkTimer);
-  clearInterval(state.activityTimer);
-  clearInterval(state.countdownTimer);
+  clearInterval(state.socTimer);
 
   state.checkTimer = null;
-  state.activityTimer = null;
-  state.countdownTimer = null;
-  state.monitorRunning = false;
+  state.socTimer = null;
+
 }
 
-/* =========================================================
-   14) التحديث اليدوي
-   ========================================================= */
 
-async function refreshAll() {
-  if (state.busy || state.loggingOut) return;
+/* ======================================================
+   17. منع استمرار صفحة غير متحققة
+====================================================== */
 
-  state.busy = true;
-  $("refreshButton").disabled = true;
+window.addEventListener("storage", event => {
 
-  try {
-    await verifyEverything();
-    addEvent("تم تحديث بيانات الحساب والجلسة بنجاح", "success");
-  } catch (error) {
-    await handleVerificationError(error, "التحديث اليدوي");
-  } finally {
-    state.busy = false;
-    $("refreshButton").disabled = false;
-  }
-}
-
-/* =========================================================
-   15) تسجيل الخروج
-   ========================================================= */
-
-async function forceLogout(reason = "تم إنهاء الجلسة.") {
-  if (state.loggingOut) return;
-
-  state.loggingOut = true;
-  stopTimers();
-  releaseTabLock();
-
-  showNotice(reason, "warn");
-  addEvent("إنهاء الجلسة: " + reason, "warn");
-
-  const token = getIdentityToken();
-
-  try {
-    const session = await supabase.auth.getSession();
-    const accessToken = session.data?.session?.access_token;
-
-    if (token && accessToken) {
-      await requestJSON(
-        CONFIG.SERVICE_ORIGIN.replace(/\/$/, "") +
-          "/v1/session/logout",
-        {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + accessToken,
-            apikey: CONFIG.SUPABASE_PUBLIC_KEY,
-            "Content-Type": "application/json",
-            "X-AQX-Session": token,
-            "X-AQX-Session-ID": getIdentitySessionId()
-          },
-          body: JSON.stringify({
-            session_token: token,
-            session_id: getIdentitySessionId()
-          })
-        }
-      ).catch(error => {
-        console.warn("Engine logout response:", error);
-      });
-    }
-  } catch (error) {
-    console.warn("Logout request failed:", error);
+  if (
+    event.key === "aqx_session_token" &&
+    !event.newValue
+  ) {
+    blockContent(
+      "تم تغيير بيانات جلسة الهوية في تبويب آخر. أعد التحقق."
+    );
   }
 
-  // محاولة إبطال جلسة الخدمة باستخدام RPC الموجود أصلًا.
-  try {
-    await supabase.rpc(CONFIG.REVOKE_RPC);
-  } catch (error) {
-    console.warn("Service revoke RPC:", error);
-  }
-
-  // لا نستخدم global signOut حتى لا نلغي جلسات المستخدم الأخرى.
-  try {
-    await supabase.auth.signOut({ scope: "local" });
-  } catch (error) {
-    console.warn("Local signout:", error);
-  }
-
-  clearIdentityStorage();
-
-  location.replace(CONFIG.SECURE_PAGE);
-}
-
-function clearIdentityStorage() {
-  for (const key of [
-    ...CONFIG.SESSION_KEYS,
-    ...CONFIG.RESTRICTED_KEYS
-  ]) {
-    try {
-      localStorage.removeItem(key);
-    } catch (_) {}
-  }
-}
-
-async function manualLogout() {
-  if (!confirm("هل تريد تسجيل الخروج وإنهاء جلسة الهوية؟")) {
-    return;
-  }
-
-  await forceLogout("تم تسجيل الخروج بطلب المستخدم.");
-}
-
-/* =========================================================
-   16) أحداث المصادقة
-   ========================================================= */
-
-supabase.auth.onAuthStateChange((event, session) => {
-  if (event === "SIGNED_OUT") {
-    state.session = null;
-    state.accessToken = null;
-  }
-
-  if (event === "TOKEN_REFRESHED" && session) {
-    state.session = session;
-    state.accessToken = session.access_token;
-  }
 });
 
-/* =========================================================
-   17) التعامل مع الرجوع للصفحة
-   ========================================================= */
 
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && state.booted && !state.loggingOut) {
-    refreshAll();
-  }
-});
-
-window.addEventListener("pageshow", () => {
-  if (state.booted && !state.loggingOut) {
-    state.stopped = false;
-    refreshAll();
-  }
-});
+/* ======================================================
+   18. أحداث الصفحة
+====================================================== */
 
 window.addEventListener("pagehide", () => {
-  // لا نمسح الجلسة ولا نوقف المراقبة نهائيًا بسبب pagehide.
-  // نحرر القفل فقط عند مغادرة المستند.
+
+  state.stopped = true;
+
+  stopMonitoring();
   releaseTabLock();
+
 });
 
-/* =========================================================
-   18) بدء التشغيل
-   ========================================================= */
+window.addEventListener("pageshow", event => {
+
+  if (event.persisted) {
+    state.stopped = false;
+    boot();
+  }
+
+});
+
+retryButton.addEventListener("click", () => {
+  boot();
+});
+
+
+/* ======================================================
+   19. التشغيل الرئيسي
+====================================================== */
 
 async function boot() {
-  if (state.busy || state.loggingOut) return;
 
-  state.busy = true;
+  if (state.checking) return;
+
   state.stopped = false;
 
-  showBoot();
-  setBootMessage("جارٍ التحقق من تسجيل الدخول...");
+  showMessage(
+    "جارٍ تأكيد تسجيل الدخول والتحقق من جلسة الهوية والسلوك الأمني..."
+  );
 
   try {
-    const session = await getFreshAuth();
 
-    if (!session?.user) {
-      const error = new Error("لا يوجد مستخدم مسجل الدخول.");
-      error.code = "NO_AUTH_SESSION";
-      throw error;
-    }
-
-    setBootMessage("جارٍ فحص الجلسة النشطة...");
+    await getAuthenticatedUser();
 
     const lock = await acquireTabLock();
 
     if (!lock) {
-      setBootMessage(
-        "لوحة التحكم مفتوحة بالفعل في تبويب آخر. أغلق التبويب الآخر أو استخدمه.",
-        true
+
+      blockContent(
+        "هذه الصفحة مفتوحة بالفعل في تبويب آخر. استخدم التبويب المفتوح أو أغلقه أولًا.",
+        "التبويب مستخدم"
       );
-      addEvent("تم منع فتح لوحة ثانية دون إنهاء الجلسة", "warn");
-      state.busy = false;
+
       return;
     }
 
-    setBootMessage("جارٍ الاتصال بمحرك AQX Identity...");
+    await verifyAll();
 
-    await verifyEverything();
-
-    showDashboard();
-    state.booted = true;
-
-    recordActivity();
-    startTimers();
-
-    addEvent("تم تشغيل لوحة التحكم بنجاح", "success");
   } catch (error) {
-    await handleVerificationError(error, "بدء التشغيل");
 
-    // لا نعيد التوجيه تلقائيًا عند الفشل غير الحاسم.
-    setBootMessage(
-      "تعذر إكمال التحقق حاليًا. لم يتم مسح الجلسة. أعد المحاولة.",
-      true
-    );
-  } finally {
-    state.busy = false;
+    await handleError(error);
+
   }
 }
 
-/* =========================================================
-   19) استعادة سجل الأحداث
-   ========================================================= */
 
-function restoreEvents() {
-  try {
-    const events = JSON.parse(
-      sessionStorage.getItem("aqx_dashboard_events") || "[]"
+/* ======================================================
+   20. مراقبة تجديد رمز Supabase
+====================================================== */
+
+sb.auth.onAuthStateChange((event, session) => {
+
+  if (
+    event === "TOKEN_REFRESHED" &&
+    session?.access_token
+  ) {
+    state.authSession = session;
+    state.accessToken = session.access_token;
+  }
+
+  if (event === "SIGNED_OUT") {
+
+    state.authorized = false;
+
+    blockContent(
+      "تم إنهاء جلسة المصادقة."
     );
 
-    if (!events.length) return;
+  }
 
-    $("eventList").innerHTML = "";
+});
 
-    events.forEach(event => {
-      const item = document.createElement("div");
-      item.className = "item";
 
-      const label = document.createElement("span");
-      label.textContent = event.message;
+/* ======================================================
+   21. تشغيل الحارس
+====================================================== */
 
-      const time = document.createElement("time");
-      time.textContent = event.time;
-
-      item.append(label, time);
-      $("eventList").append(item);
-    });
-  } catch (_) {}
-}
-
-function clearEvents() {
-  if (!confirm("هل تريد مسح سجل الأحداث المحلي؟")) return;
-
-  sessionStorage.removeItem("aqx_dashboard_events");
-  $("eventList").innerHTML =
-    '<div class="item empty-event">تم مسح السجل المحلي.</div>';
-}
-
-restoreEvents();
 boot();
 
+})();
 </script>
-</body>
-</html>
+
+<!-- نهاية حارس AQX -->
