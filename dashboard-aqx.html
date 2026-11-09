@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,694 +5,1080 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#101827">
 <meta name="robots" content="noindex,nofollow">
-<title>لوحة المستخدم | AQX Identity</title>
+<title>لوحة التحكم | AQX Identity</title>
 
 <style>
 :root{
- --bg:#0b1220;
- --panel:#142137;
- --line:#2b3c58;
- --text:#f1f5ff;
- --muted:#9aabc4;
- --blue:#63a5ff;
- --red:#ff647c;
- --green:#45d6a0;
- --amber:#ffc46b;
+  color-scheme:dark;
+  --bg:#0b1120;
+  --panel:#121d30;
+  --panel2:#17243a;
+  --line:#263750;
+  --text:#edf3ff;
+  --muted:#91a2bd;
+  --blue:#4b91ff;
+  --green:#35c98b;
+  --red:#ff6474;
+  --yellow:#f3bd55;
+  --radius:18px;
 }
-
 *{box-sizing:border-box}
-
 body{
- margin:0;
- min-height:100vh;
- background:radial-gradient(ellipse at top,#1b304d,#0b1220 65%);
- color:var(--text);
- font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Tahoma,Arial,sans-serif;
+  min-height:100vh;
 }
-
-main{
- max-width:900px;
- margin:auto;
- padding:22px 15px 45px;
+button{font:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.page{width:min(1120px,100%);margin:auto;padding:22px}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;margin-bottom:22px;flex-wrap:wrap
 }
-
-.hidden{display:none!important}
-
-.top{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:12px;
- margin-bottom:20px;
+.brand{font-size:20px;font-weight:800;letter-spacing:.3px}
+.brand span{color:var(--blue)}
+.status-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--line);border-radius:30px;
+  padding:9px 13px;color:var(--muted);font-size:12px
 }
-
-.brand{
- font-weight:900;
- letter-spacing:1px;
-}
-
-.status{
- color:var(--green);
- border:1px solid #28634f;
- border-radius:30px;
- padding:7px 12px;
- font-size:12px;
-}
-
-.card{
- background:linear-gradient(145deg,#172740,#101a2b);
- border:1px solid var(--line);
- border-radius:18px;
- padding:20px;
- margin:14px 0;
- box-shadow:0 12px 35px #0003;
-}
-
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
 .profile{
- display:flex;
- align-items:center;
- gap:16px;
+  display:flex;align-items:center;gap:17px;
+  background:linear-gradient(135deg,#172844,#111b2e);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px
 }
-
 .avatar{
- width:76px;
- height:76px;
- border-radius:50%;
- object-fit:cover;
- background:#263650;
- border:2px solid #45658d;
+  width:76px;height:76px;border-radius:50%;
+  object-fit:cover;border:2px solid #3d70b4;background:#233653
 }
-
-.name{
- font-size:21px;
- font-weight:800;
+.profile h1{font-size:21px;margin:0 0 8px}
+.profile p{margin:0;color:var(--muted);font-size:13px}
+.grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px
 }
-
-.sub{
- color:var(--muted);
- font-size:13px;
- margin-top:6px;
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:19px;min-width:0
 }
-
-h2{
- font-size:16px;
- margin:0 0 15px;
+.card h2{font-size:15px;margin:0 0 17px}
+.metric{font-size:27px;font-weight:800;direction:ltr;text-align:right}
+.sub{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.8}
+.timer{color:var(--green);font-variant-numeric:tabular-nums}
+.timer.warning{color:var(--yellow)}
+.timer.danger{color:var(--red)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+.btn{
+  border:0;border-radius:12px;padding:12px 17px;
+  color:white;background:var(--blue);font-weight:700
 }
-
-.big{
- font-size:36px;
- font-weight:900;
- font-variant-numeric:tabular-nums;
+.btn.secondary{background:#263750}
+.btn.danger{background:#a93649}
+.btn:focus-visible{outline:2px solid white;outline-offset:3px}
+.event-list{display:flex;flex-direction:column;gap:10px}
+.event{
+  border:1px solid var(--line);background:var(--panel2);
+  border-radius:12px;padding:13px
 }
-
-.muted{
- color:var(--muted);
+.event-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.event-title{font-size:13px;font-weight:700}
+.event-date{font-size:11px;color:var(--muted);direction:ltr}
+.event-desc{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7}
+.severity{
+  display:inline-block;border-radius:20px;padding:4px 8px;
+  font-size:10px;background:#263750;color:#cbd8eb
 }
-
-.small{
- font-size:12px;
- color:var(--muted);
- line-height:1.8;
-}
-
+.severity.high,.severity.critical{background:#572632;color:#ff9ba7}
+.severity.medium{background:#514020;color:#ffd27d}
+.severity.low{background:#164534;color:#8ce6bd}
+.full{grid-column:1/-1}
+.empty{color:var(--muted);font-size:13px;padding:15px 0}
 .notice{
- display:none;
- background:#382b18;
- border:1px solid #77582b;
- color:#ffe0aa;
- border-radius:12px;
- padding:13px;
- margin:12px 0;
+  display:none;border:1px solid #805d25;background:#352a17;
+  color:#ffdc91;border-radius:12px;padding:13px;
+  margin-bottom:16px;font-size:13px;line-height:1.7
 }
-
-button{
- border:0;
- border-radius:12px;
- padding:14px 18px;
- font:inherit;
- font-weight:800;
- cursor:pointer;
+.overlay{
+  position:fixed;inset:0;z-index:1000;background:#080e19;
+  display:flex;align-items:center;justify-content:center;padding:24px
 }
-
-.logout{
- width:100%;
- background:var(--red);
- color:#250912;
+.overlay-box{
+  width:min(420px,100%);text-align:center;background:var(--panel);
+  border:1px solid var(--line);border-radius:20px;padding:30px
 }
-
-@media(max-width:550px){
- .card{padding:16px}
- .big{font-size:30px}
+.spinner{
+  width:35px;height:35px;border:3px solid #33445e;
+  border-top-color:var(--blue);border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 17px
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay h2{font-size:18px}
+.overlay p{font-size:13px;color:var(--muted);line-height:1.8}
+.hidden{display:none!important}
+.footer{text-align:center;color:#71819b;font-size:11px;padding:25px 10px}
+@media(max-width:680px){
+  .page{padding:14px}
+  .grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .profile{padding:17px}
+  .avatar{width:62px;height:62px}
+  .metric{font-size:24px}
 }
 </style>
 </head>
 
 <body>
 
-<main id="app" class="hidden">
-
- <div class="top">
-  <div class="brand">AQX IDENTITY</div>
-  <div class="status" id="liveStatus">● جاري التحقق</div>
- </div>
-
- <!-- بيانات الحساب -->
- <section class="card profile">
-  <img id="avatar" class="avatar" alt="صورة الحساب">
-  <div>
-   <div id="displayName" class="name">—</div>
-   <div id="accountId" class="sub">الحساب الموحد</div>
+<div id="gate" class="overlay">
+  <div class="overlay-box">
+    <div id="spinner" class="spinner"></div>
+    <h2 id="gateTitle">جارٍ التحقق الأمني</h2>
+    <p id="gateMessage">لن تظهر بيانات الحساب قبل اكتمال التحقق من الهوية والجلسة.</p>
+    <button id="gateButton" class="btn hidden" onclick="location.replace('/secure-aqx.html')">
+      العودة إلى بوابة التحقق
+    </button>
   </div>
- </section>
+</div>
 
- <div id="warning" class="notice"></div>
+<main id="dashboard" class="page hidden">
 
- <!-- عداد الخمول -->
- <section class="card">
-  <h2>مراقبة الجلسة</h2>
-  <div class="big" id="idleClock">15:00</div>
-  <div class="small">
-   الوقت المتبقي قبل انتهاء الجلسة بسبب الخمول.
-   مهلة الخمول المعتمدة: 15 دقيقة.
-  </div>
- </section>
+  <header class="topbar">
+    <div class="brand">AQX <span>IDENTITY</span></div>
+    <div class="status-pill">
+      <span class="dot"></span>
+      <span id="connectionText">الجلسة نشطة ومؤمنة</span>
+    </div>
+  </header>
 
- <!-- آخر ظهور -->
- <section class="card">
-  <h2>آخر ظهور فعلي</h2>
-  <div id="lastSeenValue" class="muted">
-   غير متاح حاليًا
-  </div>
-  <div id="lastSeenElapsed" class="small">
-   يتطلب واجهة خادمية مستقلة لقراءة آخر ظهور سابق.
-  </div>
- </section>
+  <div id="warningBox" class="notice"></div>
 
- <!-- الأحداث -->
- <section class="card">
-  <h2>سجل النشاط والأحداث الأمنية</h2>
-  <div id="eventsValue" class="muted">
-   واجهة سجل الأحداث غير مفعّلة بعد.
-  </div>
-  <div class="small">
-   لن يتم عرض سجلات غير حقيقية.
-  </div>
- </section>
+  <section class="profile">
+    <img id="avatar" class="avatar" alt="صورة الحساب">
+    <div>
+      <h1 id="displayName">حساب AQX</h1>
+      <p id="accountId">الحساب الموحد</p>
+    </div>
+  </section>
 
- <!-- تسجيل الخروج -->
- <section class="card">
-  <button class="logout" id="logoutBtn">
-   تسجيل الخروج وإنهاء الجلسة
-  </button>
- </section>
+  <section class="grid">
 
+    <article class="card">
+      <h2>آخر ظهور سابق</h2>
+      <div id="lastSeen" class="metric">—</div>
+      <div id="lastSeenDate" class="sub">جارٍ تحميل بيانات الظهور</div>
+      <div id="elapsed" class="sub"></div>
+    </article>
+
+    <article class="card">
+      <h2>الوقت المتبقي للجلسة</h2>
+      <div id="sessionTimer" class="metric timer">15:00</div>
+      <div class="sub">تنتهي الجلسة بعد 15 دقيقة من عدم وجود نشاط فعلي.</div>
+      <div class="actions">
+        <button id="logoutButton" class="btn danger">تسجيل الخروج</button>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>الحالة الأمنية</h2>
+      <div id="securityStatus" class="metric" style="font-size:20px">تم التحقق</div>
+      <div id="securityDetails" class="sub">حالة الجلسة والحساب</div>
+    </article>
+
+    <article class="card">
+      <h2>الأحداث الأمنية خلال آخر 24 ساعة</h2>
+      <div id="eventCount" class="metric">0</div>
+      <div class="sub">عدد الأحداث المسجلة في قاعدة البيانات.</div>
+    </article>
+
+    <article class="card full">
+      <h2>سجل النشاط والأحداث الأمنية</h2>
+      <div id="events" class="event-list">
+        <div class="empty">جارٍ تحميل سجل الأحداث...</div>
+      </div>
+    </article>
+
+  </section>
+
+  <footer class="footer">
+    AQX Identity · Secure Account Dashboard
+  </footer>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 "use strict";
 
-/* إعدادات AQX */
-const API =
-"https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity";
-
-const SECURE_URL =
-"https://id.alqurmanix.com/secure-aqx.html";
-
-const IDLE_LIMIT = 15 * 60 * 1000;
-const WARNING_LIMIT = 2 * 60 * 1000;
-
-/* متغيرات الجلسة */
-let accessToken = "";
-let aqxSession = "";
-let serviceToken = "";
-let profile = null;
-
-let lastActivity = Date.now();
-let timer = null;
-let verifying = false;
-let activityTimer = null;
-
-/* عناصر الصفحة */
-const $ = id => document.getElementById(id);
-
-/* استخراج جلسة Supabase */
-function getAccessToken(){
-
- const keys = [
-  "sb-fkiokwwztbyztleeuwks-auth-token",
-  ...Object.keys(localStorage).filter(
-   k => /^sb-.+-auth-token$/.test(k)
-  )
- ];
-
- for(const key of keys){
-
-  try{
-
-   const data = JSON.parse(localStorage.getItem(key));
-
-   if(data?.access_token)
-    return data.access_token;
-
-   if(data?.currentSession?.access_token)
-    return data.currentSession.access_token;
-
-  }catch(error){}
- }
-
- return "";
-}
-
-/* استخراج رمز AQX */
-function getToken(storages, names){
-
- for(const storage of storages){
-
-  for(const name of names){
-
-   try{
-
-    const value = storage.getItem(name);
-
-    if(value && value.length > 20)
-     return value;
-
-   }catch(error){}
-
-  }
- }
-
- return "";
-}
-
-/* العودة للفحص الأمني */
-function rejectAccess(reason){
-
- try{
-  $("app").classList.add("hidden");
- }catch(error){}
-
- location.replace(
-  SECURE_URL + "?reason=" + encodeURIComponent(reason)
- );
-
-}
-
-/* طلبات الخادم */
-async function request(path, options={}){
-
- const headers = {
-  "Content-Type":"application/json",
-  ...(options.headers || {})
- };
-
- if(options.bearer !== false){
-  headers.Authorization = "Bearer " + accessToken;
- }
-
- const response = await fetch(API + path,{
-  method:"POST",
-  headers,
-  body:JSON.stringify(options.body || {}),
-  cache:"no-store",
-  credentials:"omit"
- });
-
- let data={};
-
- try{
-  data=await response.json();
- }catch(error){}
-
- return {
-  ok:response.ok,
-  status:response.status,
-  data
- };
-
-}
-
-/* التحقق من الجلسة والتصريح والحساب */
-async function verifySession(){
-
- if(verifying) return false;
-
- verifying=true;
-
- try{
-
-  /* تصريح المرور من الفحص الأمني */
-  const service = await request(
-   "/v1/service/session/check",
-   {
-    bearer:false,
-    headers:{
-     "x-aqx-service-session":serviceToken
-    }
-   }
-  );
-
-  if(!service.ok || service.data.valid !== true)
-   return false;
-
-  /* التحقق من جلسة AQX الأساسية */
-  const session = await request(
-   "/v1/session/check",
-   {
-    headers:{
-     "x-aqx-session":aqxSession
-    }
-   }
-  );
-
-  if(!session.ok || session.data.valid !== true)
-   return false;
-
-  /* التحقق من حالة الحساب */
-  const status = await request("/v1/me/status");
-
-  if(!status.ok || status.data.success !== true){
-
-   rejectAccess(
-    status.data?.account_status ||
-    status.data?.error ||
-    "ACCOUNT_RESTRICTED"
-   );
-
-   return false;
-  }
-
-  /* بيانات الحساب */
-  const me = await request("/v1/me");
-
-  if(!me.ok || me.data.success !== true || !me.data.profile)
-   return false;
-
-  profile = me.data.profile;
-
-  return true;
-
- }catch(error){
-
-  return false;
-
- }finally{
-
-  verifying=false;
-
- }
-
-}
-
-/* صورة الحساب والاسم */
-function renderProfile(){
-
- let metadata={};
-
- for(const key of Object.keys(localStorage)){
-
-  if(!/^sb-.+-auth-token$/.test(key))
-   continue;
-
-  try{
-
-   const data=JSON.parse(localStorage.getItem(key));
-   const user=data?.user || data?.currentSession?.user;
-
-   if(user){
-    metadata=user.user_metadata || {};
-    break;
-   }
-
-  }catch(error){}
-
- }
-
- const name =
-  metadata.full_name ||
-  metadata.name ||
-  metadata.display_name ||
-  profile?.username ||
-  profile?.display_name ||
-  profile?.aqx_id ||
-  "مستخدم AQX";
-
- const picture =
-  metadata.avatar_url ||
-  metadata.picture ||
-  metadata.photo_url ||
-  "";
-
- $("displayName").textContent=name;
-
- $("accountId").textContent=
-  profile?.aqx_id
-   ? "AQX ID: "+profile.aqx_id
-   : (profile?.primary_email || "الحساب الموحد");
-
- $("avatar").src=picture ||
-  "data:image/svg+xml,"+
-  encodeURIComponent(
-   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'+
-   '<rect width="100" height="100" rx="50" fill="#263b59"/>'+
-   '<circle cx="50" cy="37" r="18" fill="#9db6d6"/>'+
-   '<path d="M16 94c3-22 17-33 34-33s31 11 34 33" fill="#9db6d6"/>'+
-   '</svg>'
-  );
-
-}
-
-/* عرض العداد */
-function formatTime(ms){
-
- const seconds=Math.max(0,Math.floor(ms/1000));
-
- const minutes=Math.floor(seconds/60);
- const remainder=seconds%60;
-
- return String(minutes).padStart(2,"0")+":"+
-        String(remainder).padStart(2,"0");
-
-}
-
-/* عداد الخمول */
-function updateIdleClock(){
-
- const remaining =
-  IDLE_LIMIT - (Date.now()-lastActivity);
-
- $("idleClock").textContent=formatTime(remaining);
-
- if(remaining <= WARNING_LIMIT && remaining > 0){
-
-  $("warning").style.display="block";
-
-  $("warning").textContent=
-   "تنبيه: ستنتهي الجلسة بسبب الخمول خلال "+
-   formatTime(remaining);
-
- }
-
- if(remaining <= 0){
-
-  clearInterval(timer);
-
-  terminateSession("idle_timeout");
-
- }
-
-}
-
-/* النشاط الحقيقي */
-async function onUserActivity(){
-
- if(Date.now()-lastActivity >= IDLE_LIMIT){
-
-  terminateSession("idle_timeout");
-  return;
-
- }
-
- lastActivity=Date.now();
-
- $("warning").style.display="none";
-
- const valid=await verifySession();
-
- if(!valid){
-
-  terminateSession("session_invalid");
-
- }
-
-}
-
-/* مراقبة التفاعل */
-[
- "pointerdown",
- "keydown",
- "touchstart",
- "wheel"
-].forEach(eventName=>{
-
- document.addEventListener(eventName,()=>{
-
-  clearTimeout(activityTimer);
-
-  activityTimer=setTimeout(
-   onUserActivity,
-   700
-  );
-
- },{passive:true});
-
+/* =========================================================
+   1. إعدادات المشروع
+========================================================= */
+
+const CONFIG = Object.freeze({
+  SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
+  SUPABASE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+  IDENTITY_API: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+  SERVICE_ORIGIN: "https://id.alqurmanix.com",
+  SECURE_PAGE: "/secure-aqx.html",
+  IDLE_LIMIT_SECONDS: 15 * 60,
+  SNAPSHOT_INTERVAL_MS: 30000,
+  ACTIVITY_THROTTLE_MS: 30000,
+  TAB_LOCK_NAME: "aqx-dashboard-single-tab-v1"
 });
 
-/* إنهاء الجلسة */
-async function terminateSession(reason){
+const KEYS = Object.freeze({
+  SESSION: "aqx_session_token",
+  SESSION_ID: "aqx_session_id",
+  SERVICE: "aqx_service_session_token",
+  LOGIN_PROOF: "aqx_login_proof",
+  RESTRICTED_TOKEN: "aqx_restricted_session_token",
+  RESTRICTED_ID: "aqx_restricted_session_id",
+  RESTRICTION: "aqx_restriction_data"
+});
 
- clearInterval(timer);
+const $ = id => document.getElementById(id);
 
- $("app").classList.add("hidden");
+const state = {
+  supabase: null,
+  accessToken: null,
+  sessionToken: null,
+  serviceToken: null,
+  user: null,
+  profile: null,
+  snapshot: null,
+  remaining: 0,
+  lastActivityRequest: 0,
+  timer: null,
+  refreshTimer: null,
+  elapsedTimer: null,
+  releasingTabLock: null,
+  stopped: false,
+  loggingOut: false,
+  lastSeenDate: null
+};
 
- /*
-  * لا يتم إبطال الجلسة الأساسية عند انتهاء الخمول
-  * لأن الخادم أنهى صلاحيتها بالفعل.
-  */
+/* =========================================================
+   2. أدوات عامة
+========================================================= */
 
- if(reason !== "idle_timeout" && accessToken && aqxSession){
-
-  try{
-
-   await request("/v1/session/logout",{
-    headers:{
-     "x-aqx-session":aqxSession
-    }
-   });
-
-  }catch(error){}
-
- }
-
- try{
-
-  sessionStorage.removeItem("aqx_service_session_token");
-  sessionStorage.removeItem("service_session_token");
-  sessionStorage.removeItem("aqx_redirect_ticket");
-
-  localStorage.removeItem("aqx_session_token");
-  sessionStorage.removeItem("aqx_session_token");
-
- }catch(error){}
-
- rejectAccess(reason);
-
+function readLocal(key) {
+  try { return localStorage.getItem(key); }
+  catch (_) { return null; }
 }
 
-/* منع الرجوع في الواجهة */
-function protectHistory(){
-
- history.replaceState(
-  {aqx:true},
-  "",
-  location.href
- );
-
- history.pushState(
-  {aqx:true},
-  "",
-  location.href
- );
-
- window.addEventListener("popstate",()=>{
-
-  history.pushState(
-   {aqx:true},
-   "",
-   location.href
-  );
-
- });
-
+function showGate(title, message, showButton = false) {
+  $("gateTitle").textContent = title;
+  $("gateMessage").textContent = message;
+  $("spinner").classList.toggle("hidden", showButton);
+  $("gateButton").classList.toggle("hidden", !showButton);
+  $("gate").classList.remove("hidden");
+  $("dashboard").classList.add("hidden");
 }
 
-/* بدء اللوحة */
-async function initialize(){
+function hideGate() {
+  $("gate").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+}
 
- accessToken=getAccessToken();
+function safeText(value, fallback = "—") {
+  if (value === null || value === undefined || value === "") return fallback;
+  return String(value);
+}
 
- aqxSession=getToken(
-  [sessionStorage,localStorage],
-  ["aqx_session_token"]
- );
+function formatDate(value) {
+  if (!value) return "لا توجد بيانات سابقة";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "تاريخ غير متاح";
+  return new Intl.DateTimeFormat("ar-EG", {
+    dateStyle: "full",
+    timeStyle: "medium"
+  }).format(date);
+}
 
- /*
-  * تصريح الخدمة يجب أن يكون في sessionStorage
-  * ولا يقبل من localStorage.
-  */
- serviceToken=getToken(
-  [sessionStorage],
-  [
-   "aqx_service_session_token",
-   "service_session_token"
-  ]
- );
+function formatClock(seconds) {
+  seconds = Math.max(0, Math.floor(seconds));
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return String(m).padStart(2, "0") + ":" +
+         String(s).padStart(2, "0");
+}
 
- if(!accessToken || !aqxSession || !serviceToken){
+function addMonthsClamped(date, months) {
+  const result = new Date(date);
+  const day = result.getDate();
+  result.setDate(1);
+  result.setMonth(result.getMonth() + months);
+  const lastDay = new Date(
+    result.getFullYear(), result.getMonth() + 1, 0
+  ).getDate();
+  result.setDate(Math.min(day, lastDay));
+  return result;
+}
 
-  rejectAccess("MISSING_SECURITY_CREDENTIALS");
-  return;
+function elapsedParts(from, to = new Date()) {
+  let cursor = new Date(from);
+  if (Number.isNaN(cursor.getTime()) || cursor > to) return null;
 
- }
-
- /* لا تظهر البيانات قبل نجاح التحقق */
- const valid=await verifySession();
-
- if(!valid){
-
-  rejectAccess("SECURITY_VERIFICATION_FAILED");
-  return;
-
- }
-
- renderProfile();
-
- $("app").classList.remove("hidden");
-
- $("liveStatus").textContent="● الجلسة موثقة";
-
- $("logoutBtn").addEventListener(
-  "click",
-  ()=>terminateSession("user_logout")
- );
-
- protectHistory();
-
- window.addEventListener("pageshow",async event=>{
-
-  if(event.persisted){
-
-   const stillValid=await verifySession();
-
-   if(!stillValid)
-    terminateSession("PAGE_RESTORED_INVALID");
-
+  let years = 0;
+  while (addMonthsClamped(cursor, 12) <= to) {
+    cursor = addMonthsClamped(cursor, 12);
+    years++;
   }
 
- });
+  let months = 0;
+  while (addMonthsClamped(cursor, 1) <= to) {
+    cursor = addMonthsClamped(cursor, 1);
+    months++;
+  }
 
- lastActivity=Date.now();
+  let remaining = Math.max(0, to - cursor);
+  const days = Math.floor(remaining / 86400000);
+  remaining %= 86400000;
+  const hours = Math.floor(remaining / 3600000);
+  remaining %= 3600000;
+  const minutes = Math.floor(remaining / 60000);
+  remaining %= 60000;
+  const seconds = Math.floor(remaining / 1000);
 
- timer=setInterval(updateIdleClock,250);
-
- updateIdleClock();
-
+  return { years, months, days, hours, minutes, seconds };
 }
 
-initialize();
+function formatElapsed(date) {
+  const p = elapsedParts(new Date(date));
+  if (!p) return "غير متاح";
+
+  return `${p.years} سنة، ${p.months} شهر، ${p.days} يوم، ` +
+         `${p.hours} ساعة، ${p.minutes} دقيقة، ${p.seconds} ثانية`;
+}
+
+async function sha256Hex(value) {
+  if (!crypto.subtle) throw new Error("SECURE_CRYPTO_UNAVAILABLE");
+
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+/* =========================================================
+   3. الاتصال بمحرك AQX Identity
+========================================================= */
+
+async function identityRequest(path, options = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    "apikey": CONFIG.SUPABASE_KEY,
+    "Authorization": "Bearer " + state.accessToken,
+    ...(options.headers || {})
+  };
+
+  const response = await fetch(CONFIG.IDENTITY_API + path, {
+    method: options.method || "POST",
+    headers,
+    body: options.body ? JSON.stringify(options.body) : "{}",
+    cache: "no-store",
+    credentials: "omit"
+  });
+
+  const raw = await response.text();
+  let data = {};
+
+  try { data = raw ? JSON.parse(raw) : {}; }
+  catch (_) { data = { message: raw }; }
+
+  if (!response.ok) {
+    const error = new Error(
+      data.message || data.error || data.code || `HTTP_${response.status}`
+    );
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
+}
+
+/* =========================================================
+   4. قراءة جلسة Supabase والتحقق من المستخدم
+========================================================= */
+
+async function initializeSupabase() {
+  if (!window.supabase?.createClient) {
+    throw new Error("SUPABASE_LIBRARY_UNAVAILABLE");
+  }
+
+  state.supabase = window.supabase.createClient(
+    CONFIG.SUPABASE_URL,
+    CONFIG.SUPABASE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false
+      },
+      global: {
+        headers: { "X-Client-Info": "AQX-Dashboard" }
+      }
+    }
+  );
+
+  const { data, error } = await state.supabase.auth.getSession();
+
+  if (error || !data?.session?.access_token) {
+    throw new Error("SUPABASE_SESSION_REQUIRED");
+  }
+
+  state.accessToken = data.session.access_token;
+  state.user = data.session.user;
+
+  const refreshed = await state.supabase.auth.getUser();
+
+  if (refreshed.error || !refreshed.data?.user) {
+    throw new Error("IDENTITY_VERIFICATION_FAILED");
+  }
+
+  state.user = refreshed.data.user;
+}
+
+/* =========================================================
+   5. قراءة مفاتيح جلسة AQX
+========================================================= */
+
+function readAqxCredentials() {
+  state.sessionToken = readLocal(KEYS.SESSION);
+  state.serviceToken = readLocal(KEYS.SERVICE);
+
+  if (!state.sessionToken || !state.serviceToken) {
+    throw new Error("AQX_SESSION_CREDENTIALS_MISSING");
+  }
+
+  if (state.sessionToken.length < 20 || state.serviceToken.length < 20) {
+    throw new Error("AQX_SESSION_CREDENTIALS_INVALID");
+  }
+}
+
+/* =========================================================
+   6. التحقق من حالة الحساب
+========================================================= */
+
+async function verifyAccountStatus() {
+  const result = await identityRequest("/v1/me/status");
+
+  const status = String(
+    result.status ??
+    result.account_status ??
+    result.security_status ??
+    ""
+  ).toLowerCase();
+
+  const blocked = [
+    "blocked", "suspended", "disabled", "banned",
+    "frozen", "review", "restricted", "locked"
+  ];
+
+  const explicitlyBlocked =
+    result.allowed === false ||
+    result.access_allowed === false ||
+    result.is_blocked === true ||
+    result.is_suspended === true ||
+    blocked.includes(status);
+
+  if (explicitlyBlocked) {
+    const reason = result.message || result.reason ||
+      "الحساب غير مسموح له باستخدام لوحة التحكم.";
+
+    showGate("الحساب غير متاح", reason, true);
+    throw new Error("ACCOUNT_RESTRICTED");
+  }
+
+  return result;
+}
+
+/* =========================================================
+   7. التحقق من جلسة AQX
+========================================================= */
+
+async function verifyAqxSession() {
+  const result = await identityRequest("/v1/session/check", {
+    headers: { "x-aqx-session": state.sessionToken }
+  });
+
+  if (result.valid === false || result.active === false ||
+      result.ok === false) {
+    throw new Error(result.reason || "AQX_SESSION_INVALID");
+  }
+
+  return result;
+}
+
+/* =========================================================
+   8. استدعاء دالة لوحة التحكم في Supabase
+========================================================= */
+
+async function dashboardRpc(functionName, parameters) {
+  const response = await fetch(
+    CONFIG.SUPABASE_URL + "/rest/v1/rpc/" + functionName,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": CONFIG.SUPABASE_KEY,
+        "Authorization": "Bearer " + state.accessToken
+      },
+      body: JSON.stringify(parameters),
+      cache: "no-store"
+    }
+  );
+
+  const raw = await response.text();
+  let data;
+
+  try { data = raw ? JSON.parse(raw) : null; }
+  catch (_) { data = raw; }
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message || data?.hint || data?.code ||
+      `DASHBOARD_RPC_${response.status}`
+    );
+  }
+
+  return data;
+}
+
+async function loadSnapshot() {
+  const sessionHash = await sha256Hex(state.sessionToken);
+  const serviceHash = await sha256Hex(state.serviceToken);
+
+  const result = await dashboardRpc("aqx_dashboard_snapshot", {
+    p_session_token_hash_hex: sessionHash,
+    p_service_token_hash_hex: serviceHash,
+    p_service_origin: CONFIG.SERVICE_ORIGIN
+  });
+
+  if (!result || result.valid !== true) {
+    if (result?.security_action === "SESSION_REVOKED" ||
+        result?.reason === "SECURITY_RISK_DETECTED") {
+      throw new Error("SECURITY_RISK_DETECTED");
+    }
+
+    throw new Error(result?.reason || "DASHBOARD_SESSION_INVALID");
+  }
+
+  state.snapshot = result;
+  state.remaining = Number(
+    result.session?.idle_remaining_seconds ?? 0
+  );
+
+  return result;
+}
+
+/* =========================================================
+   9. بيانات الملف الشخصي
+========================================================= */
+
+async function loadProfile() {
+  const result = await identityRequest("/v1/me");
+
+  const profile = result.profile || result.data || result;
+  const metadata = state.user?.user_metadata || {};
+
+  state.profile = {
+    name:
+      metadata.display_name ||
+      metadata.full_name ||
+      metadata.name ||
+      profile.display_name ||
+      profile.full_name ||
+      profile.name ||
+      "حساب AQX",
+
+    avatar:
+      metadata.avatar_url ||
+      metadata.picture ||
+      profile.avatar_url ||
+      profile.picture ||
+      "",
+
+    aqxId: profile.aqx_id || profile.user_id || state.user.id
+  };
+}
+
+/* =========================================================
+   10. عرض بيانات الحساب
+========================================================= */
+
+function renderProfile() {
+  $("displayName").textContent = state.profile.name;
+  $("accountId").textContent = "معرّف الحساب: " + state.profile.aqxId;
+
+  const fallback =
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">' +
+      '<rect width="100%" height="100%" fill="#233653"/>' +
+      '<circle cx="50" cy="38" r="19" fill="#8ba6cb"/>' +
+      '<path d="M15 100c2-25 16-37 35-37s33 12 35 37" fill="#8ba6cb"/>' +
+      '</svg>'
+    );
+
+  $("avatar").src = state.profile.avatar || fallback;
+  $("avatar").onerror = () => { $("avatar").src = fallback; };
+}
+
+function renderLastSeen() {
+  const date = state.snapshot?.last_seen_at;
+
+  if (!date) {
+    $("lastSeen").textContent = "غير متاح";
+    $("lastSeenDate").textContent = "لا توجد جلسة سابقة مسجلة";
+    $("elapsed").textContent = "";
+    return;
+  }
+
+  state.lastSeenDate = date;
+  $("lastSeen").textContent = "مسجل";
+  $("lastSeenDate").textContent = formatDate(date);
+  updateElapsed();
+}
+
+function updateElapsed() {
+  if (!state.lastSeenDate) return;
+  $("elapsed").textContent =
+    "المدة منذ آخر ظهور: " + formatElapsed(state.lastSeenDate);
+}
+
+/* =========================================================
+   11. عرض سجل الأحداث الأمنية
+========================================================= */
+
+function renderEvents() {
+  const events = Array.isArray(state.snapshot?.events)
+    ? state.snapshot.events : [];
+
+  $("eventCount").textContent =
+    safeText(state.snapshot?.event_count_24h, "0");
+
+  const container = $("events");
+  container.replaceChildren();
+
+  if (!events.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "لا توجد أحداث أمنية مسجلة.";
+    container.appendChild(empty);
+    return;
+  }
+
+  for (const event of events) {
+    const item = document.createElement("div");
+    item.className = "event";
+
+    const head = document.createElement("div");
+    head.className = "event-head";
+
+    const title = document.createElement("span");
+    title.className = "event-title";
+    title.textContent = safeText(
+      event.summary || event.event_type,
+      "حدث أمني"
+    );
+
+    const date = document.createElement("span");
+    date.className = "event-date";
+    date.textContent = formatDate(event.created_at);
+
+    head.append(title, date);
+
+    const severity = document.createElement("span");
+    const level = String(event.severity || "info").toLowerCase();
+    severity.className = "severity " + level;
+    severity.textContent = level.toUpperCase();
+
+    const description = document.createElement("div");
+    description.className = "event-desc";
+
+    const details = [
+      event.event_type ? "النوع: " + event.event_type : "",
+      event.outcome ? "النتيجة: " + event.outcome : "",
+      event.failure_code ? "رمز الفشل: " + event.failure_code : "",
+      event.response_action ? "الإجراء: " + event.response_action : "",
+      event.device_label ? "الجهاز: " + event.device_label : "",
+      event.browser ? "المتصفح: " + event.browser : "",
+      event.operating_system ? "النظام: " + event.operating_system : "",
+      event.city || event.country
+        ? "الموقع التقريبي: " + [event.city, event.country].filter(Boolean).join("، ")
+        : "",
+      event.risk_score !== null && event.risk_score !== undefined
+        ? "درجة الخطورة: " + event.risk_score : ""
+    ].filter(Boolean);
+
+    description.textContent = details.join(" · ") || "لا توجد تفاصيل إضافية.";
+
+    item.append(head, severity, description);
+    container.appendChild(item);
+  }
+}
+
+/* =========================================================
+   12. مؤقت الخمول
+========================================================= */
+
+function renderSessionTimer() {
+  const timer = $("sessionTimer");
+  timer.textContent = formatClock(state.remaining);
+
+  timer.classList.remove("warning", "danger");
+
+  if (state.remaining <= 60) {
+    timer.classList.add("danger");
+  } else if (state.remaining <= 180) {
+    timer.classList.add("warning");
+  }
+
+  if (state.remaining <= 120 && state.remaining > 0) {
+    $("warningBox").style.display = "block";
+    $("warningBox").textContent =
+      "تنبيه: اقترب انتهاء الجلسة بسبب عدم النشاط. حرّك الصفحة أو استخدمها لاستمرار الجلسة.";
+  } else {
+    $("warningBox").style.display = "none";
+  }
+}
+
+function startTimers() {
+  clearInterval(state.timer);
+  clearInterval(state.refreshTimer);
+  clearInterval(state.elapsedTimer);
+
+  state.timer = setInterval(async () => {
+    if (state.stopped) return;
+
+    state.remaining = Math.max(0, state.remaining - 1);
+    renderSessionTimer();
+
+    if (state.remaining <= 0) {
+      await forceLogout("انتهت مهلة الخمول.");
+    }
+  }, 1000);
+
+  state.refreshTimer = setInterval(async () => {
+    if (state.stopped) return;
+
+    try {
+      const snapshot = await loadSnapshot();
+      renderLastSeen();
+      renderEvents();
+      renderSessionTimer();
+    } catch (error) {
+      await handleSecurityError(error);
+    }
+  }, CONFIG.SNAPSHOT_INTERVAL_MS);
+
+  state.elapsedTimer = setInterval(updateElapsed, 1000);
+}
+
+/* =========================================================
+   13. النشاط الفعلي للمستخدم
+========================================================= */
+
+async function reportRealActivity() {
+  if (state.stopped || state.loggingOut) return;
+
+  const now = Date.now();
+
+  if (now - state.lastActivityRequest <
+      CONFIG.ACTIVITY_THROTTLE_MS) return;
+
+  state.lastActivityRequest = now;
+
+  try {
+    await verifyAqxSession();
+    await loadSnapshot();
+
+    renderSessionTimer();
+  } catch (error) {
+    await handleSecurityError(error);
+  }
+}
+
+function installActivityMonitoring() {
+  const events = ["pointerdown", "keydown", "touchstart", "scroll"];
+
+  for (const eventName of events) {
+    window.addEventListener(eventName, reportRealActivity, {
+      passive: true
+    });
+  }
+}
+
+/* =========================================================
+   14. منع تشغيل اللوحة في أكثر من تبويب
+========================================================= */
+
+async function acquireTabLock() {
+  if (navigator.locks?.request) {
+    return new Promise((resolve, reject) => {
+      let decided = false;
+
+      navigator.locks.request(
+        CONFIG.TAB_LOCK_NAME,
+        { mode: "exclusive", ifAvailable: true },
+        async lock => {
+          if (!lock) {
+            decided = true;
+            resolve(false);
+            return;
+          }
+
+          state.releasingTabLock = null;
+
+          await new Promise(release => {
+            state.releasingTabLock = release;
+          });
+        }
+      ).catch(reject);
+
+      setTimeout(() => {
+        if (!decided && state.releasingTabLock) resolve(true);
+      }, 100);
+    });
+  }
+
+  const key = "aqx_dashboard_tab_lock";
+  const now = Date.now();
+  const existing = Number(readLocal(key) || 0);
+
+  if (existing && now - existing < 30000) return false;
+
+  localStorage.setItem(key, String(now));
+
+  const check = Number(readLocal(key) || 0);
+  if (check !== now) return false;
+
+  state.fallbackLockKey = key;
+
+  state.fallbackHeartbeat = setInterval(() => {
+    if (state.stopped) return;
+    localStorage.setItem(key, String(Date.now()));
+  }, 5000);
+
+  window.addEventListener("storage", event => {
+    if (event.key === key && event.newValue &&
+        event.newValue !== String(now)) {
+      forceLogout("تم اكتشاف فتح لوحة التحكم في تبويب آخر.");
+    }
+  });
+
+  return true;
+}
+
+function releaseTabLock() {
+  if (state.releasingTabLock) {
+    state.releasingTabLock();
+    state.releasingTabLock = null;
+  }
+
+  if (state.fallbackHeartbeat) {
+    clearInterval(state.fallbackHeartbeat);
+  }
+
+  if (state.fallbackLockKey) {
+    localStorage.removeItem(state.fallbackLockKey);
+  }
+}
+
+/* =========================================================
+   15. تسجيل الخروج وإنهاء الجلسة
+========================================================= */
+
+async function revokeServiceSession() {
+  if (!state.serviceToken || !state.accessToken) return;
+
+  const serviceHash = await sha256Hex(state.serviceToken);
+
+  await dashboardRpc("aqx_dashboard_revoke_service", {
+    p_service_token_hash_hex: serviceHash
+  });
+}
+
+async function forceLogout(reason = "تم إنهاء الجلسة.") {
+  if (state.loggingOut) return;
+
+  state.loggingOut = true;
+  state.stopped = true;
+
+  showGate("تم إنهاء الجلسة", reason, false);
+
+  clearInterval(state.timer);
+  clearInterval(state.refreshTimer);
+  clearInterval(state.elapsedTimer);
+
+  try {
+    if (state.sessionToken && state.accessToken) {
+      await identityRequest("/v1/session/logout", {
+        headers: { "x-aqx-session": state.sessionToken }
+      });
+    }
+  } catch (_) {}
+
+  try {
+    await revokeServiceSession();
+  } catch (_) {}
+
+  try {
+    await state.supabase?.auth?.signOut({ scope: "local" });
+  } catch (_) {}
+
+  for (const key of [
+    KEYS.SESSION,
+    KEYS.SESSION_ID,
+    KEYS.SERVICE,
+    KEYS.LOGIN_PROOF
+  ]) {
+    try { localStorage.removeItem(key); } catch (_) {}
+  }
+
+  releaseTabLock();
+
+  setTimeout(() => {
+    location.replace(CONFIG.SECURE_PAGE);
+  }, 700);
+}
+
+/* =========================================================
+   16. معالجة حالات الرفض الأمني
+========================================================= */
+
+async function handleSecurityError(error) {
+  const message = String(error?.message || error || "");
+
+  if (message.includes("ACCOUNT_RESTRICTED")) {
+    state.stopped = true;
+    return;
+  }
+
+  if (
+    message.includes("SECURITY_RISK_DETECTED") ||
+    message.includes("SESSION_REVOKED")
+  ) {
+    await forceLogout("تم اكتشاف مؤشر أمني خطير، وتم إنهاء الجلسة.");
+    return;
+  }
+
+  if (
+    message.includes("IDLE_TIMEOUT") ||
+    message.includes("SESSION_NOT_FOUND") ||
+    message.includes("SERVICE_SESSION_INVALID") ||
+    message.includes("AQX_SESSION_INVALID") ||
+    message.includes("DASHBOARD_SESSION_INVALID") ||
+    message.includes("INVALID_CREDENTIALS")
+  ) {
+    await forceLogout("الجلسة غير صالحة أو انتهت صلاحيتها.");
+    return;
+  }
+
+  await forceLogout("تعذر تأكيد سلامة الجلسة. أُغلقت اللوحة لحماية الحساب.");
+}
+
+/* =========================================================
+   17. منع الرجوع للوحة بعد مغادرتها
+========================================================= */
+
+function installHistoryGuard() {
+  history.replaceState({ aqx: "dashboard" }, "", location.href);
+  history.pushState({ aqx: "dashboard-active" }, "", location.href);
+
+  window.addEventListener("popstate", () => {
+    history.pushState({ aqx: "dashboard-active" }, "", location.href);
+  });
+
+  window.addEventListener("pagehide", () => {
+    state.stopped = true;
+    releaseTabLock();
+  });
+}
+
+/* =========================================================
+   18. تشغيل اللوحة
+========================================================= */
+
+async function boot() {
+  try {
+    showGate(
+      "جارٍ التحقق الأمني",
+      "يتم التحقق من هوية الحساب وصلاحية جلسة AQX."
+    );
+
+    installHistoryGuard();
+
+    await initializeSupabase();
+    readAqxCredentials();
+
+    const lockAcquired = await acquireTabLock();
+
+    if (!lockAcquired) {
+      await forceLogout(
+        "تم اكتشاف محاولة فتح لوحة التحكم في تبويب آخر."
+      );
+      return;
+    }
+
+    await verifyAccountStatus();
+    await verifyAqxSession();
+
+    await loadProfile();
+    await loadSnapshot();
+
+    if (state.snapshot?.risk_detected === true) {
+      throw new Error("SECURITY_RISK_DETECTED");
+    }
+
+    renderProfile();
+    renderLastSeen();
+    renderEvents();
+    renderSessionTimer();
+
+    $("securityStatus").textContent = "تم التحقق";
+    $("securityDetails").textContent =
+      "الهوية مؤكدة · جلسة AQX صالحة · تصريح الخدمة صالح";
+
+    hideGate();
+    installActivityMonitoring();
+    startTimers();
+
+  } catch (error) {
+    if (String(error?.message).includes("ACCOUNT_RESTRICTED")) {
+      return;
+    }
+
+    await handleSecurityError(error);
+  }
+}
+
+/* =========================================================
+   19. أزرار الواجهة
+========================================================= */
+
+$("logoutButton").addEventListener("click", async () => {
+  await forceLogout("طلبت تسجيل الخروج.");
+});
+
+/* منع تكرار إرسال طلب الخروج */
+$("logoutButton").addEventListener("dblclick", event => {
+  event.preventDefault();
+});
+
+/* =========================================================
+   20. بدء التشغيل
+========================================================= */
+
+boot();
 
 </script>
-
 </body>
 </html>
-
