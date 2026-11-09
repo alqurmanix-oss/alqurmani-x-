@@ -23,9 +23,7 @@
   --warning:#e5b65c;
 }
 
-* {
-  box-sizing:border-box;
-}
+* { box-sizing:border-box; }
 
 body {
   margin:0;
@@ -85,17 +83,9 @@ h1 {
   overflow-wrap:anywhere;
 }
 
-.status.success {
-  border-color:#237c5b;
-}
-
-.status.error {
-  border-color:#873c49;
-}
-
-.status.warning {
-  border-color:#8b6c31;
-}
+.status.success { border-color:#237c5b; }
+.status.error { border-color:#873c49; }
+.status.warning { border-color:#8b6c31; }
 
 .spinner {
   width:30px;
@@ -150,7 +140,6 @@ button:disabled {
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
-
 </head>
 
 <body>
@@ -172,7 +161,7 @@ button:disabled {
 
   <div id="captchaBox"></div>
 
-  <button id="retry" type="button" hidden>
+  <button id="retry" type="button" hidden disabled>
     إعادة المحاولة
   </button>
 
@@ -186,8 +175,7 @@ button:disabled {
 "use strict";
 
 /* =====================================================
-   AQX SECURITY GATE
-   الإصدار المستقر لإدارة الفحص الأمني وإعادة المحاولة
+   AQX IDENTITY — CENTRAL SECURITY GATE
 ===================================================== */
 
 const CONFIG = Object.freeze({
@@ -215,7 +203,9 @@ const CONFIG = Object.freeze({
 
   REQUEST_TIMEOUT:15000,
 
-  CAPTCHA_TIMEOUT:180000
+  CAPTCHA_TIMEOUT:180000,
+
+  MAX_PROOF_LENGTH:4096
 
 });
 
@@ -225,38 +215,46 @@ const statusBox = $("status");
 const retryButton = $("retry");
 const captchaBox = $("captchaBox");
 
-if (!window.supabase?.createClient) {
-  throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
-}
-
-const supabase = window.supabase.createClient(
-  CONFIG.SUPABASE_URL,
-  CONFIG.SUPABASE_PUBLIC_KEY,
-  {
-    auth:{
-      persistSession:true,
-      autoRefreshToken:true,
-      detectSessionInUrl:false,
-      flowType:"pkce"
-    }
-  }
-);
-
-/* =====================================================
-   الحالة العامة
-===================================================== */
+let supabase = null;
 
 let running = false;
-
 let captchaWidgetId = null;
-let captchaToken = "";
 let captchaSiteKey = "";
-
 let captchaScriptPromise = null;
 let captchaWaiter = null;
+let captchaToken = "";
 
 /* =====================================================
-   أدوات مساعدة
+   INITIALIZE SUPABASE
+===================================================== */
+
+try {
+
+  if (!window.supabase?.createClient) {
+    throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
+  }
+
+  supabase = window.supabase.createClient(
+    CONFIG.SUPABASE_URL,
+    CONFIG.SUPABASE_PUBLIC_KEY,
+    {
+      auth:{
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:false,
+        flowType:"pkce"
+      }
+    }
+  );
+
+} catch(error) {
+
+  console.error("AQX INIT:",error);
+
+}
+
+/* =====================================================
+   HELPERS
 ===================================================== */
 
 function safeText(value,max = 300) {
@@ -267,11 +265,7 @@ function safeText(value,max = 300) {
 
 }
 
-function showStatus(
-  message,
-  type = "normal",
-  loading = false
-) {
+function showStatus(message,type = "normal",loading = false) {
 
   statusBox.className = "status";
 
@@ -284,17 +278,13 @@ function showStatus(
   if (loading) {
 
     const spinner = document.createElement("div");
-
     spinner.className = "spinner";
-
     statusBox.appendChild(spinner);
 
   }
 
   const text = document.createElement("div");
-
   text.textContent = message;
-
   statusBox.appendChild(text);
 
 }
@@ -306,7 +296,6 @@ function fail(message) {
   showStatus(message,"error");
 
   retryButton.hidden = false;
-
   retryButton.disabled = false;
 
 }
@@ -317,38 +306,39 @@ function goTo(url) {
 
 }
 
+function safeSessionJSON(key) {
+
+  try {
+
+    const value = sessionStorage.getItem(key);
+
+    return value ? JSON.parse(value) : null;
+
+  } catch {
+
+    return null;
+
+  }
+
+}
+
+/* =====================================================
+   ACCOUNT STATUS REDIRECT
+===================================================== */
+
 function goToAccountStatus(data = {}) {
 
   const url = new URL(CONFIG.ACCOUNT_STATUS);
 
-  const status = safeText(
-    data.account_status,
-    60
-  );
+  const status = safeText(data.account_status,60);
 
   if (status) {
-
     url.searchParams.set("status",status);
-
   }
 
-  let restriction = data.restriction;
-
-  if (!restriction) {
-
-    try {
-
-      restriction = JSON.parse(
-        sessionStorage.getItem("aqx_restriction_data") || "null"
-      );
-
-    } catch {
-
-      restriction = null;
-
-    }
-
-  }
+  const restriction =
+    data.restriction ||
+    safeSessionJSON("aqx_restriction_data");
 
   if (
     restriction &&
@@ -366,15 +356,11 @@ function goToAccountStatus(data = {}) {
     );
 
     if (type) {
-
       url.searchParams.set("restriction",type);
-
     }
 
     if (message) {
-
       url.searchParams.set("message",message);
-
     }
 
   }
@@ -406,7 +392,7 @@ function goToDenied(reason) {
 }
 
 /* =====================================================
-   API REQUEST ENGINE
+   API ENGINE
 ===================================================== */
 
 async function api(url,options = {}) {
@@ -432,30 +418,30 @@ async function api(url,options = {}) {
 
     });
 
-    const data = await response.json().catch(() => null);
+    const raw = await response.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error("INVALID_SERVER_RESPONSE");
+    }
 
     if (!data || typeof data !== "object") {
-
       throw new Error("INVALID_SERVER_RESPONSE");
-
     }
 
     return {
-
       ok:response.ok,
-
       status:response.status,
-
       data
-
     };
 
   } catch(error) {
 
     if (error.name === "AbortError") {
-
       throw new Error("REQUEST_TIMEOUT");
-
     }
 
     throw error;
@@ -485,17 +471,19 @@ function identityHeaders(accessToken,extra = {}) {
 }
 
 /* =====================================================
-   SUPABASE AUTH SESSION
+   SUPABASE AUTH
 ===================================================== */
 
 async function getAuthSession() {
 
+  if (!supabase) {
+    throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
+  }
+
   const result = await supabase.auth.getSession();
 
   if (result.error) {
-
     throw new Error("SUPABASE_SESSION_READ_FAILED");
-
   }
 
   const session = result.data?.session;
@@ -504,9 +492,7 @@ async function getAuthSession() {
     !session?.access_token ||
     !session?.user?.id
   ) {
-
     throw new Error("AUTH_SESSION_MISSING");
-
   }
 
   return session;
@@ -522,15 +508,10 @@ async function getRegistrationStatus() {
   const result = await api(
     CONFIG.IDENTITY + "/v1/registration/status",
     {
-
       method:"GET",
-
       headers:{
-
         "apikey":CONFIG.SUPABASE_PUBLIC_KEY
-
       }
-
     }
   );
 
@@ -551,75 +532,58 @@ async function getRegistrationStatus() {
 }
 
 /* =====================================================
-   CLOUDFLARE TURNSTILE
-   Widget واحد مع إعادة ضبط صحيحة للمحاولات
+   TURNSTILE SCRIPT
 ===================================================== */
 
 function loadTurnstile() {
 
   if (window.turnstile) {
-
     return Promise.resolve();
-
   }
 
   if (captchaScriptPromise) {
-
     return captchaScriptPromise;
-
   }
 
-  captchaScriptPromise = new Promise(
-    (resolve,reject) => {
+  captchaScriptPromise = new Promise((resolve,reject) => {
 
-      const script = document.createElement("script");
+    const script = document.createElement("script");
 
-      script.src =
-        "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.src =
+      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
-      script.async = true;
+    script.async = true;
+    script.defer = true;
 
-      script.defer = true;
+    script.onload = () => {
 
-      script.onload = () => {
-
-        if (window.turnstile) {
-
-          resolve();
-
-        } else {
-
-          captchaScriptPromise = null;
-
-          reject(
-            new Error("TURNSTILE_LOAD_FAILED")
-          );
-
-        }
-
-      };
-
-      script.onerror = () => {
-
+      if (window.turnstile) {
+        resolve();
+      } else {
         captchaScriptPromise = null;
+        reject(new Error("TURNSTILE_LOAD_FAILED"));
+      }
 
-        reject(
-          new Error("TURNSTILE_LOAD_FAILED")
-        );
+    };
 
-      };
+    script.onerror = () => {
 
-      document.head.appendChild(script);
+      captchaScriptPromise = null;
 
-    }
-  );
+      reject(new Error("TURNSTILE_LOAD_FAILED"));
+
+    };
+
+    document.head.appendChild(script);
+
+  });
 
   return captchaScriptPromise;
 
 }
 
 /* =====================================================
-   إدارة انتظار رمز CAPTCHA
+   CAPTCHA WAIT CONTROL
 ===================================================== */
 
 function settleCaptcha(error,token) {
@@ -648,10 +612,6 @@ function settleCaptcha(error,token) {
 
 }
 
-/* =====================================================
-   إعادة ضبط CAPTCHA
-===================================================== */
-
 function resetCaptcha() {
 
   captchaToken = "";
@@ -662,16 +622,9 @@ function resetCaptcha() {
   ) {
 
     try {
-
       window.turnstile.reset(captchaWidgetId);
-
     } catch(error) {
-
-      console.error(
-        "AQX CAPTCHA RESET:",
-        error
-      );
-
+      console.error("AQX CAPTCHA RESET:",error);
     }
 
   }
@@ -679,7 +632,7 @@ function resetCaptcha() {
 }
 
 /* =====================================================
-   إعداد CAPTCHA
+   PREPARE CAPTCHA
 ===================================================== */
 
 async function prepareCaptcha(registrationStatus) {
@@ -687,55 +640,41 @@ async function prepareCaptcha(registrationStatus) {
   const captcha = registrationStatus?.captcha || {};
 
   if (captcha.enabled !== true) {
-
-    throw new Error(
-      "CAPTCHA_NOT_CONFIGURED"
-    );
-
+    throw new Error("CAPTCHA_NOT_CONFIGURED");
   }
 
-  const siteKey = safeText(
-    captcha.site_key,
-    200
-  );
+  const siteKey = safeText(captcha.site_key,200);
 
   if (!siteKey) {
-
-    throw new Error(
-      "CAPTCHA_SITE_KEY_MISSING"
-    );
-
+    throw new Error("CAPTCHA_SITE_KEY_MISSING");
   }
 
   await loadTurnstile();
 
   captchaBox.style.display = "block";
 
-  // إزالة الاختبار القديم عند تغير مفتاح الموقع.
   if (
     captchaWidgetId !== null &&
     captchaSiteKey !== siteKey
   ) {
 
     try {
-
       window.turnstile.remove(captchaWidgetId);
-
     } catch(error) {
-
       console.error(error);
-
     }
 
     captchaWidgetId = null;
-
     captchaBox.replaceChildren();
 
   }
 
   captchaSiteKey = siteKey;
-
   captchaToken = "";
+
+  if (captchaWaiter) {
+    settleCaptcha(new Error("CAPTCHA_RESTARTED"));
+  }
 
   showStatus(
     "أكمل اختبار الحماية للمتابعة.",
@@ -743,15 +682,6 @@ async function prepareCaptcha(registrationStatus) {
   );
 
   return new Promise((resolve,reject) => {
-
-    // منع وجود أكثر من انتظار نشط.
-    if (captchaWaiter) {
-
-      settleCaptcha(
-        new Error("CAPTCHA_RESTARTED")
-      );
-
-    }
 
     const timeout = setTimeout(() => {
 
@@ -762,13 +692,9 @@ async function prepareCaptcha(registrationStatus) {
     },CONFIG.CAPTCHA_TIMEOUT);
 
     captchaWaiter = {
-
       resolve,
-
       reject,
-
       timeout
-
     };
 
     const options = {
@@ -796,22 +722,13 @@ async function prepareCaptcha(registrationStatus) {
 
       "expired-callback":() => {
 
-        captchaToken = "";
-
         settleCaptcha(
           new Error("CAPTCHA_TOKEN_EXPIRED")
-        );
-
-        showStatus(
-          "انتهت صلاحية اختبار الحماية. أعد المحاولة.",
-          "warning"
         );
 
       },
 
       "error-callback":() => {
-
-        captchaToken = "";
 
         settleCaptcha(
           new Error("CAPTCHA_VERIFICATION_FAILED")
@@ -820,7 +737,6 @@ async function prepareCaptcha(registrationStatus) {
       },
 
       theme:"dark",
-
       language:"ar"
 
     };
@@ -836,7 +752,6 @@ async function prepareCaptcha(registrationStatus) {
 
       } else {
 
-        // إعادة استخدام نفس الاختبار.
         window.turnstile.reset(captchaWidgetId);
 
       }
@@ -865,9 +780,7 @@ async function checkRestrictedSession(authSession) {
     );
 
   if (!restrictedToken) {
-
     return false;
-
   }
 
   showStatus(
@@ -885,10 +798,7 @@ async function checkRestrictedSession(authSession) {
       headers:identityHeaders(
         authSession.access_token,
         {
-
-          "x-aqx-restricted-session":
-            restrictedToken
-
+          "x-aqx-restricted-session":restrictedToken
         }
       ),
 
@@ -919,17 +829,10 @@ async function checkRestrictedSession(authSession) {
   }
 
   const restrictionData = {
-
     ...result.data,
-
     restriction:
       result.data.restriction ||
-      JSON.parse(
-        sessionStorage.getItem(
-          "aqx_restriction_data"
-        ) || "null"
-      )
-
+      safeSessionJSON("aqx_restriction_data")
   };
 
   goToAccountStatus(restrictionData);
@@ -939,7 +842,7 @@ async function checkRestrictedSession(authSession) {
 }
 
 /* =====================================================
-   AQX NORMAL SESSION
+   AQX SESSION CHECK
 ===================================================== */
 
 async function checkAqxSession(authSession) {
@@ -951,9 +854,7 @@ async function checkAqxSession(authSession) {
     !aqxToken ||
     aqxToken.length < 30
   ) {
-
     throw new Error("AQX_SESSION_MISSING");
-
   }
 
   showStatus(
@@ -971,9 +872,7 @@ async function checkAqxSession(authSession) {
       headers:identityHeaders(
         authSession.access_token,
         {
-
           "x-aqx-session":aqxToken
-
         }
       ),
 
@@ -999,8 +898,71 @@ async function checkAqxSession(authSession) {
 }
 
 /* =====================================================
-   LOGIN PROOF
-   Single-use proof + fresh CAPTCHA token
+   LOGIN PROOF NORMALIZATION
+   يقبل النص المباشر أو JSON أو object
+===================================================== */
+
+function getLoginProofToken() {
+
+  const stored =
+    sessionStorage.getItem("aqx_login_proof");
+
+  if (!stored) {
+    throw new Error("LOGIN_PROOF_MISSING");
+  }
+
+  let proof = stored;
+
+  try {
+    proof = JSON.parse(stored);
+  } catch {
+    // التخزين كنص مباشر مقبول.
+  }
+
+  let token = "";
+
+  if (typeof proof === "string") {
+
+    token = proof;
+
+  } else if (
+    proof &&
+    typeof proof === "object"
+  ) {
+
+    token =
+      proof.token ||
+      proof.proof_token ||
+      "";
+
+    if (
+      proof.purpose &&
+      proof.purpose !== "dashboard_access"
+    ) {
+      throw new Error("LOGIN_PROOF_PURPOSE_INVALID");
+    }
+
+  }
+
+  if (typeof token !== "string") {
+    throw new Error("LOGIN_PROOF_INVALID");
+  }
+
+  token = token.trim();
+
+  if (
+    token.length < 30 ||
+    token.length > CONFIG.MAX_PROOF_LENGTH
+  ) {
+    throw new Error("LOGIN_PROOF_INVALID");
+  }
+
+  return token;
+
+}
+
+/* =====================================================
+   CONSUME LOGIN PROOF
 ===================================================== */
 
 async function consumeLoginProof(
@@ -1009,74 +971,18 @@ async function consumeLoginProof(
   registrationStatus
 ) {
 
-  const proofData =
-    sessionStorage.getItem("aqx_login_proof");
-
-  if (!proofData) {
-
-    throw new Error("LOGIN_PROOF_MISSING");
-
-  }
-
-  let proof;
-
-  try {
-
-    proof = JSON.parse(proofData);
-
-  } catch {
-
-    throw new Error("LOGIN_PROOF_INVALID");
-
-  }
-
-  const proofToken =
-    typeof proof === "string"
-      ? proof
-      : (
-          proof?.token ||
-          proof?.proof_token
-        );
-
-  if (
-    typeof proofToken !== "string" ||
-    proofToken.length < 30 ||
-    proofToken.length > 100
-  ) {
-
-    throw new Error("LOGIN_PROOF_INVALID");
-
-  }
-
-  if (
-    proof &&
-    typeof proof === "object" &&
-    proof.purpose &&
-    proof.purpose !== "dashboard_access"
-  ) {
-
-    throw new Error(
-      "LOGIN_PROOF_PURPOSE_INVALID"
-    );
-
-  }
+  const proofToken = getLoginProofToken();
 
   showStatus(
     "يرجى إكمال اختبار الحماية...",
     "normal"
   );
 
-  // انتظار رمز جديد قبل استهلاك إثبات الدخول.
-  const token = await prepareCaptcha(
-    registrationStatus
-  );
+  // رمز CAPTCHA جديد لكل محاولة.
+  const token = await prepareCaptcha(registrationStatus);
 
   if (!token) {
-
-    throw new Error(
-      "CAPTCHA_VERIFICATION_FAILED"
-    );
-
+    throw new Error("CAPTCHA_VERIFICATION_FAILED");
   }
 
   showStatus(
@@ -1094,18 +1000,13 @@ async function consumeLoginProof(
       headers:identityHeaders(
         authSession.access_token,
         {
-
           "x-aqx-session":aqxToken
-
         }
       ),
 
       body:JSON.stringify({
-
         proof_token:proofToken,
-
         captcha_token:token
-
       })
 
     }
@@ -1122,33 +1023,30 @@ async function consumeLoginProof(
       safeText(result.data.error,100) ||
       "LOGIN_PROOF_REJECTED";
 
-    // رمز CAPTCHA لا يعاد استخدامه.
     captchaToken = "";
 
     if (
       code === "CAPTCHA_REQUIRED_OR_INVALID" ||
       code === "CAPTCHA_TOKEN_EXPIRED"
     ) {
-
       resetCaptcha();
-
     }
 
     throw new Error(code);
 
   }
 
-  // حذف الإثبات فقط بعد نجاح استهلاكه.
-  sessionStorage.removeItem(
-    "aqx_login_proof"
-  );
+  // لا نحذف إثبات الدخول إلا بعد نجاح الاستهلاك من الخادم.
+  sessionStorage.removeItem("aqx_login_proof");
+
+  captchaToken = "";
 
   return true;
 
 }
 
 /* =====================================================
-   AQX-SOC CENTRAL SECURITY CHECK
+   AQX SOC CENTRAL SECURITY CHECK
 ===================================================== */
 
 async function runCentralSecurityCheck(
@@ -1178,19 +1076,13 @@ async function runCentralSecurityCheck(
         .timeZone || null,
 
     screen:{
-
       width:screen.width,
-
       height:screen.height
-
     },
 
     viewport:{
-
       width:innerWidth,
-
       height:innerHeight
-
     },
 
     timestamp:new Date().toISOString()
@@ -1204,27 +1096,15 @@ async function runCentralSecurityCheck(
       method:"POST",
 
       headers:{
-
-        "Authorization":
-          "Bearer " + authSession.access_token,
-
-        "apikey":
-          CONFIG.SUPABASE_PUBLIC_KEY,
-
-        "Content-Type":
-          "application/json",
-
-        "x-aqx-session":
-          aqxToken
-
+        "Authorization":"Bearer " + authSession.access_token,
+        "apikey":CONFIG.SUPABASE_PUBLIC_KEY,
+        "Content-Type":"application/json",
+        "x-aqx-session":aqxToken
       },
 
       body:JSON.stringify({
-
         action:"dashboard_access",
-
         client_telemetry:telemetry
-
       })
 
     }
@@ -1239,33 +1119,27 @@ async function runCentralSecurityCheck(
     data.verified === true &&
     data.next_action === "continue"
   ) {
-
     return data;
-
   }
 
   if (
-    data.account_status === "frozen" ||
-    data.account_status === "review" ||
-    data.account_status === "banned"
+    ["frozen","review","banned"].includes(
+      data.account_status
+    )
   ) {
-
     goToAccountStatus(data);
-
     return null;
-
   }
 
   if (
-    data.error === "ACCOUNT_FROZEN" ||
-    data.error === "ACCOUNT_UNDER_SECURITY_REVIEW" ||
-    data.error === "ACCOUNT_PERMANENTLY_BANNED"
+    [
+      "ACCOUNT_FROZEN",
+      "ACCOUNT_UNDER_SECURITY_REVIEW",
+      "ACCOUNT_PERMANENTLY_BANNED"
+    ].includes(data.error)
   ) {
-
     goToAccountStatus(data);
-
     return null;
-
   }
 
   throw new Error(
@@ -1279,16 +1153,14 @@ async function runCentralSecurityCheck(
    REDIRECT TICKET
 ===================================================== */
 
-async function consumeRedirectTicket(authSession) {
+async function consumeRedirectTicket() {
 
   const ticket =
     sessionStorage.getItem("aqx_redirect_ticket") ||
     localStorage.getItem("aqx_redirect_ticket");
 
   if (!ticket) {
-
     return false;
-
   }
 
   const result = await api(
@@ -1298,30 +1170,20 @@ async function consumeRedirectTicket(authSession) {
       method:"POST",
 
       headers:{
-
         "apikey":CONFIG.SUPABASE_PUBLIC_KEY,
-
         "Content-Type":"application/json"
-
       },
 
       body:JSON.stringify({
-
         redirect_ticket:ticket
-
       })
 
     }
   );
 
   // التذكرة أحادية الاستخدام.
-  sessionStorage.removeItem(
-    "aqx_redirect_ticket"
-  );
-
-  localStorage.removeItem(
-    "aqx_redirect_ticket"
-  );
+  sessionStorage.removeItem("aqx_redirect_ticket");
+  localStorage.removeItem("aqx_redirect_ticket");
 
   if (
     !result.ok ||
@@ -1339,25 +1201,13 @@ async function consumeRedirectTicket(authSession) {
   let target;
 
   try {
-
-    target = new URL(
-      result.data.redirect_uri
-    );
-
+    target = new URL(result.data.redirect_uri);
   } catch {
-
-    throw new Error(
-      "REDIRECT_TICKET_INVALID"
-    );
-
+    throw new Error("REDIRECT_TICKET_INVALID");
   }
 
   if (target.protocol !== "https:") {
-
-    throw new Error(
-      "REDIRECT_PROTOCOL_NOT_ALLOWED"
-    );
-
+    throw new Error("REDIRECT_PROTOCOL_NOT_ALLOWED");
   }
 
   const host = target.hostname.toLowerCase();
@@ -1366,11 +1216,7 @@ async function consumeRedirectTicket(authSession) {
     host !== "alqurmanix.com" &&
     !host.endsWith(".alqurmanix.com")
   ) {
-
-    throw new Error(
-      "REDIRECT_HOST_NOT_ALLOWED"
-    );
-
+    throw new Error("REDIRECT_HOST_NOT_ALLOWED");
   }
 
   goTo(target.toString());
@@ -1384,6 +1230,9 @@ async function consumeRedirectTicket(authSession) {
 ===================================================== */
 
 const ERROR_MESSAGES = {
+
+  SUPABASE_CLIENT_UNAVAILABLE:
+    "تعذر تحميل مكتبة الهوية.",
 
   AUTH_SESSION_MISSING:
     "جلسة الهوية غير موجودة. أعد تسجيل الدخول.",
@@ -1401,10 +1250,10 @@ const ERROR_MESSAGES = {
     "إثبات الدخول غير موجود. أعد تسجيل الدخول.",
 
   LOGIN_PROOF_INVALID:
-    "إثبات الدخول غير صالح.",
+    "بيانات إثبات الدخول المخزنة غير صالحة.",
 
   LOGIN_PROOF_REJECTED:
-    "تعذر اعتماد إثبات الدخول.",
+    "رفض الخادم إثبات الدخول.",
 
   LOGIN_PROOF_INVALID_OR_EXPIRED:
     "انتهت صلاحية إثبات الدخول أو سبق استخدامه. أعد تسجيل الدخول.",
@@ -1416,7 +1265,7 @@ const ERROR_MESSAGES = {
     "خدمة الحماية غير مهيأة على الخادم.",
 
   CAPTCHA_SERVER_SECRET_NOT_CONFIGURED:
-    "يجب ضبط إعدادات الحماية على الخادم.",
+    "إعدادات الحماية على الخادم غير مكتملة.",
 
   CAPTCHA_SITE_KEY_MISSING:
     "مفتاح اختبار الحماية غير متوفر.",
@@ -1432,6 +1281,9 @@ const ERROR_MESSAGES = {
 
   CAPTCHA_TIMEOUT:
     "انتهى وقت انتظار اختبار الحماية. أعد المحاولة.",
+
+  CAPTCHA_RESTARTED:
+    "أعيد تشغيل اختبار الحماية. حاول مرة أخرى.",
 
   TURNSTILE_LOAD_FAILED:
     "تعذر تحميل خدمة اختبار الحماية.",
@@ -1452,16 +1304,13 @@ const ERROR_MESSAGES = {
     "وجهة التحويل غير معتمدة.",
 
   REDIRECT_PROTOCOL_NOT_ALLOWED:
-    "بروتوكول وجهة التحويل غير آمن.",
+    "وجهة التحويل لا تستخدم اتصال HTTPS.",
 
   REQUEST_TIMEOUT:
     "انتهت مهلة الاتصال بالخادم. تحقق من الاتصال وأعد المحاولة.",
 
   INVALID_SERVER_RESPONSE:
-    "استجابة الخادم غير صالحة.",
-
-  SUPABASE_CLIENT_UNAVAILABLE:
-    "تعذر تحميل مكتبة الهوية."
+    "استجابة الخادم غير صالحة."
 
 };
 
@@ -1476,11 +1325,9 @@ async function startSecurityGate() {
   running = true;
 
   retryButton.hidden = true;
-
   retryButton.disabled = true;
 
   captchaToken = "";
-
   captchaBox.style.display = "none";
 
   try {
@@ -1491,17 +1338,8 @@ async function startSecurityGate() {
       true
     );
 
-    if (!window.supabase?.createClient) {
-
-      throw new Error(
-        "SUPABASE_CLIENT_UNAVAILABLE"
-      );
-
-    }
-
     // 1. Supabase authentication.
-    const authSession =
-      await getAuthSession();
+    const authSession = await getAuthSession();
 
     // 2. Restricted temporary session.
     const restricted =
@@ -1509,7 +1347,7 @@ async function startSecurityGate() {
 
     if (restricted) return;
 
-    // 3. Registration and security configuration.
+    // 3. Registration and CAPTCHA configuration.
     const registrationStatus =
       await getRegistrationStatus();
 
@@ -1517,14 +1355,14 @@ async function startSecurityGate() {
     const aqxToken =
       await checkAqxSession(authSession);
 
-    // 5. Single-use login proof + Turnstile.
+    // 5. Single-use proof and CAPTCHA.
     await consumeLoginProof(
       authSession,
       aqxToken,
       registrationStatus
     );
 
-    // 6. Central SOC verification.
+    // 6. Central security check.
     const securityResult =
       await runCentralSecurityCheck(
         authSession,
@@ -1533,13 +1371,13 @@ async function startSecurityGate() {
 
     if (!securityResult) return;
 
-    // 7. Redirect ticket if available.
+    // 7. Redirect ticket.
     const redirected =
-      await consumeRedirectTicket(authSession);
+      await consumeRedirectTicket();
 
     if (redirected) return;
 
-    // 8. Successful verification.
+    // 8. Success.
     showStatus(
       "اكتمل الفحص الأمني بنجاح. جارٍ فتح لوحة التحكم...",
       "success",
@@ -1547,17 +1385,12 @@ async function startSecurityGate() {
     );
 
     setTimeout(() => {
-
       goTo(CONFIG.DASHBOARD);
-
     },700);
 
   } catch(error) {
 
-    console.error(
-      "AQX SECURITY GATE:",
-      error
-    );
+    console.error("AQX SECURITY GATE:",error);
 
     const code =
       error instanceof Error
@@ -1576,30 +1409,36 @@ async function startSecurityGate() {
 }
 
 /* =====================================================
-   RETRY CONTROL
+   RETRY
 ===================================================== */
 
-retryButton.addEventListener(
-  "click",
-  () => {
+retryButton.addEventListener("click",() => {
 
-    if (running) return;
+  if (running) return;
 
-    // لا نعيد استخدام رمز CAPTCHA السابق.
-    captchaToken = "";
+  captchaToken = "";
 
-    retryButton.disabled = true;
+  retryButton.disabled = true;
 
-    startSecurityGate();
+  startSecurityGate();
 
-  }
-);
+});
 
 /* =====================================================
-   PAGE INITIALIZATION
+   INITIALIZATION
 ===================================================== */
 
-startSecurityGate();
+if (!supabase) {
+
+  fail(
+    ERROR_MESSAGES.SUPABASE_CLIENT_UNAVAILABLE
+  );
+
+} else {
+
+  startSecurityGate();
+
+}
 
 </script>
 
