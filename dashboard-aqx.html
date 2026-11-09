@@ -24,11 +24,8 @@
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Tahoma,Arial,sans-serif;
-  min-height:100vh;
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Tahoma,Arial,sans-serif;min-height:100vh
 }
 button{font:inherit;cursor:pointer}
 button:disabled{opacity:.5;cursor:not-allowed}
@@ -52,8 +49,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
   padding:22px;margin-bottom:18px
 }
 .avatar{
-  width:76px;height:76px;border-radius:50%;
-  object-fit:cover;border:2px solid #3d70b4;background:#233653
+  width:76px;height:76px;border-radius:50%;object-fit:cover;
+  border:2px solid #3d70b4;background:#233653
 }
 .profile h1{font-size:21px;margin:0 0 8px}
 .profile p{margin:0;color:var(--muted);font-size:13px}
@@ -138,8 +135,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
     <div id="spinner" class="spinner"></div>
     <h2 id="gateTitle">جارٍ التحقق الأمني</h2>
     <p id="gateMessage">لن تظهر بيانات الحساب قبل اكتمال التحقق من الهوية والجلسة.</p>
-    <button id="gateButton" class="btn hidden" onclick="location.replace('/secure-aqx.html')">
-      العودة إلى بوابة التحقق
+    <button id="gateButton" class="btn hidden" type="button">
+      إعادة المحاولة
     </button>
   </div>
 </div>
@@ -226,7 +223,9 @@ const CONFIG = Object.freeze({
   IDLE_LIMIT_SECONDS: 15 * 60,
   SNAPSHOT_INTERVAL_MS: 30000,
   ACTIVITY_THROTTLE_MS: 30000,
-  TAB_LOCK_NAME: "aqx-dashboard-single-tab-v1"
+  TAB_LOCK_NAME: "aqx-dashboard-single-tab-v1",
+  TAB_LEASE_KEY: "aqx_dashboard_tab_lock",
+  TAB_LEASE_MS: 30000
 });
 
 const KEYS = Object.freeze({
@@ -257,7 +256,12 @@ const state = {
   releasingTabLock: null,
   stopped: false,
   loggingOut: false,
-  lastSeenDate: null
+  lastSeenDate: null,
+  fallbackLockKey: null,
+  fallbackLockOwner: null,
+  fallbackHeartbeat: null,
+  booting: false,
+  activityListenersInstalled: false
 };
 
 /* =========================================================
@@ -281,6 +285,18 @@ function showGate(title, message, showButton = false) {
 function hideGate() {
   $("gate").classList.add("hidden");
   $("dashboard").classList.remove("hidden");
+}
+
+function showWarning(message) {
+  $("warningBox").textContent = message;
+  $("warningBox").style.display = "block";
+  $("connectionText").textContent = "تعذر تحديث بيانات الاتصال";
+}
+
+function clearWarning() {
+  $("warningBox").textContent = "";
+  $("warningBox").style.display = "none";
+  $("connectionText").textContent = "الجلسة نشطة ومؤمنة";
 }
 
 function safeText(value, fallback = "—") {
@@ -369,21 +385,56 @@ async function sha256Hex(value) {
    3. الاتصال بمحرك AQX Identity
 ========================================================= */
 
+async function getFreshAccessToken() {
+  if (!state.supabase) {
+    throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
+  }
+
+  const { data, error } = await state.supabase.auth.getSession();
+
+  if (error) {
+    const e = new Error(error.message || "SUPABASE_SESSION_READ_FAILED");
+    e.cause = error;
+    throw e;
+  }
+
+  if (!data?.session?.access_token) {
+    const e = new Error("SUPABASE_SESSION_REQUIRED");
+    e.definitive = true;
+    throw e;
+  }
+
+  state.accessToken = data.session.access_token;
+  state.user = data.session.user;
+  return state.accessToken;
+}
+
 async function identityRequest(path, options = {}) {
+  const accessToken = await getFreshAccessToken();
+
   const headers = {
     "Content-Type": "application/json",
     "apikey": CONFIG.SUPABASE_KEY,
-    "Authorization": "Bearer " + state.accessToken,
+    "Authorization": "Bearer " + accessToken,
     ...(options.headers || {})
   };
 
-  const response = await fetch(CONFIG.IDENTITY_API + path, {
-    method: options.method || "POST",
-    headers,
-    body: options.body ? JSON.stringify(options.body) : "{}",
-    cache: "no-store",
-    credentials: "omit"
-  });
+  let response;
+
+  try {
+    response = await fetch(CONFIG.IDENTITY_API + path, {
+      method: options.method || "POST",
+      headers,
+      body: options.body ? JSON.stringify(options.body) : "{}",
+      cache: "no-store",
+      credentials: "omit"
+    });
+  } catch (error) {
+    const e = new Error("NETWORK_ERROR");
+    e.cause = error;
+    e.transient = true;
+    throw e;
+  }
 
   const raw = await response.text();
   let data = {};
@@ -397,6 +448,11 @@ async function identityRequest(path, options = {}) {
     );
     error.status = response.status;
     error.data = data;
+
+    if (response.status >= 500 || response.status === 429) {
+      error.transient = true;
+    }
+
     throw error;
   }
 
@@ -429,8 +485,16 @@ async function initializeSupabase() {
 
   const { data, error } = await state.supabase.auth.getSession();
 
-  if (error || !data?.session?.access_token) {
-    throw new Error("SUPABASE_SESSION_REQUIRED");
+  if (error) {
+    const e = new Error(error.message || "SUPABASE_SESSION_READ_FAILED");
+    e.cause = error;
+    throw e;
+  }
+
+  if (!data?.session?.access_token) {
+    const e = new Error("SUPABASE_SESSION_REQUIRED");
+    e.definitive = true;
+    throw e;
   }
 
   state.accessToken = data.session.access_token;
@@ -439,7 +503,9 @@ async function initializeSupabase() {
   const refreshed = await state.supabase.auth.getUser();
 
   if (refreshed.error || !refreshed.data?.user) {
-    throw new Error("IDENTITY_VERIFICATION_FAILED");
+    const e = new Error("IDENTITY_VERIFICATION_FAILED");
+    e.definitive = true;
+    throw e;
   }
 
   state.user = refreshed.data.user;
@@ -454,11 +520,15 @@ function readAqxCredentials() {
   state.serviceToken = readLocal(KEYS.SERVICE);
 
   if (!state.sessionToken || !state.serviceToken) {
-    throw new Error("AQX_SESSION_CREDENTIALS_MISSING");
+    const e = new Error("AQX_SESSION_CREDENTIALS_MISSING");
+    e.definitive = true;
+    throw e;
   }
 
   if (state.sessionToken.length < 20 || state.serviceToken.length < 20) {
-    throw new Error("AQX_SESSION_CREDENTIALS_INVALID");
+    const e = new Error("AQX_SESSION_CREDENTIALS_INVALID");
+    e.definitive = true;
+    throw e;
   }
 }
 
@@ -492,8 +562,10 @@ async function verifyAccountStatus() {
     const reason = result.message || result.reason ||
       "الحساب غير مسموح له باستخدام لوحة التحكم.";
 
-    showGate("الحساب غير متاح", reason, true);
-    throw new Error("ACCOUNT_RESTRICTED");
+    const e = new Error("ACCOUNT_RESTRICTED");
+    e.accountRestricted = true;
+    e.reason = reason;
+    throw e;
   }
 
   return result;
@@ -510,7 +582,10 @@ async function verifyAqxSession() {
 
   if (result.valid === false || result.active === false ||
       result.ok === false) {
-    throw new Error(result.reason || "AQX_SESSION_INVALID");
+    const e = new Error(result.reason || "AQX_SESSION_INVALID");
+    e.definitive = true;
+    e.data = result;
+    throw e;
   }
 
   return result;
@@ -521,19 +596,31 @@ async function verifyAqxSession() {
 ========================================================= */
 
 async function dashboardRpc(functionName, parameters) {
-  const response = await fetch(
-    CONFIG.SUPABASE_URL + "/rest/v1/rpc/" + functionName,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": CONFIG.SUPABASE_KEY,
-        "Authorization": "Bearer " + state.accessToken
-      },
-      body: JSON.stringify(parameters),
-      cache: "no-store"
-    }
-  );
+  const accessToken = await getFreshAccessToken();
+
+  let response;
+
+  try {
+    response = await fetch(
+      CONFIG.SUPABASE_URL + "/rest/v1/rpc/" + functionName,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": CONFIG.SUPABASE_KEY,
+          "Authorization": "Bearer " + accessToken
+        },
+        body: JSON.stringify(parameters),
+        cache: "no-store",
+        credentials: "omit"
+      }
+    );
+  } catch (error) {
+    const e = new Error("DASHBOARD_RPC_NETWORK_ERROR");
+    e.cause = error;
+    e.transient = true;
+    throw e;
+  }
 
   const raw = await response.text();
   let data;
@@ -542,10 +629,19 @@ async function dashboardRpc(functionName, parameters) {
   catch (_) { data = raw; }
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       data?.message || data?.hint || data?.code ||
       `DASHBOARD_RPC_${response.status}`
     );
+
+    error.status = response.status;
+    error.data = data;
+
+    if (response.status >= 500 || response.status === 429) {
+      error.transient = true;
+    }
+
+    throw error;
   }
 
   return data;
@@ -561,19 +657,39 @@ async function loadSnapshot() {
     p_service_origin: CONFIG.SERVICE_ORIGIN
   });
 
-  if (!result || result.valid !== true) {
-    if (result?.security_action === "SESSION_REVOKED" ||
-        result?.reason === "SECURITY_RISK_DETECTED") {
-      throw new Error("SECURITY_RISK_DETECTED");
+  if (!result || typeof result !== "object") {
+    throw new Error("DASHBOARD_SNAPSHOT_UNAVAILABLE");
+  }
+
+  if (result.valid === false) {
+    const reason = String(result.reason || result.security_action || "");
+
+    const invalidReasons = [
+      "SESSION_REVOKED",
+      "SECURITY_RISK_DETECTED",
+      "IDLE_TIMEOUT",
+      "SESSION_NOT_FOUND",
+      "SERVICE_SESSION_INVALID",
+      "DASHBOARD_SESSION_INVALID"
+    ];
+
+    if (invalidReasons.includes(reason)) {
+      const e = new Error(reason);
+      e.definitive = true;
+      throw e;
     }
 
-    throw new Error(result?.reason || "DASHBOARD_SESSION_INVALID");
+    throw new Error(reason || "DASHBOARD_SNAPSHOT_REJECTED");
+  }
+
+  if (result.valid !== true) {
+    throw new Error("DASHBOARD_SNAPSHOT_UNCONFIRMED");
   }
 
   state.snapshot = result;
-  state.remaining = Number(
+  state.remaining = Math.max(0, Number(
     result.session?.idle_remaining_seconds ?? 0
-  );
+  ));
 
   return result;
 }
@@ -712,13 +828,15 @@ function renderEvents() {
       event.browser ? "المتصفح: " + event.browser : "",
       event.operating_system ? "النظام: " + event.operating_system : "",
       event.city || event.country
-        ? "الموقع التقريبي: " + [event.city, event.country].filter(Boolean).join("، ")
+        ? "الموقع التقريبي: " +
+          [event.city, event.country].filter(Boolean).join("، ")
         : "",
       event.risk_score !== null && event.risk_score !== undefined
         ? "درجة الخطورة: " + event.risk_score : ""
     ].filter(Boolean);
 
-    description.textContent = details.join(" · ") || "لا توجد تفاصيل إضافية.";
+    description.textContent =
+      details.join(" · ") || "لا توجد تفاصيل إضافية.";
 
     item.append(head, severity, description);
     container.appendChild(item);
@@ -744,9 +862,26 @@ function renderSessionTimer() {
   if (state.remaining <= 120 && state.remaining > 0) {
     $("warningBox").style.display = "block";
     $("warningBox").textContent =
-      "تنبيه: اقترب انتهاء الجلسة بسبب عدم النشاط. حرّك الصفحة أو استخدمها لاستمرار الجلسة.";
-  } else {
+      "تنبيه: اقترب انتهاء الجلسة بسبب عدم النشاط.";
+  } else if (!$("warningBox").textContent.includes("تعذر تحديث")) {
     $("warningBox").style.display = "none";
+  }
+}
+
+async function confirmIdleTimeout() {
+  if (state.stopped || state.loggingOut) return;
+
+  try {
+    await verifyAqxSession();
+    await loadSnapshot();
+
+    renderSessionTimer();
+
+    if (state.remaining <= 0) {
+      await forceLogout("انتهت مهلة الخمول المؤكدة من محرك AQX.");
+    }
+  } catch (error) {
+    await handleSecurityError(error);
   }
 }
 
@@ -756,24 +891,27 @@ function startTimers() {
   clearInterval(state.elapsedTimer);
 
   state.timer = setInterval(async () => {
-    if (state.stopped) return;
+    if (state.stopped || state.loggingOut) return;
 
-    state.remaining = Math.max(0, state.remaining - 1);
-    renderSessionTimer();
+    if (state.remaining > 0) {
+      state.remaining = Math.max(0, state.remaining - 1);
+      renderSessionTimer();
+    }
 
     if (state.remaining <= 0) {
-      await forceLogout("انتهت مهلة الخمول.");
+      await confirmIdleTimeout();
     }
   }, 1000);
 
   state.refreshTimer = setInterval(async () => {
-    if (state.stopped) return;
+    if (state.stopped || state.loggingOut) return;
 
     try {
-      const snapshot = await loadSnapshot();
+      await loadSnapshot();
       renderLastSeen();
       renderEvents();
       renderSessionTimer();
+      clearWarning();
     } catch (error) {
       await handleSecurityError(error);
     }
@@ -801,12 +939,15 @@ async function reportRealActivity() {
     await loadSnapshot();
 
     renderSessionTimer();
+    clearWarning();
   } catch (error) {
     await handleSecurityError(error);
   }
 }
 
 function installActivityMonitoring() {
+  if (state.activityListenersInstalled) return;
+
   const events = ["pointerdown", "keydown", "touchstart", "scroll"];
 
   for (const eventName of events) {
@@ -814,6 +955,8 @@ function installActivityMonitoring() {
       passive: true
     });
   }
+
+  state.activityListenersInstalled = true;
 }
 
 /* =========================================================
@@ -823,56 +966,89 @@ function installActivityMonitoring() {
 async function acquireTabLock() {
   if (navigator.locks?.request) {
     return new Promise((resolve, reject) => {
-      let decided = false;
-
       navigator.locks.request(
         CONFIG.TAB_LOCK_NAME,
         { mode: "exclusive", ifAvailable: true },
         async lock => {
           if (!lock) {
-            decided = true;
             resolve(false);
             return;
           }
 
-          state.releasingTabLock = null;
+          let release;
+          const holdLock = new Promise(r => { release = r; });
 
-          await new Promise(release => {
-            state.releasingTabLock = release;
-          });
+          state.releasingTabLock = release;
+          resolve(true);
+
+          await holdLock;
         }
       ).catch(reject);
-
-      setTimeout(() => {
-        if (!decided && state.releasingTabLock) resolve(true);
-      }, 100);
     });
   }
 
-  const key = "aqx_dashboard_tab_lock";
+  const owner = (
+    crypto.randomUUID?.() ||
+    String(Date.now()) + "-" + Math.random().toString(36).slice(2)
+  );
+
+  const key = CONFIG.TAB_LEASE_KEY;
   const now = Date.now();
-  const existing = Number(readLocal(key) || 0);
 
-  if (existing && now - existing < 30000) return false;
+  let existing = null;
 
-  localStorage.setItem(key, String(now));
+  try {
+    existing = JSON.parse(readLocal(key) || "null");
+  } catch (_) {}
 
-  const check = Number(readLocal(key) || 0);
-  if (check !== now) return false;
+  if (
+    existing &&
+    existing.owner &&
+    existing.expires > now
+  ) {
+    return false;
+  }
+
+  const lease = {
+    owner,
+    expires: now + CONFIG.TAB_LEASE_MS
+  };
+
+  localStorage.setItem(key, JSON.stringify(lease));
+
+  let confirmation = null;
+
+  try {
+    confirmation = JSON.parse(readLocal(key) || "null");
+  } catch (_) {}
+
+  if (confirmation?.owner !== owner) {
+    return false;
+  }
 
   state.fallbackLockKey = key;
+  state.fallbackLockOwner = owner;
 
   state.fallbackHeartbeat = setInterval(() => {
-    if (state.stopped) return;
-    localStorage.setItem(key, String(Date.now()));
-  }, 5000);
+    if (state.stopped || state.loggingOut) return;
 
-  window.addEventListener("storage", event => {
-    if (event.key === key && event.newValue &&
-        event.newValue !== String(now)) {
-      forceLogout("تم اكتشاف فتح لوحة التحكم في تبويب آخر.");
+    let current = null;
+
+    try {
+      current = JSON.parse(readLocal(key) || "null");
+    } catch (_) {}
+
+    if (current?.owner !== owner) {
+      clearInterval(state.fallbackHeartbeat);
+      state.fallbackHeartbeat = null;
+      return;
     }
-  });
+
+    localStorage.setItem(key, JSON.stringify({
+      owner,
+      expires: Date.now() + CONFIG.TAB_LEASE_MS
+    }));
+  }, 5000);
 
   return true;
 }
@@ -885,11 +1061,23 @@ function releaseTabLock() {
 
   if (state.fallbackHeartbeat) {
     clearInterval(state.fallbackHeartbeat);
+    state.fallbackHeartbeat = null;
   }
 
-  if (state.fallbackLockKey) {
-    localStorage.removeItem(state.fallbackLockKey);
+  if (state.fallbackLockKey && state.fallbackLockOwner) {
+    try {
+      const current = JSON.parse(
+        readLocal(state.fallbackLockKey) || "null"
+      );
+
+      if (current?.owner === state.fallbackLockOwner) {
+        localStorage.removeItem(state.fallbackLockKey);
+      }
+    } catch (_) {}
   }
+
+  state.fallbackLockKey = null;
+  state.fallbackLockOwner = null;
 }
 
 /* =========================================================
@@ -918,21 +1106,30 @@ async function forceLogout(reason = "تم إنهاء الجلسة.") {
   clearInterval(state.refreshTimer);
   clearInterval(state.elapsedTimer);
 
+  /* إنهاء جلسة AQX */
   try {
     if (state.sessionToken && state.accessToken) {
       await identityRequest("/v1/session/logout", {
         headers: { "x-aqx-session": state.sessionToken }
       });
     }
-  } catch (_) {}
+  } catch (error) {
+    console.warn("AQX logout request failed:", error);
+  }
 
+  /* إبطال تصريح الخدمة */
   try {
     await revokeServiceSession();
-  } catch (_) {}
+  } catch (error) {
+    console.warn("Service revocation failed:", error);
+  }
 
+  /* إنهاء جلسة Supabase المحلية */
   try {
     await state.supabase?.auth?.signOut({ scope: "local" });
-  } catch (_) {}
+  } catch (error) {
+    console.warn("Supabase signOut failed:", error);
+  }
 
   for (const key of [
     KEYS.SESSION,
@@ -943,6 +1140,15 @@ async function forceLogout(reason = "تم إنهاء الجلسة.") {
     try { localStorage.removeItem(key); } catch (_) {}
   }
 
+  for (const key of [
+    KEYS.SESSION,
+    KEYS.SESSION_ID,
+    KEYS.SERVICE,
+    KEYS.LOGIN_PROOF
+  ]) {
+    try { sessionStorage.removeItem(key); } catch (_) {}
+  }
+
   releaseTabLock();
 
   setTimeout(() => {
@@ -951,70 +1157,110 @@ async function forceLogout(reason = "تم إنهاء الجلسة.") {
 }
 
 /* =========================================================
-   16. معالجة حالات الرفض الأمني
+   16. تصنيف الأخطاء الأمنية
 ========================================================= */
 
+function getErrorCode(error) {
+  const data = error?.data || {};
+
+  return String(
+    data.code ||
+    data.error ||
+    data.reason ||
+    error?.message ||
+    error ||
+    ""
+  ).toUpperCase();
+}
+
+function isDefinitiveSessionFailure(error) {
+  if (error?.definitive === true) return true;
+
+  const code = getErrorCode(error);
+
+  const definitiveCodes = [
+    "AQX_SESSION_INVALID",
+    "AQX_SESSION_CREDENTIALS_MISSING",
+    "AQX_SESSION_CREDENTIALS_INVALID",
+    "SESSION_REVOKED",
+    "SESSION_NOT_FOUND",
+    "IDLE_TIMEOUT",
+    "SERVICE_SESSION_INVALID",
+    "DASHBOARD_SESSION_INVALID",
+    "DASHBOARD_SESSION_INVALID",
+    "INVALID_CREDENTIALS",
+    "SUPABASE_SESSION_REQUIRED",
+    "IDENTITY_VERIFICATION_FAILED"
+  ];
+
+  return definitiveCodes.some(item =>
+    code === item || code.includes(item)
+  );
+}
+
 async function handleSecurityError(error) {
+  if (state.stopped || state.loggingOut) return;
+
   const message = String(error?.message || error || "");
 
-  if (message.includes("ACCOUNT_RESTRICTED")) {
+  if (error?.accountRestricted ||
+      message.includes("ACCOUNT_RESTRICTED")) {
     state.stopped = true;
+
+    clearInterval(state.timer);
+    clearInterval(state.refreshTimer);
+    clearInterval(state.elapsedTimer);
+
+    showGate(
+      "الحساب غير متاح",
+      error.reason || "الحساب غير مسموح له باستخدام لوحة التحكم.",
+      true
+    );
+
     return;
   }
 
-  if (
-    message.includes("SECURITY_RISK_DETECTED") ||
-    message.includes("SESSION_REVOKED")
-  ) {
-    await forceLogout("تم اكتشاف مؤشر أمني خطير، وتم إنهاء الجلسة.");
-    return;
-  }
-
-  if (
-    message.includes("IDLE_TIMEOUT") ||
-    message.includes("SESSION_NOT_FOUND") ||
-    message.includes("SERVICE_SESSION_INVALID") ||
-    message.includes("AQX_SESSION_INVALID") ||
-    message.includes("DASHBOARD_SESSION_INVALID") ||
-    message.includes("INVALID_CREDENTIALS")
-  ) {
+  if (isDefinitiveSessionFailure(error)) {
     await forceLogout("الجلسة غير صالحة أو انتهت صلاحيتها.");
     return;
   }
 
-  await forceLogout("تعذر تأكيد سلامة الجلسة. أُغلقت اللوحة لحماية الحساب.");
+  /*
+    أخطاء الشبكة والخادم واستعلامات قاعدة البيانات
+    لا تعني وحدها أن الجلسة انتهت.
+    نحافظ على الجلسة ونطلب إعادة التحقق.
+  */
+
+  console.warn("AQX temporary verification error:", error);
+
+  if ($("dashboard").classList.contains("hidden")) {
+    showGate(
+      "تعذر إكمال التحقق",
+      "حدث خطأ مؤقت أثناء الاتصال. لم يتم إنهاء الجلسة. يمكنك إعادة المحاولة.",
+      true
+    );
+  } else {
+    showWarning(
+      "تعذر تحديث بيانات الجلسة مؤقتًا. الجلسة لم تُنهَ بسبب هذا الخطأ. ستتم إعادة المحاولة تلقائيًا."
+    );
+  }
 }
 
 /* =========================================================
-   17. منع الرجوع للوحة بعد مغادرتها
-========================================================= */
-
-function installHistoryGuard() {
-  history.replaceState({ aqx: "dashboard" }, "", location.href);
-  history.pushState({ aqx: "dashboard-active" }, "", location.href);
-
-  window.addEventListener("popstate", () => {
-    history.pushState({ aqx: "dashboard-active" }, "", location.href);
-  });
-
-  window.addEventListener("pagehide", () => {
-    state.stopped = true;
-    releaseTabLock();
-  });
-}
-
-/* =========================================================
-   18. تشغيل اللوحة
+   17. تشغيل اللوحة
 ========================================================= */
 
 async function boot() {
+  if (state.booting || state.loggingOut) return;
+
+  state.booting = true;
+  state.stopped = false;
+
   try {
     showGate(
       "جارٍ التحقق الأمني",
       "يتم التحقق من هوية الحساب وصلاحية جلسة AQX."
     );
-
-    installHistoryGuard();
 
     await initializeSupabase();
     readAqxCredentials();
@@ -1022,8 +1268,10 @@ async function boot() {
     const lockAcquired = await acquireTabLock();
 
     if (!lockAcquired) {
-      await forceLogout(
-        "تم اكتشاف محاولة فتح لوحة التحكم في تبويب آخر."
+      showGate(
+        "لوحة التحكم مفتوحة بالفعل",
+        "يوجد تبويب آخر يستخدم لوحة التحكم بهذه الجلسة. أغلق التبويب الآخر ثم أعد المحاولة.",
+        true
       );
       return;
     }
@@ -1035,7 +1283,9 @@ async function boot() {
     await loadSnapshot();
 
     if (state.snapshot?.risk_detected === true) {
-      throw new Error("SECURITY_RISK_DETECTED");
+      const e = new Error("SECURITY_RISK_DETECTED");
+      e.definitive = true;
+      throw e;
     }
 
     renderProfile();
@@ -1047,34 +1297,39 @@ async function boot() {
     $("securityDetails").textContent =
       "الهوية مؤكدة · جلسة AQX صالحة · تصريح الخدمة صالح";
 
+    clearWarning();
     hideGate();
+
     installActivityMonitoring();
     startTimers();
 
   } catch (error) {
-    if (String(error?.message).includes("ACCOUNT_RESTRICTED")) {
-      return;
-    }
-
     await handleSecurityError(error);
+  } finally {
+    state.booting = false;
   }
 }
 
 /* =========================================================
-   19. أزرار الواجهة
+   18. أزرار الواجهة
 ========================================================= */
 
 $("logoutButton").addEventListener("click", async () => {
   await forceLogout("طلبت تسجيل الخروج.");
 });
 
-/* منع تكرار إرسال طلب الخروج */
-$("logoutButton").addEventListener("dblclick", event => {
-  event.preventDefault();
+$("gateButton").addEventListener("click", async () => {
+  if (state.loggingOut) {
+    location.replace(CONFIG.SECURE_PAGE);
+    return;
+  }
+
+  state.stopped = false;
+  await boot();
 });
 
 /* =========================================================
-   20. بدء التشغيل
+   19. بدء التشغيل
 ========================================================= */
 
 boot();
