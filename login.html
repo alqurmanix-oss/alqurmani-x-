@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -64,7 +65,7 @@ a{color:var(--gold2)}@media(max-width:390px){.card{padding:20px}.inline-actions{
       <label for="password">كلمة المرور</label>
       <input id="password" type="password" name="password" placeholder="أدخل كلمة المرور" autocomplete="current-password" required minlength="8" maxlength="128">
     </div>
-    <button id="loginButton" class="primary" type="submit" disabled>تسجيل الدخول</button>
+    <button id="loginButton" class="primary" type="submit">تسجيل الدخول</button>
   </form>
 
   <div class="inline-actions">
@@ -151,25 +152,40 @@ const allowed = (last, interval) => Date.now() - last >= interval;
 if (!window.supabase || typeof window.supabase.createClient !== "function") {
   showMessage("message", "تعذر تحميل مكتبة المصادقة. حدّث الصفحة أو تحقق من الاتصال.", "error");
   $("providerLoading").classList.add("hidden");
+  $("loginButton").disabled = true;
   return;
 }
 
 const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" }
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    flowType: "pkce"
+  }
 });
 
-let busy = false, policyReady = false, lastLogin = 0, lastRecovery = 0, lastResend = 0, lastReactivate = 0;
-let challengeId = "", resetToken = "", redirectTarget = "";
+let busy = false;
+let lastLogin = 0;
+let lastRecovery = 0;
+let lastResend = 0;
+let lastReactivate = 0;
+let challengeId = "";
+let resetToken = "";
+let redirectTarget = "";
 
 function setBusy(value) {
   busy = value;
-  $("loginButton").disabled = value || !policyReady;
+  $("loginButton").disabled = value;
   $("forgotButton").disabled = value;
   $("resendButton").disabled = value;
   $("reactivateButton").disabled = value;
   $("loginButton").textContent = value ? "جارٍ التحقق..." : "تسجيل الدخول";
 }
-function clearProof() { sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY); }
+
+function clearProof() {
+  sessionStorage.removeItem(CONFIG.LOGIN_PROOF_KEY);
+}
 function clearNormal() {
   localStorage.removeItem(CONFIG.NORMAL_SESSION_KEY);
   localStorage.removeItem(CONFIG.SESSION_ID_KEY);
@@ -179,29 +195,52 @@ function clearRestricted() {
   sessionStorage.removeItem(CONFIG.RESTRICTED_TOKEN_KEY);
   sessionStorage.removeItem(CONFIG.RESTRICTION_DATA_KEY);
 }
+
 function friendlyError(error) {
   const raw = String(error?.message || error?.code || error || "");
-  if (/invalid login credentials/i.test(raw)) return "بيانات الدخول غير صحيحة. راجع البريد وكلمة المرور.";
-  if (/email not confirmed|email_not_verified/i.test(raw)) return "البريد الإلكتروني غير مؤكد. أعد إرسال رسالة التفعيل.";
-  if (/login_provider_disabled/i.test(raw)) return "طريقة تسجيل الدخول غير متاحة حاليًا.";
-  if (/login_rate_limited|too many requests|rate limit/i.test(raw)) return "تجاوزت عدد المحاولات المسموح بها. انتظر قليلًا.";
-  if (/captcha/i.test(raw)) return "تعذر إتمام فحص الحماية. راجع إعدادات محرك الهوية.";
-  if (/account_self_disabled/i.test(raw)) return "الحساب معطل بناءً على طلب صاحبه. استخدم إعادة تفعيل الحساب.";
-  if (/account_admin_disabled/i.test(raw)) return "الحساب معطل إداريًا. تواصل مع إدارة AQX.";
-  if (/central_access_blocked|blocked/i.test(raw)) return "الحساب مقيّد أمنيًا. راجع مركز حالة الحساب.";
-  if (/network|fetch/i.test(raw)) return "تعذر الاتصال بالخدمة. تحقق من الإنترنت.";
-  return "تعذر إكمال العملية. حاول مجددًا.";
+  const code = String(error?.code || "");
+  const all = raw + " " + code;
+
+  if (/invalid login credentials|invalid_credentials/i.test(all))
+    return "بيانات الدخول غير صحيحة. راجع البريد وكلمة المرور.";
+  if (/email not confirmed|email_not_confirmed|email_not_verified/i.test(all))
+    return "البريد الإلكتروني غير مؤكد. أعد إرسال رسالة التفعيل.";
+  if (/login_provider_disabled|provider_disabled/i.test(all))
+    return "تسجيل الدخول بالبريد وكلمة المرور غير متاح حاليًا.";
+  if (/login_rate_limited|too many requests|rate limit|over_request_rate_limit/i.test(all))
+    return "تجاوزت عدد المحاولات المسموح بها. انتظر قليلًا.";
+  if (/captcha/i.test(all))
+    return "تعذر إتمام فحص الحماية. راجع إعدادات محرك الهوية.";
+  if (/account_self_disabled/i.test(all))
+    return "الحساب معطل بناءً على طلب صاحبه. استخدم إعادة تفعيل الحساب.";
+  if (/account_admin_disabled/i.test(all))
+    return "الحساب معطل إداريًا. تواصل مع إدارة AQX.";
+  if (/central_access_blocked|account_security_restricted|blocked/i.test(all))
+    return "الحساب مقيّد أمنيًا. راجع مركز حالة الحساب.";
+  if (/network|fetch|failed to fetch|load failed/i.test(all))
+    return "تعذر الاتصال بالخدمة. تحقق من الإنترنت.";
+  if (/session_start_failed|request_failed/i.test(all))
+    return "تم التحقق من بيانات الدخول، لكن تعذر إنشاء جلسة AQX.";
+  if (/login_proof_invalid/i.test(all))
+    return "لم يستلم النظام إثبات الدخول الأمني بشكل صحيح.";
+  return "تعذر إكمال العملية. رمز التشخيص: " +
+    (code || error?.name || "UNKNOWN_ERROR") + ".";
 }
 
+/* سياسة التسجيل اختيارية لعملية الدخول؛ لا توقف الحسابات الموجودة. */
 async function loadPolicy() {
   const response = await fetch(CONFIG.API + "/v1/registration/status", {
     method: "GET",
-    headers: { "apikey": CONFIG.SUPABASE_KEY, "Accept": "application/json" },
+    headers: {
+      "apikey": CONFIG.SUPABASE_KEY,
+      "Accept": "application/json"
+    },
     cache: "no-store",
     credentials: "omit"
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok || data.success !== true) throw new Error("REGISTRATION_POLICY_UNAVAILABLE");
+  if (!response.ok || data.success !== true)
+    throw new Error(data.error || "REGISTRATION_POLICY_UNAVAILABLE");
   return data;
 }
 
@@ -218,69 +257,98 @@ async function startAqxSession(session) {
     cache: "no-store",
     credentials: "omit"
   });
+
   const data = await response.json().catch(() => ({}));
+
   if (!response.ok || data.success !== true) {
-    const error = new Error(data.error || data.message || "SESSION_START_FAILED");
-    error.code = data.error;
+    const error = new Error(data.message || data.error || "SESSION_START_FAILED");
+    error.code = data.error || "SESSION_START_FAILED";
+    error.status = response.status;
     throw error;
   }
 
   if (data.restricted === true) {
-    if (typeof data.restricted_session_token !== "string" || !data.restricted_session_token) {
+    if (typeof data.restricted_session_token !== "string" ||
+        !data.restricted_session_token) {
       throw new Error("RESTRICTED_TOKEN_INVALID");
     }
+
     clearNormal();
-    sessionStorage.setItem(CONFIG.RESTRICTED_TOKEN_KEY, data.restricted_session_token);
-    sessionStorage.setItem(CONFIG.RESTRICTION_DATA_KEY, JSON.stringify(data.restriction || {}));
+    clearRestricted();
+    sessionStorage.setItem(
+      CONFIG.RESTRICTED_TOKEN_KEY,
+      data.restricted_session_token
+    );
+    sessionStorage.setItem(
+      CONFIG.RESTRICTION_DATA_KEY,
+      JSON.stringify(data.restriction || {})
+    );
     return "restricted";
   }
 
-  if (typeof data.aqx_session_token !== "string" || !data.aqx_session_token) {
+  if (typeof data.aqx_session_token !== "string" ||
+      !data.aqx_session_token) {
     throw new Error("NORMAL_SESSION_TOKEN_INVALID");
   }
+
   const proof = data.login_proof;
-  if (!proof || typeof proof.token !== "string" || proof.purpose !== "dashboard_access" ||
-      proof.single_use !== true || !proof.expires_at || Date.parse(proof.expires_at) <= Date.now()) {
+  if (
+    !proof ||
+    typeof proof.token !== "string" ||
+    proof.purpose !== "dashboard_access" ||
+    proof.single_use !== true ||
+    !proof.expires_at ||
+    !Number.isFinite(Date.parse(proof.expires_at)) ||
+    Date.parse(proof.expires_at) <= Date.now()
+  ) {
     throw new Error("LOGIN_PROOF_INVALID");
   }
 
   clearRestricted();
   localStorage.setItem(CONFIG.NORMAL_SESSION_KEY, data.aqx_session_token);
-  if (data.session_id) localStorage.setItem(CONFIG.SESSION_ID_KEY, data.session_id);
-  else localStorage.removeItem(CONFIG.SESSION_ID_KEY);
+
+  if (data.session_id)
+    localStorage.setItem(CONFIG.SESSION_ID_KEY, data.session_id);
+  else
+    localStorage.removeItem(CONFIG.SESSION_ID_KEY);
+
   sessionStorage.setItem(CONFIG.LOGIN_PROOF_KEY, proof.token);
   return "normal";
 }
 
 function showSuccess(mode) {
   redirectTarget = mode;
-  $("successTitle").textContent = mode === "restricted" ? "تم التحقق من الحساب" : "تم تسجيل الدخول بنجاح";
-  $("successText").textContent = mode === "restricted"
-    ? "حسابك يحتاج إلى مراجعة. سيتم فتح مركز حالة الحساب."
-    : "تم إنشاء جلسة AQX بنجاح. سيتم فتح الفحص الأمني.";
+  $("successTitle").textContent =
+    mode === "restricted" ? "تم التحقق من الحساب" : "تم تسجيل الدخول بنجاح";
+  $("successText").textContent =
+    mode === "restricted"
+      ? "حسابك يحتاج إلى مراجعة. سيتم فتح مركز حالة الحساب."
+      : "تم إنشاء جلسة AQX بنجاح. سيتم فتح الفحص الأمني.";
   $("successModal").classList.remove("hidden");
 }
+
 function continueAfterLogin() {
   if (!redirectTarget) return;
   const target = redirectTarget;
   redirectTarget = "";
-  location.replace(target === "restricted" ? CONFIG.STATUS_URL : CONFIG.SECURITY_URL);
+  location.replace(
+    target === "restricted" ? CONFIG.STATUS_URL : CONFIG.SECURITY_URL
+  );
 }
 $("continueButton").addEventListener("click", continueAfterLogin);
 
 $("loginForm").addEventListener("submit", async event => {
   event.preventDefault();
   if (busy) return;
-  if (!policyReady) {
-    showMessage("message", "خدمة تسجيل الدخول غير جاهزة حاليًا.", "error");
-    return;
-  }
+
   if (!allowed(lastLogin, CONFIG.LOGIN_COOLDOWN)) {
     showMessage("message", "انتظر قليلًا قبل إعادة المحاولة.", "info");
     return;
   }
 
-  const email = emailValue(), password = $("password").value;
+  const email = emailValue();
+  const password = $("password").value;
+
   if (!validEmail(email)) {
     showMessage("message", "أدخل بريدًا إلكترونيًا صحيحًا.", "error");
     return;
@@ -293,17 +361,24 @@ $("loginForm").addEventListener("submit", async event => {
   lastLogin = Date.now();
   setBusy(true);
   clearProof();
+  clearNormal();
+  clearRestricted();
   clearMessage("message");
 
   try {
     showMessage("message", "جارٍ التحقق من بيانات الحساب...", "info");
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    const { data, error } =
+      await supabase.auth.signInWithPassword({ email, password });
+
     if (error) throw error;
-    if (!data.session?.access_token) throw new Error("AUTH_SESSION_NOT_CREATED");
+    if (!data.session?.access_token)
+      throw new Error("AUTH_SESSION_NOT_CREATED");
 
     showMessage("message", "جارٍ إنشاء جلسة AQX...", "info");
     const mode = await startAqxSession(data.session);
     showSuccess(mode);
+
   } catch (error) {
     console.error("AQX login:", error);
     clearProof();
@@ -314,10 +389,12 @@ $("loginForm").addEventListener("submit", async event => {
 
 $("resendButton").addEventListener("click", async () => {
   if (busy) return;
+
   if (!allowed(lastResend, CONFIG.ACTION_COOLDOWN)) {
     showMessage("message", "انتظر قليلًا قبل إعادة الإرسال.", "info");
     return;
   }
+
   const email = emailValue();
   if (!validEmail(email)) {
     showMessage("message", "أدخل بريدك الإلكتروني أولًا.", "info");
@@ -327,18 +404,29 @@ $("resendButton").addEventListener("click", async () => {
 
   lastResend = Date.now();
   $("resendButton").disabled = true;
+
   try {
     const { error } = await supabase.auth.resend({
       type: "signup",
       email,
-      options: { emailRedirectTo: "https://id.alqurmanix.com/confirmed.html" }
+      options: {
+        emailRedirectTo: "https://id.alqurmanix.com/confirmed.html"
+      }
     });
+
     if (error) throw error;
-    showMessage("message", "إذا كان الحساب يحتاج إلى تأكيد البريد، فستصلك رسالة جديدة.", "success");
+    showMessage(
+      "message",
+      "إذا كان الحساب يحتاج إلى تأكيد البريد، فستصلك رسالة جديدة.",
+      "success"
+    );
   } catch (error) {
+    console.error("AQX resend:", error);
     showMessage("message", friendlyError(error), "error");
   } finally {
-    setTimeout(() => { $("resendButton").disabled = busy; }, CONFIG.ACTION_COOLDOWN);
+    setTimeout(() => {
+      $("resendButton").disabled = busy;
+    }, CONFIG.ACTION_COOLDOWN);
   }
 });
 
@@ -348,21 +436,41 @@ function openRecovery() {
   $("recoveryStep2").classList.add("hidden");
   $("recoveryStep3").classList.add("hidden");
   clearMessage("recoveryMessage");
+
   challengeId = "";
   resetToken = "";
+
+  $("recoveryCode").value = "";
+  $("newPassword").value = "";
+  $("confirmPassword").value = "";
+
+  const email = emailValue();
+  if (validEmail(email)) $("recoveryEmail").value = email;
 }
 $("forgotButton").addEventListener("click", openRecovery);
 
 async function recoveryRequest(path, body) {
   const response = await fetch(CONFIG.RECOVERY_API + path, {
     method: "POST",
-    headers: { "apikey": CONFIG.SUPABASE_KEY, "Content-Type": "application/json", "Accept": "application/json" },
+    headers: {
+      "apikey": CONFIG.SUPABASE_KEY,
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
     body: JSON.stringify(body),
     cache: "no-store",
     credentials: "omit"
   });
+
   const data = await response.json().catch(() => ({}));
-  if (!response.ok || data.success !== true) throw new Error(data.message || data.error || "RECOVERY_FAILED");
+
+  if (!response.ok || data.success !== true) {
+    const error = new Error(data.message || data.error || "RECOVERY_FAILED");
+    error.code = data.error || "RECOVERY_FAILED";
+    error.status = response.status;
+    throw error;
+  }
+
   return data;
 }
 
@@ -371,69 +479,135 @@ $("sendRecovery").addEventListener("click", async () => {
     showMessage("recoveryMessage", "انتظر قليلًا قبل طلب رمز آخر.", "info");
     return;
   }
+
   const email = $("recoveryEmail").value.trim().toLowerCase();
   if (!validEmail(email)) {
     showMessage("recoveryMessage", "أدخل بريد استرداد صحيحًا.", "error");
     return;
   }
+
   lastRecovery = Date.now();
   $("sendRecovery").disabled = true;
+
   try {
     showMessage("recoveryMessage", "جارٍ إرسال طلب الاسترداد...", "info");
-    const data = await recoveryRequest("/v1/account-recovery/start", { recovery_email: email });
-    if (typeof data.challenge_id !== "string" || !data.challenge_id) throw new Error("RECOVERY_CHALLENGE_INVALID");
+
+    const data = await recoveryRequest(
+      "/v1/account-recovery/start",
+      { recovery_email: email }
+    );
+
+    if (typeof data.challenge_id !== "string" || !data.challenge_id)
+      throw new Error("RECOVERY_CHALLENGE_INVALID");
+
     challengeId = data.challenge_id;
     $("recoveryStep1").classList.add("hidden");
     $("recoveryStep2").classList.remove("hidden");
-    showMessage("recoveryMessage", "إذا كان البريد موثقًا ومؤهلًا للاسترداد، فستصلك رسالة برمز التحقق.", "success");
+
+    showMessage(
+      "recoveryMessage",
+      "إذا كان البريد موثقًا ومؤهلًا للاسترداد، فستصلك رسالة برمز التحقق.",
+      "success"
+    );
   } catch (error) {
+    console.error("AQX recovery start:", error);
     showMessage("recoveryMessage", friendlyError(error), "error");
   } finally {
-    setTimeout(() => { $("sendRecovery").disabled = false; }, CONFIG.ACTION_COOLDOWN);
+    setTimeout(() => {
+      $("sendRecovery").disabled = false;
+    }, CONFIG.ACTION_COOLDOWN);
   }
 });
 
 $("verifyRecovery").addEventListener("click", async () => {
   const code = $("recoveryCode").value.trim();
   const email = $("recoveryEmail").value.trim().toLowerCase();
+
+  if (!challengeId) {
+    showMessage("recoveryMessage", "ابدأ طلب الاسترداد أولًا.", "error");
+    return;
+  }
+
   if (!/^[0-9]{6}$/.test(code)) {
     showMessage("recoveryMessage", "أدخل رمز التحقق المكون من 6 أرقام.", "error");
     return;
   }
+
+  $("verifyRecovery").disabled = true;
+
   try {
-    const data = await recoveryRequest("/v1/account-recovery/verify", {
-      challenge_id: challengeId, recovery_email: email, code
-    });
-    if (typeof data.reset_token !== "string" || !data.reset_token) throw new Error("RESET_TOKEN_INVALID");
+    const data = await recoveryRequest(
+      "/v1/account-recovery/verify",
+      { challenge_id: challengeId, recovery_email: email, code }
+    );
+
+    if (typeof data.reset_token !== "string" || !data.reset_token)
+      throw new Error("RESET_TOKEN_INVALID");
+
     resetToken = data.reset_token;
     $("recoveryStep2").classList.add("hidden");
     $("recoveryStep3").classList.remove("hidden");
-    showMessage("recoveryMessage", "تم التحقق بنجاح. أدخل كلمة المرور الجديدة.", "success");
+
+    showMessage(
+      "recoveryMessage",
+      "تم التحقق بنجاح. أدخل كلمة المرور الجديدة.",
+      "success"
+    );
   } catch (error) {
+    console.error("AQX recovery verify:", error);
     showMessage("recoveryMessage", friendlyError(error), "error");
+  } finally {
+    $("verifyRecovery").disabled = false;
   }
 });
 
 $("completeRecovery").addEventListener("click", async () => {
-  const password = $("newPassword").value, confirm = $("confirmPassword").value;
+  const password = $("newPassword").value;
+  const confirm = $("confirmPassword").value;
+
+  if (!challengeId || !resetToken) {
+    showMessage("recoveryMessage", "تحقق من رمز الاسترداد أولًا.", "error");
+    return;
+  }
+
   if (password.length < 12 || password.length > 128) {
     showMessage("recoveryMessage", "كلمة المرور يجب أن تكون 12 حرفًا على الأقل.", "error");
     return;
   }
+
   if (password !== confirm) {
     showMessage("recoveryMessage", "كلمتا المرور غير متطابقتين.", "error");
     return;
   }
+
   $("completeRecovery").disabled = true;
+
   try {
-    const data = await recoveryRequest("/v1/account-recovery/complete", {
-      challenge_id: challengeId, reset_token: resetToken, new_password: password
-    });
-    if (data.password_changed !== true) throw new Error("PASSWORD_UPDATE_FAILED");
+    const data = await recoveryRequest(
+      "/v1/account-recovery/complete",
+      {
+        challenge_id: challengeId,
+        reset_token: resetToken,
+        new_password: password
+      }
+    );
+
+    if (data.password_changed !== true)
+      throw new Error("PASSWORD_UPDATE_FAILED");
+
     $("recoveryModal").classList.add("hidden");
-    showMessage("message", "تم تغيير كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول من جديد.", "success");
+    challengeId = "";
+    resetToken = "";
+
+    showMessage(
+      "message",
+      "تم تغيير كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول من جديد.",
+      "success"
+    );
+
     $("password").value = "";
   } catch (error) {
+    console.error("AQX recovery complete:", error);
     showMessage("recoveryMessage", friendlyError(error), "error");
   } finally {
     $("completeRecovery").disabled = false;
@@ -442,40 +616,73 @@ $("completeRecovery").addEventListener("click", async () => {
 
 $("reactivateButton").addEventListener("click", async () => {
   if (busy) return;
+
   if (!allowed(lastReactivate, CONFIG.ACTION_COOLDOWN)) {
     showMessage("message", "انتظر قليلًا قبل إعادة المحاولة.", "info");
     return;
   }
-  const email = emailValue(), password = $("password").value;
-  if (!validEmail(email) || password.length < 8) {
-    showMessage("message", "أدخل بريد الحساب وكلمة المرور أولًا لإثبات ملكية الحساب.", "info");
+
+  const email = emailValue();
+  const password = $("password").value;
+
+  if (!validEmail(email) || password.length < 8 || password.length > 128) {
+    showMessage(
+      "message",
+      "أدخل بريد الحساب وكلمة المرور أولًا لإثبات ملكية الحساب.",
+      "info"
+    );
     return;
   }
+
   lastReactivate = Date.now();
   setBusy(true);
+
   try {
     showMessage("message", "جارٍ التحقق من ملكية الحساب...", "info");
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    if (!data.session?.access_token) throw new Error("AUTH_SESSION_NOT_CREATED");
 
-    const response = await fetch(CONFIG.API + "/v1/account/reactivation/request", {
-      method: "POST",
-      headers: {
-        "apikey": CONFIG.SUPABASE_KEY,
-        "Authorization": "Bearer " + data.session.access_token,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({}),
-      cache: "no-store",
-      credentials: "omit"
-    });
+    const { data, error } =
+      await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) throw error;
+    if (!data.session?.access_token)
+      throw new Error("AUTH_SESSION_NOT_CREATED");
+
+    const response = await fetch(
+      CONFIG.API + "/v1/account/reactivation/request",
+      {
+        method: "POST",
+        headers: {
+          "apikey": CONFIG.SUPABASE_KEY,
+          "Authorization": "Bearer " + data.session.access_token,
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({}),
+        cache: "no-store",
+        credentials: "omit"
+      }
+    );
+
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || result.success !== true) throw new Error(result.message || result.error || "REACTIVATION_FAILED");
+
+    if (!response.ok || result.success !== true) {
+      const err = new Error(
+        result.message || result.error || "REACTIVATION_FAILED"
+      );
+      err.code = result.error || "REACTIVATION_FAILED";
+      throw err;
+    }
 
     await supabase.auth.signOut({ scope: "local" });
-    showMessage("message", "إذا كان حسابك مؤهلًا لإعادة التنشيط، فستصلك رسالة على بريدك المسجل تحتوي على رابط آمن صالح للاستخدام مرة واحدة.", "success");
+    clearNormal();
+    clearRestricted();
+
+    showMessage(
+      "message",
+      "إذا كان حسابك مؤهلًا لإعادة التنشيط، فستصلك رسالة على بريدك المسجل تحتوي على رابط آمن صالح للاستخدام مرة واحدة.",
+      "success"
+    );
+
   } catch (error) {
     console.error("AQX reactivation:", error);
     showMessage("message", friendlyError(error), "error");
@@ -485,23 +692,37 @@ $("reactivateButton").addEventListener("click", async () => {
 });
 
 document.querySelectorAll("[data-close]").forEach(button => {
-  button.addEventListener("click", () => $(button.dataset.close).classList.add("hidden"));
+  button.addEventListener("click", () => {
+    $(button.dataset.close).classList.add("hidden");
+  });
 });
 
+/*
+ * التهيئة:
+ * لا نربط تفعيل زر الدخول بنجاح endpoint سياسة التسجيل.
+ * الحسابات الموجودة تستطيع محاولة الدخول مباشرة.
+ * الخادم يظل مسؤولًا عن التحقق من صلاحية الحساب وإنشاء جلسة AQX.
+ */
 async function initialize() {
-  try {
-    await loadPolicy();
-    policyReady = true;
-    $("providerLoading").classList.add("hidden");
-    $("loginButton").disabled = false;
-  } catch (error) {
-    console.error("AQX initialization:", error);
-    policyReady = false;
-    $("loginButton").disabled = true;
-    $("providerLoading").textContent = "تعذر الاتصال بمحرك الهوية. تم إيقاف تسجيل الدخول لحماية الحسابات.";
-  }
+  $("loginButton").disabled = false;
+  $("providerLoading").textContent =
+    "بوابة الدخول جاهزة. يمكنك تسجيل الدخول بحساب AQX.";
+
+  loadPolicy()
+    .then(() => {
+      $("providerLoading").classList.add("hidden");
+    })
+    .catch(error => {
+      console.warn(
+        "AQX registration policy unavailable (non-blocking):",
+        error
+      );
+      $("providerLoading").classList.add("hidden");
+    });
 }
+
 initialize();
+
 })();
 </script>
 </body>
