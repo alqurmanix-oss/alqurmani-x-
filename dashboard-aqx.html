@@ -65,5 +65,561 @@ document.documentElement.classList.add("aqx-guard-pending");
         <p>نحن نعمل على إطلاق شي مميز لأجلكم. تابعونا، سنكون معكم في أقرب وقت!</p>
         <div class="loader"></div>
     </div>
+   <script type="module">
+import { createClient } from
+"https://esm.sh/@supabase/supabase-js@2";
+
+(() => {
+"use strict";
+
+/* =================================
+   AQX IDENTITY CONFIGURATION
+================================= */
+
+const CONFIG = {
+  SUPABASE_URL:
+    "https://fkiokwwztbyztleeuwks.supabase.co",
+
+  SUPABASE_KEY:
+    "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+  IDENTITY_API:
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+  LOGIN_URL:
+    "https://id.alqurmanix.com/login.html",
+
+  SESSION_KEY:
+    "aqx_session_token",
+
+  IDLE_LIMIT:
+    15 * 60 * 1000,
+
+  CHECK_INTERVAL:
+    30 * 1000,
+
+  TAB_HEARTBEAT:
+    2000,
+
+  TAB_LOCK_TIMEOUT:
+    8000
+};
+
+/* =================================
+   INITIALIZATION
+================================= */
+
+const supabase = createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false
+    }
+  }
+);
+
+let sessionToken = null;
+let accessToken = null;
+let userId = null;
+
+let lastActivity = Date.now();
+let stopped = false;
+let checking = false;
+let failures = 0;
+
+const tabId = (() => {
+  let id = sessionStorage.getItem("aqx_guard_tab");
+
+  if (!id) {
+    id = crypto.randomUUID();
+    sessionStorage.setItem("aqx_guard_tab", id);
+  }
+
+  return id;
+})();
+
+let lockKey = null;
+
+/* =================================
+   SECURITY REDIRECT
+================================= */
+
+function redirectLogin(reason) {
+
+  if (stopped) return;
+
+  stopped = true;
+
+  document.documentElement.classList.add(
+    "aqx-guard-pending"
+  );
+
+  const url = new URL(CONFIG.LOGIN_URL);
+
+  url.searchParams.set(
+    "reason",
+    reason
+  );
+
+  location.replace(url.href);
+}
+
+/* =================================
+   SESSION LOGOUT
+================================= */
+
+async function terminate(reason) {
+
+  if (stopped) return;
+
+  stopped = true;
+
+  try {
+
+    if (sessionToken && accessToken) {
+
+      await fetch(
+        CONFIG.IDENTITY_API + "/v1/session/logout",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": CONFIG.SUPABASE_KEY,
+            "Authorization": "Bearer " + accessToken,
+            "x-aqx-session": sessionToken
+          },
+
+          body: JSON.stringify({}),
+
+          cache: "no-store"
+        }
+      );
+
+    }
+
+  } catch (e) {
+    console.warn("AQX logout request failed");
+  }
+
+  try {
+    await supabase.auth.signOut({
+      scope: "local"
+    });
+  } catch (e) {}
+
+  localStorage.removeItem(CONFIG.SESSION_KEY);
+
+  redirectLogin(reason);
+}
+
+/* =================================
+   VERIFY SUPABASE IDENTITY
+================================= */
+
+async function verifyIdentity() {
+
+  const {
+    data: sessionData,
+    error: sessionError
+  } = await supabase.auth.getSession();
+
+  if (
+    sessionError ||
+    !sessionData ||
+    !sessionData.session
+  ) {
+    return false;
+  }
+
+  const session = sessionData.session;
+
+  if (!session.access_token) {
+    return false;
+  }
+
+  const {
+    data: userData,
+    error: userError
+  } = await supabase.auth.getUser(
+    session.access_token
+  );
+
+  if (
+    userError ||
+    !userData ||
+    !userData.user ||
+    !userData.user.id
+  ) {
+    return false;
+  }
+
+  accessToken = session.access_token;
+  userId = userData.user.id;
+
+  return true;
+}
+
+/* =================================
+   VERIFY AQX SERVER SESSION
+================================= */
+
+async function verifyAqxSession() {
+
+  if (!sessionToken || !accessToken) {
+    return false;
+  }
+
+  const response = await fetch(
+    CONFIG.IDENTITY_API + "/v1/session/check",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": CONFIG.SUPABASE_KEY,
+        "Authorization": "Bearer " + accessToken,
+        "x-aqx-session": sessionToken
+      },
+
+      body: JSON.stringify({}),
+
+      cache: "no-store"
+    }
+  );
+
+  if (
+    response.status === 401 ||
+    response.status === 403
+  ) {
+    return false;
+  }
+
+  if (!response.ok) {
+    throw new Error("IDENTITY_SERVICE_UNAVAILABLE");
+  }
+
+  const result = await response.json();
+
+  return result.valid === true;
+}
+
+/* =================================
+   MULTI TAB PROTECTION
+================================= */
+
+function acquireTabLock() {
+
+  lockKey = "aqx_active_tab_" + userId;
+
+  const now = Date.now();
+
+  let existing = null;
+
+  try {
+    existing = JSON.parse(
+      localStorage.getItem(lockKey) || "null"
+    );
+  } catch {}
+
+  if (
+    existing &&
+    existing.tab !== tabId &&
+    existing.expires > now
+  ) {
+    return false;
+  }
+
+  localStorage.setItem(
+    lockKey,
+    JSON.stringify({
+      tab: tabId,
+      expires: now + CONFIG.TAB_LOCK_TIMEOUT
+    })
+  );
+
+  return true;
+}
+
+function maintainTabLock() {
+
+  if (!lockKey || stopped) return;
+
+  let existing = null;
+
+  try {
+    existing = JSON.parse(
+      localStorage.getItem(lockKey) || "null"
+    );
+  } catch {}
+
+  if (
+    existing &&
+    existing.tab !== tabId &&
+    existing.expires > Date.now()
+  ) {
+    terminate("multiple_tabs");
+    return;
+  }
+
+  localStorage.setItem(
+    lockKey,
+    JSON.stringify({
+      tab: tabId,
+      expires: Date.now() + CONFIG.TAB_LOCK_TIMEOUT
+    })
+  );
+}
+
+/* =================================
+   IDLE MONITORING
+================================= */
+
+function registerActivity() {
+
+  if (stopped) return;
+
+  lastActivity = Date.now();
+}
+
+[
+  "pointerdown",
+  "pointermove",
+  "keydown",
+  "scroll",
+  "touchstart",
+  "click",
+  "input"
+].forEach(event => {
+
+  document.addEventListener(
+    event,
+    registerActivity,
+    { passive: true }
+  );
+
+});
+
+/* =================================
+   BACK NAVIGATION PROTECTION
+================================= */
+
+function protectHistory() {
+
+  history.replaceState(
+    { aqx: true },
+    "",
+    location.href
+  );
+
+  history.pushState(
+    { aqx: true },
+    "",
+    location.href
+  );
+
+  window.addEventListener(
+    "popstate",
+    () => {
+
+      if (stopped) return;
+
+      history.pushState(
+        { aqx: true },
+        "",
+        location.href
+      );
+
+    }
+  );
+}
+
+/* =================================
+   CONTINUOUS SECURITY MONITOR
+================================= */
+
+async function securityCheck() {
+
+  if (stopped || checking) return;
+
+  checking = true;
+
+  try {
+
+    if (
+      Date.now() - lastActivity >=
+      CONFIG.IDLE_LIMIT
+    ) {
+
+      await terminate("idle_timeout");
+
+      return;
+    }
+
+    const identityValid =
+      await verifyIdentity();
+
+    if (!identityValid) {
+
+      await terminate("identity_invalid");
+
+      return;
+    }
+
+    const sessionValid =
+      await verifyAqxSession();
+
+    if (!sessionValid) {
+
+      await terminate("aqx_session_invalid");
+
+      return;
+    }
+
+    failures = 0;
+
+  } catch (error) {
+
+    failures++;
+
+    console.error(
+      "AQX security verification failed",
+      error
+    );
+
+    if (failures >= 3) {
+
+      await terminate("security_check_failed");
+
+      return;
+    }
+
+  } finally {
+
+    checking = false;
+
+  }
+
+}
+
+/* =================================
+   VISIBILITY MONITOR
+================================= */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (!document.hidden && !stopped) {
+
+      securityCheck();
+
+    }
+
+  }
+);
+
+window.addEventListener(
+  "focus",
+  () => {
+
+    if (!stopped) {
+      securityCheck();
+    }
+
+  }
+);
+
+/* =================================
+   START SECURITY ENGINE
+================================= */
+
+async function start() {
+
+  try {
+
+    sessionToken =
+      localStorage.getItem(
+        CONFIG.SESSION_KEY
+      );
+
+    if (!sessionToken) {
+
+      redirectLogin("session_missing");
+
+      return;
+    }
+
+    const identityValid =
+      await verifyIdentity();
+
+    if (!identityValid) {
+
+      redirectLogin("identity_invalid");
+
+      return;
+    }
+
+    if (!acquireTabLock()) {
+
+      redirectLogin("multiple_tabs");
+
+      return;
+    }
+
+    const sessionValid =
+      await verifyAqxSession();
+
+    if (!sessionValid) {
+
+      await terminate("session_invalid");
+
+      return;
+    }
+
+    /* Enable page */
+
+    protectHistory();
+
+    document.documentElement.classList.remove(
+      "aqx-guard-pending"
+    );
+
+    /* Start continuous checks */
+
+    setInterval(
+      securityCheck,
+      CONFIG.CHECK_INTERVAL
+    );
+
+    setInterval(
+      maintainTabLock,
+      CONFIG.TAB_HEARTBEAT
+    );
+
+    console.info(
+      "AQX Identity Guard: ACTIVE"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "AQX initialization failed",
+      error
+    );
+
+    redirectLogin("initialization_failed");
+
+  }
+
+}
+
+start();
+
+})();
+</script>
 </body>
 </html>
