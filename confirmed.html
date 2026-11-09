@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -5,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#101827">
 <meta name="description" content="AQX Identity - تأكيد وإدارة الحساب الموحد">
+<meta name="robots" content="noindex,nofollow">
 <title>مركز الحساب الذكي | AQX Identity</title>
 
 <style>
@@ -191,17 +193,30 @@ import { createClient } from
 
 "use strict";
 
+/* إعدادات المشروع والمحرك */
 const CONFIG = Object.freeze({
   SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
   SUPABASE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
-  CONFIRMED_URL: "https://id.alqurmanix.com/confirmed.html",
-  LOGIN_URL: "https://id.alqurmanix.com/login.html",
-  SIGNUP_URL: "https://id.alqurmanix.com/signup.html",
+
+  IDENTITY_API:
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+  SECURE_URL:
+    "https://id.alqurmanix.com/secure-aqx.html",
+
+  CONFIRMED_URL:
+    "https://id.alqurmanix.com/confirmed.html",
+
+  LOGIN_URL:
+    "https://id.alqurmanix.com/login.html",
+
+  SIGNUP_URL:
+    "https://id.alqurmanix.com/signup.html",
+
   MIN_PASSWORD_LENGTH: 8,
   MAX_PASSWORD_LENGTH: 128,
   OTP_LENGTH: 6,
-  REQUEST_TIMEOUT: 20000,
-  LOGIN_REDIRECT_DELAY: 1800
+  REQUEST_TIMEOUT: 20000
 });
 
 const supabase = createClient(
@@ -218,9 +233,12 @@ const supabase = createClient(
 );
 
 const $ = id => document.getElementById(id);
+
 let busy = false;
 let recoveryMode = false;
+let redirectStarted = false;
 
+/* أدوات الواجهة */
 function showStatus(message, type = "info") {
   const el = $("status");
   el.className = "status " + type;
@@ -231,6 +249,7 @@ function showSection(id) {
   document.querySelectorAll(".section").forEach(section =>
     section.classList.remove("active")
   );
+
   if (id) $(id).classList.add("active");
 }
 
@@ -238,6 +257,7 @@ function setBusy(button, value, label) {
   if (!button.dataset.originalText) {
     button.dataset.originalText = button.textContent;
   }
+
   button.disabled = value;
   button.textContent = value ? label : button.dataset.originalText;
 }
@@ -260,31 +280,57 @@ function safeErrorMessage(error) {
   if (message.includes("expired") || message.includes("invalid")) {
     return "رمز التحقق أو الرابط غير صالح أو انتهت صلاحيته. اطلب رمزًا جديدًا.";
   }
+
   if (message.includes("otp") || message.includes("token")) {
     return "رمز التحقق غير صحيح أو انتهت صلاحيته. راجع الرمز وحاول مرة أخرى.";
   }
+
   if (message.includes("password") || message.includes("weak")) {
     return "كلمة المرور لا تحقق شروط الأمان المطلوبة.";
   }
+
   if (message.includes("rate limit")) {
     return "تم تجاوز عدد المحاولات المسموح. انتظر قليلًا ثم حاول مجددًا.";
   }
+
   if (message.includes("network") || message.includes("fetch")) {
     return "تعذر الاتصال بالخدمة. تحقق من اتصال الإنترنت.";
   }
+
   if (message.includes("timeout")) {
     return "استغرق الاتصال وقتًا أطول من المتوقع. تحقق من الاتصال وحاول مجددًا.";
   }
+
+  if (message.includes("email_not_verified")) {
+    return "يجب تأكيد البريد الإلكتروني أولًا.";
+  }
+
+  if (message.includes("login_provider_disabled")) {
+    return "تسجيل الدخول بهذا المزود غير متاح حاليًا.";
+  }
+
+  if (message.includes("login_rate_limited")) {
+    return "تم تجاوز عدد محاولات تسجيل الدخول. حاول لاحقًا.";
+  }
+
+  if (message.includes("return_to_not_registered")) {
+    return "وجهة التحويل غير مسجلة لدى محرك AQX Identity.";
+  }
+
   return "تعذر تنفيذ العملية. يرجى المحاولة مرة أخرى.";
 }
 
 async function withTimeout(promise, ms = CONFIG.REQUEST_TIMEOUT) {
   let timer;
+
   try {
     return await Promise.race([
       promise,
       new Promise((_, reject) => {
-        timer = setTimeout(() => reject(new Error("REQUEST_TIMEOUT")), ms);
+        timer = setTimeout(
+          () => reject(new Error("REQUEST_TIMEOUT")),
+          ms
+        );
       })
     ]);
   } finally {
@@ -292,33 +338,209 @@ async function withTimeout(promise, ms = CONFIG.REQUEST_TIMEOUT) {
   }
 }
 
+/* الحصول على المستخدم الحالي */
 async function getCurrentUser() {
   const { data: sessionData, error: sessionError } =
     await supabase.auth.getSession();
 
   if (sessionError) throw sessionError;
+
   if (!sessionData.session) return null;
 
   const { data, error } = await supabase.auth.getUser();
+
   if (error) throw error;
+
   return data.user || null;
 }
 
-/* قراءة رابط زر البريد وتعبئة البريد والرمز */
+/*
+ * تكامل إصدار تذكرة التحويل مع AQX Identity v62.
+ *
+ * المحرك يستقبل secure-aqx.html كوجهة أولية.
+ * الإصدار 62 يعالج الوجهة ويعيد اعتمادها إلى dashboard-aqx.html.
+ *
+ * لا يتم استهلاك التذكرة هنا.
+ * الاستهلاك يتم من بوابة secure-aqx.html.
+ */
+async function startAqxRedirect() {
+  if (redirectStarted) return;
+
+  redirectStarted = true;
+
+  try {
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    const accessToken = sessionData?.session?.access_token;
+
+    if (!accessToken) {
+      throw new Error("AUTH_SESSION_MISSING");
+    }
+
+    const response = await withTimeout(
+      fetch(CONFIG.IDENTITY_API + "/v1/session/start", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": CONFIG.SUPABASE_KEY,
+          "Authorization": "Bearer " + accessToken
+        },
+        body: JSON.stringify({
+          return_to: CONFIG.SECURE_URL
+        })
+      })
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || result.success !== true) {
+      throw new Error(
+        result.message ||
+        result.error ||
+        "AQX_SESSION_START_FAILED"
+      );
+    }
+
+    /*
+     * الجلسة المقيدة لا يتم تحويلها إلى لوحة التحكم.
+     */
+    if (result.restricted === true) {
+      if (result.restricted_session_token) {
+        sessionStorage.setItem(
+          "aqx_restricted_session_token",
+          result.restricted_session_token
+        );
+      }
+
+      if (result.restricted_session_id) {
+        sessionStorage.setItem(
+          "aqx_restricted_session_id",
+          result.restricted_session_id
+        );
+      }
+
+      redirectStarted = false;
+
+      showStatus(
+        "تم تأكيد البريد، لكن حسابك يعمل حاليًا في وضع الوصول المقيّد. راجع حالة حسابك.",
+        "warning"
+      );
+
+      showSection("generalActions");
+      return;
+    }
+
+    const ticket = result.redirect_ticket;
+    const sessionToken = result.aqx_session_token;
+    const proofToken = result.login_proof?.token;
+
+    /*
+     * التذكرة التي يصدرها المحرك 64 خانة hexadecimal.
+     */
+    if (
+      typeof ticket !== "string" ||
+      !/^[a-f0-9]{64}$/i.test(ticket)
+    ) {
+      throw new Error("AQX_REDIRECT_TICKET_INVALID");
+    }
+
+    if (
+      typeof sessionToken !== "string" ||
+      sessionToken.length < 30
+    ) {
+      throw new Error("AQX_SESSION_TOKEN_INVALID");
+    }
+
+    if (
+      typeof proofToken !== "string" ||
+      proofToken.length < 30
+    ) {
+      throw new Error("AQX_LOGIN_PROOF_INVALID");
+    }
+
+    /*
+     * حفظ بيانات الدخول التي تحتاجها بوابة الأمان.
+     */
+    sessionStorage.setItem(
+      "aqx_redirect_ticket",
+      ticket
+    );
+
+    sessionStorage.setItem(
+      "aqx_session_token",
+      sessionToken
+    );
+
+    sessionStorage.setItem(
+      "aqx_login_proof",
+      proofToken
+    );
+
+    if (result.session_id) {
+      sessionStorage.setItem(
+        "aqx_session_id",
+        result.session_id
+      );
+    }
+
+    /*
+     * تمرير التذكرة إلى بوابة الأمان.
+     * لا نستهلكها من صفحة التأكيد.
+     */
+    const destination = new URL(CONFIG.SECURE_URL);
+
+    destination.searchParams.set(
+      "redirect_ticket",
+      ticket
+    );
+
+    showStatus(
+      "تم إصدار تذكرة التحويل بنجاح. جارٍ الانتقال إلى بوابة الأمان...",
+      "success"
+    );
+
+    location.replace(destination.toString());
+
+  } catch (error) {
+    redirectStarted = false;
+
+    console.error("AQX redirect initialization:", error);
+
+    showStatus(
+      "تم تأكيد البريد، لكن تعذر إصدار تذكرة التحويل. " +
+      safeErrorMessage(error),
+      "error"
+    );
+
+    showSection("confirmed");
+  }
+}
+
+/* تجهيز بيانات رمز التفعيل من رابط البريد */
 function prefillOtpFromEmailLink() {
   const params = new URLSearchParams(location.hash.slice(1));
+
   const email = params.get("email");
   const token = params.get("token");
 
   if (!email && !token) return false;
 
   if (
-    !email || !token ||
+    !email ||
+    !token ||
     !validEmail(email) ||
     !new RegExp(`^[0-9]{${CONFIG.OTP_LENGTH}}$`).test(token)
   ) {
     cleanUrl();
-    showStatus("رابط التفعيل غير مكتمل أو غير صالح. يمكنك طلب رسالة جديدة.", "error");
+
+    showStatus(
+      "رابط التفعيل غير مكتمل أو غير صالح. يمكنك طلب رسالة جديدة.",
+      "error"
+    );
+
     showSection("otpSection");
     return true;
   }
@@ -331,19 +553,24 @@ function prefillOtpFromEmailLink() {
     "تم تجهيز بيانات التفعيل. اضغط على زر تأكيد البريد الإلكتروني لإكمال العملية.",
     "success"
   );
+
   showSection("otpSection");
 
-  // إزالة بيانات الرمز والبريد من شريط العنوان بعد قراءتها
   cleanUrl();
+
   return true;
 }
 
-/* تفعيل البريد باستخدام OTP */
+/* تأكيد البريد وإصدار تذكرة التحويل */
 async function verifyEmailOtp() {
   if (busy) return;
 
   const email = normalizeEmail($("otpEmail").value);
-  const token = $("otpCode").value.replace(/\D/g, "").slice(0, CONFIG.OTP_LENGTH);
+
+  const token = $("otpCode").value
+    .replace(/\D/g, "")
+    .slice(0, CONFIG.OTP_LENGTH);
+
   const button = $("verifyOtpBtn");
 
   if (!validEmail(email)) {
@@ -351,12 +578,15 @@ async function verifyEmailOtp() {
     return;
   }
 
-  if (!new RegExp(`^[0-9]{${CONFIG.OTP_LENGTH}}$`).test(token)) {
+  if (
+    !new RegExp(`^[0-9]{${CONFIG.OTP_LENGTH}}$`).test(token)
+  ) {
     showStatus("أدخل رمز التحقق المكوّن من 6 أرقام.", "error");
     return;
   }
 
   busy = true;
+
   setBusy(button, true, "جارٍ التحقق...");
 
   try {
@@ -371,34 +601,46 @@ async function verifyEmailOtp() {
     if (error) throw error;
 
     if (!data?.user?.email_confirmed_at) {
-      throw new Error("Email confirmation not completed");
+      throw new Error("EMAIL_CONFIRMATION_NOT_COMPLETED");
+    }
+
+    if (!data?.session?.access_token) {
+      throw new Error("AUTH_SESSION_MISSING");
     }
 
     $("confirmedEmail").textContent =
       "البريد المؤكد: " + (data.user.email || email);
 
     $("otpCode").value = "";
-    showSection("confirmed");
-    showStatus(
-      "تم تأكيد بريدك الإلكتروني بنجاح! جارٍ تحويلك إلى تسجيل الدخول...",
-      "success"
-    );
+
     cleanUrl();
 
-    setTimeout(() => {
-      location.replace(CONFIG.LOGIN_URL);
-    }, CONFIG.LOGIN_REDIRECT_DELAY);
+    showSection("confirmed");
+
+    showStatus(
+      "تم تأكيد بريدك الإلكتروني. جارٍ إنشاء جلسة AQX وإصدار تذكرة التحويل...",
+      "success"
+    );
+
+    await startAqxRedirect();
 
   } catch (error) {
     console.error("AQX OTP verification:", error);
-    showStatus(safeErrorMessage(error), "error");
+
+    showStatus(
+      safeErrorMessage(error),
+      "error"
+    );
+
+    showSection("otpSection");
+
   } finally {
     busy = false;
     setBusy(button, false);
   }
 }
 
-/* إعادة إرسال OTP */
+/* إعادة إرسال رمز التفعيل */
 async function resendSignupOtp(emailInput, button) {
   if (busy) return;
 
@@ -410,6 +652,7 @@ async function resendSignupOtp(emailInput, button) {
   }
 
   busy = true;
+
   setBusy(button, true, "جارٍ إرسال الرسالة...");
 
   try {
@@ -430,11 +673,17 @@ async function resendSignupOtp(emailInput, button) {
       "إذا كان البريد مؤهلًا لإعادة التفعيل، فستصلك رسالة تحتوي على رمز جديد. افحص البريد الوارد والرسائل غير المرغوب فيها.",
       "success"
     );
+
     showSection("otpSection");
 
   } catch (error) {
     console.error("AQX resend signup:", error);
-    showStatus(safeErrorMessage(error), "error");
+
+    showStatus(
+      safeErrorMessage(error),
+      "error"
+    );
+
   } finally {
     busy = false;
     setBusy(button, false);
@@ -454,6 +703,7 @@ async function requestPasswordReset() {
   }
 
   busy = true;
+
   setBusy(button, true, "جارٍ إرسال الطلب...");
 
   try {
@@ -469,9 +719,15 @@ async function requestPasswordReset() {
       "إذا كان الحساب مؤهلًا للاستعادة، فستصلك رسالة على بريدك الإلكتروني.",
       "success"
     );
+
   } catch (error) {
     console.error("AQX password recovery:", error);
-    showStatus(safeErrorMessage(error), "error");
+
+    showStatus(
+      safeErrorMessage(error),
+      "error"
+    );
+
   } finally {
     busy = false;
     setBusy(button, false);
@@ -487,12 +743,18 @@ async function saveNewPassword() {
   const button = $("savePasswordBtn");
 
   if (!recoveryMode) {
-    showStatus("جلسة استعادة كلمة المرور غير متاحة. اطلب رابط استعادة جديدًا.", "error");
+    showStatus(
+      "جلسة استعادة كلمة المرور غير متاحة. اطلب رابط استعادة جديدًا.",
+      "error"
+    );
     return;
   }
 
   if (password.length < CONFIG.MIN_PASSWORD_LENGTH) {
-    showStatus(`كلمة المرور يجب ألا تقل عن ${CONFIG.MIN_PASSWORD_LENGTH} أحرف.`, "error");
+    showStatus(
+      `كلمة المرور يجب ألا تقل عن ${CONFIG.MIN_PASSWORD_LENGTH} أحرف.`,
+      "error"
+    );
     return;
   }
 
@@ -507,6 +769,7 @@ async function saveNewPassword() {
   }
 
   busy = true;
+
   setBusy(button, true, "جارٍ حفظ كلمة المرور...");
 
   try {
@@ -514,7 +777,10 @@ async function saveNewPassword() {
       await supabase.auth.getSession();
 
     if (sessionError) throw sessionError;
-    if (!sessionData?.session) throw new Error("Recovery session missing");
+
+    if (!sessionData?.session) {
+      throw new Error("RECOVERY_SESSION_MISSING");
+    }
 
     const { error } = await withTimeout(
       supabase.auth.updateUser({ password })
@@ -524,6 +790,7 @@ async function saveNewPassword() {
 
     $("password").value = "";
     $("password2").value = "";
+
     recoveryMode = false;
 
     await supabase.auth.signOut();
@@ -532,90 +799,166 @@ async function saveNewPassword() {
       "تم تحديث كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.",
       "success"
     );
+
     showSection("generalActions");
 
   } catch (error) {
     console.error("AQX update password:", error);
-    showStatus(safeErrorMessage(error), "error");
+
+    showStatus(
+      safeErrorMessage(error),
+      "error"
+    );
+
   } finally {
     busy = false;
     setBusy(button, false);
   }
 }
 
-/* معالجة روابط Supabase القديمة وروابط الاستعادة */
+/*
+ * معالجة روابط تأكيد البريد واستعادة كلمة المرور.
+ * لا يتم إصدار تذكرة تحويل في مسار استعادة كلمة المرور.
+ */
 async function handleAuthCallback() {
   const params = new URLSearchParams(location.search);
-  const hash = new URLSearchParams(location.hash.replace(/^#/, ""));
+
+  const hash = new URLSearchParams(
+    location.hash.replace(/^#/, "")
+  );
 
   const errorDescription =
-    params.get("error_description") || hash.get("error_description");
-  const errorCode = params.get("error") || hash.get("error");
+    params.get("error_description") ||
+    hash.get("error_description");
+
+  const errorCode =
+    params.get("error") ||
+    hash.get("error");
 
   if (errorDescription || errorCode) {
     showStatus(
       "تعذر إتمام العملية. قد يكون الرابط غير صالح أو انتهت صلاحيته. اطلب رسالة جديدة.",
       "error"
     );
+
     showSection("generalActions");
     cleanUrl();
+
     return true;
   }
 
+  /*
+   * PKCE callback
+   */
   const code = params.get("code");
 
   if (code) {
     const { error } = await withTimeout(
       supabase.auth.exchangeCodeForSession(code)
     );
+
     if (error) throw error;
 
+    const callbackType = params.get("type");
+
     cleanUrl();
+
+    if (callbackType === "recovery") {
+      recoveryMode = true;
+
+      showStatus(
+        "تم التحقق من رابط الاستعادة. أنشئ كلمة مرور جديدة.",
+        "success"
+      );
+
+      showSection("newPassword");
+
+      return true;
+    }
 
     const user = await getCurrentUser();
 
     if (user?.email_confirmed_at) {
-      $("confirmedEmail").textContent = "البريد المؤكد: " + (user.email || "");
-      showStatus("تم تأكيد البريد الإلكتروني بنجاح.", "success");
+      $("confirmedEmail").textContent =
+        "البريد المؤكد: " + (user.email || "");
+
       showSection("confirmed");
+
+      showStatus(
+        "تم التحقق بنجاح. جارٍ تجهيز جلسة AQX وتذكرة التحويل...",
+        "success"
+      );
+
+      await startAqxRedirect();
+
       return true;
     }
   }
 
+  /*
+   * Token Hash callback
+   */
   const tokenHash = params.get("token_hash");
   const type = params.get("type");
 
   if (tokenHash && type) {
-    const supportedTypes = ["signup", "recovery", "email", "email_change"];
+    const supportedTypes = [
+      "signup",
+      "recovery",
+      "email",
+      "email_change"
+    ];
 
     if (!supportedTypes.includes(type)) {
-      throw new Error("Unsupported verification type");
+      throw new Error("UNSUPPORTED_VERIFICATION_TYPE");
     }
 
     const { data, error } = await withTimeout(
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type })
+      supabase.auth.verifyOtp({
+        token_hash: tokenHash,
+        type
+      })
     );
+
     if (error) throw error;
 
     cleanUrl();
 
     if (type === "recovery") {
       recoveryMode = true;
-      showStatus("تم التحقق من رابط الاستعادة. أنشئ كلمة مرور جديدة.", "success");
+
+      showStatus(
+        "تم التحقق من رابط الاستعادة. أنشئ كلمة مرور جديدة.",
+        "success"
+      );
+
       showSection("newPassword");
+
       return true;
     }
 
     const user = data?.user || await getCurrentUser();
 
     if (user?.email_confirmed_at) {
-      $("confirmedEmail").textContent = "البريد المؤكد: " + (user.email || "");
-      showStatus("تم تأكيد البريد الإلكتروني بنجاح.", "success");
+      $("confirmedEmail").textContent =
+        "البريد المؤكد: " + (user.email || "");
+
       showSection("confirmed");
+
+      showStatus(
+        "تم تأكيد البريد الإلكتروني. جارٍ إصدار تذكرة التحويل...",
+        "success"
+      );
+
+      await startAqxRedirect();
+
       return true;
     }
   }
 
+  /*
+   * Legacy implicit callback
+   */
   const accessToken = hash.get("access_token");
   const refreshToken = hash.get("refresh_token");
   const hashType = hash.get("type");
@@ -627,22 +970,37 @@ async function handleAuthCallback() {
         refresh_token: refreshToken
       })
     );
+
     if (error) throw error;
 
     cleanUrl();
 
     if (hashType === "recovery") {
       recoveryMode = true;
-      showStatus("تم التحقق من رابط الاستعادة. أنشئ كلمة مرور جديدة.", "success");
+
+      showStatus(
+        "تم التحقق من رابط الاستعادة. أنشئ كلمة مرور جديدة.",
+        "success"
+      );
+
       showSection("newPassword");
+
       return true;
     }
 
     if (data?.user?.email_confirmed_at) {
       $("confirmedEmail").textContent =
         "البريد المؤكد: " + (data.user.email || "");
-      showStatus("تم تأكيد البريد الإلكتروني بنجاح.", "success");
+
       showSection("confirmed");
+
+      showStatus(
+        "تم التحقق بنجاح. جارٍ إصدار تذكرة التحويل...",
+        "success"
+      );
+
+      await startAqxRedirect();
+
       return true;
     }
   }
@@ -650,13 +1008,19 @@ async function handleAuthCallback() {
   return false;
 }
 
-/* بدء الصفحة */
+/* تشغيل الصفحة */
 async function initialize() {
   try {
-    // رابط زر البريد له الأولوية حتى لا يتم استهلاك الرمز تلقائيًا
+    /*
+     * رابط OTP المخصص له الأولوية.
+     */
     if (prefillOtpFromEmailLink()) return;
 
+    /*
+     * معالجة روابط Supabase.
+     */
     const handled = await handleAuthCallback();
+
     if (handled) return;
 
     const user = await getCurrentUser();
@@ -664,19 +1028,28 @@ async function initialize() {
     if (user?.email_confirmed_at) {
       $("confirmedEmail").textContent =
         "البريد المؤكد: " + (user.email || "");
-      showStatus("حسابك مؤكد بالفعل.", "success");
+
+      showStatus(
+        "حسابك مؤكد بالفعل. يمكنك تسجيل الدخول.",
+        "success"
+      );
+
       showSection("confirmed");
+
       return;
     }
 
     if (user && !user.email_confirmed_at) {
       $("otpEmail").value = user.email || "";
       $("resendEmail").value = user.email || "";
+
       showStatus(
         "الحساب موجود، لكن البريد الإلكتروني لم يتم تأكيده بعد. أدخل رمز التحقق.",
         "warning"
       );
+
       showSection("otpSection");
+
       return;
     }
 
@@ -684,20 +1057,26 @@ async function initialize() {
       "أدخل بريدك الإلكتروني ورمز التحقق لإكمال تفعيل حسابك.",
       "info"
     );
+
     showSection("otpSection");
 
   } catch (error) {
     console.error("AQX initialization:", error);
+
     showStatus(
       "لم نتمكن من استكمال التحقق تلقائيًا. يمكنك إدخال رمز التفعيل أو طلب رسالة جديدة.",
       "warning"
     );
+
     showSection("otpSection");
   }
 }
 
-/* الأحداث */
-$("verifyOtpBtn").addEventListener("click", verifyEmailOtp);
+/* ربط الأحداث */
+$("verifyOtpBtn").addEventListener(
+  "click",
+  verifyEmailOtp
+);
 
 $("resendOtpBtn").addEventListener("click", () =>
   resendSignupOtp("otpEmail", $("resendOtpBtn"))
@@ -707,8 +1086,15 @@ $("resendBtn").addEventListener("click", () =>
   resendSignupOtp("resendEmail", $("resendBtn"))
 );
 
-$("resetBtn").addEventListener("click", requestPasswordReset);
-$("savePasswordBtn").addEventListener("click", saveNewPassword);
+$("resetBtn").addEventListener(
+  "click",
+  requestPasswordReset
+);
+
+$("savePasswordBtn").addEventListener(
+  "click",
+  saveNewPassword
+);
 
 $("showOtpBtn").addEventListener("click", () => {
   showStatus("أدخل البريد الإلكتروني ورمز التحقق.", "info");
@@ -716,15 +1102,24 @@ $("showOtpBtn").addEventListener("click", () => {
 });
 
 $("showResendBtn").addEventListener("click", () => {
-  showStatus("أدخل بريدك الإلكتروني لطلب رسالة تفعيل جديدة.", "info");
+  showStatus(
+    "أدخل بريدك الإلكتروني لطلب رسالة تفعيل جديدة.",
+    "info"
+  );
+
   showSection("resend");
 });
 
 $("showForgotBtn").addEventListener("click", () => {
-  showStatus("أدخل بريد حسابك لطلب استعادة كلمة المرور.", "info");
+  showStatus(
+    "أدخل بريد حسابك لطلب استعادة كلمة المرور.",
+    "info"
+  );
+
   showSection("forgot");
 });
 
+/* تنسيق رمز OTP */
 $("otpCode").addEventListener("input", event => {
   event.target.value = event.target.value
     .replace(/\D/g, "")
@@ -732,10 +1127,14 @@ $("otpCode").addEventListener("input", event => {
 });
 
 $("otpCode").addEventListener("keydown", event => {
-  if (event.key === "Enter") verifyEmailOtp();
+  if (event.key === "Enter") {
+    verifyEmailOtp();
+  }
 });
 
+/* بدء التشغيل */
 initialize();
 </script>
+
 </body>
 </html>
