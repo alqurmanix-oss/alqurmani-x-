@@ -289,7 +289,9 @@
       if (returnTo) {
         try {
           const parsed = new URL(returnTo);
-          if (parsed.protocol === "https:" && !parsed.username && !parsed.password && !parsed.hash) {
+          const host = parsed.hostname.toLowerCase();
+          const allowedHost = host === "alqurmanix.com" || host.endsWith(".alqurmanix.com");
+          if (parsed.protocol === "https:" && allowedHost && !parsed.port && !parsed.username && !parsed.password && !parsed.hash) {
             state.returnTo = parsed.toString();
             try { sessionStorage.setItem(STORAGE_KEYS.returnTo, state.returnTo); } catch (_) {}
           }
@@ -345,7 +347,13 @@
         DEVICE_ACCOUNT_LIMIT_REACHED: "تم الوصول إلى الحد المسموح لإنشاء الحسابات من هذا الجهاز.",
         LEGAL_DOCUMENTS_NOT_CONFIGURED: "تعذر تحميل مستندات الموافقة القانونية. يرجى المحاولة لاحقًا.",
         SIGNUP_FINALIZATION_FAILED: "تعذر إكمال إنشاء الحساب. لم يتم اعتماد التسجيل؛ يرجى المحاولة لاحقًا.",
-        SIGNUP_SERVICE_UNAVAILABLE: "خدمة التسجيل غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل."
+        SIGNUP_SERVICE_UNAVAILABLE: "خدمة التسجيل غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل.",
+        SIGNUP_RATE_LIMITED: "تم تجاوز الحد المسموح لمحاولات التسجيل. حاول لاحقًا.",
+        INVALID_RETURN_TO: "رابط العودة إلى الخدمة غير صالح.",
+        RETURN_TO_NOT_REGISTERED: "الخدمة المطلوبة غير مسجلة ضمن نطاقات AQX المسموح بها.",
+        SESSION_START_RESPONSE_INVALID: "استجابة إنشاء الجلسة غير مكتملة. سجّل الدخول مرة أخرى.",
+        REGISTRATION_POLICY_UNAVAILABLE: "تعذر التحقق من سياسة التسجيل. حاول لاحقًا.",
+        EMAIL_STATUS_RATE_LIMITED: "تم تجاوز الحد المسموح لفحص البريد. انتظر قليلًا ثم أعد المحاولة."
       };
       return messages[code] || "تعذر إتمام التسجيل. حاول مرة أخرى، وإذا استمرت المشكلة تواصل مع الدعم.";
     }
@@ -449,8 +457,16 @@
         return;
       }
       $("registration-state").textContent = "التسجيل متاح";
-      state.captchaRequired = !!(data.captcha && data.captcha.enabled === true);
-      renderCaptcha(data.captcha && data.captcha.site_key);
+      state.captchaRequired = true;
+      if (!data.captcha || data.captcha.enabled !== true || !data.captcha.site_key) {
+        state.policy = null;
+        $("registration-state").textContent = "إعداد الحماية غير مكتمل";
+        captchaHint.textContent = "خدمة مكافحة الروبوتات غير مهيأة على الخادم؛ التسجيل متوقف لحين ضبط Turnstile.";
+        showMessage("error", "لا يمكن التسجيل الآن لأن إعداد Cloudflare Turnstile غير مكتمل على الخادم.");
+        submitButton.disabled = true;
+        return;
+      }
+      renderCaptcha(data.captcha.site_key);
       updateSubmitState();
     }
 
@@ -551,6 +567,39 @@
       updateSubmitState();
     }
 
+    async function completeImmediateSession(session) {
+      if (!session || typeof session.access_token !== "string" || !session.access_token) return false;
+      const data = await api("/v1/session/start", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + session.access_token },
+        body: state.returnTo ? { return_to: state.returnTo } : {}
+      });
+
+      // Clear stale AQX session material before writing the new account state.
+      const normalKeys = ["aqx_session_token", "aqx_session_id", "aqx_login_proof", "aqx_redirect_ticket"];
+      const restrictedKeys = ["aqx_restricted_session_token", "aqx_restricted_session_id", "aqx_restriction_data"];
+      for (const key of [...normalKeys, ...restrictedKeys]) {
+        try { sessionStorage.removeItem(key); localStorage.removeItem(key); } catch (_) {}
+      }
+
+      if (data.restricted === true || data.access_mode === "restricted_notice_only") {
+        sessionStorage.setItem("aqx_restricted_session_token", data.restricted_session_token || "");
+        sessionStorage.setItem("aqx_restricted_session_id", data.restricted_session_id || "");
+        sessionStorage.setItem("aqx_restriction_data", JSON.stringify(data.restriction || {}));
+      } else {
+        if (!data.aqx_session_token || !data.session_id || !data.login_proof || !data.login_proof.token) {
+          throw new Error("SESSION_START_RESPONSE_INVALID");
+        }
+        localStorage.setItem("aqx_session_token", data.aqx_session_token);
+        localStorage.setItem("aqx_session_id", data.session_id);
+        sessionStorage.setItem("aqx_session_token", data.aqx_session_token);
+        sessionStorage.setItem("aqx_session_id", data.session_id);
+        sessionStorage.setItem("aqx_login_proof", data.login_proof.token);
+      }
+      if (data.redirect_ticket) sessionStorage.setItem("aqx_redirect_ticket", data.redirect_ticket);
+      return true;
+    }
+
     async function submitSignup(event) {
       event.preventDefault();
       clearMessage();
@@ -611,6 +660,7 @@
         });
 
         if (result.success === true && result.accepted === true) {
+          const returnedSession = result.session || null;
           form.reset();
           state.emailStatus = "unchecked";
           state.formStartedAt = Date.now();
@@ -619,13 +669,25 @@
           setHint(confirmHint, "");
           $("strength-bar").style.width = "0";
           resetCaptcha();
-          showMessage("success",
-            result.email_confirmation_required
-              ? "تم استلام طلب إنشاء الحساب. إذا كان البريد مؤهلًا فستصلك رسالة تفعيل من القرماني إكس AQX. افتح الرسالة واتبع رابط التفعيل لإكمال العملية."
-              : "تم إنشاء الحساب بنجاح. يمكنك الآن متابعة تسجيل الدخول من صفحة الدخول.");
-          submitButton.textContent = "تم استلام الطلب";
           submitButton.disabled = true;
-          $("registration-state").textContent = "تم استلام طلب التسجيل";
+          if (returnedSession && returnedSession.access_token) {
+            showMessage("success", "تم إنشاء الحساب. جارٍ بدء جلسة AQX والتحقق من حالة الحساب…");
+            $("registration-state").textContent = "جارٍ إكمال جلسة الحساب";
+            try {
+              await completeImmediateSession(returnedSession);
+              location.replace("https://id.alqurmanix.com/secure-aqx.html");
+              return;
+            } catch (sessionError) {
+              console.error("AQX immediate session start failed:", sessionError);
+              showMessage("error", "تم إنشاء الحساب، لكن تعذر بدء جلسة AQX تلقائيًا. سجّل الدخول من صفحة الدخول لإكمال التحقق.");
+              submitButton.textContent = "تم إنشاء الحساب";
+              $("registration-state").textContent = "الحساب أُنشئ ويحتاج تسجيل الدخول";
+              return;
+            }
+          }
+          showMessage("success", "تم استلام طلب إنشاء الحساب. ستصلك رسالة تأكيد على بريدك الإلكتروني. افتح الرسالة واضغط رابط التأكيد لإكمال تفعيل الحساب. بعد التأكيد ستُستكمل جلسة AQX من صفحة confirmed.html.");
+          submitButton.textContent = "تم استلام الطلب";
+          $("registration-state").textContent = "بانتظار تأكيد البريد الإلكتروني";
           return;
         }
         throw new Error(result.error || "SIGNUP_REJECTED");
