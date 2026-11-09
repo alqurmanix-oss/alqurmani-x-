@@ -2,1336 +2,1322 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#101827">
 <meta name="robots" content="noindex,nofollow">
+<meta name="description" content="AQX Identity - لوحة إدارة ومراقبة الهوية والجلسات">
 <title>لوحة التحكم | AQX Identity</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
+
 <style>
-:root{
-  color-scheme:dark;
+:root {
+  color-scheme: dark;
   --bg:#0b1120;
-  --panel:#121d30;
+  --panel:#111c30;
   --panel2:#17243a;
-  --line:#263750;
+  --border:#263750;
   --text:#edf3ff;
-  --muted:#91a2bd;
-  --blue:#4b91ff;
-  --green:#35c98b;
-  --red:#ff6474;
-  --yellow:#f3bd55;
-  --radius:18px;
+  --muted:#9aabc4;
+  --blue:#3985ff;
+  --green:#22c58b;
+  --red:#ef626c;
+  --yellow:#e9b84e;
 }
 *{box-sizing:border-box}
 body{
   margin:0;background:var(--bg);color:var(--text);
-  font-family:Tahoma,Arial,sans-serif;min-height:100vh
+  font-family:Tahoma,Arial,sans-serif;min-height:100vh;
 }
 button{font:inherit;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-.page{width:min(1120px,100%);margin:auto;padding:22px}
-.topbar{
+.container{width:min(1150px,94%);margin:25px auto}
+header{
   display:flex;align-items:center;justify-content:space-between;
-  gap:15px;margin-bottom:22px;flex-wrap:wrap
+  gap:15px;flex-wrap:wrap;margin-bottom:22px
 }
-.brand{font-size:20px;font-weight:800;letter-spacing:.3px}
-.brand span{color:var(--blue)}
-.status-pill{
-  display:inline-flex;align-items:center;gap:8px;
-  border:1px solid var(--line);border-radius:30px;
-  padding:9px 13px;color:var(--muted);font-size:12px
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:46px;height:46px;border-radius:14px;
+  display:grid;place-items:center;background:#1b3b70;
+  color:#fff;font-size:20px;font-weight:bold
 }
-.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
-.profile{
-  display:flex;align-items:center;gap:17px;
-  background:linear-gradient(135deg,#172844,#111b2e);
-  border:1px solid var(--line);border-radius:var(--radius);
-  padding:22px;margin-bottom:18px
+h1{font-size:21px;margin:0 0 5px}
+.subtitle{color:var(--muted);font-size:12px}
+.panel{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:16px;padding:19px;margin-bottom:16px
 }
-.avatar{
-  width:76px;height:76px;border-radius:50%;object-fit:cover;
-  border:2px solid #3d70b4;background:#233653
-}
-.profile h1{font-size:21px;margin:0 0 8px}
-.profile p{margin:0;color:var(--muted);font-size:13px}
+.panel h2{font-size:16px;margin:0 0 16px}
 .grid{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:16px
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:13px
 }
-.card{
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:var(--radius);padding:19px;min-width:0
+.stat{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:13px;padding:15px;min-height:95px
 }
-.card h2{font-size:15px;margin:0 0 17px}
-.metric{font-size:27px;font-weight:800;direction:ltr;text-align:right}
-.sub{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.8}
-.timer{color:var(--green);font-variant-numeric:tabular-nums}
-.timer.warning{color:var(--yellow)}
-.timer.danger{color:var(--red)}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+.stat small{display:block;color:var(--muted);margin-bottom:12px}
+.stat strong{font-size:17px;overflow-wrap:anywhere}
+.row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap
+}
+.muted{color:var(--muted)}
+.status{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 11px;border-radius:30px;font-size:12px;
+  background:#273247;color:#dbe7fa
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--yellow)}
+.status.ok .dot{background:var(--green)}
+.status.bad .dot{background:var(--red)}
+.status.wait .dot{background:var(--yellow)}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
 .btn{
-  border:0;border-radius:12px;padding:12px 17px;
-  color:white;background:var(--blue);font-weight:700
+  border:0;border-radius:10px;padding:11px 16px;
+  color:white;background:var(--blue);font-weight:bold
 }
-.btn.secondary{background:#263750}
-.btn.danger{background:#a93649}
-.btn:focus-visible{outline:2px solid white;outline-offset:3px}
-.event-list{display:flex;flex-direction:column;gap:10px}
-.event{
-  border:1px solid var(--line);background:var(--panel2);
-  border-radius:12px;padding:13px
-}
-.event-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.event-title{font-size:13px;font-weight:700}
-.event-date{font-size:11px;color:var(--muted);direction:ltr}
-.event-desc{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7}
-.severity{
-  display:inline-block;border-radius:20px;padding:4px 8px;
-  font-size:10px;background:#263750;color:#cbd8eb
-}
-.severity.high,.severity.critical{background:#572632;color:#ff9ba7}
-.severity.medium{background:#514020;color:#ffd27d}
-.severity.low{background:#164534;color:#8ce6bd}
-.full{grid-column:1/-1}
-.empty{color:var(--muted);font-size:13px;padding:15px 0}
+.btn.secondary{background:#293a54}
+.btn.danger{background:#a93645}
+.btn:disabled{opacity:.55;cursor:not-allowed}
 .notice{
-  display:none;border:1px solid #805d25;background:#352a17;
-  color:#ffdc91;border-radius:12px;padding:13px;
-  margin-bottom:16px;font-size:13px;line-height:1.7
+  padding:13px 15px;border-radius:11px;margin:12px 0;
+  font-size:13px;line-height:1.8;display:none
 }
-.overlay{
-  position:fixed;inset:0;z-index:1000;background:#080e19;
-  display:flex;align-items:center;justify-content:center;padding:24px
+.notice.show{display:block}
+.notice.info{background:#172f50;border:1px solid #28558b}
+.notice.warn{background:#44391e;border:1px solid #806329}
+.notice.error{background:#48242b;border:1px solid #8b3c48}
+.notice.success{background:#163c32;border:1px solid #28745e}
+.list{display:grid;gap:9px}
+.item{
+  padding:12px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:10px;
+  display:flex;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;font-size:13px
 }
-.overlay-box{
-  width:min(420px,100%);text-align:center;background:var(--panel);
-  border:1px solid var(--line);border-radius:20px;padding:30px
+.item time{color:var(--muted);font-size:11px}
+#bootScreen{
+  position:fixed;inset:0;background:var(--bg);z-index:10;
+  display:grid;place-items:center;padding:20px
+}
+.bootCard{
+  width:min(430px,100%);background:var(--panel);
+  border:1px solid var(--border);border-radius:17px;
+  padding:25px;text-align:center
 }
 .spinner{
-  width:35px;height:35px;border:3px solid #33445e;
+  width:30px;height:30px;border:3px solid #344762;
   border-top-color:var(--blue);border-radius:50%;
-  animation:spin .8s linear infinite;margin:0 auto 17px
+  animation:spin .8s linear infinite;margin:15px auto
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-.overlay h2{font-size:18px}
-.overlay p{font-size:13px;color:var(--muted);line-height:1.8}
 .hidden{display:none!important}
-.footer{text-align:center;color:#71819b;font-size:11px;padding:25px 10px}
-@media(max-width:680px){
-  .page{padding:14px}
-  .grid{grid-template-columns:1fr}
-  .full{grid-column:auto}
-  .profile{padding:17px}
-  .avatar{width:62px;height:62px}
-  .metric{font-size:24px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+@media(max-width:550px){
+  .container{width:93%;margin:15px auto}
+  .panel{padding:14px}
+  h1{font-size:18px}
 }
 </style>
 </head>
 
 <body>
 
-<div id="gate" class="overlay">
-  <div class="overlay-box">
-    <div id="spinner" class="spinner"></div>
-    <h2 id="gateTitle">جارٍ التحقق الأمني</h2>
-    <p id="gateMessage">لن تظهر بيانات الحساب قبل اكتمال التحقق من الهوية والجلسة.</p>
-    <button id="gateButton" class="btn hidden" type="button">
-      إعادة المحاولة
-    </button>
+<div id="bootScreen">
+  <div class="bootCard">
+    <div class="logo" style="margin:auto">AQX</div>
+    <h2>التحقق من الهوية</h2>
+    <div class="spinner" id="bootSpinner"></div>
+    <p id="bootMessage" class="muted">جارٍ الاتصال بخدمات الهوية...</p>
+    <button id="retryBoot" class="btn hidden" onclick="boot()">إعادة المحاولة</button>
   </div>
 </div>
 
-<main id="dashboard" class="page hidden">
+<main class="container hidden" id="dashboard">
 
-  <header class="topbar">
-    <div class="brand">AQX <span>IDENTITY</span></div>
-    <div class="status-pill">
-      <span class="dot"></span>
-      <span id="connectionText">الجلسة نشطة ومؤمنة</span>
-    </div>
-  </header>
-
-  <div id="warningBox" class="notice"></div>
-
-  <section class="profile">
-    <img id="avatar" class="avatar" alt="صورة الحساب">
+<header>
+  <div class="brand">
+    <div class="logo">AQX</div>
     <div>
-      <h1 id="displayName">حساب AQX</h1>
-      <p id="accountId">الحساب الموحد</p>
+      <h1>لوحة تحكم AQX Identity</h1>
+      <div class="subtitle">إدارة الحساب الموحد ومراقبة الجلسات</div>
     </div>
-  </section>
+  </div>
+  <div class="actions">
+    <span class="status wait" id="mainStatus">
+      <span class="dot"></span><span id="mainStatusText">جارٍ التحقق</span>
+    </span>
+    <button class="btn secondary" id="refreshButton" onclick="refreshAll()">تحديث البيانات</button>
+    <button class="btn danger" id="logoutButton" onclick="manualLogout()">تسجيل الخروج</button>
+  </div>
+</header>
 
-  <section class="grid">
+<div id="globalNotice" class="notice"></div>
 
-    <article class="card">
-      <h2>آخر ظهور سابق</h2>
-      <div id="lastSeen" class="metric">—</div>
-      <div id="lastSeenDate" class="sub">جارٍ تحميل بيانات الظهور</div>
-      <div id="elapsed" class="sub"></div>
-    </article>
+<section class="panel">
+  <h2>ملخص الحساب</h2>
+  <div class="grid">
+    <div class="stat">
+      <small>البريد الإلكتروني</small>
+      <strong id="userEmail">—</strong>
+    </div>
+    <div class="stat">
+      <small>معرّف المستخدم</small>
+      <strong id="userId">—</strong>
+    </div>
+    <div class="stat">
+      <small>حالة الهوية</small>
+      <strong id="identityStatus">بانتظار التحقق</strong>
+    </div>
+    <div class="stat">
+      <small>حالة الجلسة</small>
+      <strong id="sessionStatus">بانتظار التحقق</strong>
+    </div>
+  </div>
+</section>
 
-    <article class="card">
-      <h2>الوقت المتبقي للجلسة</h2>
-      <div id="sessionTimer" class="metric timer">15:00</div>
-      <div class="sub">تنتهي الجلسة بعد 15 دقيقة من عدم وجود نشاط فعلي.</div>
-      <div class="actions">
-        <button id="logoutButton" class="btn danger">تسجيل الخروج</button>
-      </div>
-    </article>
+<section class="panel">
+  <h2>مراقبة الجلسة</h2>
+  <div class="grid">
+    <div class="stat">
+      <small>الوقت المتبقي حسب الخادم</small>
+      <strong id="remainingTime">—</strong>
+    </div>
+    <div class="stat">
+      <small>آخر تحقق ناجح</small>
+      <strong id="lastCheck">—</strong>
+    </div>
+    <div class="stat">
+      <small>آخر نشاط محلي</small>
+      <strong id="lastActivity">—</strong>
+    </div>
+    <div class="stat">
+      <small>مراقبة الجلسة</small>
+      <strong id="monitorState">نشطة</strong>
+    </div>
+  </div>
+  <div class="notice info show" id="monitorNotice">
+    تتم مراجعة حالة الجلسة دوريًا. أخطاء الشبكة المؤقتة لا تؤدي إلى تسجيل الخروج.
+  </div>
+</section>
 
-    <article class="card">
-      <h2>الحالة الأمنية</h2>
-      <div id="securityStatus" class="metric" style="font-size:20px">تم التحقق</div>
-      <div id="securityDetails" class="sub">حالة الجلسة والحساب</div>
-    </article>
+<section class="panel">
+  <div class="row">
+    <h2>بيانات الهوية من المحرك</h2>
+    <span class="muted" id="engineState">لم يتم التحقق بعد</span>
+  </div>
+  <div class="grid">
+    <div class="stat">
+      <small>مصدر التحقق</small>
+      <strong>AQX Identity Engine</strong>
+    </div>
+    <div class="stat">
+      <small>آخر استجابة للمحرك</small>
+      <strong id="engineResponse">—</strong>
+    </div>
+    <div class="stat">
+      <small>معرّف الجلسة</small>
+      <strong id="sessionId">—</strong>
+    </div>
+    <div class="stat">
+      <small>حالة الاتصال</small>
+      <strong id="connectionState">غير محدد</strong>
+    </div>
+  </div>
+</section>
 
-    <article class="card">
-      <h2>الأحداث الأمنية خلال آخر 24 ساعة</h2>
-      <div id="eventCount" class="metric">0</div>
-      <div class="sub">عدد الأحداث المسجلة في قاعدة البيانات.</div>
-    </article>
+<section class="panel">
+  <div class="row">
+    <h2>سجل الأحداث</h2>
+    <button class="btn secondary" onclick="clearEvents()">مسح السجل المحلي</button>
+  </div>
+  <div id="eventList" class="list">
+    <div class="item">لا توجد أحداث حتى الآن.</div>
+  </div>
+</section>
 
-    <article class="card full">
-      <h2>سجل النشاط والأحداث الأمنية</h2>
-      <div id="events" class="event-list">
-        <div class="empty">جارٍ تحميل سجل الأحداث...</div>
-      </div>
-    </article>
-
-  </section>
-
-  <footer class="footer">
-    AQX Identity · Secure Account Dashboard
-  </footer>
+<footer>
+  AQX Identity — لوحة إدارة الهوية والجلسات
+</footer>
 </main>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 "use strict";
 
 /* =========================================================
-   1. إعدادات المشروع
-========================================================= */
+   1) إعدادات المشروع
+   ========================================================= */
 
 const CONFIG = Object.freeze({
   SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
-  SUPABASE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
-  IDENTITY_API: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+  // Publishable key فقط. لا تضع service_role أو secret key هنا.
+  SUPABASE_PUBLIC_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+  // رابط خدمة الهوية الحالية.
   SERVICE_ORIGIN: "https://id.alqurmanix.com",
+
+  // رابط Edge Function الحالي.
+  EDGE_FUNCTION_URL:
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
   SECURE_PAGE: "/secure-aqx.html",
-  IDLE_LIMIT_SECONDS: 15 * 60,
-  SNAPSHOT_INTERVAL_MS: 30000,
-  ACTIVITY_THROTTLE_MS: 30000,
-  TAB_LOCK_NAME: "aqx-dashboard-single-tab-v1",
-  TAB_LEASE_KEY: "aqx_dashboard_tab_lock",
-  TAB_LEASE_MS: 30000
+
+  SNAPSHOT_RPC: "aqx_dashboard_snapshot",
+  REVOKE_RPC: "aqx_dashboard_revoke_service",
+
+  CHECK_INTERVAL: 30000,
+  ACTIVITY_INTERVAL: 60000,
+  REQUEST_TIMEOUT: 12000,
+  IDLE_LIMIT: 15 * 60 * 1000,
+
+  SESSION_KEYS: [
+    "aqx_session_token",
+    "aqx_session_id",
+    "aqx_service_session_token",
+    "aqx_login_proof"
+  ],
+
+  RESTRICTED_KEYS: [
+    "aqx_restricted_session",
+    "aqx_restricted_session_token"
+  ]
 });
 
-const KEYS = Object.freeze({
-  SESSION: "aqx_session_token",
-  SESSION_ID: "aqx_session_id",
-  SERVICE: "aqx_service_session_token",
-  LOGIN_PROOF: "aqx_login_proof",
-  RESTRICTED_TOKEN: "aqx_restricted_session_token",
-  RESTRICTED_ID: "aqx_restricted_session_id",
-  RESTRICTION: "aqx_restriction_data"
-});
+const supabase = window.supabase.createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_PUBLIC_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+/* =========================================================
+   2) الحالة الداخلية
+   ========================================================= */
+
+const state = {
+  user: null,
+  accessToken: null,
+  session: null,
+  snapshot: null,
+  profile: null,
+
+  remaining: null,
+  lastActivity: Date.now(),
+  lastVerified: null,
+
+  busy: false,
+  stopped: false,
+  loggingOut: false,
+  booted: false,
+  monitorRunning: false,
+
+  checkTimer: null,
+  activityTimer: null,
+  countdownTimer: null,
+
+  lockRelease: null,
+  lockName: "aqx-identity-dashboard-lock",
+  lockOwned: false,
+
+  lastError: null
+};
+
+const INVALID_SESSION_CODES = new Set([
+  "IDLE_TIMEOUT",
+  "SESSION_NOT_FOUND",
+  "SERVICE_SESSION_INVALID",
+  "AQX_SESSION_INVALID",
+  "DASHBOARD_SESSION_INVALID",
+  "SESSION_REVOKED",
+  "INVALID_CREDENTIALS"
+]);
+
+/* =========================================================
+   3) أدوات عامة
+   ========================================================= */
 
 const $ = id => document.getElementById(id);
 
-const state = {
-  supabase: null,
-  accessToken: null,
-  sessionToken: null,
-  serviceToken: null,
-  user: null,
-  profile: null,
-  snapshot: null,
-  remaining: 0,
-  lastActivityRequest: 0,
-  timer: null,
-  refreshTimer: null,
-  elapsedTimer: null,
-  releasingTabLock: null,
-  stopped: false,
-  loggingOut: false,
-  lastSeenDate: null,
-  fallbackLockKey: null,
-  fallbackLockOwner: null,
-  fallbackHeartbeat: null,
-  booting: false,
-  activityListenersInstalled: false
-};
-
-/* =========================================================
-   2. أدوات عامة
-========================================================= */
-
-function readLocal(key) {
-  try { return localStorage.getItem(key); }
-  catch (_) { return null; }
-}
-
-function showGate(title, message, showButton = false) {
-  $("gateTitle").textContent = title;
-  $("gateMessage").textContent = message;
-  $("spinner").classList.toggle("hidden", showButton);
-  $("gateButton").classList.toggle("hidden", !showButton);
-  $("gate").classList.remove("hidden");
-  $("dashboard").classList.add("hidden");
-}
-
-function hideGate() {
-  $("gate").classList.add("hidden");
-  $("dashboard").classList.remove("hidden");
-}
-
-function showWarning(message) {
-  $("warningBox").textContent = message;
-  $("warningBox").style.display = "block";
-  $("connectionText").textContent = "تعذر تحديث بيانات الاتصال";
-}
-
-function clearWarning() {
-  $("warningBox").textContent = "";
-  $("warningBox").style.display = "none";
-  $("connectionText").textContent = "الجلسة نشطة ومؤمنة";
+function nowText() {
+  return new Date().toLocaleString("ar-EG");
 }
 
 function safeText(value, fallback = "—") {
-  if (value === null || value === undefined || value === "") return fallback;
+  if (value === null || value === undefined || value === "") {
+    return fallback;
+  }
+  if (typeof value === "object") return fallback;
   return String(value);
 }
 
-function formatDate(value) {
-  if (!value) return "لا توجد بيانات سابقة";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "تاريخ غير متاح";
-  return new Intl.DateTimeFormat("ar-EG", {
-    dateStyle: "full",
-    timeStyle: "medium"
-  }).format(date);
-}
+function addEvent(message, type = "info") {
+  const list = $("eventList");
+  const empty = list.querySelector(".empty-event");
+  if (empty) empty.remove();
 
-function formatClock(seconds) {
-  seconds = Math.max(0, Math.floor(seconds));
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return String(m).padStart(2, "0") + ":" +
-         String(s).padStart(2, "0");
-}
+  const item = document.createElement("div");
+  item.className = "item";
 
-function addMonthsClamped(date, months) {
-  const result = new Date(date);
-  const day = result.getDate();
-  result.setDate(1);
-  result.setMonth(result.getMonth() + months);
-  const lastDay = new Date(
-    result.getFullYear(), result.getMonth() + 1, 0
-  ).getDate();
-  result.setDate(Math.min(day, lastDay));
-  return result;
-}
+  const label = document.createElement("span");
+  label.textContent = message;
 
-function elapsedParts(from, to = new Date()) {
-  let cursor = new Date(from);
-  if (Number.isNaN(cursor.getTime()) || cursor > to) return null;
+  const time = document.createElement("time");
+  time.textContent = nowText();
 
-  let years = 0;
-  while (addMonthsClamped(cursor, 12) <= to) {
-    cursor = addMonthsClamped(cursor, 12);
-    years++;
+  item.append(label, time);
+  list.prepend(item);
+
+  while (list.children.length > 40) {
+    list.lastElementChild.remove();
   }
 
-  let months = 0;
-  while (addMonthsClamped(cursor, 1) <= to) {
-    cursor = addMonthsClamped(cursor, 1);
-    months++;
+  try {
+    const events = JSON.parse(
+      sessionStorage.getItem("aqx_dashboard_events") || "[]"
+    );
+    events.unshift({ message, time: nowText(), type });
+    sessionStorage.setItem(
+      "aqx_dashboard_events",
+      JSON.stringify(events.slice(0, 40))
+    );
+  } catch (_) {}
+}
+
+function showNotice(message, type = "info") {
+  const box = $("globalNotice");
+  box.textContent = message;
+  box.className = "notice show " + type;
+}
+
+function hideNotice() {
+  $("globalNotice").className = "notice";
+}
+
+function setMainStatus(text, type = "wait") {
+  $("mainStatusText").textContent = text;
+  $("mainStatus").className = "status " + type;
+}
+
+function setBootMessage(message, retry = false) {
+  $("bootMessage").textContent = message;
+  $("bootSpinner").classList.toggle("hidden", retry);
+  $("retryBoot").classList.toggle("hidden", !retry);
+}
+
+function showDashboard() {
+  $("bootScreen").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+}
+
+function showBoot() {
+  $("dashboard").classList.add("hidden");
+  $("bootScreen").classList.remove("hidden");
+}
+
+function getStoredValue(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (_) {
+    return null;
+  }
+}
+
+function getIdentityToken() {
+  return (
+    getStoredValue("aqx_service_session_token") ||
+    getStoredValue("aqx_session_token") ||
+    ""
+  );
+}
+
+function getIdentitySessionId() {
+  return getStoredValue("aqx_session_id") || "";
+}
+
+function isNetworkError(error) {
+  const message = String(error?.message || "").toLowerCase();
+
+  return (
+    error?.name === "AbortError" ||
+    message.includes("failed to fetch") ||
+    message.includes("network") ||
+    message.includes("timeout") ||
+    message.includes("load failed") ||
+    message.includes("fetch")
+  );
+}
+
+function getErrorCode(data, error) {
+  return String(
+    data?.code ||
+    data?.error_code ||
+    data?.error?.code ||
+    error?.code ||
+    ""
+  ).toUpperCase();
+}
+
+function explicitSessionInvalid(data, error) {
+  const code = getErrorCode(data, error);
+
+  if (INVALID_SESSION_CODES.has(code)) return true;
+
+  if (data && typeof data === "object") {
+    if (data.valid === false) return true;
+    if (data.active === false) return true;
+
+    if (data.session && typeof data.session === "object") {
+      if (data.session.valid === false) return true;
+      if (data.session.active === false) return true;
+    }
   }
 
-  let remaining = Math.max(0, to - cursor);
-  const days = Math.floor(remaining / 86400000);
-  remaining %= 86400000;
-  const hours = Math.floor(remaining / 3600000);
-  remaining %= 3600000;
-  const minutes = Math.floor(remaining / 60000);
-  remaining %= 60000;
-  const seconds = Math.floor(remaining / 1000);
-
-  return { years, months, days, hours, minutes, seconds };
+  return false;
 }
 
-function formatElapsed(date) {
-  const p = elapsedParts(new Date(date));
-  if (!p) return "غير متاح";
-
-  return `${p.years} سنة، ${p.months} شهر، ${p.days} يوم، ` +
-         `${p.hours} ساعة، ${p.minutes} دقيقة، ${p.seconds} ثانية`;
-}
-
-async function sha256Hex(value) {
-  if (!crypto.subtle) throw new Error("SECURE_CRYPTO_UNAVAILABLE");
-
-  const bytes = new TextEncoder().encode(value);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-
-  return Array.from(new Uint8Array(digest))
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
+function normalizeObject(data) {
+  if (Array.isArray(data)) return data[0] || {};
+  if (data && typeof data === "object") return data;
+  return {};
 }
 
 /* =========================================================
-   3. الاتصال بمحرك AQX Identity
-========================================================= */
+   4) تحديث رمز Supabase
+   ========================================================= */
 
-async function getFreshAccessToken() {
-  if (!state.supabase) {
-    throw new Error("SUPABASE_CLIENT_UNAVAILABLE");
+async function getFreshAuth() {
+  const result = await supabase.auth.getSession();
+
+  if (result.error) throw result.error;
+
+  const session = result.data?.session;
+
+  if (!session?.access_token || !session?.user?.id) {
+    const error = new Error("لا توجد جلسة Supabase نشطة.");
+    error.code = "NO_AUTH_SESSION";
+    throw error;
   }
 
-  const { data, error } = await state.supabase.auth.getSession();
+  state.session = session;
+  state.user = session.user;
+  state.accessToken = session.access_token;
 
-  if (error) {
-    const e = new Error(error.message || "SUPABASE_SESSION_READ_FAILED");
-    e.cause = error;
-    throw e;
-  }
-
-  if (!data?.session?.access_token) {
-    const e = new Error("SUPABASE_SESSION_REQUIRED");
-    e.definitive = true;
-    throw e;
-  }
-
-  state.accessToken = data.session.access_token;
-  state.user = data.session.user;
-  return state.accessToken;
+  return session;
 }
 
-async function identityRequest(path, options = {}) {
-  const accessToken = await getFreshAccessToken();
+/* =========================================================
+   5) طلبات المحرك
+   ========================================================= */
+
+async function requestJSON(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    CONFIG.REQUEST_TIMEOUT
+  );
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        ...(options.headers || {})
+      }
+    });
+
+    const raw = await response.text();
+    let data = {};
+
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      data = { raw_response: raw };
+    }
+
+    if (!response.ok) {
+      const error = new Error(
+        data?.message ||
+        data?.error_description ||
+        data?.error ||
+        `HTTP ${response.status}`
+      );
+
+      error.status = response.status;
+      error.code = getErrorCode(data, error);
+      error.data = data;
+
+      throw error;
+    }
+
+    return { data, response };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function engineRequest(path, options = {}) {
+  const session = await getFreshAuth();
+
+  const identityToken = getIdentityToken();
+  const identitySessionId = getIdentitySessionId();
 
   const headers = {
+    Authorization: "Bearer " + session.access_token,
+    apikey: CONFIG.SUPABASE_PUBLIC_KEY,
     "Content-Type": "application/json",
-    "apikey": CONFIG.SUPABASE_KEY,
-    "Authorization": "Bearer " + accessToken,
+    ...(identityToken
+      ? { "X-AQX-Session": identityToken }
+      : {}),
+    ...(identitySessionId
+      ? { "X-AQX-Session-ID": identitySessionId }
+      : {}),
     ...(options.headers || {})
   };
 
-  let response;
-
-  try {
-    response = await fetch(CONFIG.IDENTITY_API + path, {
-      method: options.method || "POST",
-      headers,
-      body: options.body ? JSON.stringify(options.body) : "{}",
-      cache: "no-store",
-      credentials: "omit"
-    });
-  } catch (error) {
-    const e = new Error("NETWORK_ERROR");
-    e.cause = error;
-    e.transient = true;
-    throw e;
-  }
-
-  const raw = await response.text();
-  let data = {};
-
-  try { data = raw ? JSON.parse(raw) : {}; }
-  catch (_) { data = { message: raw }; }
-
-  if (!response.ok) {
-    const error = new Error(
-      data.message || data.error || data.code || `HTTP_${response.status}`
-    );
-    error.status = response.status;
-    error.data = data;
-
-    if (response.status >= 500 || response.status === 429) {
-      error.transient = true;
-    }
-
-    throw error;
-  }
-
-  return data;
-}
-
-/* =========================================================
-   4. قراءة جلسة Supabase والتحقق من المستخدم
-========================================================= */
-
-async function initializeSupabase() {
-  if (!window.supabase?.createClient) {
-    throw new Error("SUPABASE_LIBRARY_UNAVAILABLE");
-  }
-
-  state.supabase = window.supabase.createClient(
-    CONFIG.SUPABASE_URL,
-    CONFIG.SUPABASE_KEY,
+  return requestJSON(
+    CONFIG.SERVICE_ORIGIN.replace(/\/$/, "") + path,
     {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: false
-      },
-      global: {
-        headers: { "X-Client-Info": "AQX-Dashboard" }
-      }
+      method: options.method || "GET",
+      headers,
+      body: options.body
+        ? JSON.stringify(options.body)
+        : undefined
     }
   );
-
-  const { data, error } = await state.supabase.auth.getSession();
-
-  if (error) {
-    const e = new Error(error.message || "SUPABASE_SESSION_READ_FAILED");
-    e.cause = error;
-    throw e;
-  }
-
-  if (!data?.session?.access_token) {
-    const e = new Error("SUPABASE_SESSION_REQUIRED");
-    e.definitive = true;
-    throw e;
-  }
-
-  state.accessToken = data.session.access_token;
-  state.user = data.session.user;
-
-  const refreshed = await state.supabase.auth.getUser();
-
-  if (refreshed.error || !refreshed.data?.user) {
-    const e = new Error("IDENTITY_VERIFICATION_FAILED");
-    e.definitive = true;
-    throw e;
-  }
-
-  state.user = refreshed.data.user;
 }
 
 /* =========================================================
-   5. قراءة مفاتيح جلسة AQX
-========================================================= */
+   6) التحقق من الجلسة
+   ========================================================= */
 
-function readAqxCredentials() {
-  state.sessionToken = readLocal(KEYS.SESSION);
-  state.serviceToken = readLocal(KEYS.SERVICE);
+async function checkIdentitySession() {
+  const token = getIdentityToken();
 
-  if (!state.sessionToken || !state.serviceToken) {
-    const e = new Error("AQX_SESSION_CREDENTIALS_MISSING");
-    e.definitive = true;
-    throw e;
+  if (!token) {
+    const error = new Error("رمز جلسة الهوية غير موجود.");
+    error.code = "IDENTITY_TOKEN_MISSING";
+    throw error;
   }
 
-  if (state.sessionToken.length < 20 || state.serviceToken.length < 20) {
-    const e = new Error("AQX_SESSION_CREDENTIALS_INVALID");
-    e.definitive = true;
-    throw e;
-  }
-}
-
-/* =========================================================
-   6. التحقق من حالة الحساب
-========================================================= */
-
-async function verifyAccountStatus() {
-  const result = await identityRequest("/v1/me/status");
-
-  const status = String(
-    result.status ??
-    result.account_status ??
-    result.security_status ??
-    ""
-  ).toLowerCase();
-
-  const blocked = [
-    "blocked", "suspended", "disabled", "banned",
-    "frozen", "review", "restricted", "locked"
-  ];
-
-  const explicitlyBlocked =
-    result.allowed === false ||
-    result.access_allowed === false ||
-    result.is_blocked === true ||
-    result.is_suspended === true ||
-    blocked.includes(status);
-
-  if (explicitlyBlocked) {
-    const reason = result.message || result.reason ||
-      "الحساب غير مسموح له باستخدام لوحة التحكم.";
-
-    const e = new Error("ACCOUNT_RESTRICTED");
-    e.accountRestricted = true;
-    e.reason = reason;
-    throw e;
-  }
-
-  return result;
-}
-
-/* =========================================================
-   7. التحقق من جلسة AQX
-========================================================= */
-
-async function verifyAqxSession() {
-  const result = await identityRequest("/v1/session/check", {
-    headers: { "x-aqx-session": state.sessionToken }
+  const result = await engineRequest("/v1/session/check", {
+    method: "POST",
+    body: {
+      session_token: token,
+      session_id: getIdentitySessionId()
+    }
   });
 
-  if (result.valid === false || result.active === false ||
-      result.ok === false) {
-    const e = new Error(result.reason || "AQX_SESSION_INVALID");
-    e.definitive = true;
-    e.data = result;
-    throw e;
+  const data = normalizeObject(result.data);
+
+  if (explicitSessionInvalid(data, null)) {
+    const error = new Error(
+      data.message || "الخادم أكد أن جلسة الهوية غير صالحة."
+    );
+    error.code = getErrorCode(data, error) || "AQX_SESSION_INVALID";
+    error.data = data;
+    throw error;
   }
 
-  return result;
+  // الرد الناقص لا يعني أن الجلسة ملغاة.
+  if (
+    data.valid === undefined &&
+    data.active === undefined &&
+    data.status === undefined &&
+    data.session_status === undefined
+  ) {
+    throw new Error("رد المحرك لا يحتوي على حالة جلسة واضحة.");
+  }
+
+  const inactiveStatuses = [
+    "revoked",
+    "expired",
+    "invalid",
+    "terminated"
+  ];
+
+  const status = String(
+    data.status || data.session_status || ""
+  ).toLowerCase();
+
+  if (inactiveStatuses.includes(status)) {
+    const error = new Error("المحرك أكد انتهاء أو إبطال الجلسة.");
+    error.code = "SESSION_REVOKED";
+    throw error;
+  }
+
+  if (data.valid === true || data.active === true) {
+    return data;
+  }
+
+  if (status === "active" || status === "valid") {
+    return data;
+  }
+
+  throw new Error("تعذر تأكيد صلاحية الجلسة من رد المحرك.");
 }
 
 /* =========================================================
-   8. استدعاء دالة لوحة التحكم في Supabase
-========================================================= */
+   7) جلب بيانات الحساب
+   ========================================================= */
 
-async function dashboardRpc(functionName, parameters) {
-  const accessToken = await getFreshAccessToken();
+async function loadProfile() {
+  const result = await engineRequest("/v1/me", {
+    method: "GET"
+  });
 
-  let response;
+  state.profile = normalizeObject(result.data);
+  renderProfile(state.profile);
 
-  try {
-    response = await fetch(
-      CONFIG.SUPABASE_URL + "/rest/v1/rpc/" + functionName,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": CONFIG.SUPABASE_KEY,
-          "Authorization": "Bearer " + accessToken
-        },
-        body: JSON.stringify(parameters),
-        cache: "no-store",
-        credentials: "omit"
-      }
-    );
-  } catch (error) {
-    const e = new Error("DASHBOARD_RPC_NETWORK_ERROR");
-    e.cause = error;
-    e.transient = true;
-    throw e;
-  }
+  return state.profile;
+}
 
-  const raw = await response.text();
-  let data;
+async function loadIdentityStatus() {
+  const result = await engineRequest("/v1/me/status", {
+    method: "GET"
+  });
 
-  try { data = raw ? JSON.parse(raw) : null; }
-  catch (_) { data = raw; }
+  const data = normalizeObject(result.data);
 
-  if (!response.ok) {
-    const error = new Error(
-      data?.message || data?.hint || data?.code ||
-      `DASHBOARD_RPC_${response.status}`
-    );
-
-    error.status = response.status;
-    error.data = data;
-
-    if (response.status >= 500 || response.status === 429) {
-      error.transient = true;
-    }
-
+  if (explicitSessionInvalid(data, null)) {
+    const error = new Error("المحرك أكد عدم صلاحية الهوية.");
+    error.code = getErrorCode(data, error) || "AQX_SESSION_INVALID";
     throw error;
   }
 
   return data;
 }
 
+/* =========================================================
+   8) لقطة لوحة التحكم من قاعدة البيانات
+   ========================================================= */
+
 async function loadSnapshot() {
-  const sessionHash = await sha256Hex(state.sessionToken);
-  const serviceHash = await sha256Hex(state.serviceToken);
+  await getFreshAuth();
 
-  const result = await dashboardRpc("aqx_dashboard_snapshot", {
-    p_session_token_hash_hex: sessionHash,
-    p_service_token_hash_hex: serviceHash,
-    p_service_origin: CONFIG.SERVICE_ORIGIN
-  });
+  const result = await supabase.rpc(CONFIG.SNAPSHOT_RPC);
 
-  if (!result || typeof result !== "object") {
-    throw new Error("DASHBOARD_SNAPSHOT_UNAVAILABLE");
+  if (result.error) {
+    // فشل RPC ليس دليلًا على انتهاء الجلسة.
+    throw result.error;
   }
 
-  if (result.valid === false) {
-    const reason = String(result.reason || result.security_action || "");
+  const data = normalizeObject(result.data);
 
-    const invalidReasons = [
-      "SESSION_REVOKED",
-      "SECURITY_RISK_DETECTED",
-      "IDLE_TIMEOUT",
-      "SESSION_NOT_FOUND",
-      "SERVICE_SESSION_INVALID",
-      "DASHBOARD_SESSION_INVALID"
-    ];
-
-    if (invalidReasons.includes(reason)) {
-      const e = new Error(reason);
-      e.definitive = true;
-      throw e;
-    }
-
-    throw new Error(reason || "DASHBOARD_SNAPSHOT_REJECTED");
-  }
-
-  if (result.valid !== true) {
-    throw new Error("DASHBOARD_SNAPSHOT_UNCONFIRMED");
-  }
-
-  state.snapshot = result;
-  state.remaining = Math.max(0, Number(
-    result.session?.idle_remaining_seconds ?? 0
-  ));
-
-  return result;
-}
-
-/* =========================================================
-   9. بيانات الملف الشخصي
-========================================================= */
-
-async function loadProfile() {
-  const result = await identityRequest("/v1/me");
-
-  const profile = result.profile || result.data || result;
-  const metadata = state.user?.user_metadata || {};
-
-  state.profile = {
-    name:
-      metadata.display_name ||
-      metadata.full_name ||
-      metadata.name ||
-      profile.display_name ||
-      profile.full_name ||
-      profile.name ||
-      "حساب AQX",
-
-    avatar:
-      metadata.avatar_url ||
-      metadata.picture ||
-      profile.avatar_url ||
-      profile.picture ||
-      "",
-
-    aqxId: profile.aqx_id || profile.user_id || state.user.id
-  };
-}
-
-/* =========================================================
-   10. عرض بيانات الحساب
-========================================================= */
-
-function renderProfile() {
-  $("displayName").textContent = state.profile.name;
-  $("accountId").textContent = "معرّف الحساب: " + state.profile.aqxId;
-
-  const fallback =
-    "data:image/svg+xml;charset=UTF-8," +
-    encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">' +
-      '<rect width="100%" height="100%" fill="#233653"/>' +
-      '<circle cx="50" cy="38" r="19" fill="#8ba6cb"/>' +
-      '<path d="M15 100c2-25 16-37 35-37s33 12 35 37" fill="#8ba6cb"/>' +
-      '</svg>'
+  // لا نحول undefined أو الرد الناقص إلى valid:false.
+  if (data.valid === false || data.active === false) {
+    const error = new Error(
+      data.message || "لقطة الخادم تؤكد أن الجلسة غير نشطة."
     );
+    error.code = getErrorCode(data, error) || "SESSION_REVOKED";
+    throw error;
+  }
 
-  $("avatar").src = state.profile.avatar || fallback;
-  $("avatar").onerror = () => { $("avatar").src = fallback; };
+  state.snapshot = data;
+  renderSnapshot(data);
+
+  return data;
 }
 
-function renderLastSeen() {
-  const date = state.snapshot?.last_seen_at;
+/* =========================================================
+   9) عرض البيانات
+   ========================================================= */
 
-  if (!date) {
-    $("lastSeen").textContent = "غير متاح";
-    $("lastSeenDate").textContent = "لا توجد جلسة سابقة مسجلة";
-    $("elapsed").textContent = "";
+function renderProfile(profile) {
+  const user = state.user || {};
+
+  $("userEmail").textContent = safeText(
+    profile.email || profile.user?.email || user.email
+  );
+
+  $("userId").textContent = safeText(
+    profile.id || profile.user_id || user.id
+  );
+
+  $("sessionId").textContent = safeText(
+    profile.session_id ||
+    profile.session?.id ||
+    getIdentitySessionId()
+  );
+
+  $("identityStatus").textContent = safeText(
+    profile.identity_status ||
+    profile.status ||
+    profile.account_status,
+    "تم استلام البيانات"
+  );
+}
+
+function renderSnapshot(snapshot) {
+  const remaining =
+    snapshot.remaining_seconds ??
+    snapshot.remaining ??
+    snapshot.session?.remaining_seconds;
+
+  if (Number.isFinite(Number(remaining))) {
+    state.remaining = Math.max(0, Number(remaining));
+    renderRemaining();
+  }
+
+  const sessionState =
+    snapshot.session_status ||
+    snapshot.status ||
+    snapshot.session?.status;
+
+  $("sessionStatus").textContent = safeText(
+    sessionState,
+    "تم استلام لقطة الخادم"
+  );
+
+  $("lastCheck").textContent = nowText();
+}
+
+function renderRemaining() {
+  if (state.remaining === null) {
+    $("remainingTime").textContent = "غير متاح";
     return;
   }
 
-  state.lastSeenDate = date;
-  $("lastSeen").textContent = "مسجل";
-  $("lastSeenDate").textContent = formatDate(date);
-  updateElapsed();
-}
+  const seconds = Math.max(0, Math.floor(state.remaining));
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
 
-function updateElapsed() {
-  if (!state.lastSeenDate) return;
-  $("elapsed").textContent =
-    "المدة منذ آخر ظهور: " + formatElapsed(state.lastSeenDate);
+  $("remainingTime").textContent =
+    `${minutes} دقيقة و ${rest} ثانية`;
 }
 
 /* =========================================================
-   11. عرض سجل الأحداث الأمنية
-========================================================= */
+   10) التحقق الشامل
+   ========================================================= */
 
-function renderEvents() {
-  const events = Array.isArray(state.snapshot?.events)
-    ? state.snapshot.events : [];
+async function verifyEverything() {
+  const session = await getFreshAuth();
 
-  $("eventCount").textContent =
-    safeText(state.snapshot?.event_count_24h, "0");
+  $("userEmail").textContent = safeText(session.user.email);
+  $("userId").textContent = safeText(session.user.id);
 
-  const container = $("events");
-  container.replaceChildren();
+  const identity = await checkIdentitySession();
 
-  if (!events.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "لا توجد أحداث أمنية مسجلة.";
-    container.appendChild(empty);
+  state.lastVerified = Date.now();
+  $("lastCheck").textContent = nowText();
+  $("engineState").textContent = "تم التحقق";
+  $("engineResponse").textContent = "استجابة ناجحة";
+  $("connectionState").textContent = "متصل";
+  $("identityStatus").textContent = "صالحة";
+  $("sessionStatus").textContent = "نشطة";
+
+  const status = await loadIdentityStatus();
+
+  if (
+    status.valid === false ||
+    status.active === false
+  ) {
+    const error = new Error("حالة الهوية غير نشطة حسب الخادم.");
+    error.code = getErrorCode(status, error) || "AQX_SESSION_INVALID";
+    throw error;
+  }
+
+  await loadProfile();
+  await loadSnapshot();
+
+  setMainStatus("الجلسة نشطة", "ok");
+  $("monitorState").textContent = "نشطة";
+  hideNotice();
+
+  return { identity, status };
+}
+
+/* =========================================================
+   11) التعامل مع الأخطاء
+   ========================================================= */
+
+async function handleVerificationError(error, source = "التحقق") {
+  console.error("[AQX]", source, error);
+
+  const code = getErrorCode(error?.data, error);
+
+  if (
+    error?.code === "NO_AUTH_SESSION" ||
+    error?.code === "IDENTITY_TOKEN_MISSING"
+  ) {
+    setMainStatus("بيانات الدخول غير مكتملة", "bad");
+    showNotice(
+      "لا توجد بيانات جلسة مكتملة. ارجع إلى صفحة تسجيل الدخول وأعد الدخول.",
+      "warn"
+    );
+    $("identityStatus").textContent = "بيانات ناقصة";
+    $("sessionStatus").textContent = "لم يتم التحقق";
+    addEvent("بيانات جلسة الدخول غير مكتملة", "warn");
     return;
   }
 
-  for (const event of events) {
-    const item = document.createElement("div");
-    item.className = "event";
+  if (INVALID_SESSION_CODES.has(code)) {
+    addEvent("الخادم أكد إبطال الجلسة: " + code, "error");
+    await forceLogout("أكد الخادم انتهاء أو إبطال جلسة الهوية.");
+    return;
+  }
 
-    const head = document.createElement("div");
-    head.className = "event-head";
-
-    const title = document.createElement("span");
-    title.className = "event-title";
-    title.textContent = safeText(
-      event.summary || event.event_type,
-      "حدث أمني"
+  // 401 لا يُعامل منفردًا كدليل قاطع إلا إذا حمل رمز إبطال معروفًا.
+  // 403 قد يعني تقييد الحساب، وليس إبطال الجلسة.
+  if (error?.status === 403) {
+    setMainStatus("الحساب يحتاج مراجعة", "wait");
+    showNotice(
+      "المحرك رفض العملية. قد يكون الحساب مقيّدًا أو لا يملك الصلاحية المطلوبة. لم يتم تسجيل خروجك.",
+      "warn"
     );
-
-    const date = document.createElement("span");
-    date.className = "event-date";
-    date.textContent = formatDate(event.created_at);
-
-    head.append(title, date);
-
-    const severity = document.createElement("span");
-    const level = String(event.severity || "info").toLowerCase();
-    severity.className = "severity " + level;
-    severity.textContent = level.toUpperCase();
-
-    const description = document.createElement("div");
-    description.className = "event-desc";
-
-    const details = [
-      event.event_type ? "النوع: " + event.event_type : "",
-      event.outcome ? "النتيجة: " + event.outcome : "",
-      event.failure_code ? "رمز الفشل: " + event.failure_code : "",
-      event.response_action ? "الإجراء: " + event.response_action : "",
-      event.device_label ? "الجهاز: " + event.device_label : "",
-      event.browser ? "المتصفح: " + event.browser : "",
-      event.operating_system ? "النظام: " + event.operating_system : "",
-      event.city || event.country
-        ? "الموقع التقريبي: " +
-          [event.city, event.country].filter(Boolean).join("، ")
-        : "",
-      event.risk_score !== null && event.risk_score !== undefined
-        ? "درجة الخطورة: " + event.risk_score : ""
-    ].filter(Boolean);
-
-    description.textContent =
-      details.join(" · ") || "لا توجد تفاصيل إضافية.";
-
-    item.append(head, severity, description);
-    container.appendChild(item);
+    $("connectionState").textContent = "الخادم متصل";
+    addEvent("رفض صلاحية من الخادم - لم يتم تسجيل الخروج", "warn");
+    return;
   }
+
+  if (isNetworkError(error) || error?.status >= 500) {
+    $("connectionState").textContent = "تعذر الاتصال مؤقتًا";
+    $("engineState").textContent = "تعذر التحقق مؤقتًا";
+    setMainStatus("مشكلة اتصال مؤقتة", "wait");
+    showNotice(
+      "تعذر الاتصال بخدمة الهوية حاليًا. جلستك لم تُمسح ولم يتم تسجيل خروجك. ستتم إعادة المحاولة تلقائيًا.",
+      "warn"
+    );
+    addEvent("تعذر الاتصال مؤقتًا - الجلسة محفوظة", "warn");
+    return;
+  }
+
+  $("connectionState").textContent = "تعذر التحقق";
+  $("engineState").textContent = "رد غير مكتمل";
+  setMainStatus("تعذر تأكيد الحالة", "wait");
+  showNotice(
+    "لم يصل رد واضح من المحرك. لم يتم اعتبار الجلسة ملغاة، ولم يتم تسجيل خروجك. يمكنك إعادة المحاولة.",
+    "warn"
+  );
+  addEvent("فشل تحقق غير حاسم - الجلسة محفوظة", "warn");
 }
 
 /* =========================================================
-   12. مؤقت الخمول
-========================================================= */
-
-function renderSessionTimer() {
-  const timer = $("sessionTimer");
-  timer.textContent = formatClock(state.remaining);
-
-  timer.classList.remove("warning", "danger");
-
-  if (state.remaining <= 60) {
-    timer.classList.add("danger");
-  } else if (state.remaining <= 180) {
-    timer.classList.add("warning");
-  }
-
-  if (state.remaining <= 120 && state.remaining > 0) {
-    $("warningBox").style.display = "block";
-    $("warningBox").textContent =
-      "تنبيه: اقترب انتهاء الجلسة بسبب عدم النشاط.";
-  } else if (!$("warningBox").textContent.includes("تعذر تحديث")) {
-    $("warningBox").style.display = "none";
-  }
-}
-
-async function confirmIdleTimeout() {
-  if (state.stopped || state.loggingOut) return;
-
-  try {
-    await verifyAqxSession();
-    await loadSnapshot();
-
-    renderSessionTimer();
-
-    if (state.remaining <= 0) {
-      await forceLogout("انتهت مهلة الخمول المؤكدة من محرك AQX.");
-    }
-  } catch (error) {
-    await handleSecurityError(error);
-  }
-}
-
-function startTimers() {
-  clearInterval(state.timer);
-  clearInterval(state.refreshTimer);
-  clearInterval(state.elapsedTimer);
-
-  state.timer = setInterval(async () => {
-    if (state.stopped || state.loggingOut) return;
-
-    if (state.remaining > 0) {
-      state.remaining = Math.max(0, state.remaining - 1);
-      renderSessionTimer();
-    }
-
-    if (state.remaining <= 0) {
-      await confirmIdleTimeout();
-    }
-  }, 1000);
-
-  state.refreshTimer = setInterval(async () => {
-    if (state.stopped || state.loggingOut) return;
-
-    try {
-      await loadSnapshot();
-      renderLastSeen();
-      renderEvents();
-      renderSessionTimer();
-      clearWarning();
-    } catch (error) {
-      await handleSecurityError(error);
-    }
-  }, CONFIG.SNAPSHOT_INTERVAL_MS);
-
-  state.elapsedTimer = setInterval(updateElapsed, 1000);
-}
-
-/* =========================================================
-   13. النشاط الفعلي للمستخدم
-========================================================= */
-
-async function reportRealActivity() {
-  if (state.stopped || state.loggingOut) return;
-
-  const now = Date.now();
-
-  if (now - state.lastActivityRequest <
-      CONFIG.ACTIVITY_THROTTLE_MS) return;
-
-  state.lastActivityRequest = now;
-
-  try {
-    await verifyAqxSession();
-    await loadSnapshot();
-
-    renderSessionTimer();
-    clearWarning();
-  } catch (error) {
-    await handleSecurityError(error);
-  }
-}
-
-function installActivityMonitoring() {
-  if (state.activityListenersInstalled) return;
-
-  const events = ["pointerdown", "keydown", "touchstart", "scroll"];
-
-  for (const eventName of events) {
-    window.addEventListener(eventName, reportRealActivity, {
-      passive: true
-    });
-  }
-
-  state.activityListenersInstalled = true;
-}
-
-/* =========================================================
-   14. منع تشغيل اللوحة في أكثر من تبويب
-========================================================= */
+   12) إدارة القفل بين التبويبات
+   ========================================================= */
 
 async function acquireTabLock() {
   if (navigator.locks?.request) {
-    return new Promise((resolve, reject) => {
-      navigator.locks.request(
-        CONFIG.TAB_LOCK_NAME,
-        { mode: "exclusive", ifAvailable: true },
-        async lock => {
-          if (!lock) {
-            resolve(false);
-            return;
-          }
+    let resolveAcquired;
+    let rejectAcquired;
 
-          let release;
-          const holdLock = new Promise(r => { release = r; });
-
-          state.releasingTabLock = release;
-          resolve(true);
-
-          await holdLock;
-        }
-      ).catch(reject);
+    const acquired = new Promise((resolve, reject) => {
+      resolveAcquired = resolve;
+      rejectAcquired = reject;
     });
+
+    const hold = new Promise(resolve => {
+      state.lockRelease = resolve;
+    });
+
+    navigator.locks.request(
+      state.lockName,
+      { mode: "exclusive", ifAvailable: true },
+      async lock => {
+        if (!lock) {
+          resolveAcquired(false);
+          return;
+        }
+
+        state.lockOwned = true;
+        resolveAcquired(true);
+        await hold;
+        state.lockOwned = false;
+      }
+    ).catch(rejectAcquired);
+
+    return acquired;
   }
 
-  const owner = (
-    crypto.randomUUID?.() ||
-    String(Date.now()) + "-" + Math.random().toString(36).slice(2)
-  );
-
-  const key = CONFIG.TAB_LEASE_KEY;
+  // بديل آمن: لا يحذف الجلسة ولا يسجل الخروج عند وجود تبويب آخر.
+  const key = "aqx_dashboard_tab_owner";
+  const current = getStoredValue(key);
   const now = Date.now();
 
-  let existing = null;
-
-  try {
-    existing = JSON.parse(readLocal(key) || "null");
-  } catch (_) {}
-
-  if (
-    existing &&
-    existing.owner &&
-    existing.expires > now
-  ) {
-    return false;
-  }
-
-  const lease = {
-    owner,
-    expires: now + CONFIG.TAB_LEASE_MS
-  };
-
-  localStorage.setItem(key, JSON.stringify(lease));
-
-  let confirmation = null;
-
-  try {
-    confirmation = JSON.parse(readLocal(key) || "null");
-  } catch (_) {}
-
-  if (confirmation?.owner !== owner) {
-    return false;
-  }
-
-  state.fallbackLockKey = key;
-  state.fallbackLockOwner = owner;
-
-  state.fallbackHeartbeat = setInterval(() => {
-    if (state.stopped || state.loggingOut) return;
-
-    let current = null;
-
+  if (current) {
     try {
-      current = JSON.parse(readLocal(key) || "null");
+      const owner = JSON.parse(current);
+      if (
+        owner.id !== TAB_ID &&
+        now - Number(owner.time || 0) < 45000
+      ) {
+        return false;
+      }
     } catch (_) {}
+  }
 
-    if (current?.owner !== owner) {
-      clearInterval(state.fallbackHeartbeat);
-      state.fallbackHeartbeat = null;
-      return;
-    }
+  try {
+    localStorage.setItem(
+      key,
+      JSON.stringify({ id: TAB_ID, time: now })
+    );
+  } catch (_) {
+    // لا نمنع المستخدم ولا نمسح الجلسة إذا تعذر التخزين.
+  }
 
-    localStorage.setItem(key, JSON.stringify({
-      owner,
-      expires: Date.now() + CONFIG.TAB_LEASE_MS
-    }));
-  }, 5000);
+  state.lockOwned = true;
+  state.lockRelease = () => {
+    try {
+      const owner = JSON.parse(
+        localStorage.getItem(key) || "{}"
+      );
+      if (owner.id === TAB_ID) {
+        localStorage.removeItem(key);
+      }
+    } catch (_) {}
+    state.lockOwned = false;
+  };
 
   return true;
 }
 
+const TAB_ID =
+  "aqx-" + Math.random().toString(36).slice(2);
+
 function releaseTabLock() {
-  if (state.releasingTabLock) {
-    state.releasingTabLock();
-    state.releasingTabLock = null;
+  if (state.lockRelease) {
+    state.lockRelease();
+    state.lockRelease = null;
   }
-
-  if (state.fallbackHeartbeat) {
-    clearInterval(state.fallbackHeartbeat);
-    state.fallbackHeartbeat = null;
-  }
-
-  if (state.fallbackLockKey && state.fallbackLockOwner) {
-    try {
-      const current = JSON.parse(
-        readLocal(state.fallbackLockKey) || "null"
-      );
-
-      if (current?.owner === state.fallbackLockOwner) {
-        localStorage.removeItem(state.fallbackLockKey);
-      }
-    } catch (_) {}
-  }
-
-  state.fallbackLockKey = null;
-  state.fallbackLockOwner = null;
 }
 
 /* =========================================================
-   15. تسجيل الخروج وإنهاء الجلسة
-========================================================= */
+   13) النشاط والخمول
+   ========================================================= */
 
-async function revokeServiceSession() {
-  if (!state.serviceToken || !state.accessToken) return;
-
-  const serviceHash = await sha256Hex(state.serviceToken);
-
-  await dashboardRpc("aqx_dashboard_revoke_service", {
-    p_service_token_hash_hex: serviceHash
-  });
+function recordActivity() {
+  state.lastActivity = Date.now();
+  $("lastActivity").textContent = nowText();
 }
+
+[
+  "click",
+  "keydown",
+  "pointerdown",
+  "touchstart",
+  "scroll"
+].forEach(eventName => {
+  document.addEventListener(
+    eventName,
+    recordActivity,
+    { passive: true }
+  );
+});
+
+async function checkIdleWithServer() {
+  const localIdle = Date.now() - state.lastActivity;
+
+  if (localIdle < CONFIG.IDLE_LIMIT) return;
+
+  // لا نسجل الخروج بالعداد المحلي وحده.
+  // نطلب تأكيد حالة الجلسة من الخادم.
+  try {
+    await verifyEverything();
+    recordActivity();
+  } catch (error) {
+    await handleVerificationError(error, "فحص الخمول");
+  }
+}
+
+function startTimers() {
+  stopTimers();
+
+  state.checkTimer = setInterval(async () => {
+    if (state.busy || state.stopped) return;
+
+    state.busy = true;
+    try {
+      await verifyEverything();
+    } catch (error) {
+      await handleVerificationError(error, "الفحص الدوري");
+    } finally {
+      state.busy = false;
+    }
+  }, CONFIG.CHECK_INTERVAL);
+
+  state.activityTimer = setInterval(async () => {
+    if (state.busy || state.stopped) return;
+
+    await checkIdleWithServer();
+  }, CONFIG.ACTIVITY_INTERVAL);
+
+  state.countdownTimer = setInterval(() => {
+    if (state.remaining === null) return;
+
+    state.remaining = Math.max(0, state.remaining - 1);
+    renderRemaining();
+
+    // عند وصول العداد للصفر لا يتم تسجيل الخروج محليًا.
+    if (state.remaining <= 0 && !state.busy) {
+      refreshAll();
+    }
+  }, 1000);
+
+  state.monitorRunning = true;
+}
+
+function stopTimers() {
+  clearInterval(state.checkTimer);
+  clearInterval(state.activityTimer);
+  clearInterval(state.countdownTimer);
+
+  state.checkTimer = null;
+  state.activityTimer = null;
+  state.countdownTimer = null;
+  state.monitorRunning = false;
+}
+
+/* =========================================================
+   14) التحديث اليدوي
+   ========================================================= */
+
+async function refreshAll() {
+  if (state.busy || state.loggingOut) return;
+
+  state.busy = true;
+  $("refreshButton").disabled = true;
+
+  try {
+    await verifyEverything();
+    addEvent("تم تحديث بيانات الحساب والجلسة بنجاح", "success");
+  } catch (error) {
+    await handleVerificationError(error, "التحديث اليدوي");
+  } finally {
+    state.busy = false;
+    $("refreshButton").disabled = false;
+  }
+}
+
+/* =========================================================
+   15) تسجيل الخروج
+   ========================================================= */
 
 async function forceLogout(reason = "تم إنهاء الجلسة.") {
   if (state.loggingOut) return;
 
   state.loggingOut = true;
-  state.stopped = true;
+  stopTimers();
+  releaseTabLock();
 
-  showGate("تم إنهاء الجلسة", reason, false);
+  showNotice(reason, "warn");
+  addEvent("إنهاء الجلسة: " + reason, "warn");
 
-  clearInterval(state.timer);
-  clearInterval(state.refreshTimer);
-  clearInterval(state.elapsedTimer);
+  const token = getIdentityToken();
 
-  /* إنهاء جلسة AQX */
   try {
-    if (state.sessionToken && state.accessToken) {
-      await identityRequest("/v1/session/logout", {
-        headers: { "x-aqx-session": state.sessionToken }
+    const session = await supabase.auth.getSession();
+    const accessToken = session.data?.session?.access_token;
+
+    if (token && accessToken) {
+      await requestJSON(
+        CONFIG.SERVICE_ORIGIN.replace(/\/$/, "") +
+          "/v1/session/logout",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + accessToken,
+            apikey: CONFIG.SUPABASE_PUBLIC_KEY,
+            "Content-Type": "application/json",
+            "X-AQX-Session": token,
+            "X-AQX-Session-ID": getIdentitySessionId()
+          },
+          body: JSON.stringify({
+            session_token: token,
+            session_id: getIdentitySessionId()
+          })
+        }
+      ).catch(error => {
+        console.warn("Engine logout response:", error);
       });
     }
   } catch (error) {
-    console.warn("AQX logout request failed:", error);
+    console.warn("Logout request failed:", error);
   }
 
-  /* إبطال تصريح الخدمة */
+  // محاولة إبطال جلسة الخدمة باستخدام RPC الموجود أصلًا.
   try {
-    await revokeServiceSession();
+    await supabase.rpc(CONFIG.REVOKE_RPC);
   } catch (error) {
-    console.warn("Service revocation failed:", error);
+    console.warn("Service revoke RPC:", error);
   }
 
-  /* إنهاء جلسة Supabase المحلية */
+  // لا نستخدم global signOut حتى لا نلغي جلسات المستخدم الأخرى.
   try {
-    await state.supabase?.auth?.signOut({ scope: "local" });
+    await supabase.auth.signOut({ scope: "local" });
   } catch (error) {
-    console.warn("Supabase signOut failed:", error);
+    console.warn("Local signout:", error);
   }
 
+  clearIdentityStorage();
+
+  location.replace(CONFIG.SECURE_PAGE);
+}
+
+function clearIdentityStorage() {
   for (const key of [
-    KEYS.SESSION,
-    KEYS.SESSION_ID,
-    KEYS.SERVICE,
-    KEYS.LOGIN_PROOF
+    ...CONFIG.SESSION_KEYS,
+    ...CONFIG.RESTRICTED_KEYS
   ]) {
-    try { localStorage.removeItem(key); } catch (_) {}
+    try {
+      localStorage.removeItem(key);
+    } catch (_) {}
+  }
+}
+
+async function manualLogout() {
+  if (!confirm("هل تريد تسجيل الخروج وإنهاء جلسة الهوية؟")) {
+    return;
   }
 
-  for (const key of [
-    KEYS.SESSION,
-    KEYS.SESSION_ID,
-    KEYS.SERVICE,
-    KEYS.LOGIN_PROOF
-  ]) {
-    try { sessionStorage.removeItem(key); } catch (_) {}
+  await forceLogout("تم تسجيل الخروج بطلب المستخدم.");
+}
+
+/* =========================================================
+   16) أحداث المصادقة
+   ========================================================= */
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_OUT") {
+    state.session = null;
+    state.accessToken = null;
   }
 
+  if (event === "TOKEN_REFRESHED" && session) {
+    state.session = session;
+    state.accessToken = session.access_token;
+  }
+});
+
+/* =========================================================
+   17) التعامل مع الرجوع للصفحة
+   ========================================================= */
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && state.booted && !state.loggingOut) {
+    refreshAll();
+  }
+});
+
+window.addEventListener("pageshow", () => {
+  if (state.booted && !state.loggingOut) {
+    state.stopped = false;
+    refreshAll();
+  }
+});
+
+window.addEventListener("pagehide", () => {
+  // لا نمسح الجلسة ولا نوقف المراقبة نهائيًا بسبب pagehide.
+  // نحرر القفل فقط عند مغادرة المستند.
   releaseTabLock();
-
-  setTimeout(() => {
-    location.replace(CONFIG.SECURE_PAGE);
-  }, 700);
-}
+});
 
 /* =========================================================
-   16. تصنيف الأخطاء الأمنية
-========================================================= */
-
-function getErrorCode(error) {
-  const data = error?.data || {};
-
-  return String(
-    data.code ||
-    data.error ||
-    data.reason ||
-    error?.message ||
-    error ||
-    ""
-  ).toUpperCase();
-}
-
-function isDefinitiveSessionFailure(error) {
-  if (error?.definitive === true) return true;
-
-  const code = getErrorCode(error);
-
-  const definitiveCodes = [
-    "AQX_SESSION_INVALID",
-    "AQX_SESSION_CREDENTIALS_MISSING",
-    "AQX_SESSION_CREDENTIALS_INVALID",
-    "SESSION_REVOKED",
-    "SESSION_NOT_FOUND",
-    "IDLE_TIMEOUT",
-    "SERVICE_SESSION_INVALID",
-    "DASHBOARD_SESSION_INVALID",
-    "DASHBOARD_SESSION_INVALID",
-    "INVALID_CREDENTIALS",
-    "SUPABASE_SESSION_REQUIRED",
-    "IDENTITY_VERIFICATION_FAILED"
-  ];
-
-  return definitiveCodes.some(item =>
-    code === item || code.includes(item)
-  );
-}
-
-async function handleSecurityError(error) {
-  if (state.stopped || state.loggingOut) return;
-
-  const message = String(error?.message || error || "");
-
-  if (error?.accountRestricted ||
-      message.includes("ACCOUNT_RESTRICTED")) {
-    state.stopped = true;
-
-    clearInterval(state.timer);
-    clearInterval(state.refreshTimer);
-    clearInterval(state.elapsedTimer);
-
-    showGate(
-      "الحساب غير متاح",
-      error.reason || "الحساب غير مسموح له باستخدام لوحة التحكم.",
-      true
-    );
-
-    return;
-  }
-
-  if (isDefinitiveSessionFailure(error)) {
-    await forceLogout("الجلسة غير صالحة أو انتهت صلاحيتها.");
-    return;
-  }
-
-  /*
-    أخطاء الشبكة والخادم واستعلامات قاعدة البيانات
-    لا تعني وحدها أن الجلسة انتهت.
-    نحافظ على الجلسة ونطلب إعادة التحقق.
-  */
-
-  console.warn("AQX temporary verification error:", error);
-
-  if ($("dashboard").classList.contains("hidden")) {
-    showGate(
-      "تعذر إكمال التحقق",
-      "حدث خطأ مؤقت أثناء الاتصال. لم يتم إنهاء الجلسة. يمكنك إعادة المحاولة.",
-      true
-    );
-  } else {
-    showWarning(
-      "تعذر تحديث بيانات الجلسة مؤقتًا. الجلسة لم تُنهَ بسبب هذا الخطأ. ستتم إعادة المحاولة تلقائيًا."
-    );
-  }
-}
-
-/* =========================================================
-   17. تشغيل اللوحة
-========================================================= */
+   18) بدء التشغيل
+   ========================================================= */
 
 async function boot() {
-  if (state.booting || state.loggingOut) return;
+  if (state.busy || state.loggingOut) return;
 
-  state.booting = true;
+  state.busy = true;
   state.stopped = false;
 
+  showBoot();
+  setBootMessage("جارٍ التحقق من تسجيل الدخول...");
+
   try {
-    showGate(
-      "جارٍ التحقق الأمني",
-      "يتم التحقق من هوية الحساب وصلاحية جلسة AQX."
-    );
+    const session = await getFreshAuth();
 
-    await initializeSupabase();
-    readAqxCredentials();
+    if (!session?.user) {
+      const error = new Error("لا يوجد مستخدم مسجل الدخول.");
+      error.code = "NO_AUTH_SESSION";
+      throw error;
+    }
 
-    const lockAcquired = await acquireTabLock();
+    setBootMessage("جارٍ فحص الجلسة النشطة...");
 
-    if (!lockAcquired) {
-      showGate(
-        "لوحة التحكم مفتوحة بالفعل",
-        "يوجد تبويب آخر يستخدم لوحة التحكم بهذه الجلسة. أغلق التبويب الآخر ثم أعد المحاولة.",
+    const lock = await acquireTabLock();
+
+    if (!lock) {
+      setBootMessage(
+        "لوحة التحكم مفتوحة بالفعل في تبويب آخر. أغلق التبويب الآخر أو استخدمه.",
         true
       );
+      addEvent("تم منع فتح لوحة ثانية دون إنهاء الجلسة", "warn");
+      state.busy = false;
       return;
     }
 
-    await verifyAccountStatus();
-    await verifyAqxSession();
+    setBootMessage("جارٍ الاتصال بمحرك AQX Identity...");
 
-    await loadProfile();
-    await loadSnapshot();
+    await verifyEverything();
 
-    if (state.snapshot?.risk_detected === true) {
-      const e = new Error("SECURITY_RISK_DETECTED");
-      e.definitive = true;
-      throw e;
-    }
+    showDashboard();
+    state.booted = true;
 
-    renderProfile();
-    renderLastSeen();
-    renderEvents();
-    renderSessionTimer();
-
-    $("securityStatus").textContent = "تم التحقق";
-    $("securityDetails").textContent =
-      "الهوية مؤكدة · جلسة AQX صالحة · تصريح الخدمة صالح";
-
-    clearWarning();
-    hideGate();
-
-    installActivityMonitoring();
+    recordActivity();
     startTimers();
 
+    addEvent("تم تشغيل لوحة التحكم بنجاح", "success");
   } catch (error) {
-    await handleSecurityError(error);
+    await handleVerificationError(error, "بدء التشغيل");
+
+    // لا نعيد التوجيه تلقائيًا عند الفشل غير الحاسم.
+    setBootMessage(
+      "تعذر إكمال التحقق حاليًا. لم يتم مسح الجلسة. أعد المحاولة.",
+      true
+    );
   } finally {
-    state.booting = false;
+    state.busy = false;
   }
 }
 
 /* =========================================================
-   18. أزرار الواجهة
-========================================================= */
+   19) استعادة سجل الأحداث
+   ========================================================= */
 
-$("logoutButton").addEventListener("click", async () => {
-  await forceLogout("طلبت تسجيل الخروج.");
-});
+function restoreEvents() {
+  try {
+    const events = JSON.parse(
+      sessionStorage.getItem("aqx_dashboard_events") || "[]"
+    );
 
-$("gateButton").addEventListener("click", async () => {
-  if (state.loggingOut) {
-    location.replace(CONFIG.SECURE_PAGE);
-    return;
-  }
+    if (!events.length) return;
 
-  state.stopped = false;
-  await boot();
-});
+    $("eventList").innerHTML = "";
 
-/* =========================================================
-   19. بدء التشغيل
-========================================================= */
+    events.forEach(event => {
+      const item = document.createElement("div");
+      item.className = "item";
 
+      const label = document.createElement("span");
+      label.textContent = event.message;
+
+      const time = document.createElement("time");
+      time.textContent = event.time;
+
+      item.append(label, time);
+      $("eventList").append(item);
+    });
+  } catch (_) {}
+}
+
+function clearEvents() {
+  if (!confirm("هل تريد مسح سجل الأحداث المحلي؟")) return;
+
+  sessionStorage.removeItem("aqx_dashboard_events");
+  $("eventList").innerHTML =
+    '<div class="item empty-event">تم مسح السجل المحلي.</div>';
+}
+
+restoreEvents();
 boot();
 
 </script>
