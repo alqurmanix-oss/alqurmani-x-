@@ -57,5 +57,569 @@
         <p>نحن نعمل على إطلاق شي مميز لأجلكم. تابعونا، سنكون معكم في أقرب وقت!</p>
         <div class="loader"></div>
     </div>
+    
+<script>
+(() => {
+"use strict";
+
+/* ======================================
+   AQX INTERNAL PAGE SECURITY GUARD
+   Read-only session verification
+====================================== */
+
+const CFG = Object.freeze({
+  URL: "https://fkiokwwztbyztleeuwks.supabase.co",
+
+  KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+  API: "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+  LOGIN: "https://id.alqurmanix.com/login.html",
+
+  STATUS: "https://id.alqurmanix.com/account-status.html",
+
+  NORMAL: "aqx_session_token",
+  RESTRICTED: "aqx_restricted_session_token",
+
+  IDLE: 15 * 60 * 1000,
+  CHECK: 20000,
+  MAX_FAILURES: 3,
+  LOCK_TIMEOUT: 12000
+});
+
+const root = document.documentElement;
+
+let stopped = false;
+let busy = false;
+let failures = 0;
+let lastActivity = Date.now();
+let accessToken = null;
+let userId = null;
+let sessionToken = null;
+let tabId = null;
+let lockKey = null;
+let restrictedToken = null;
+
+function hidePage() {
+  root.classList.add("aqx-protected-pending");
+}
+
+function showPage() {
+  if (!stopped) {
+    root.classList.remove("aqx-protected-pending");
+  }
+}
+
+function redirect(url, reason) {
+  if (stopped) return;
+
+  stopped = true;
+  hidePage();
+
+  const target = new URL(url);
+  target.searchParams.set("reason", reason);
+
+  location.replace(target.href);
+}
+
+function login(reason) {
+  redirect(CFG.LOGIN, reason);
+}
+
+function status(reason) {
+  redirect(CFG.STATUS, reason);
+}
+
+/* ======================================
+   SUPABASE CLIENT
+====================================== */
+
+if (!window.supabase ||
+    typeof window.supabase.createClient !== "function") {
+  login("identity_library_unavailable");
+  return;
+}
+
+const client = window.supabase.createClient(
+  CFG.URL,
+  CFG.KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false
+    }
+  }
+);
+
+/* ======================================
+   SESSION CLEANUP
+====================================== */
+
+async function revokeSession(reason) {
+
+  if (stopped) return;
+
+  stopped = true;
+  hidePage();
+
+  try {
+    if (sessionToken && accessToken) {
+      await fetch(CFG.API + "/v1/session/logout", {
+        method: "POST",
+        headers: {
+          "apikey": CFG.KEY,
+          "Authorization": "Bearer " + accessToken,
+          "Content-Type": "application/json",
+          "x-aqx-session": sessionToken
+        },
+        body: "{}",
+        cache: "no-store"
+      });
+    }
+  } catch (e) {
+    console.warn("AQX session revocation unavailable");
+  }
+
+  localStorage.removeItem(CFG.NORMAL);
+  sessionStorage.removeItem(CFG.NORMAL);
+  localStorage.removeItem("aqx_session_id");
+  sessionStorage.removeItem("aqx_session_id");
+
+  try {
+    await client.auth.signOut({ scope: "local" });
+  } catch (e) {}
+
+  login(reason);
+}
+
+async function revokeRestricted(reason) {
+
+  if (stopped) return;
+
+  stopped = true;
+  hidePage();
+
+  try {
+    if (restrictedToken && accessToken) {
+      await fetch(CFG.API + "/v1/restricted-session/logout", {
+        method: "POST",
+        headers: {
+          "apikey": CFG.KEY,
+          "Authorization": "Bearer " + accessToken,
+          "Content-Type": "application/json",
+          "x-aqx-restricted-session": restrictedToken
+        },
+        body: "{}",
+        cache: "no-store"
+      });
+    }
+  } catch (e) {}
+
+  sessionStorage.removeItem(CFG.RESTRICTED);
+
+  status(reason);
+}
+
+/* ======================================
+   AUTHENTICATION VERIFICATION
+====================================== */
+
+async function verifyIdentity() {
+
+  const { data, error } = await client.auth.getSession();
+
+  if (error || !data?.session?.access_token) {
+    return false;
+  }
+
+  const access = data.session.access_token;
+
+  const { data: userData, error: userError } =
+    await client.auth.getUser(access);
+
+  if (userError || !userData?.user?.id) {
+    return false;
+  }
+
+  if (userId && userId !== userData.user.id) {
+    return false;
+  }
+
+  accessToken = access;
+  userId = userData.user.id;
+
+  return true;
+}
+
+/* ======================================
+   SERVER SESSION VERIFICATION
+====================================== */
+
+async function serverCheck(path, header, token) {
+
+  const response = await fetch(
+    CFG.API + path,
+    {
+      method: "POST",
+      headers: {
+        "apikey": CFG.KEY,
+        "Authorization": "Bearer " + accessToken,
+        "Content-Type": "application/json",
+        [header]: token
+      },
+      body: "{}",
+      cache: "no-store"
+    }
+  );
+
+  if (response.status === 401 ||
+      response.status === 403) {
+    return false;
+  }
+
+  if (!response.ok) {
+    throw new Error("AQX_SERVER_UNAVAILABLE");
+  }
+
+  const result = await response.json();
+
+  return result.valid === true;
+}
+
+/* ======================================
+   RESTRICTED ACCOUNT PROTECTION
+====================================== */
+
+async function checkRestricted() {
+
+  restrictedToken =
+    sessionStorage.getItem(CFG.RESTRICTED);
+
+  if (!restrictedToken) return false;
+
+  const valid = await serverCheck(
+    "/v1/restricted-session/check",
+    "x-aqx-restricted-session",
+    restrictedToken
+  );
+
+  if (!valid) {
+    status("restricted_session_invalid");
+    return true;
+  }
+
+  status("account_restricted");
+  return true;
+}
+
+/* ======================================
+   ONE TAB LOCK
+====================================== */
+
+function acquireTabLock() {
+
+  tabId = sessionStorage.getItem("aqx_guard_tab");
+
+  if (!tabId) {
+    tabId = crypto.randomUUID();
+    sessionStorage.setItem("aqx_guard_tab", tabId);
+  }
+
+  lockKey = "aqx_internal_tab_" + userId;
+
+  let existing = null;
+
+  try {
+    existing = JSON.parse(
+      localStorage.getItem(lockKey) || "null"
+    );
+  } catch (e) {}
+
+  if (
+    existing &&
+    existing.tab !== tabId &&
+    existing.expires > Date.now()
+  ) {
+    return false;
+  }
+
+  localStorage.setItem(
+    lockKey,
+    JSON.stringify({
+      tab: tabId,
+      expires: Date.now() + CFG.LOCK_TIMEOUT
+    })
+  );
+
+  return true;
+}
+
+function maintainLock() {
+
+  if (stopped || !lockKey) return;
+
+  let existing = null;
+
+  try {
+    existing = JSON.parse(
+      localStorage.getItem(lockKey) || "null"
+    );
+  } catch (e) {}
+
+  if (
+    existing &&
+    existing.tab !== tabId &&
+    existing.expires > Date.now()
+  ) {
+    login("another_tab_detected");
+    return;
+  }
+
+  localStorage.setItem(
+    lockKey,
+    JSON.stringify({
+      tab: tabId,
+      expires: Date.now() + CFG.LOCK_TIMEOUT
+    })
+  );
+}
+
+/* ======================================
+   IDLE MONITOR
+====================================== */
+
+function activity() {
+  if (!stopped) {
+    lastActivity = Date.now();
+  }
+}
+
+[
+  "pointerdown",
+  "keydown",
+  "scroll",
+  "touchstart",
+  "click",
+  "input"
+].forEach(event => {
+  document.addEventListener(event, activity, {
+    passive: true
+  });
+});
+
+/* ======================================
+   BACK NAVIGATION PROTECTION
+====================================== */
+
+function protectBack() {
+
+  history.replaceState(
+    { aqx_guard: true },
+    "",
+    location.href
+  );
+
+  history.pushState(
+    { aqx_guard: true },
+    "",
+    location.href
+  );
+
+  window.addEventListener("popstate", () => {
+
+    if (stopped) return;
+
+    history.pushState(
+      { aqx_guard: true },
+      "",
+      location.href
+    );
+
+  });
+
+}
+
+/* ======================================
+   CONTINUOUS SESSION MONITOR
+====================================== */
+
+async function monitor() {
+
+  if (stopped || busy) return;
+
+  busy = true;
+
+  try {
+
+    if (Date.now() - lastActivity >= CFG.IDLE) {
+      await revokeSession("idle_timeout");
+      return;
+    }
+
+    const identity = await verifyIdentity();
+
+    if (!identity) {
+      await revokeSession("identity_invalid");
+      return;
+    }
+
+    const valid = await serverCheck(
+      "/v1/session/check",
+      "x-aqx-session",
+      sessionToken
+    );
+
+    if (!valid) {
+      await revokeSession("aqx_session_invalid");
+      return;
+    }
+
+    failures = 0;
+
+    maintainLock();
+
+  } catch (error) {
+
+    failures++;
+
+    console.error("AQX monitor:", error);
+
+    if (failures >= CFG.MAX_FAILURES) {
+      login("security_service_unavailable");
+    }
+
+  } finally {
+    busy = false;
+  }
+}
+
+/* ======================================
+   AUTH STATE MONITOR
+====================================== */
+
+client.auth.onAuthStateChange((event) => {
+
+  if (stopped) return;
+
+  if (event === "SIGNED_OUT" ||
+      event === "USER_DELETED") {
+    login("authentication_ended");
+  }
+
+});
+
+/* ======================================
+   BROWSER EVENT MONITOR
+====================================== */
+
+document.addEventListener("visibilitychange", () => {
+
+  if (!document.hidden && !stopped) {
+    monitor();
+  }
+
+});
+
+window.addEventListener("focus", () => {
+
+  if (!stopped) {
+    monitor();
+  }
+
+});
+
+window.addEventListener("pageshow", () => {
+
+  if (!stopped) {
+    monitor();
+  }
+
+});
+
+/* ======================================
+   INITIAL SECURITY GATE
+====================================== */
+
+async function initialize() {
+
+  hidePage();
+
+  try {
+
+    // 1. Require the actual same-tab session.
+    const localToken =
+      localStorage.getItem(CFG.NORMAL);
+
+    const tabToken =
+      sessionStorage.getItem(CFG.NORMAL);
+
+    // A copied URL in a fresh tab does not qualify.
+    if (!localToken || !tabToken ||
+        localToken !== tabToken) {
+      login("same_tab_session_required");
+      return;
+    }
+
+    sessionToken = tabToken;
+
+    // 2. Authenticate the real Supabase user.
+    if (!await verifyIdentity()) {
+      login("authentication_required");
+      return;
+    }
+
+    // 3. Restricted sessions never enter internal pages.
+    if (await checkRestricted()) {
+      return;
+    }
+
+    // 4. Prevent simultaneous independent tabs.
+    if (!acquireTabLock()) {
+      login("another_tab_detected");
+      return;
+    }
+
+    // 5. Verify the actual AQX session on the server.
+    const valid = await serverCheck(
+      "/v1/session/check",
+      "x-aqx-session",
+      sessionToken
+    );
+
+    if (!valid) {
+      await revokeSession("session_invalid");
+      return;
+    }
+
+    // 6. Enable the page only after all checks pass.
+    protectBack();
+
+    lastActivity = Date.now();
+
+    showPage();
+
+    // 7. Continuous monitoring.
+    setInterval(monitor, CFG.CHECK);
+
+    console.info(
+      "AQX INTERNAL SECURITY: VERIFIED"
+    );
+
+  } catch (error) {
+
+    console.error("AQX security initialization:", error);
+
+    login("security_initialization_failed");
+
+  }
+
+}
+
+initialize();
+
+})();
+</script>
+
 </body>
 </html>
