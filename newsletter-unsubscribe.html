@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>إلغاء اشتراك النشرة البريدية | AQX</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: #f7f4ee;
+      color: #253047;
+      font-family: Tahoma, Arial, sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 35px 25px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid #e8e0d2;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.05);
+    }
+
+    .logo {
+      color: #17243a;
+      font-size: 30px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      margin: 25px 0 15px;
+      font-size: 21px;
+    }
+
+    p {
+      line-height: 2;
+      color: #64748b;
+      font-size: 15px;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .error {
+      color: #b42318;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <div class="logo">AQX</div>
+    <p>القرماني إكس</p>
+
+    <h1>إلغاء اشتراك النشرة البريدية</h1>
+
+    <div id="status" class="status">
+      جارٍ التحقق من رابط إلغاء الاشتراك...
+    </div>
+
+    <div class="footer">
+      منظومة القرماني إكس AQX
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const ACTION_URL =
+        "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-newsletter-worker/action";
+
+      const statusBox = document.getElementById("status");
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token") || "";
+
+      if (!/^[a-f0-9]{64}$/i.test(token)) {
+        statusBox.classList.add("error");
+        statusBox.textContent =
+          "رابط إلغاء الاشتراك غير صالح أو غير مكتمل.";
+        return;
+      }
+
+      // تنفيذ الإلغاء عبر نقطة المعالجة الآمنة الموجودة بالخلفية.
+      const target = new URL(ACTION_URL);
+      target.searchParams.set("decision", "reject");
+      target.searchParams.set("token", token);
+
+      statusBox.textContent = "جارٍ تنفيذ طلب إلغاء الاشتراك...";
+
+      window.location.replace(target.toString());
+    })();
+  </script>
+</body>
+</html>
