@@ -1,1 +1,773 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <title>AQX | إعدادات النشرة البريدية</title>
+
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #102b50;
+      --green: #087a50;
+      --red: #b42318;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --surface: #ffffff;
+      --background: #f4f7fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--background);
+      color: #172033;
+      font-family: Arial, sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 24px 14px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: auto;
+    }
+
+    .header {
+      background: var(--navy);
+      color: white;
+      border-radius: 17px;
+      padding: 25px 20px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0 0 9px;
+      font-size: 24px;
+    }
+
+    .header p {
+      margin: 0;
+      color: #dbeafe;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 22px;
+      margin-bottom: 17px;
+      box-shadow: 0 5px 22px rgba(15, 35, 65, .04);
+    }
+
+    .panel h2 {
+      margin: 0 0 17px;
+      font-size: 19px;
+      color: var(--navy);
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status {
+      padding: 7px 12px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: bold;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .status.active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status.inactive {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .toggle {
+      width: 100%;
+      min-height: 66px;
+      border: 0;
+      border-radius: 13px;
+      padding: 13px 17px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      background: #e8eef5;
+      color: #334155;
+      transition: background .2s, opacity .2s;
+    }
+
+    .toggle.on {
+      background: #e5f7ed;
+      color: #087a50;
+    }
+
+    .toggle:disabled {
+      cursor: wait;
+      opacity: .55;
+    }
+
+    .toggle-text {
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .switch {
+      width: 52px;
+      height: 29px;
+      border-radius: 30px;
+      padding: 3px;
+      background: #94a3b8;
+      flex-shrink: 0;
+      transition: background .2s;
+    }
+
+    .switch::after {
+      content: "";
+      display: block;
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background: white;
+      transition: transform .2s;
+    }
+
+    .toggle.on .switch {
+      background: var(--green);
+    }
+
+    .toggle.on .switch::after {
+      transform: translateX(-23px);
+    }
+
+    .description {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .25s ease, opacity .2s ease,
+                  margin .2s ease;
+      margin-top: 0;
+    }
+
+    .description.show {
+      max-height: 160px;
+      opacity: 1;
+      margin-top: 16px;
+    }
+
+    .description p {
+      margin: 0;
+      color: #526176;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 15px;
+      font-size: 14px;
+      line-height: 1.8;
+      font-weight: bold;
+    }
+
+    .message.error { color: var(--red); }
+    .message.success { color: var(--green); }
+
+    .security-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .hidden { display: none !important; }
+
+    .blocked {
+      max-width: 520px;
+      margin: 12vh auto;
+      text-align: center;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 30px 20px;
+    }
+
+    .blocked h2 {
+      color: var(--red);
+      font-size: 21px;
+    }
+
+    .blocked p {
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .login-link {
+      display: inline-block;
+      padding: 13px 20px;
+      background: var(--navy);
+      color: white;
+      text-decoration: none;
+      border-radius: 9px;
+      margin-top: 12px;
+    }
+
+    @media(max-width: 480px) {
+      .page { padding: 12px 9px; }
+      .panel { padding: 17px; }
+      .header h1 { font-size: 21px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="blocked" class="blocked hidden">
+  <h2>تعذر التحقق من جلسة الدخول</h2>
+  <p id="blockedText">
+    يجب تسجيل الدخول من بوابة AQX للوصول إلى هذه الصفحة.
+  </p>
+  <a class="login-link" href="https://id.alqurmanix.com/">
+    العودة إلى الحساب الموحد
+  </a>
+</div>
+
+<main id="app" class="page hidden">
+  <div class="container">
+
+    <header class="header">
+      <h1>💌 إعدادات النشرة البريدية</h1>
+      <p>
+        تحكم في اشتراكك بالنشرة البريدية لمنظومة AQX
+        من خلال إعدادات حسابك الموحد.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>إدارة الاشتراك</h2>
+
+      <div class="status-row">
+        <span class="status-label">الحالة الحالية</span>
+        <span id="status" class="status">جارٍ التحقق...</span>
+      </div>
+
+      <button
+        type="button"
+        id="toggle"
+        class="toggle"
+        disabled
+        aria-pressed="false"
+      >
+        <span id="toggleText" class="toggle-text">
+          جارٍ تحميل حالة الاشتراك...
+        </span>
+        <span class="switch" aria-hidden="true"></span>
+      </button>
+
+      <div id="description" class="description">
+        <p id="descriptionText"></p>
+      </div>
+
+      <div id="message" class="message" role="status"
+           aria-live="polite"></div>
+    </section>
+
+    <section class="panel">
+      <p class="security-note">
+        🔐 هذه الصفحة مخصصة للمستخدمين المسجلين دخولهم
+        عبر الحساب الموحد AQX. تخضع العمليات للتحقق
+        المركزي من الجلسة وصلاحيات الحساب.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<script type="module">
+/*
+  AQX Newsletter Settings
+
+  لا تضع service_role هنا.
+  لا تستخدم user_id المرسل من المتصفح.
+  لا تعتمد على localStorage كدليل مصادقة.
+
+  يتطلب هذا الملف أن توفر بوابة AQX:
+  1. تذكرة تحويل أحادية الاستخدام.
+  2. رمز جلسة خدمة صادرًا من aqx-identity.
+  3. تسجيل أصل الصفحة في نظام redirect clients.
+*/
+
+const CONFIG = Object.freeze({
+  identityApi:
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-identity",
+
+  supabaseUrl:
+    "https://fkiokwwztbyztleeuwks.supabase.co",
+
+  publishableKey:
+    "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
+
+  loginUrl:
+    "https://id.alqurmanix.com/",
+
+  // يجب أن يطابق origin المسجل في نظام AQX.
+  serviceOrigin: window.location.origin,
+
+  // نقطة تسليم تذكرة الدخول التي ستجهزها البوابة.
+  consumeRoute: "/v1/redirect/consume",
+
+  sessionCheckRoute: "/v1/service/session/check",
+
+  idleLimit: 15 * 60 * 1000,
+
+  heartbeatInterval: 60 * 1000,
+
+  lockName: "AQX_NEWSLETTER_SETTINGS_SINGLE_TAB"
+});
+
+const state = {
+  serviceToken: null,
+  active: false,
+  busy: false,
+  idleTimer: null,
+  heartbeatTimer: null,
+  channel: null,
+  lastActivity: Date.now(),
+  status: null
+};
+
+const $ = (id) => document.getElementById(id);
+
+function showBlocked(message) {
+  $("app").classList.add("hidden");
+  $("blocked").classList.remove("hidden");
+  $("blockedText").textContent = message;
+}
+
+function setMessage(message, type = "") {
+  const node = $("message");
+  node.textContent = message;
+  node.className = "message " + type;
+}
+
+function apiHeaders() {
+  return {
+    "Content-Type": "application/json",
+    "apikey": CONFIG.publishableKey,
+    "x-aqx-service-session": state.serviceToken
+  };
+}
+
+async function identityRequest(route, options = {}) {
+  const response = await fetch(CONFIG.identityApi + route, {
+    ...options,
+    credentials: "omit",
+    cache: "no-store",
+    headers: {
+      ...apiHeaders(),
+      ...(options.headers || {})
+    }
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.error || "IDENTITY_VALIDATION_FAILED");
+  }
+
+  return data;
+}
+
+/* التحقق المركزي من جلسة الخدمة والجلسة الأصلية */
+async function validateSession() {
+  if (!state.serviceToken) return false;
+
+  try {
+    const result = await identityRequest(
+      CONFIG.sessionCheckRoute,
+      { method: "POST", body: "{}" }
+    );
+
+    return result.valid === true;
+  } catch {
+    return false;
+  }
+}
+
+/*
+  يجب أن تأتي التذكرة من رابط التحويل الذي تصدره بوابة AQX.
+  التذكرة أحادية الاستخدام، ولا تكفي وحدها لإثبات الدخول.
+*/
+async function redeemLoginTicket() {
+  const url = new URL(window.location.href);
+  const ticket = url.searchParams.get("redirect_ticket");
+
+  if (!ticket || !/^[a-f0-9]{64}$/i.test(ticket)) {
+    throw new Error("LOGIN_REQUIRED");
+  }
+
+  const response = await fetch(
+    CONFIG.identityApi + CONFIG.consumeRoute,
+    {
+      method: "POST",
+      credentials: "omit",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": CONFIG.publishableKey
+      },
+      body: JSON.stringify({
+        redirect_ticket: ticket
+      })
+    }
+  );
+
+  const result = await response.json().catch(() => ({}));
+
+  if (
+    !response.ok ||
+    result.success !== true ||
+    typeof result.service_session_token !== "string" ||
+    result.service_session_token.length < 40
+  ) {
+    throw new Error("LOGIN_TICKET_INVALID");
+  }
+
+  state.serviceToken = result.service_session_token;
+
+  // إزالة التذكرة من العنوان فور استخدامها.
+  history.replaceState(
+    null,
+    "",
+    window.location.pathname
+  );
+
+  if (!(await validateSession())) {
+    throw new Error("SESSION_INVALID");
+  }
+}
+
+/* قفل التبويب الواحد */
+async function acquireSingleTabLock() {
+  if (!("locks" in navigator)) {
+    throw new Error("SECURE_TAB_LOCK_UNSUPPORTED");
+  }
+
+  let acquired = false;
+
+  await navigator.locks.request(
+    CONFIG.lockName,
+    { ifAvailable: true },
+    async (lock) => {
+      if (!lock) return;
+
+      acquired = true;
+
+      await new Promise((resolve) => {
+        state.releaseLock = resolve;
+      });
+    }
+  );
+
+  return acquired;
+}
+
+/*
+  قفل Web Locks يحتاج أن يبقى الطلب مفتوحًا طوال عمر الصفحة.
+  نستخدم آلية تشغيل منفصلة له حتى لا يتوقف مسار التهيئة.
+*/
+function startTabLock() {
+  if (!navigator.locks) {
+    throw new Error("SECURE_TAB_LOCK_UNSUPPORTED");
+  }
+
+  let acquiredResolve;
+
+  const acquiredPromise = new Promise(resolve => {
+    acquiredResolve = resolve;
+  });
+
+  state.lockPromise = navigator.locks.request(
+    CONFIG.lockName,
+    { ifAvailable: true },
+    async (lock) => {
+      if (!lock) {
+        acquiredResolve(false);
+        return;
+      }
+
+      acquiredResolve(true);
+
+      await new Promise(resolve => {
+        state.releaseLock = resolve;
+      });
+    }
+  );
+
+  return acquiredPromise;
+}
+
+/* عرض حالة الاشتراك */
+function renderStatus(status) {
+  state.status = status;
+
+  const isActive = status === "active";
+  const badge = $("status");
+  const button = $("toggle");
+
+  badge.textContent = isActive ? "مفتوح" : "مغلق";
+  badge.className = "status " + (isActive ? "active" : "inactive");
+
+  button.classList.toggle("on", isActive);
+  button.setAttribute("aria-pressed", String(isActive));
+
+  $("toggleText").textContent =
+    isActive ? "إغلاق الاشتراك" : "فتح الاشتراك";
+
+  $("descriptionText").textContent = isActive
+    ? "أنت مشترك في النشرة البريدية. ستصلك أحدث أخبار AQX وتحديثات منصاتها وخدماتها وإعلاناتها المهمة. يمكنك إيقاف الاشتراك في أي وقت."
+    : "اشتراكك متوقف حاليًا. عند فتح الاشتراك ستصلك أخبار AQX وتحديثات المنصات والخدمات والإعلانات المهمة.";
+
+  $("description").classList.add("show");
+  button.disabled = false;
+}
+
+/*
+  لا نقرأ الجداول مباشرة.
+  نحتاج endpoint آمنًا في aqx-identity يعيد الحالة
+  اعتمادًا على هوية جلسة الخدمة المتحققة.
+*/
+async function loadPreference() {
+  const result = await identityRequest(
+    "/v1/newsletter/preference",
+    { method: "GET" }
+  );
+
+  if (!["active", "unsubscribed"].includes(result.status)) {
+    throw new Error("NEWSLETTER_STATUS_INVALID");
+  }
+
+  renderStatus(result.status);
+}
+
+/*
+  عملية التغيير يجب أن تمر عبر endpoint مركزي
+  يتحقق من جلسة الخدمة ويربط user_id داخليًا.
+*/
+async function changePreference(enabled) {
+  if (state.busy || !state.active) return;
+
+  state.busy = true;
+  $("toggle").disabled = true;
+  setMessage("جارٍ حفظ اختيارك...");
+
+  try {
+    if (!(await validateSession())) {
+      throw new Error("SESSION_INVALID");
+    }
+
+    const result = await identityRequest(
+      "/v1/newsletter/preference",
+      {
+        method: "POST",
+        body: JSON.stringify({ enabled })
+      }
+    );
+
+    if (
+      result.success !== true ||
+      !["active", "unsubscribed"].includes(result.status)
+    ) {
+      throw new Error("PREFERENCE_UPDATE_FAILED");
+    }
+
+    renderStatus(result.status);
+
+    setMessage(
+      enabled
+        ? "تم فتح الاشتراك بنجاح."
+        : "تم إغلاق الاشتراك بنجاح.",
+      "success"
+    );
+
+  } catch (error) {
+    setMessage(
+      "تعذر تنفيذ العملية. يرجى التحقق من جلسة الدخول والمحاولة مجددًا.",
+      "error"
+    );
+
+    if (error.message === "SESSION_INVALID") {
+      await terminateSession();
+    }
+  } finally {
+    state.busy = false;
+    if (state.active) $("toggle").disabled = false;
+  }
+}
+
+/* إنهاء الجلسة عند 15 دقيقة خمول */
+function resetIdleTimer() {
+  if (!state.active) return;
+
+  state.lastActivity = Date.now();
+
+  clearTimeout(state.idleTimer);
+
+  state.idleTimer = setTimeout(
+    terminateSession,
+    CONFIG.idleLimit
+  );
+}
+
+async function terminateSession() {
+  if (!state.active) return;
+
+  state.active = false;
+
+  clearTimeout(state.idleTimer);
+  clearInterval(state.heartbeatTimer);
+
+  if (state.releaseLock) state.releaseLock();
+
+  state.serviceToken = null;
+
+  $("app").classList.add("hidden");
+
+  showBlocked(
+    "انتهت جلسة الصفحة بسبب الخمول أو انتهاء جلسة الحساب الموحد. يرجى تسجيل الدخول مجددًا."
+  );
+}
+
+/* فحص الجلسة دوريًا */
+function startHeartbeat() {
+  state.heartbeatTimer = setInterval(async () => {
+    if (!state.active) return;
+
+    if (Date.now() - state.lastActivity >= CONFIG.idleLimit) {
+      await terminateSession();
+      return;
+    }
+
+    const valid = await validateSession();
+
+    if (!valid) {
+      await terminateSession();
+    }
+  }, CONFIG.heartbeatInterval);
+}
+
+/* مراقبة النشاط */
+[
+  "pointerdown",
+  "keydown",
+  "touchstart",
+  "scroll"
+].forEach(eventName => {
+  document.addEventListener(
+    eventName,
+    resetIdleTimer,
+    { passive: true }
+  );
+});
+
+/* مزامنة إغلاق الصفحة بين التبويبات */
+if ("BroadcastChannel" in window) {
+  state.channel = new BroadcastChannel("aqx-account-security");
+
+  state.channel.onmessage = (event) => {
+    if (event.data?.type === "SESSION_TERMINATED") {
+      terminateSession();
+    }
+  };
+}
+
+$("toggle").addEventListener("click", async () => {
+  const nextValue = state.status !== "active";
+  await changePreference(nextValue);
+});
+
+/* بدء الصفحة */
+async function initialize() {
+  try {
+    if (!window.isSecureContext) {
+      throw new Error("HTTPS_REQUIRED");
+    }
+
+    const locked = await startTabLock();
+
+    if (!locked) {
+      throw new Error("MULTIPLE_TABS_BLOCKED");
+    }
+
+    await redeemLoginTicket();
+
+    state.active = true;
+
+    $("app").classList.remove("hidden");
+
+    resetIdleTimer();
+    startHeartbeat();
+
+    await loadPreference();
+
+  } catch (error) {
+    const messages = {
+      LOGIN_REQUIRED: "يجب فتح الصفحة من داخل الحساب الموحد بعد تسجيل الدخول.",
+      LOGIN_TICKET_INVALID: "رابط الدخول غير صالح أو سبق استخدامه.",
+      SESSION_INVALID: "جلسة الحساب الموحد غير صالحة أو منتهية.",
+      SECURE_TAB_LOCK_UNSUPPORTED: "المتصفح لا يدعم حماية التبويبات المطلوبة.",
+      MULTIPLE_TABS_BLOCKED: "الصفحة مفتوحة بالفعل في تبويب آخر. أغلق التبويب الآخر ثم حاول مجددًا.",
+      HTTPS_REQUIRED: "يجب استخدام اتصال HTTPS آمن."
+    };
+
+    showBlocked(
+      messages[error.message] ||
+      "تعذر التحقق من صلاحية الوصول. ارجع إلى الحساب الموحد وحاول مرة أخرى."
+    );
+  }
+}
+
+initialize();
+
+window.addEventListener("pagehide", () => {
+  if (state.releaseLock) state.releaseLock();
+
+  if (state.channel) {
+    state.channel.close();
+  }
+});
+</script>
+
+</body>
+</html>
+
