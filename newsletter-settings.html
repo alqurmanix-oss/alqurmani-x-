@@ -2,384 +2,538 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10131b">
-<meta name="robots" content="noindex,nofollow">
-<title>إعدادات النشرة البريدية | AQX</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
-<style>
-:root {
-  --bg:#10131b;--panel:#191e29;--panel2:#202737;
-  --gold:#d8b66a;--gold2:#f1d99b;--text:#f5f3ed;
-  --muted:#a9afbd;--line:#343c4d;
-  --success:#69d6a1;--danger:#ff8585;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;min-height:100vh;padding:22px;
-  display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 50% 0%,#30364a 0,transparent 48%),var(--bg);
-  color:var(--text);font-family:Tahoma,Arial,sans-serif
-}
-.container{width:100%;max-width:490px}
-.brand{text-align:center;margin-bottom:24px}
-.logo{
-  width:70px;height:70px;border-radius:21px;margin:0 auto 13px;
-  display:grid;place-items:center;color:#171923;font-size:24px;
-  font-weight:900;background:linear-gradient(145deg,var(--gold2),#b78d3e)
-}
-.brand h1{font-size:22px;margin:0 0 8px}
-.brand p{color:var(--muted);font-size:13px;margin:0}
-.card{
-  background:linear-gradient(160deg,#202635,#171c27);
-  border:1px solid var(--line);border-radius:22px;padding:25px;
-  box-shadow:0 20px 70px #0006
-}
-h2{font-size:19px;margin:0 0 9px}
-.subtitle{color:var(--muted);font-size:13px;line-height:1.9;margin:0 0 22px}
-.status{
-  padding:15px;border:1px solid var(--line);border-radius:13px;
-  background:#111722;margin-bottom:20px
-}
-.status-title{font-size:13px;color:var(--muted);margin-bottom:8px}
-.status-value{font-size:15px;font-weight:bold}
-.status-detail{font-size:12px;color:var(--muted);line-height:1.8;margin-top:7px}
-.actions{display:grid;gap:11px;margin-top:20px}
-button{
-  width:100%;min-height:48px;border:0;border-radius:12px;
-  cursor:pointer;font-size:14px;font-weight:bold;transition:.2s
-}
-button:disabled{opacity:.5;cursor:not-allowed}
-.primary{color:#171923;background:linear-gradient(110deg,var(--gold2),#c49a4d)}
-.secondary{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
-.message{
-  display:none;padding:12px 13px;border-radius:11px;
-  font-size:13px;line-height:1.9;margin-bottom:16px;overflow-wrap:anywhere
-}
-.message.show{display:block}
-.error{background:#5a252b55;color:#ffaaaa;border:1px solid #9b454d}
-.success{background:#17493655;color:#8ce4b6;border:1px solid #347e5c}
-.info{background:#35425b66;color:#d5dfef;border:1px solid #536782}
-.footer{text-align:center;color:var(--muted);font-size:11px;margin-top:20px;line-height:2}
-.hidden{display:none!important}
-.spinner{
-  width:29px;height:29px;border:3px solid #ffffff25;
-  border-top-color:var(--gold);border-radius:50%;
-  animation:spin .8s linear infinite;margin:18px auto
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-a{color:var(--gold2);text-decoration:none}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>إعدادات النشرة البريدية | AQX</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: #111c2e;
+      --border: rgba(255,255,255,.09);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --green: #34d399;
+      --red: #f87171;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse at top, #172a43 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 570px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-name {
+      font-size: 29px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #7dd3fc;
+    }
+
+    .brand-caption {
+      margin-top: 7px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .card {
+      padding: 30px 25px;
+      background: rgba(17,28,46,.96);
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      box-shadow: 0 20px 65px rgba(0,0,0,.25);
+    }
+
+    h1 {
+      font-size: 23px;
+      margin: 0 0 12px;
+    }
+
+    .intro {
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: 14px;
+      margin: 0 0 24px;
+    }
+
+    .account {
+      padding: 13px 15px;
+      border-radius: 11px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid var(--border);
+      margin-bottom: 22px;
+      overflow-wrap: anywhere;
+    }
+
+    .account-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .account-email {
+      font-size: 14px;
+      direction: ltr;
+      text-align: right;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .status.active { color: var(--green); }
+    .status.active .dot { background: var(--green); }
+    .status.inactive { color: var(--muted); }
+
+    .description {
+      padding: 19px;
+      border-radius: 13px;
+      background: rgba(56,189,248,.075);
+      border: 1px solid rgba(56,189,248,.18);
+      margin-bottom: 23px;
+      transition: opacity .2s ease;
+    }
+
+    .description h2 {
+      font-size: 17px;
+      color: #7dd3fc;
+      margin: 0 0 10px;
+    }
+
+    .description p {
+      font-size: 14px;
+      line-height: 2;
+      color: #dbeafe;
+      margin: 0;
+    }
+
+    .description.inactive {
+      background: transparent;
+      border-color: transparent;
+      padding: 5px 2px;
+      margin-bottom: 20px;
+      opacity: .48;
+    }
+
+    .description.inactive h2 {
+      display: none;
+    }
+
+    .description.inactive p {
+      font-size: 12px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .main-button {
+      width: 100%;
+      min-height: 52px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #071525;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity .2s, transform .2s;
+    }
+
+    .main-button.close {
+      background: #334155;
+      color: #f8fafc;
+    }
+
+    .main-button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .main-button:not(:disabled):active {
+      transform: scale(.99);
+    }
+
+    .message {
+      display: none;
+      margin-top: 17px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .message.error {
+      display: block;
+      color: #fecaca;
+      background: rgba(248,113,113,.1);
+      border: 1px solid rgba(248,113,113,.2);
+    }
+
+    .message.success {
+      display: block;
+      color: #a7f3d0;
+      background: rgba(52,211,153,.09);
+      border: 1px solid rgba(52,211,153,.2);
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 10px;
+      font-size: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #64748b;
+      font-size: 11px;
+    }
+
+    .login-link {
+      display: inline-block;
+      margin-top: 14px;
+      color: #7dd3fc;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media(max-width:480px) {
+      .card { padding: 24px 18px; }
+      h1 { font-size: 21px; }
+    }
+  </style>
 </head>
+
 <body>
-<main class="container">
+  <main class="container">
+    <header class="brand">
+      <div class="brand-name">AQX</div>
+      <div class="brand-caption">منظومة القرآن الرقمية</div>
+    </header>
 
-<header class="brand">
-  <div class="logo">AQX</div>
-  <h1>القرماني إكس AQX</h1>
-  <p>بوابة الهوية والحساب الموحد</p>
-</header>
-
-<section class="card">
-  <h2>إعدادات النشرة البريدية</h2>
-  <p class="subtitle">
-    تحكم في موافقتك على استقبال النشرة البريدية الخاصة بمنظومة AQX.
-    يمكنك تغيير اختيارك في أي وقت.
-  </p>
-
-  <div id="message" class="message" role="status" aria-live="polite"></div>
-
-  <div id="loading">
-    <div class="spinner"></div>
-    <p style="text-align:center;color:var(--muted);font-size:13px">
-      جارٍ التحقق من جلسة الحساب...
-    </p>
-  </div>
-
-  <div id="content" class="hidden">
-    <div class="status">
-      <div class="status-title">حالة اشتراكك الحالية</div>
-      <div id="statusValue" class="status-value">—</div>
-      <div id="statusDetail" class="status-detail"></div>
-    </div>
-
-    <div class="actions">
-      <button id="enableButton" class="primary" type="button">
-        موافق — الاشتراك في النشرة البريدية
-      </button>
-      <button id="disableButton" class="secondary" type="button">
-        رفض — عدم الاشتراك
-      </button>
-    </div>
-
-    <p style="font-size:12px;color:var(--muted);line-height:1.9;margin-top:18px">
-      موافقتك اختيارية. عند الموافقة سيتم تسجيل اختيارك في حسابك
-      الموحد، ويمكنك إلغاء الاشتراك من هذه الصفحة لاحقًا.
-    </p>
-  </div>
-
-  <div id="loginRequired" class="hidden">
-    <div class="status">
-      <div class="status-value">يلزم تسجيل الدخول</div>
-      <div class="status-detail">
-        افتح هذه الصفحة من متصفح بوابة الحساب الموحد بعد تسجيل الدخول.
-        لا يمكن التحقق من الاشتراك دون جلسة حساب صالحة.
+    <section class="card">
+      <div id="loading" class="loading">
+        جارٍ التحقق من الحساب وتحميل إعدادات النشرة البريدية...
       </div>
-    </div>
-    <a href="https://id.alqurmanix.com/" style="display:block;text-align:center">
-      العودة إلى بوابة الحساب الموحد
-    </a>
-  </div>
-</section>
 
-<footer class="footer">
-  © AQX — القرماني إكس<br>
-  نظام الهوية الموحدة
-</footer>
-</main>
+      <div id="content" hidden>
+        <h1>إعدادات النشرة البريدية</h1>
+
+        <p class="intro">
+          تحكم في استقبال أخبار وتحديثات منظومة AQX عبر بريدك الإلكتروني.
+          يمكنك تغيير اختيارك في أي وقت.
+        </p>
+
+        <div class="account">
+          <div class="account-label">الحساب المسجل</div>
+          <div id="email" class="account-email"></div>
+        </div>
+
+        <div id="status" class="status">
+          <span class="dot"></span>
+          <span id="statusText">جارٍ تحميل الحالة</span>
+        </div>
+
+        <div id="description" class="description">
+          <h2 id="descriptionTitle"></h2>
+          <p id="descriptionText"></p>
+        </div>
+
+        <button id="toggleButton" class="main-button" disabled>
+          جارٍ التحميل...
+        </button>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+      </div>
+
+      <div id="authError" hidden>
+        <h1>يلزم تسجيل الدخول</h1>
+        <p class="intro">
+          يجب فتح إعدادات النشرة البريدية من داخل الحساب الموحد بعد تسجيل الدخول.
+        </p>
+        <a class="login-link" href="https://id.alqurmanix.com/">
+          العودة إلى الحساب الموحد
+        </a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      AQX · إعدادات الحساب الموحد
+    </footer>
+  </main>
 
 <script>
 (() => {
-"use strict";
+  "use strict";
 
-const CONFIG = Object.freeze({
-  SUPABASE_URL: "https://fkiokwwztbyztleeuwks.supabase.co",
-  SUPABASE_KEY: "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_",
-  IDENTITY_URL: "https://id.alqurmanix.com/"
-});
+  const SUPABASE_URL =
+    "https://fkiokwwztbyztleeuwks.supabase.co";
 
-const $ = id => document.getElementById(id);
+  const SUPABASE_KEY =
+    "sb_publishable_4DCXObCqPUoNnI8ANOo8dA_nRAg0y5_";
 
-let supabaseClient = null;
-let currentUser = null;
-let busy = false;
-let initialized = false;
+  const LOGIN_URL = "https://id.alqurmanix.com/";
 
-function showMessage(message, type = "info") {
-  const el = $("message");
-  el.textContent = String(message || "");
-  el.className = "message show " + type;
-}
-
-function clearMessage() {
-  $("message").textContent = "";
-  $("message").className = "message";
-}
-
-function setBusy(value) {
-  busy = value;
-  $("enableButton").disabled = value;
-  $("disableButton").disabled = value;
-  $("enableButton").textContent = value
-    ? "جارٍ حفظ اختيارك..."
-    : "موافق — الاشتراك في النشرة البريدية";
-}
-
-function showLoginRequired(message) {
-  $("loading").classList.add("hidden");
-  $("content").classList.add("hidden");
-  $("loginRequired").classList.remove("hidden");
-
-  if (message) showMessage(message, "error");
-}
-
-function showContent() {
-  $("loading").classList.add("hidden");
-  $("loginRequired").classList.add("hidden");
-  $("content").classList.remove("hidden");
-}
-
-function statusLabel(status) {
-  const labels = {
-    active: "مشترك ومفعّل",
-    pending: "بانتظار اختيارك",
-    unsubscribed: "غير مشترك",
-    not_subscribed: "لم يتم الاشتراك بعد"
-  };
-
-  return labels[status] || "حالة الاشتراك: " + status;
-}
-
-function statusDescription(status) {
-  const descriptions = {
-    active: "أنت موافق على استقبال النشرة البريدية.",
-    pending: "لم يتم تسجيل موافقة نهائية على الاشتراك حتى الآن.",
-    unsubscribed: "تم تسجيل رفضك أو إلغاء اشتراكك. لن تصلك النشرة.",
-    not_subscribed: "يمكنك اختيار الاشتراك أو عدم الاشتراك من هذه الصفحة."
-  };
-
-  return descriptions[status] ||
-    "يمكنك تحديث اختيارك باستخدام الأزرار الموجودة بالأسفل.";
-}
-
-async function verifySession() {
-  const { data, error } = await supabaseClient.auth.getSession();
-
-  if (error) throw error;
-
-  const session = data?.session;
-
-  if (!session?.access_token) {
-    return null;
-  }
-
-  // تحقق فعلي من الخادم، وليس الاعتماد على بيانات التخزين المحلية فقط.
-  const { data: userData, error: userError } =
-    await supabaseClient.auth.getUser();
-
-  if (userError || !userData?.user) {
-    return null;
-  }
-
-  const user = userData.user;
-
-  if (!user.email_confirmed_at) {
-    throw new Error("CONFIRMED_EMAIL_REQUIRED");
-  }
-
-  return user;
-}
-
-async function loadPreference() {
-  const { data, error } = await supabaseClient.rpc(
-    "aqx_newsletter_get_preference"
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: "pkce"
+      }
+    }
   );
 
-  if (error) throw error;
+  const $ = id => document.getElementById(id);
 
-  if (!data || data.success !== true ||
-      typeof data.status !== "string") {
-    throw new Error("NEWSLETTER_READ_FAILED");
+  const loading = $("loading");
+  const content = $("content");
+  const authError = $("authError");
+  const emailBox = $("email");
+  const statusBox = $("status");
+  const statusText = $("statusText");
+  const description = $("description");
+  const descriptionTitle = $("descriptionTitle");
+  const descriptionText = $("descriptionText");
+  const button = $("toggleButton");
+  const message = $("message");
+
+  let currentUser = null;
+  let enabled = false;
+  let busy = false;
+
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = "message " + type;
   }
 
-  $("statusValue").textContent = statusLabel(data.status);
-  $("statusDetail").textContent = statusDescription(data.status);
+  function clearMessage() {
+    message.textContent = "";
+    message.className = "message";
+  }
 
-  $("enableButton").disabled = data.status === "active";
-  $("disableButton").disabled = data.status === "unsubscribed";
+  function showAuthError() {
+    loading.hidden = true;
+    content.hidden = true;
+    authError.hidden = false;
+  }
 
-  return data;
-}
+  function render() {
+    statusBox.className = enabled
+      ? "status active"
+      : "status inactive";
 
-async function updatePreference(enabled) {
-  if (busy || !currentUser) return;
+    statusText.textContent = enabled
+      ? "النشرة البريدية مفعلة"
+      : "النشرة البريدية مغلقة";
 
-  setBusy(true);
-  clearMessage();
+    description.className = enabled
+      ? "description"
+      : "description inactive";
 
-  try {
-    // لا نرسل user_id. الدالة تعتمد على auth.uid() من جلسة المستخدم.
-    const { data, error } = await supabaseClient.rpc(
-      "aqx_newsletter_set_preference",
-      { p_enabled: enabled }
+    if (enabled) {
+      descriptionTitle.textContent =
+        "ابقَ على اطلاع دائم بأخبار AQX";
+
+      descriptionText.textContent =
+        "تصلك أحدث أخبار المنظومة، والتحديثات المهمة، والإطلاقات الجديدة، والمستجدات والخدمات التي تهمك، مباشرة عبر بريدك الإلكتروني.";
+
+      button.textContent = "إغلاق النشرة البريدية";
+      button.className = "main-button close";
+    } else {
+      descriptionTitle.textContent = "";
+
+      descriptionText.textContent =
+        "النشرة البريدية مغلقة حاليًا. يمكنك إعادة تفعيلها في أي وقت لمتابعة أخبار وتحديثات AQX عبر بريدك الإلكتروني.";
+
+      button.textContent = "تفعيل النشرة البريدية";
+      button.className = "main-button";
+    }
+
+    button.disabled = busy;
+  }
+
+  async function loadPreference() {
+    const { data, error } = await supabase.rpc(
+      "aqx_newsletter_get_preference"
     );
 
     if (error) throw error;
 
-    if (!data || data.success !== true) {
-      throw new Error("NEWSLETTER_UPDATE_FAILED");
-    }
+    const result = Array.isArray(data) ? data[0] : data;
 
-    await loadPreference();
-
-    showMessage(
-      enabled
-        ? "تم تسجيل موافقتك بنجاح. أنت الآن مشترك في النشرة البريدية."
-        : "تم تسجيل اختيارك بنجاح. لن تصلك النشرة البريدية.",
-      "success"
-    );
-
-  } catch (error) {
-    console.error("AQX newsletter preference:", error);
-
-    const raw = String(error?.message || "");
-
-    if (/AUTH_REQUIRED|JWT|session/i.test(raw)) {
-      showLoginRequired("انتهت جلسة الدخول أو لم تعد صالحة. سجل الدخول مجددًا.");
-    } else if (/CONFIRMED_EMAIL_REQUIRED/i.test(raw)) {
-      showMessage("يجب تأكيد البريد الإلكتروني أولًا قبل إدارة الاشتراك.", "error");
-    } else if (/NEWSLETTER_EMAIL_ALREADY_LINKED/i.test(raw)) {
-      showMessage("هذا البريد مرتبط باشتراك آخر. يرجى مراجعة إدارة AQX.", "error");
+    if (typeof result === "boolean") {
+      enabled = result;
+    } else if (result && typeof result.enabled === "boolean") {
+      enabled = result.enabled;
+    } else if (result && typeof result.is_enabled === "boolean") {
+      enabled = result.is_enabled;
+    } else if (
+      result &&
+      typeof result.status === "string"
+    ) {
+      enabled = result.status === "active";
     } else {
-      showMessage("تعذر حفظ اختيارك. تحقق من الاتصال وحاول مرة أخرى.", "error");
-    }
-
-  } finally {
-    setBusy(false);
-  }
-}
-
-async function initialize() {
-  try {
-    if (!window.supabase ||
-        typeof window.supabase.createClient !== "function") {
-      throw new Error("SUPABASE_LIBRARY_UNAVAILABLE");
-    }
-
-    // نفس مشروع Supabase ونفس إعدادات المصادقة المستخدمة في صفحة الدخول.
-    // Supabase يستعيد الجلسة المحفوظة تلقائيًا من تخزين المتصفح.
-    supabaseClient = window.supabase.createClient(
-      CONFIG.SUPABASE_URL,
-      CONFIG.SUPABASE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          flowType: "pkce"
-        }
-      }
-    );
-
-    currentUser = await verifySession();
-
-    if (!currentUser) {
-      showLoginRequired(
-        "تعذر العثور على جلسة دخول صالحة. سجل الدخول من بوابة AQX أولًا."
+      throw new Error(
+        "تعذر قراءة حالة الاشتراك من قاعدة البيانات."
       );
-      return;
     }
 
-    await loadPreference();
-    showContent();
-    initialized = true;
+    render();
+  }
 
-    // متابعة انتهاء الجلسة أو تسجيل الخروج دون إعادة توجيه مفاجئة.
-    supabaseClient.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") {
-        currentUser = null;
-        showLoginRequired("تم تسجيل الخروج. سجل الدخول مجددًا لإدارة الاشتراك.");
+  async function initialize() {
+    try {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      const session = sessionData?.session;
+
+      if (!session) {
+        showAuthError();
+        return;
       }
-    });
 
-  } catch (error) {
-    console.error("AQX newsletter initialization:", error);
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
 
-    $("loading").classList.add("hidden");
+      if (userError || !userData?.user) {
+        showAuthError();
+        return;
+      }
 
-    const raw = String(error?.message || "");
+      currentUser = userData.user;
 
-    if (/CONFIRMED_EMAIL_REQUIRED/i.test(raw)) {
-      showLoginRequired("يجب تأكيد بريدك الإلكتروني قبل إدارة اشتراك النشرة.");
-    } else if (/SUPABASE_LIBRARY_UNAVAILABLE/i.test(raw)) {
-      showMessage("تعذر تحميل مكتبة الاتصال. حدّث الصفحة وحاول مجددًا.", "error");
-    } else {
-      showMessage("تعذر تحميل إعدادات النشرة البريدية. حاول مجددًا.", "error");
+      if (!currentUser.email_confirmed_at) {
+        showAuthError();
+        return;
+      }
+
+      emailBox.textContent = currentUser.email || "";
+      await loadPreference();
+
+      loading.hidden = true;
+      authError.hidden = true;
+      content.hidden = false;
+      button.disabled = false;
+
+    } catch (error) {
+      console.error("AQX Newsletter initialization:", error);
+
+      loading.textContent =
+        "تعذر تحميل إعدادات النشرة البريدية. يرجى إعادة تحميل الصفحة أو المحاولة لاحقًا.";
     }
   }
-}
 
-$("enableButton").addEventListener("click", () => {
-  updatePreference(true);
-});
+  async function togglePreference() {
+    if (busy || !currentUser) return;
 
-$("disableButton").addEventListener("click", () => {
-  updatePreference(false);
-});
+    busy = true;
+    clearMessage();
 
-initialize();
+    const nextValue = !enabled;
 
+    button.disabled = true;
+    button.textContent = "جارٍ حفظ التغيير...";
+
+    try {
+      const { data, error } = await supabase.rpc(
+        "aqx_newsletter_set_preference",
+        { p_enabled: nextValue }
+      );
+
+      if (error) throw error;
+
+      if (data === false) {
+        throw new Error("لم يتم تأكيد حفظ التغيير.");
+      }
+
+      // اقرأ الحالة من الخادم بعد نجاح التحديث.
+      await loadPreference();
+
+      showMessage(
+        enabled
+          ? "تم تفعيل النشرة البريدية بنجاح."
+          : "تم إغلاق النشرة البريدية بنجاح.",
+        "success"
+      );
+
+    } catch (error) {
+      console.error("AQX Newsletter update:", error);
+
+      showMessage(
+        error?.message ||
+        "تعذر حفظ التغيير. يرجى المحاولة مرة أخرى.",
+        "error"
+      );
+
+      // إعادة قراءة الحالة الحقيقية دون افتراض نجاح التغيير.
+      try {
+        await loadPreference();
+      } catch (readError) {
+        console.error(readError);
+      }
+
+    } finally {
+      busy = false;
+      render();
+    }
+  }
+
+  button.addEventListener("click", togglePreference);
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT" || !session) {
+      showAuthError();
+    }
+  });
+
+  initialize();
 })();
 </script>
 </body>
