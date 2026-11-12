@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#f7f4ee">
-  <title>إلغاء اشتراك النشرة البريدية | AQX</title>
+  <title>إلغاء الاشتراك | AQX</title>
 
   <style>
     * {
@@ -47,6 +47,7 @@
     h1 {
       margin: 25px 0 15px;
       font-size: 21px;
+      color: #187044;
     }
 
     p {
@@ -57,21 +58,18 @@
 
     .status {
       margin-top: 20px;
-      padding: 15px;
+      padding: 20px 15px;
       border-radius: 10px;
-      background: #f1f5f9;
-      font-size: 14px;
+      background: #ecfdf3;
+      color: #187044;
+      font-size: 15px;
       line-height: 2;
     }
 
-    .success {
-      color: #187044;
-      background: #ecfdf3;
-    }
-
-    .error {
-      color: #b42318;
-      background: #fef3f2;
+    .countdown {
+      margin-top: 18px;
+      color: #64748b;
+      font-size: 13px;
     }
 
     .footer {
@@ -87,10 +85,17 @@
     <div class="logo">AQX</div>
     <p>القرماني إكس</p>
 
-    <h1>إلغاء اشتراك النشرة البريدية</h1>
+    <h1>تم إلغاء اشتراكك بنجاح</h1>
 
-    <div id="status" class="status" role="status" aria-live="polite">
-      جارٍ التحقق من رابط إلغاء الاشتراك...
+    <div class="status" role="status" aria-live="polite">
+      نأسف لعدم استمرارك معنا، ونشكرك على وقتك واهتمامك.
+      <br>
+      تم تسجيل طلب إلغاء اشتراكك في النشرة البريدية.
+    </div>
+
+    <div class="countdown">
+      سيتم إغلاق الصفحة تلقائيًا خلال
+      <strong id="timer">15</strong> ثانية.
     </div>
 
     <div class="footer">
@@ -102,37 +107,18 @@
     (() => {
       "use strict";
 
-      const ACTION_URL =
-        "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-newsletter-worker/action";
+      let remaining = 15;
+      const timer = document.getElementById("timer");
 
-      const statusBox = document.getElementById("status");
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token") || "";
+      const interval = setInterval(() => {
+        remaining--;
+        timer.textContent = remaining;
 
-      function showError(message) {
-        statusBox.className = "status error";
-        statusBox.textContent = message;
-      }
-
-      function showSuccess(message) {
-        statusBox.className = "status success";
-        statusBox.textContent = message;
-      }
-
-      if (!/^[a-f0-9]{64}$/i.test(token)) {
-        showError("رابط إلغاء الاشتراك غير صالح أو غير مكتمل.");
-        return;
-      }
-
-      // تنفيذ الإلغاء من خلال نقطة المعالجة الآمنة بالخلفية.
-      const target = new URL(ACTION_URL);
-      target.searchParams.set("decision", "reject");
-      target.searchParams.set("token", token);
-
-      statusBox.textContent = "جارٍ تنفيذ طلب إلغاء الاشتراك...";
-
-      // الاحتفاظ بسلوك التحويل الأصلي حتى تتولى الخلفية تنفيذ الطلب.
-      window.location.replace(target.toString());
+        if (remaining <= 0) {
+          clearInterval(interval);
+          window.close();
+        }
+      }, 1000);
     })();
   </script>
 </body>
