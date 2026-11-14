@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071426">
-  <meta name="description" content="خدمة التحقق من إشعارات الدفع عبر منظومة AQX">
+  <meta name="description" content="خدمة الاستعلام عن عمليات الدفع لدى AQX">
   <title>التحقق من الدفع | AQX</title>
 
   <style>
@@ -13,7 +13,6 @@
       color-scheme: dark;
       --bg: #071426;
       --panel: #10213a;
-      --panel2: #142945;
       --text: #f2f6ff;
       --muted: #a9bad1;
       --accent: #38d6b0;
@@ -37,6 +36,8 @@
       color: var(--text);
       font-family: Tahoma, Arial, sans-serif;
     }
+
+    button, input { font-family: inherit; }
 
     .container {
       width: 100%;
@@ -69,7 +70,7 @@
     .subtitle {
       color: var(--muted);
       font-size: 14px;
-      line-height: 1.8;
+      line-height: 1.9;
     }
 
     .card {
@@ -121,7 +122,6 @@
       border: 0;
       border-radius: 12px;
       cursor: pointer;
-      font-family: inherit;
       font-weight: bold;
       transition: .2s;
     }
@@ -184,9 +184,17 @@
 
     .receipt h2 {
       color: var(--accent);
-      font-size: 19px;
-      margin: 0 0 17px;
+      font-size: 21px;
+      margin: 0 0 8px;
       text-align: center;
+    }
+
+    .receipt-status {
+      text-align: center;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: bold;
+      margin: 0 0 18px;
     }
 
     .receipt-row {
@@ -210,24 +218,20 @@
       text-align: left;
       overflow-wrap: anywhere;
       direction: ltr;
+      unicode-bidi: plaintext;
+      max-width: 65%;
     }
 
-    .notice {
-      margin-top: 16px;
-      color: #f2d99a;
-      background: #483b1b;
-      border: 1px solid #8a7134;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 12px;
-      line-height: 1.8;
+    .receipt-row .arabic-value {
+      direction: rtl;
+      text-align: left;
     }
 
     .actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 17px;
+      margin-top: 19px;
     }
 
     .action-btn {
@@ -236,6 +240,10 @@
       color: white;
       background: #243d5b;
       font-size: 13px;
+    }
+
+    .action-btn:hover {
+      filter: brightness(1.15);
     }
 
     .whatsapp {
@@ -261,18 +269,73 @@
       line-height: 2;
     }
 
+    @media (max-width: 380px) {
+      .card { padding: 17px; }
+      .receipt { padding: 15px; }
+      .receipt-row { font-size: 12px; }
+    }
+
     @media print {
-      body { background: white; color: black; }
-      .header, .card, .footer, .actions, .notice {
+      @page {
+        size: A4;
+        margin: 18mm;
+      }
+
+      body {
+        background: white !important;
+        color: black !important;
+        padding: 0;
+        display: block;
+      }
+
+      .container {
+        max-width: 100%;
+      }
+
+      .header,
+      .verify-form,
+      #status,
+      .footer,
+      .actions,
+      .support {
         display: none !important;
       }
+
+      .card {
+        display: block !important;
+        background: white !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+
       .receipt {
         display: block !important;
-        background: white;
-        color: black;
-        border: 1px solid #aaa;
+        margin: 0 auto;
+        max-width: 600px;
+        background: white !important;
+        color: black !important;
+        border: 1px solid #999 !important;
+        border-radius: 12px;
+        padding: 25px !important;
       }
-      .receipt-row span:first-child { color: #444; }
+
+      .receipt h2,
+      .receipt-status {
+        color: #087e64 !important;
+      }
+
+      .receipt-row {
+        border-bottom: 1px solid #ddd !important;
+      }
+
+      .receipt-row span:first-child {
+        color: #555 !important;
+      }
+
+      .receipt-row strong {
+        color: black !important;
+      }
     }
   </style>
 </head>
@@ -284,17 +347,16 @@
       <div class="logo">AQX</div>
       <h1>التحقق من الدفع</h1>
       <div class="subtitle">
-        استعلم عن إشعار التحويل أو الاستلام من خلال
-        الرسائل التي استقبلها تطبيق AQX Payment Guardian.
+        أدخل بيانات العملية للاستعلام عن حالة الدفع لدى AQX.
       </div>
     </header>
 
     <section class="card">
 
-      <form id="verifyForm" novalidate>
+      <form id="verifyForm" class="verify-form" novalidate>
 
         <div class="field">
-          <label for="phone">رقم الهاتف المطلوب البحث عنه</label>
+          <label for="phone">رقم الهاتف المحوِّل</label>
           <input
             id="phone"
             type="tel"
@@ -305,7 +367,7 @@
             required
           >
           <div class="hint">
-            أدخل الرقم بصيغة 01 أو 20 أو +20.
+            أدخل رقم الهاتف بصيغة 01 أو 20 أو +20.
           </div>
         </div>
 
@@ -327,14 +389,19 @@
 
       </form>
 
-      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <div
+        id="status"
+        class="status"
+        role="status"
+        aria-live="polite"
+      ></div>
 
       <section id="receipt" class="receipt">
-        <h2>تم العثور على رسالة دفع مطابقة</h2>
 
-        <div class="receipt-row">
-          <span>حالة البحث</span>
-          <strong>تم العثور على رسالة</strong>
+        <h2>إيصال دفع لدى AQX</h2>
+
+        <div class="receipt-status">
+          حالة البحث: تم بنجاح ✅
         </div>
 
         <div class="receipt-row">
@@ -343,7 +410,7 @@
         </div>
 
         <div class="receipt-row">
-          <span>تاريخ ووقت الرسالة</span>
+          <span>التاريخ والوقت</span>
           <strong id="transactionDate">غير متاح</strong>
         </div>
 
@@ -358,24 +425,23 @@
         </div>
 
         <div class="receipt-row">
-          <span>رقم المستلم المستخرج</span>
-          <strong id="receiverPhone">غير متاح</strong>
+          <span>رقم المستلم</span>
+          <strong id="receiverPhone">AQX</strong>
         </div>
 
         <div class="receipt-row">
-          <span>مصدر الرسالة</span>
-          <strong id="source">AQX Payment Guardian</strong>
+          <span>المصدر</span>
+          <strong id="source">—</strong>
         </div>
 
-        <div class="notice">
-          هذه النتيجة تعني العثور على إشعار SMS مطابق في قاعدة
-          بيانات التطبيق. وهي ليست اعتمادًا ماليًا نهائيًا مستقلًا
-          للعملية.
+        <div class="receipt-row">
+          <span>اسم المرسل</span>
+          <strong id="senderName" class="arabic-value">غير متاح</strong>
         </div>
 
         <div class="actions">
           <button class="action-btn" id="copyBtn" type="button">
-            نسخ بيانات الإيصال
+            نسخ الإيصال
           </button>
 
           <button class="action-btn" id="printBtn" type="button">
@@ -383,20 +449,21 @@
           </button>
 
           <button class="action-btn whatsapp" id="sendBtn" type="button">
-            إرسال بيانات الإيصال إلى دعم واتساب
+            إرسال الإيصال إلى واتساب
           </button>
         </div>
+
       </section>
 
       <button class="support" id="supportBtn" type="button">
-        التواصل مع دعم واتساب
+        التواصل مع الدعم
       </button>
 
     </section>
 
     <footer class="footer">
-      AQX Payment Guardian<br>
-      خدمة البحث في إشعارات الدفع المتزامنة
+      AQX<br>
+      خدمات الدفع والاستعلام
     </footer>
 
   </main>
@@ -408,6 +475,7 @@
       "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-payment-message-verify";
 
     const SUPPORT_NUMBER = "201027834695";
+    const REQUEST_TIMEOUT = 20000;
 
     const form = document.getElementById("verifyForm");
     const phoneInput = document.getElementById("phone");
@@ -419,6 +487,7 @@
     const supportBtn = document.getElementById("supportBtn");
 
     let currentReceiptText = "";
+    let lastSearch = null;
 
     function normalizeDigits(value) {
       return String(value)
@@ -427,16 +496,19 @@
     }
 
     function normalizePhone(value) {
-      let p = normalizeDigits(value).replace(/\D/g, "");
+      let phone = normalizeDigits(value).replace(/\D/g, "");
 
-      if (p.startsWith("0020")) p = p.slice(4);
-      else if (p.startsWith("20") && p.length >= 12) p = p.slice(2);
-
-      if (p.startsWith("0") && p.length === 11) {
-        p = p.slice(1);
+      if (phone.startsWith("0020")) {
+        phone = phone.slice(4);
+      } else if (phone.startsWith("20") && phone.length >= 12) {
+        phone = phone.slice(2);
       }
 
-      return p;
+      if (phone.startsWith("0") && phone.length === 11) {
+        phone = phone.slice(1);
+      }
+
+      return phone;
     }
 
     function parseAmount(value) {
@@ -449,22 +521,26 @@
         return null;
       }
 
-      const n = Math.round(Number(normalized) * 100);
+      const amount = Math.round(Number(normalized) * 100);
 
-      if (!Number.isSafeInteger(n) || n <= 0) {
+      if (!Number.isSafeInteger(amount) || amount <= 0) {
         return null;
       }
 
-      return n;
+      return amount;
     }
 
     function formatAmount(minor) {
-      const amount = Number(minor) / 100;
+      const amount = Number(minor);
+
+      if (!Number.isFinite(amount) || amount < 0) {
+        return "غير متاح";
+      }
 
       return new Intl.NumberFormat("ar-EG", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-      }).format(amount) + " جنيه";
+      }).format(amount / 100) + " جنيه";
     }
 
     function formatDate(value) {
@@ -472,38 +548,69 @@
 
       const date = new Date(value);
 
-      if (Number.isNaN(date.getTime())) return "غير متاح";
+      if (Number.isNaN(date.getTime())) {
+        return "غير متاح";
+      }
 
       return new Intl.DateTimeFormat("ar-EG", {
-        dateStyle: "medium",
-        timeStyle: "medium",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
         timeZone: "Africa/Cairo"
       }).format(date);
+    }
+
+    function setText(id, value, fallback = "غير متاح") {
+      const element = document.getElementById(id);
+      const text = value === null || value === undefined
+        ? ""
+        : String(value).trim();
+
+      element.textContent = text || fallback;
     }
 
     function showStatus(message, type) {
       statusBox.textContent = message;
       statusBox.className = "status " + type;
+      statusBox.style.display = "block";
+    }
+
+    function hideStatus() {
+      statusBox.textContent = "";
+      statusBox.className = "status";
+      statusBox.style.display = "none";
     }
 
     function hideResults() {
       receipt.style.display = "none";
       supportBtn.style.display = "none";
       currentReceiptText = "";
+      lastSearch = null;
+      hideStatus();
     }
 
     function getReceiptText() {
       return [
-        "إيصال العثور على رسالة دفع مطابقة - AQX",
-        "حالة البحث: تم العثور على رسالة SMS مطابقة",
-        "رقم العملية: " + document.getElementById("transactionId").textContent,
-        "التاريخ والوقت: " + document.getElementById("transactionDate").textContent,
-        "المبلغ: " + document.getElementById("transactionAmount").textContent,
-        "رقم الهاتف المدخل: " + document.getElementById("senderPhone").textContent,
-        "رقم المستلم: " + document.getElementById("receiverPhone").textContent,
-        "المصدر: " + document.getElementById("source").textContent,
-        "",
-        "تنبيه: النتيجة هي مطابقة إشعار SMS وليست تأكيدًا ماليًا نهائيًا مستقلاً."
+        "إيصال دفع لدى AQX",
+        "حالة البحث: تم بنجاح",
+        "رقم العملية: " +
+          document.getElementById("transactionId").textContent,
+        "التاريخ والوقت: " +
+          document.getElementById("transactionDate").textContent,
+        "المبلغ: " +
+          document.getElementById("transactionAmount").textContent,
+        "رقم الهاتف المدخل: " +
+          document.getElementById("senderPhone").textContent,
+        "رقم المستلم: " +
+          document.getElementById("receiverPhone").textContent,
+        "المصدر: " +
+          document.getElementById("source").textContent,
+        "اسم المرسل: " +
+          document.getElementById("senderName").textContent
       ].join("\n");
     }
 
@@ -514,58 +621,68 @@
         "?text=" +
         encodeURIComponent(message);
 
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
+      const opened = window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+      );
 
-    function showSupport() {
-      supportBtn.style.display = "block";
+      if (!opened) {
+        window.location.href = url;
+      }
     }
 
     function displayReceipt(result, enteredPhone) {
-      document.getElementById("transactionId").textContent =
-        result.transaction_id || "غير متاح في الرسالة";
+      setText("transactionId", result.transaction_id);
+      setText("transactionDate", formatDate(result.date));
+      setText("transactionAmount", formatAmount(result.amount_minor));
+      setText("senderPhone", enteredPhone);
 
-      document.getElementById("transactionDate").textContent =
-        formatDate(result.date);
+      setText(
+        "receiverPhone",
+        result.receiver_phone || "AQX"
+      );
 
-      document.getElementById("transactionAmount").textContent =
-        formatAmount(result.amount_minor);
+      setText(
+        "source",
+        result.source
+      );
 
-      document.getElementById("senderPhone").textContent =
-        enteredPhone;
+      setText(
+        "senderName",
+        result.sender_name,
+        "غير متاح"
+      );
 
-      document.getElementById("receiverPhone").textContent =
-        result.receiver_phone || "غير متاح في الرسالة";
-
-      document.getElementById("source").textContent =
-        result.source || "AQX Payment Guardian";
-
-      currentReceiptText = getReceiptText();
+      hideStatus();
 
       receipt.style.display = "block";
       supportBtn.style.display = "none";
 
-      showStatus(
-        "تم العثور على رسالة SMS مطابقة في الرسائل المتزامنة مع قاعدة البيانات.",
-        "success"
-      );
+      currentReceiptText = getReceiptText();
     }
 
     async function verifyPayment(phone, amountMinor) {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 20000);
+
+      const timeout = setTimeout(
+        () => controller.abort(),
+        REQUEST_TIMEOUT
+      );
 
       try {
         const response = await fetch(API_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Accept": "application/json"
           },
           body: JSON.stringify({
             sender_phone: phone,
             amount_minor: amountMinor
           }),
-          signal: controller.signal
+          signal: controller.signal,
+          cache: "no-store"
         });
 
         let result;
@@ -573,25 +690,27 @@
         try {
           result = await response.json();
         } catch {
-          throw new Error("استجابة غير صالحة من خدمة التحقق.");
+          throw new Error("تعذر قراءة نتيجة الاستعلام.");
         }
 
-        if (response.status === 429 ||
-            result.status === "rate_limited") {
+        if (
+          response.status === 429 ||
+          result.status === "rate_limited"
+        ) {
           throw new Error(
-            result.message || "محاولات كثيرة. حاول مرة أخرى بعد دقيقة."
+            "تم تجاوز عدد المحاولات المسموح به. يرجى المحاولة لاحقًا."
           );
         }
 
         if (response.status === 400) {
           throw new Error(
-            result.message || "راجع رقم الهاتف والمبلغ المدخل."
+            result.message || "يرجى مراجعة البيانات المدخلة."
           );
         }
 
         if (!response.ok) {
           throw new Error(
-            result.message || "تعذر تنفيذ البحث في قاعدة البيانات."
+            "تعذر إتمام الاستعلام حاليًا. يرجى المحاولة مرة أخرى."
           );
         }
 
@@ -610,24 +729,39 @@
       const normalizedPhone = normalizePhone(enteredPhone);
       const amountMinor = parseAmount(amountInput.value);
 
-      if (normalizedPhone.length < 10 ||
-          normalizedPhone.length > 12) {
-        showStatus("من فضلك أدخل رقم هاتف صحيحًا.", "error");
+      if (
+        normalizedPhone.length < 10 ||
+        normalizedPhone.length > 12
+      ) {
+        showStatus(
+          "يرجى إدخال رقم هاتف صحيح.",
+          "error"
+        );
+
         phoneInput.focus();
         return;
       }
 
       if (amountMinor === null) {
-        showStatus("من فضلك أدخل مبلغًا صحيحًا أكبر من صفر.", "error");
+        showStatus(
+          "يرجى إدخال مبلغ صحيح أكبر من صفر.",
+          "error"
+        );
+
         amountInput.focus();
         return;
       }
 
+      lastSearch = {
+        phone: enteredPhone,
+        amount: amountInput.value.trim()
+      };
+
       searchBtn.disabled = true;
-      buttonText.textContent = "جارٍ البحث في الرسائل المتزامنة...";
+      buttonText.textContent = "جارٍ الاستعلام...";
 
       showStatus(
-        "جارٍ الاستعلام عن رسائل الاستلام والتحويل المسجلة في قاعدة AQX.",
+        "جارٍ التحقق من بيانات العملية، يرجى الانتظار.",
         "info"
       );
 
@@ -643,36 +777,38 @@
 
         else if (result.status === "not_found") {
           showStatus(
-            "لا يوجد أي حالة دفع تمت من هذا الرقم تطابق المبلغ المدخل في الرسائل المتاحة.",
+            "لا يوجد أي حالة دفع تمت من هذا الرقم تطابق المبلغ المدخل لدى AQX.",
             "error"
           );
-          showSupport();
+
+          supportBtn.style.display = "block";
         }
 
         else if (result.status === "multiple_candidates") {
           showStatus(
-            "تم العثور على أكثر من رسالة مرشحة. يرجى التواصل مع الدعم لمراجعة العملية.",
+            "توجد أكثر من نتيجة محتملة لهذه العملية. يرجى التواصل مع الدعم للمراجعة.",
             "error"
           );
-          showSupport();
+
+          supportBtn.style.display = "block";
         }
 
         else {
           showStatus(
-            result.message || "لم يتمكن المحرك من تحديد نتيجة البحث.",
+            "تعذر تحديد نتيجة الاستعلام. يرجى المحاولة مرة أخرى أو التواصل مع الدعم.",
             "error"
           );
-          showSupport();
+
+          supportBtn.style.display = "block";
         }
 
       } catch (error) {
-        const message =
-          error.name === "AbortError"
-            ? "انتهت مهلة الاتصال بخدمة التحقق. حاول مرة أخرى."
-            : error.message || "تعذر الاتصال بخدمة التحقق حاليًا.";
+        const message = error.name === "AbortError"
+          ? "استغرق الاستعلام وقتًا أطول من المعتاد. يرجى المحاولة مرة أخرى."
+          : error.message || "تعذر إتمام الاستعلام حاليًا.";
 
         showStatus(message, "error");
-        showSupport();
+        supportBtn.style.display = "block";
 
       } finally {
         searchBtn.disabled = false;
@@ -680,42 +816,74 @@
       }
     });
 
-    document.getElementById("copyBtn").addEventListener("click", async () => {
-      if (!currentReceiptText) return;
+    document.getElementById("copyBtn").addEventListener(
+      "click",
+      async function() {
+        if (!currentReceiptText) return;
 
-      try {
-        await navigator.clipboard.writeText(currentReceiptText);
-        showStatus("تم نسخ بيانات الإيصال.", "success");
-      } catch {
-        showStatus(
-          "تعذر النسخ التلقائي. استخدم الطباعة أو إرسال واتساب.",
-          "error"
-        );
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(currentReceiptText);
+          } else {
+            const area = document.createElement("textarea");
+            area.value = currentReceiptText;
+            area.style.position = "fixed";
+            area.style.opacity = "0";
+
+            document.body.appendChild(area);
+            area.select();
+
+            const copied = document.execCommand("copy");
+            area.remove();
+
+            if (!copied) {
+              throw new Error("copy_failed");
+            }
+          }
+
+          showStatus("تم نسخ الإيصال بنجاح.", "success");
+
+        } catch {
+          showStatus(
+            "تعذر نسخ الإيصال. يرجى استخدام خيار الإرسال أو الطباعة.",
+            "error"
+          );
+        }
       }
-    });
+    );
 
-    document.getElementById("printBtn").addEventListener("click", () => {
-      window.print();
-    });
+    document.getElementById("printBtn").addEventListener(
+      "click",
+      function() {
+        if (!currentReceiptText) return;
+        window.print();
+      }
+    );
 
-    document.getElementById("sendBtn").addEventListener("click", () => {
-      if (!currentReceiptText) return;
-      openWhatsApp(currentReceiptText);
-    });
+    document.getElementById("sendBtn").addEventListener(
+      "click",
+      function() {
+        if (!currentReceiptText) return;
+        openWhatsApp(currentReceiptText);
+      }
+    );
 
-    supportBtn.addEventListener("click", () => {
-      const phone = phoneInput.value.trim();
-      const amount = amountInput.value.trim();
+    supportBtn.addEventListener("click", function() {
+      const search = lastSearch || {
+        phone: phoneInput.value.trim(),
+        amount: amountInput.value.trim()
+      };
 
       const message = [
-        "مرحبًا، أحتاج مراجعة عملية دفع.",
-        "رقم الهاتف: " + phone,
-        "المبلغ: " + amount + " جنيه",
-        "لم أتمكن من العثور على رسالة مطابقة."
+        "مرحبًا، أحتاج المساعدة في مراجعة عملية دفع لدى AQX.",
+        "رقم الهاتف: " + search.phone,
+        "المبلغ: " + search.amount + " جنيه",
+        "يرجى مراجعة حالة العملية."
       ].join("\n");
 
       openWhatsApp(message);
     });
+
   </script>
 </body>
 </html>
