@@ -1,1 +1,617 @@
-مرتبطة مباشرة بقاعدة 
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07152b">
+  <title>تبرع لـ AQX | ساهم في صناعة المستقبل</title>
+  <meta name="description" content="ساهم في دعم تطوير AQX ومشروعاتها ومبادراتها من خلال التبرع عبر Vodafone Cash.">
+
+  <style>
+    :root {
+      --bg: #07152b;
+      --panel: #10233d;
+      --panel2: #142b49;
+      --green: #20d6a0;
+      --text: #f4f8ff;
+      --muted: #a8b8cc;
+      --border: rgba(255,255,255,.11);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 10%, #153c58 0, transparent 35%),
+        radial-gradient(circle at 90% 80%, #123d43 0, transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+
+    .container {
+      width: min(1080px, 92%);
+      margin: auto;
+      padding: 25px 0 55px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0 30px;
+    }
+
+    .brand {
+      font-size: 29px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .brand span { color: var(--green); }
+
+    .secure {
+      color: var(--green);
+      font-size: 12px;
+      border: 1px solid rgba(32,214,160,.3);
+      padding: 9px 13px;
+      border-radius: 30px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 35px 10px 30px;
+    }
+
+    .hero-icon {
+      width: 72px;
+      height: 72px;
+      margin: auto auto 18px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg,#20d6a0,#087e77);
+      font-size: 32px;
+      box-shadow: 0 12px 40px rgba(32,214,160,.2);
+    }
+
+    h1 {
+      font-size: clamp(29px,5vw,47px);
+      margin: 0 0 15px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 2;
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr .85fr;
+      gap: 22px;
+      align-items: start;
+      margin-top: 25px;
+    }
+
+    .card {
+      background: linear-gradient(145deg,rgba(20,43,73,.96),rgba(12,30,53,.96));
+      border: 1px solid var(--border);
+      border-radius: 23px;
+      padding: 27px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.2);
+    }
+
+    .card h2 {
+      margin: 0 0 22px;
+      font-size: 21px;
+    }
+
+    .field { margin-bottom: 21px; }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    select, input {
+      width: 100%;
+      background: #091a30;
+      color: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--green);
+    }
+
+    select option {
+      background: #10233d;
+      color: white;
+    }
+
+    .amount-buttons {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 11px;
+    }
+
+    .amount-buttons button {
+      flex: 1;
+      min-width: 65px;
+      background: #1a3452;
+      color: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .amount-buttons button:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .main-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 13px;
+      padding: 16px;
+      color: #05251e;
+      font-weight: 900;
+      background: linear-gradient(100deg,#27e0a6,#83f0c9);
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .main-btn:hover { transform: translateY(-2px); }
+    .main-btn:disabled { opacity: .6; cursor: wait; }
+
+    .wallet-card {
+      background: linear-gradient(145deg,#0b332f,#102e43);
+      border: 1px solid rgba(32,214,160,.3);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .wallet-title {
+      color: var(--green);
+      font-size: 13px;
+      margin-bottom: 13px;
+    }
+
+    .wallet-number {
+      font-size: clamp(24px,4vw,34px);
+      font-weight: 900;
+      direction: ltr;
+      text-align: center;
+      letter-spacing: 1px;
+      margin: 12px 0;
+    }
+
+    .wallet-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .copy-btn {
+      width: 100%;
+      background: rgba(32,214,160,.12);
+      color: var(--green);
+      border: 1px solid rgba(32,214,160,.35);
+      border-radius: 11px;
+      padding: 13px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .status {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      margin-top: 12px;
+    }
+
+    .status.error { color: #ff9292; }
+    .status.success { color: var(--green); }
+
+    .info-item {
+      display: flex;
+      gap: 13px;
+      align-items: flex-start;
+      margin: 19px 0;
+    }
+
+    .info-icon {
+      width: 37px;
+      height: 37px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: rgba(32,214,160,.12);
+      color: var(--green);
+    }
+
+    .info-item strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .info-item p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .notice {
+      background: rgba(255,190,80,.08);
+      border: 1px solid rgba(255,190,80,.2);
+      color: #e8c98d;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.9;
+      margin-top: 20px;
+    }
+
+    footer {
+      text-align: center;
+      color: #8094ac;
+      font-size: 12px;
+      padding-top: 35px;
+    }
+
+    @media(max-width:760px) {
+      .layout { grid-template-columns: 1fr; }
+      .card { padding: 21px; }
+      header { padding-bottom: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <div class="brand">A<span>Q</span>X</div>
+    <div class="secure">● تبرع عبر Vodafone Cash</div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-icon">♥</div>
+    <h1>ساهم في صناعة المستقبل</h1>
+    <p>
+      دعمك يساعد AQX على تطوير التكنولوجيا والبنية التحتية
+      وإطلاق مشروعات ومبادرات جديدة ذات أثر مستدام.
+      كل مساهمة تصنع فرقًا.
+    </p>
+  </section>
+
+  <main class="layout">
+
+    <section class="card">
+      <h2>اختر مساهمتك</h2>
+
+      <form id="donationForm">
+
+        <div class="field">
+          <label for="category">نوع التبرع</label>
+          <select id="category" required>
+            <option value="">اختر مجال مساهمتك</option>
+            <optgroup label="التطوير والتكنولوجيا">
+              <option>دعم تطوير AQX</option>
+              <option>تطوير البرمجيات والتطبيقات</option>
+              <option>دعم الذكاء الاصطناعي</option>
+              <option>البحث والابتكار التقني</option>
+              <option>الأمن السيبراني والحماية</option>
+              <option>الخوادم والبنية التحتية</option>
+              <option>تطوير الخدمات الرقمية</option>
+            </optgroup>
+            <optgroup label="المشروعات والمبادرات">
+              <option>دعم مشروعات AQX</option>
+              <option>تمويل المشروعات الجديدة</option>
+              <option>دعم المبادرات المجتمعية</option>
+              <option>التعليم والمنح والتدريب</option>
+              <option>المحتوى والمعرفة</option>
+              <option>الدعم الإنساني والمجتمعي</option>
+            </optgroup>
+            <optgroup label="مساهمات عامة">
+              <option>دعم التشغيل والصيانة</option>
+              <option>مساهمة شهرية مستمرة</option>
+              <option>تبرع عام لـ AQX</option>
+              <option>مساهمة أخرى</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="amount">قيمة التبرع بالجنيه المصري</label>
+          <input
+            id="amount"
+            type="number"
+            min="1"
+            max="60000"
+            step="0.01"
+            value="100"
+            required
+          >
+          <div class="amount-buttons">
+            <button type="button" data-amount="50">50 ج</button>
+            <button type="button" data-amount="100">100 ج</button>
+            <button type="button" data-amount="250">250 ج</button>
+            <button type="button" data-amount="500">500 ج</button>
+            <button type="button" data-amount="1000">1000 ج</button>
+          </div>
+        </div>
+
+        <button class="main-btn" id="submitBtn" type="submit">
+          متابعة التبرع
+        </button>
+
+      </form>
+
+      <div class="status" id="status" aria-live="polite">
+        اختر مجال التبرع والمبلغ لعرض محفظة AQX المتاحة.
+      </div>
+
+      <div class="wallet-card" id="walletCard">
+        <div class="wallet-title">محفظة الاستقبال المتاحة حاليًا</div>
+        <div class="wallet-label" id="walletLabel">محفظة AQX</div>
+        <div class="wallet-number" id="walletPhone">—</div>
+        <button class="copy-btn" id="copyPhone" type="button">
+          نسخ رقم المحفظة
+        </button>
+        <button class="copy-btn" id="copyDetails" type="button">
+          نسخ تفاصيل التبرع
+        </button>
+        <div class="status success" id="refreshInfo">
+          يتم تحديث بيانات المحفظة تلقائيًا.
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>كيف تساهم؟</h2>
+
+      <div class="info-item">
+        <div class="info-icon">1</div>
+        <div>
+          <strong>اختر مجال الدعم</strong>
+          <p>حدد المشروع أو المجال الذي ترغب في دعمه.</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">2</div>
+        <div>
+          <strong>حدد مبلغ التبرع</strong>
+          <p>اختر المبلغ الذي يناسبك بالجنيه المصري.</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">3</div>
+        <div>
+          <strong>استلم رقم المحفظة</strong>
+          <p>يعرض النظام محفظة Vodafone Cash المناسبة تلقائيًا.</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">4</div>
+        <div>
+          <strong>أرسل مساهمتك</strong>
+          <p>حوّل المبلغ إلى رقم المحفظة واحتفظ برسالة التأكيد.</p>
+        </div>
+      </div>
+
+      <div class="notice">
+        يتم اختيار المحفظة وفق المحافظ المسجلة وحالتها
+        والسعة المتاحة لحدودها اليومية والشهرية.
+        عرض رقم المحفظة لا يُعد تأكيدًا لوصول التبرع.
+        يجب الاحتفاظ برسالة التحويل حتى تتم مراجعة العملية.
+      </div>
+    </aside>
+
+  </main>
+
+  <footer>
+    © AQX — جميع الحقوق محفوظة
+    <br>
+    مساهمتك تدعم التطوير والاستدامة.
+  </footer>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const API_URL =
+    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-vodafone-cash-donation-wallet";
+
+  const form = document.getElementById("donationForm");
+  const amountInput = document.getElementById("amount");
+  const categoryInput = document.getElementById("category");
+  const submitBtn = document.getElementById("submitBtn");
+  const statusBox = document.getElementById("status");
+  const walletCard = document.getElementById("walletCard");
+  const walletPhone = document.getElementById("walletPhone");
+  const walletLabel = document.getElementById("walletLabel");
+  const refreshInfo = document.getElementById("refreshInfo");
+
+  let currentWallet = null;
+  let refreshTimer = null;
+  let debounceTimer = null;
+  let requestNumber = 0;
+
+  function setStatus(message, type = "") {
+    statusBox.textContent = message;
+    statusBox.className = "status " + type;
+  }
+
+  async function loadWallet(showLoading = false) {
+    const amount = Number(amountInput.value);
+    const requestId = ++requestNumber;
+
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 60000) {
+      walletCard.style.display = "none";
+      currentWallet = null;
+      setStatus("أدخل مبلغًا صحيحًا بين 1 و60,000 جنيه.", "error");
+      return false;
+    }
+
+    if (showLoading) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "جارٍ تحديد المحفظة...";
+      setStatus("جارٍ فحص المحافظ والسعة المتاحة...");
+    }
+
+    try {
+      const response = await fetch(
+        API_URL + "?amount=" + encodeURIComponent(amount),
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: { "Accept": "application/json" }
+        }
+      );
+
+      const data = await response.json();
+
+      if (requestId !== requestNumber) return false;
+
+      if (!response.ok || !data.available || !data.wallet) {
+        currentWallet = null;
+        walletCard.style.display = "none";
+        setStatus(
+          data.error || "لا توجد محفظة متاحة لهذا المبلغ حاليًا.",
+          "error"
+        );
+        return false;
+      }
+
+      currentWallet = data.wallet;
+      walletPhone.textContent = data.wallet.phone;
+      walletLabel.textContent = data.wallet.label;
+      walletCard.style.display = "block";
+
+      refreshInfo.textContent =
+        "آخر تحديث: " +
+        new Date(data.refreshed_at).toLocaleTimeString("ar-EG");
+
+      setStatus("تم تحديد محفظة التبرع المتاحة بنجاح.", "success");
+      return true;
+
+    } catch (error) {
+      currentWallet = null;
+      walletCard.style.display = "none";
+      setStatus(
+        "تعذر الاتصال بخدمة المحافظ. حاول مرة أخرى.",
+        "error"
+      );
+      return false;
+
+    } finally {
+      if (showLoading) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "متابعة التبرع";
+      }
+    }
+  }
+
+  async function copyText(text, successMessage) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus(successMessage, "success");
+    } catch {
+      const field = document.createElement("textarea");
+      field.value = text;
+      document.body.appendChild(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      setStatus(
+        copied ? successMessage : "تعذر النسخ. انسخ الرقم يدويًا.",
+        copied ? "success" : "error"
+      );
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!categoryInput.value) {
+      setStatus("يرجى اختيار نوع التبرع أولًا.", "error");
+      return;
+    }
+
+    await loadWallet(true);
+  });
+
+  document.querySelectorAll("[data-amount]").forEach((button) => {
+    button.addEventListener("click", () => {
+      amountInput.value = button.dataset.amount;
+      loadWallet(true);
+    });
+  });
+
+  amountInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => loadWallet(false), 450);
+  });
+
+  document.getElementById("copyPhone").addEventListener("click", () => {
+    if (!currentWallet) return;
+    copyText(currentWallet.phone, "تم نسخ رقم محفظة AQX.");
+  });
+
+  document.getElementById("copyDetails").addEventListener("click", () => {
+    if (!currentWallet || !categoryInput.value) {
+      setStatus("اختر نوع التبرع أولًا.", "error");
+      return;
+    }
+
+    const details =
+      "تبرع لـ AQX\n" +
+      "نوع التبرع: " + categoryInput.value + "\n" +
+      "المبلغ: " + amountInput.value + " جنيه مصري\n" +
+      "Vodafone Cash: " + currentWallet.phone;
+
+    copyText(details, "تم نسخ تفاصيل التبرع.");
+  });
+
+  // تحديث المحفظة دوريًا حتى ينتقل العرض تلقائيًا
+  // إلى محفظة أخرى عند تغير حالة المحافظ أو سعتها.
+  refreshTimer = setInterval(() => {
+    if (!document.hidden) loadWallet(false);
+  }, 45000);
+
+  // جلب المحفظة الحالية عند فتح الصفحة.
+  loadWallet(false);
+
+})();
+</script>
+
+</body>
+</html>
