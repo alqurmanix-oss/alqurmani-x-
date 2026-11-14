@@ -1,1 +1,528 @@
-غغغغ
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#071426">
+  <title>AQX | تأكيد المدفوعات</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Tahoma, Arial, sans-serif;
+      color: #eef5ff;
+      background:
+        radial-gradient(ellipse at 15% 10%, #12345a 0, transparent 45%),
+        radial-gradient(ellipse at 90% 90%, #102d3d 0, transparent 40%),
+        #071426;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .brand-mark {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin: auto auto 12px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #18b9a5, #1675bb);
+      font-size: 25px;
+      font-weight: bold;
+      box-shadow: 0 8px 35px #12bca533;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .brand p {
+      color: #9db1c9;
+      margin-top: 9px;
+      font-size: 13px;
+    }
+
+    .panel {
+      background: rgba(15, 32, 53, .94);
+      border: 1px solid #29415c;
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 20px 70px #0006;
+    }
+
+    .panel h2 {
+      font-size: 19px;
+      margin: 0 0 8px;
+    }
+
+    .description {
+      color: #a9bad0;
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 23px;
+    }
+
+    label {
+      display: block;
+      margin: 17px 0 8px;
+      color: #dce9f8;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid #344e6b;
+      border-radius: 12px;
+      padding: 15px;
+      background: #091a2d;
+      color: white;
+      font-size: 16px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #20c6b2;
+      box-shadow: 0 0 0 3px #20c6b21c;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #71869f;
+    }
+
+    .main-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 22px;
+      color: #041b25;
+      background: linear-gradient(100deg, #22d3b5, #45a9dc);
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .main-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .status {
+      display: none;
+      margin-top: 18px;
+      border-radius: 12px;
+      padding: 14px;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .status.success {
+      display: block;
+      background: #123c35;
+      border: 1px solid #1c9d80;
+      color: #9cf4d7;
+    }
+
+    .status.warning {
+      display: block;
+      background: #42351c;
+      border: 1px solid #98752c;
+      color: #ffe2a1;
+    }
+
+    .status.error {
+      display: block;
+      background: #451f2b;
+      border: 1px solid #a3475e;
+      color: #ffc1ce;
+    }
+
+    .receipt {
+      display: none;
+      margin-top: 20px;
+      border: 1px solid #2b5268;
+      border-radius: 15px;
+      padding: 18px;
+      background: #091d2b;
+    }
+
+    .receipt h3 {
+      margin: 0 0 15px;
+      font-size: 17px;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #20384e;
+      font-size: 13px;
+    }
+
+    .receipt-row:last-child {
+      border-bottom: 0;
+    }
+
+    .receipt-row span:first-child {
+      color: #91a8c1;
+    }
+
+    .receipt-row strong {
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .action-btn {
+      border: 1px solid #36536e;
+      border-radius: 10px;
+      padding: 13px 8px;
+      background: #142c43;
+      color: #edf7ff;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .action-btn.whatsapp {
+      background: #126b4b;
+      border-color: #1c9c70;
+    }
+
+    .support {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #29415c;
+    }
+
+    .support p {
+      color: #9db1c9;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+      font-size: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #71869f;
+      font-size: 11px;
+      margin-top: 18px;
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      .brand, .description, form, .actions,
+      .support, .footer, .status { display: none !important; }
+      .panel, .receipt {
+        background: white;
+        color: black;
+        box-shadow: none;
+        border: 0;
+      }
+      .receipt { display: block !important; }
+      .receipt-row span:first-child { color: #444; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <header class="brand">
+      <div class="brand-mark">AQX</div>
+      <h1>AQX Payment Verification</h1>
+      <p>منظومة الاستعلام عن المدفوعات</p>
+    </header>
+
+    <section class="panel">
+      <h2>تأكيد عملية الدفع</h2>
+      <div class="description">
+        أدخل رقم الهاتف الذي تم التحويل منه والمبلغ.
+        سيقوم المحرك بالبحث ومطابقة بيانات العملية.
+      </div>
+
+      <form id="verifyForm" autocomplete="off">
+        <label for="senderPhone">رقم الهاتف المحوِّل منه</label>
+        <input
+          id="senderPhone"
+          type="tel"
+          inputmode="tel"
+          maxlength="15"
+          placeholder="مثال: 01012345678"
+          required
+        >
+
+        <label for="amount">المبلغ المحوَّل بالجنيه</label>
+        <input
+          id="amount"
+          type="number"
+          min="0.01"
+          max="10000000"
+          step="0.01"
+          placeholder="مثال: 150.00"
+          required
+        >
+
+        <button class="main-btn" id="verifyBtn" type="submit">
+          استعلام وتأكيد الدفع
+        </button>
+      </form>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+
+      <section id="receipt" class="receipt">
+        <h3 id="receiptTitle">تفاصيل العملية</h3>
+        <div id="receiptRows"></div>
+      </section>
+
+      <div id="actions" class="actions">
+        <button class="action-btn" id="copyBtn">نسخ الرسالة</button>
+        <button class="action-btn" id="printBtn">طباعة</button>
+        <button class="action-btn whatsapp" id="whatsappBtn"
+                style="grid-column: 1 / -1">
+          إرسال التفاصيل عبر واتساب
+        </button>
+      </div>
+
+      <section class="support">
+        <h2>الدعم الفني</h2>
+        <p>
+          لو عندك مشكلة في التحويل أو لم تظهر العملية،
+          اكتب وصف المشكلة وسيتم تجهيز رسالة دعم كاملة.
+        </p>
+
+        <label for="issue">وصف المشكلة أو رسالة الدعم</label>
+        <textarea id="issue"
+          maxlength="1000"
+          placeholder="اكتب تفاصيل المشكلة هنا..."></textarea>
+      </section>
+    </section>
+
+    <footer class="footer">
+      AQX Secure Payment Services
+    </footer>
+  </main>
+
+<script>
+"use strict";
+
+const form = document.getElementById("verifyForm");
+const verifyBtn = document.getElementById("verifyBtn");
+const statusBox = document.getElementById("status");
+const receipt = document.getElementById("receipt");
+const receiptRows = document.getElementById("receiptRows");
+const actions = document.getElementById("actions");
+
+const SUPPORT_NUMBER = "201027834695";
+let currentResult = null;
+let currentMessage = "";
+
+function normalizePhone(value) {
+  let phone = value.replace(/[^\d+]/g, "");
+
+  if (phone.startsWith("+20")) phone = "0" + phone.slice(3);
+  if (phone.startsWith("20") && phone.length === 12)
+    phone = "0" + phone.slice(2);
+
+  return phone;
+}
+
+function showStatus(message, type) {
+  statusBox.textContent = message;
+  statusBox.className = "status " + type;
+}
+
+function addRow(label, value) {
+  const row = document.createElement("div");
+  row.className = "receipt-row";
+
+  const title = document.createElement("span");
+  title.textContent = label;
+
+  const content = document.createElement("strong");
+  content.textContent = value || "غير متاح";
+
+  row.append(title, content);
+  receiptRows.appendChild(row);
+}
+
+function renderReceipt(data) {
+  receiptRows.replaceChildren();
+
+  addRow("رقم العملية", data.transaction_id);
+  addRow("تاريخ العملية", data.date);
+  addRow("وقت العملية", data.time);
+  addRow("المبلغ", data.amount);
+  addRow("رقم المحوِّل", data.sender_phone);
+  addRow("رقم المستلِم", data.receiver_phone);
+  addRow("حالة التحقق", "تم التحقق من مصدر دفع موثوق");
+
+  currentMessage =
+`إيصال تأكيد عملية دفع - AQX
+
+رقم العملية: ${data.transaction_id}
+التاريخ: ${data.date}
+الوقت: ${data.time}
+المبلغ: ${data.amount}
+رقم المحوِّل: ${data.sender_phone}
+رقم المستلِم: ${data.receiver_phone}
+الحالة: تم التحقق من مصدر دفع موثوق`;
+
+  document.getElementById("receiptTitle").textContent =
+    "تم تأكيد العملية بنجاح";
+
+  receipt.style.display = "block";
+  actions.style.display = "grid";
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  receipt.style.display = "none";
+  actions.style.display = "none";
+  currentResult = null;
+  currentMessage = "";
+
+  const phone = normalizePhone(
+    document.getElementById("senderPhone").value.trim()
+  );
+
+  const amount = Number(
+    document.getElementById("amount").value
+  );
+
+  if (!/^01[0125][0-9]{8}$/.test(phone)) {
+    showStatus("رقم الهاتف غير صحيح. أدخل رقم هاتف مصري صالح.", "error");
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 10000000) {
+    showStatus("المبلغ المدخل غير صحيح.", "error");
+    return;
+  }
+
+  verifyBtn.disabled = true;
+  verifyBtn.textContent = "جارٍ البحث والتحقق...";
+  showStatus("يتم الآن فحص بيانات العملية...", "warning");
+
+  try {
+    const response = await fetch("/api/payment/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      cache: "no-store",
+      credentials: "same-origin",
+      body: JSON.stringify({
+        sender_phone: phone,
+        amount_minor: Math.round(amount * 100)
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("verification_service_unavailable");
+    }
+
+    const result = await response.json();
+
+    if (result.status === "confirmed" &&
+        result.transaction &&
+        result.transaction.transaction_id &&
+        result.transaction.date &&
+        result.transaction.time &&
+        result.transaction.amount &&
+        result.transaction.sender_phone &&
+        result.transaction.receiver_phone) {
+
+      currentResult = result.transaction;
+      renderReceipt(currentResult);
+      showStatus("تم العثور على عملية مطابقة والتحقق منها بنجاح.", "success");
+
+    } else if (result.status === "review_required") {
+      showStatus(
+        "تم العثور على بيانات تحتاج إلى مراجعة إضافية. لم يتم تأكيد الدفع بعد.",
+        "warning"
+      );
+
+    } else {
+      showStatus(
+        "لم يتم العثور على عملية مؤكدة تطابق الرقم والمبلغ المدخلين.",
+        "error"
+      );
+    }
+
+  } catch (error) {
+    showStatus(
+      "تعذر الاتصال بخدمة التحقق حاليًا. حاول مرة أخرى أو تواصل مع الدعم.",
+      "error"
+    );
+  } finally {
+    verifyBtn.disabled = false;
+    verifyBtn.textContent = "استعلام وتأكيد الدفع";
+  }
+});
+
+document.getElementById("copyBtn").addEventListener("click", async () => {
+  if (!currentMessage) return;
+
+  try {
+    await navigator.clipboard.writeText(currentMessage);
+    showStatus("تم نسخ تفاصيل العملية.", "success");
+  } catch {
+    showStatus("تعذر النسخ من المتصفح. استخدم الطباعة أو واتساب.", "warning");
+  }
+});
+
+document.getElementById("printBtn").addEventListener("click", () => {
+  if (currentResult) window.print();
+});
+
+document.getElementById("whatsappBtn").addEventListener("click", () => {
+  const issue = document.getElementById("issue").value.trim();
+
+  const message =
+    (currentMessage || "طلب دعم بخصوص عملية دفع") +
+    "\n\nوصف المشكلة / رسالة الدعم:\n" +
+    (issue || "أرجو مراجعة طلبي والتواصل معي.");
+
+  const url = "https://wa.me/" + SUPPORT_NUMBER +
+    "?text=" + encodeURIComponent(message);
+
+  window.open(url, "_blank", "noopener,noreferrer");
+});
+</script>
+</body>
+</html>
