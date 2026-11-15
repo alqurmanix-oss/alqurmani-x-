@@ -1,616 +1,243 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#07152b">
-  <title>تبرع لـ AQX | ساهم في صناعة المستقبل</title>
-  <meta name="description" content="ساهم في دعم تطوير AQX ومشروعاتها ومبادراتها من خلال التبرع عبر Vodafone Cash.">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="ساهم في دعم وتطوير منظومة AQX عبر فودافون كاش.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://fkiokwwztbyztleeuwks.supabase.co; img-src data:; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>ساهم في دعم AQX | Vodafone Cash</title>
   <style>
-    :root {
-      --bg: #07152b;
-      --panel: #10233d;
-      --panel2: #142b49;
-      --green: #20d6a0;
-      --text: #f4f8ff;
-      --muted: #a8b8cc;
-      --border: rgba(255,255,255,.11);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 15% 10%, #153c58 0, transparent 35%),
-        radial-gradient(circle at 90% 80%, #123d43 0, transparent 30%),
-        var(--bg);
-      color: var(--text);
-      font-family: Tahoma, Arial, sans-serif;
-    }
-
-    button, input, select { font: inherit; }
-
-    .container {
-      width: min(1080px, 92%);
-      margin: auto;
-      padding: 25px 0 55px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0 30px;
-    }
-
-    .brand {
-      font-size: 29px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
-
-    .brand span { color: var(--green); }
-
-    .secure {
-      color: var(--green);
-      font-size: 12px;
-      border: 1px solid rgba(32,214,160,.3);
-      padding: 9px 13px;
-      border-radius: 30px;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 35px 10px 30px;
-    }
-
-    .hero-icon {
-      width: 72px;
-      height: 72px;
-      margin: auto auto 18px;
-      border-radius: 24px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg,#20d6a0,#087e77);
-      font-size: 32px;
-      box-shadow: 0 12px 40px rgba(32,214,160,.2);
-    }
-
-    h1 {
-      font-size: clamp(29px,5vw,47px);
-      margin: 0 0 15px;
-    }
-
-    .hero p {
-      color: var(--muted);
-      line-height: 2;
-      max-width: 650px;
-      margin: auto;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr .85fr;
-      gap: 22px;
-      align-items: start;
-      margin-top: 25px;
-    }
-
-    .card {
-      background: linear-gradient(145deg,rgba(20,43,73,.96),rgba(12,30,53,.96));
-      border: 1px solid var(--border);
-      border-radius: 23px;
-      padding: 27px;
-      box-shadow: 0 18px 55px rgba(0,0,0,.2);
-    }
-
-    .card h2 {
-      margin: 0 0 22px;
-      font-size: 21px;
-    }
-
-    .field { margin-bottom: 21px; }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    select, input {
-      width: 100%;
-      background: #091a30;
-      color: white;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 15px;
-      outline: none;
-    }
-
-    select:focus, input:focus {
-      border-color: var(--green);
-    }
-
-    select option {
-      background: #10233d;
-      color: white;
-    }
-
-    .amount-buttons {
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-      margin-top: 11px;
-    }
-
-    .amount-buttons button {
-      flex: 1;
-      min-width: 65px;
-      background: #1a3452;
-      color: white;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    .amount-buttons button:hover {
-      border-color: var(--green);
-      color: var(--green);
-    }
-
-    .main-btn {
-      width: 100%;
-      border: 0;
-      border-radius: 13px;
-      padding: 16px;
-      color: #05251e;
-      font-weight: 900;
-      background: linear-gradient(100deg,#27e0a6,#83f0c9);
-      cursor: pointer;
-      transition: .2s;
-    }
-
-    .main-btn:hover { transform: translateY(-2px); }
-    .main-btn:disabled { opacity: .6; cursor: wait; }
-
-    .wallet-card {
-      background: linear-gradient(145deg,#0b332f,#102e43);
-      border: 1px solid rgba(32,214,160,.3);
-      border-radius: 18px;
-      padding: 22px;
-      margin-top: 20px;
-      display: none;
-    }
-
-    .wallet-title {
-      color: var(--green);
-      font-size: 13px;
-      margin-bottom: 13px;
-    }
-
-    .wallet-number {
-      font-size: clamp(24px,4vw,34px);
-      font-weight: 900;
-      direction: ltr;
-      text-align: center;
-      letter-spacing: 1px;
-      margin: 12px 0;
-    }
-
-    .wallet-label {
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .copy-btn {
-      width: 100%;
-      background: rgba(32,214,160,.12);
-      color: var(--green);
-      border: 1px solid rgba(32,214,160,.35);
-      border-radius: 11px;
-      padding: 13px;
-      margin-top: 15px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .status {
-      min-height: 24px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-      margin-top: 12px;
-    }
-
-    .status.error { color: #ff9292; }
-    .status.success { color: var(--green); }
-
-    .info-item {
-      display: flex;
-      gap: 13px;
-      align-items: flex-start;
-      margin: 19px 0;
-    }
-
-    .info-icon {
-      width: 37px;
-      height: 37px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 11px;
-      background: rgba(32,214,160,.12);
-      color: var(--green);
-    }
-
-    .info-item strong {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
-
-    .info-item p {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.8;
-      margin: 0;
-    }
-
-    .notice {
-      background: rgba(255,190,80,.08);
-      border: 1px solid rgba(255,190,80,.2);
-      color: #e8c98d;
-      padding: 14px;
-      border-radius: 12px;
-      font-size: 12px;
-      line-height: 1.9;
-      margin-top: 20px;
-    }
-
-    footer {
-      text-align: center;
-      color: #8094ac;
-      font-size: 12px;
-      padding-top: 35px;
-    }
-
-    @media(max-width:760px) {
-      .layout { grid-template-columns: 1fr; }
-      .card { padding: 21px; }
-      header { padding-bottom: 12px; }
-    }
+    :root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#172438;--line:#29384d;--text:#f4f7fb;--muted:#aab8ca;--green:#22c58b;--green2:#13a875;--gold:#f2c879;--danger:#ffb4ab;--shadow:0 20px 55px rgba(0,0,0,.28)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(900px 500px at 85% -10%,#1a3b4a 0%,transparent 65%),radial-gradient(700px 450px at -10% 35%,#1d2c50 0%,transparent 60%),var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif;line-height:1.75}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit}
+    .wrap{width:min(1080px,calc(100% - 32px));margin:auto}
+    header{padding:24px 0 12px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px}
+    .logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,#2ce0a1,#087e62);display:grid;place-items:center;color:#06251c;font-size:23px;box-shadow:0 8px 25px #13a87544}
+    .brand small{display:block;color:var(--muted);font-weight:500;font-size:11px;letter-spacing:1.4px}
+    .secure{font-size:12px;color:#a9e8d2;border:1px solid #285c4b;background:#103328;padding:7px 11px;border-radius:999px;white-space:nowrap}
+    .hero{padding:54px 0 36px;text-align:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:#9be7ca;background:#12382e;border:1px solid #245b49;padding:6px 13px;border-radius:999px;font-size:12px}
+    h1{font-size:clamp(30px,5vw,52px);line-height:1.25;margin:18px auto 12px;max-width:780px}
+    .lead{color:var(--muted);font-size:clamp(14px,2vw,17px);max-width:690px;margin:0 auto}
+    .hero-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:25px}
+    .btn{border:0;border-radius:13px;padding:12px 18px;font-weight:800;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+    .btn:focus-visible,.amount:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    .primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#05251b;box-shadow:0 8px 22px #13a87535}
+    .secondary{background:#1a2a40;color:var(--text);border:1px solid var(--line)}
+    .btn:hover,.amount:hover{transform:translateY(-2px)}
+    .section{padding:28px 0}
+    .section-head{text-align:center;margin-bottom:20px}
+    .section-head h2{font-size:25px;margin:0 0 5px}
+    .section-head p{margin:0;color:var(--muted);font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .amount{background:linear-gradient(160deg,#18283d,#111b2b);border:1px solid var(--line);border-radius:20px;padding:20px 16px;text-align:center;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;transition:.2s;box-shadow:var(--shadow)}
+    .amount:hover{border-color:#329d79}
+    .emoji{font-size:30px;line-height:1.2}
+    .amount strong{font-size:24px}
+    .amount span:last-of-type{font-size:12px;color:var(--muted)}
+    .amount .btn{width:100%;margin-top:7px;padding:10px}
+    .free{margin-top:16px;background:linear-gradient(110deg,#25324a,#173b39);border:1px solid #3c665e;border-radius:20px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .free h3{margin:0 0 4px;font-size:19px}
+    .free p{margin:0;color:var(--muted);font-size:13px}
+    .details{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .card{background:rgba(18,29,46,.92);border:1px solid var(--line);border-radius:18px;padding:20px}
+    .card h3{margin:0 0 12px;font-size:17px}
+    .copyline{display:flex;align-items:center;gap:10px;background:#0c1625;border:1px solid #2b3a50;border-radius:12px;padding:10px}
+    .copyline code{direction:ltr;text-align:left;flex:1;overflow-wrap:anywhere;color:#d9f7ec;font-size:16px;font-family:Arial,sans-serif}
+    .copyline .btn{padding:8px 12px;font-size:12px;white-space:nowrap}
+    .message{color:#d7e1ed;background:#0c1625;border:1px solid #2b3a50;border-radius:12px;padding:12px;margin:0 0 10px}
+    .note{margin-top:18px;border-right:3px solid var(--gold);background:#29271f;color:#e9dfc7;border-radius:10px;padding:12px 14px;font-size:12px}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .step{background:#121d2e;border:1px solid var(--line);border-radius:15px;padding:15px}
+    .step b{display:block;color:#9be7ca;margin-bottom:4px}
+    .step p{margin:0;color:var(--muted);font-size:13px}
+    footer{border-top:1px solid #243247;margin-top:35px;padding:22px 0 35px;color:var(--muted);font-size:12px;text-align:center}
+    #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#e7fff5;color:#073326;padding:10px 16px;border-radius:12px;font-weight:700;box-shadow:var(--shadow);transition:.2s;z-index:5}
+    #toast.show{opacity:1;transform:translate(-50%,0)}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.details{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.hero{padding-top:38px}.free{align-items:stretch;flex-direction:column}.free .btn{width:100%}}
+    @media(max-width:420px){.wrap{width:min(100% - 22px,1080px)}.grid{gap:9px}.amount{padding:15px 10px;min-height:168px}.amount strong{font-size:21px}.top{align-items:flex-start}.secure{font-size:10px}.copyline{align-items:stretch;flex-direction:column}.copyline code{text-align:center}.copyline .btn{width:100%}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
-
 <body>
-<div class="container">
+<header class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo" aria-hidden="true">A</div><div>AQX<small>BUILDING WHAT'S NEXT</small></div></div>
+    <div class="secure">🔒 تجربة مساهمة آمنة</div>
+  </div>
+</header>
 
-  <header>
-    <div class="brand">A<span>Q</span>X</div>
-    <div class="secure">● تبرع عبر Vodafone Cash</div>
-  </header>
-
-  <section class="hero">
-    <div class="hero-icon">♥</div>
-    <h1>ساهم في صناعة المستقبل</h1>
-    <p>
-      دعمك يساعد AQX على تطوير التكنولوجيا والبنية التحتية
-      وإطلاق مشروعات ومبادرات جديدة ذات أثر مستدام.
-      كل مساهمة تصنع فرقًا.
-    </p>
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow">✦ كن جزءًا من التطوير</div>
+    <h1>معًا نبني مستقبل <span style="color:#65ddb0">AQX</span></h1>
+    <p class="lead">مساهمتك تساعدنا على تطوير التقنيات والخدمات الرقمية، وتعزيز البنية التحتية، وتحويل الأفكار الجديدة إلى مشروعات واقعية.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#contribute">اختر قيمة مساهمتك <span aria-hidden="true">↓</span></a>
+      <a class="btn secondary" href="#transfer">بيانات التحويل</a>
+    </div>
   </section>
 
-  <main class="layout">
+  <section class="section wrap" id="contribute">
+    <div class="section-head">
+      <h2>اختر قيمة مساهمتك</h2>
+      <p>حدد المبلغ المناسب، ثم انتقل مباشرة إلى فودافون كاش.</p>
+    </div>
+    <div class="grid" id="amountGrid">
+      <article class="amount">
+        <div class="emoji" aria-hidden="true">💚</div><strong>50 جنيه</strong><span>مساهمة داعمة</span>
+        <button class="btn primary pay" type="button" data-payment="50">انتقل إلى الدفع</button>
+      </article>
+      <article class="amount">
+        <div class="emoji" aria-hidden="true">🎁</div><strong>100 جنيه</strong><span>مساهمة مميزة</span>
+        <button class="btn primary pay" type="button" data-payment="100">انتقل إلى الدفع</button>
+      </article>
+      <article class="amount">
+        <div class="emoji" aria-hidden="true">🌟</div><strong>200 جنيه</strong><span>مساهمة قيّمة</span>
+        <button class="btn primary pay" type="button" data-payment="200">انتقل إلى الدفع</button>
+      </article>
+      <article class="amount">
+        <div class="emoji" aria-hidden="true">🏆</div><strong>500 جنيه</strong><span>مساهمة مؤثرة</span>
+        <button class="btn primary pay" type="button" data-payment="500">انتقل إلى الدفع</button>
+      </article>
+      <article class="amount">
+        <div class="emoji" aria-hidden="true">💎</div><strong>1000 جنيه</strong><span>مساهمة استثنائية</span>
+        <button class="btn primary pay" type="button" data-payment="1000">انتقل إلى الدفع</button>
+      </article>
+    </div>
+    <div class="free">
+      <div><h3>💳 مساهمة بمبلغ تختاره</h3><p>أدخل تطبيق فودافون كاش وحدد قيمة المساهمة التي تناسبك.</p></div>
+      <button class="btn primary" type="button" data-payment="custom">اختيار مبلغ المساهمة</button>
+    </div>
+  </section>
 
-    <section class="card">
-      <h2>اختر مساهمتك</h2>
-
-      <form id="donationForm">
-
-        <div class="field">
-          <label for="category">نوع التبرع</label>
-          <select id="category" required>
-            <option value="">اختر مجال مساهمتك</option>
-            <optgroup label="التطوير والتكنولوجيا">
-              <option>دعم تطوير AQX</option>
-              <option>تطوير البرمجيات والتطبيقات</option>
-              <option>دعم الذكاء الاصطناعي</option>
-              <option>البحث والابتكار التقني</option>
-              <option>الأمن السيبراني والحماية</option>
-              <option>الخوادم والبنية التحتية</option>
-              <option>تطوير الخدمات الرقمية</option>
-            </optgroup>
-            <optgroup label="المشروعات والمبادرات">
-              <option>دعم مشروعات AQX</option>
-              <option>تمويل المشروعات الجديدة</option>
-              <option>دعم المبادرات المجتمعية</option>
-              <option>التعليم والمنح والتدريب</option>
-              <option>المحتوى والمعرفة</option>
-              <option>الدعم الإنساني والمجتمعي</option>
-            </optgroup>
-            <optgroup label="مساهمات عامة">
-              <option>دعم التشغيل والصيانة</option>
-              <option>مساهمة شهرية مستمرة</option>
-              <option>تبرع عام لـ AQX</option>
-              <option>مساهمة أخرى</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="amount">قيمة التبرع بالجنيه المصري</label>
-          <input
-            id="amount"
-            type="number"
-            min="1"
-            max="60000"
-            step="0.01"
-            value="100"
-            required
-          >
-          <div class="amount-buttons">
-            <button type="button" data-amount="50">50 ج</button>
-            <button type="button" data-amount="100">100 ج</button>
-            <button type="button" data-amount="250">250 ج</button>
-            <button type="button" data-amount="500">500 ج</button>
-            <button type="button" data-amount="1000">1000 ج</button>
-          </div>
-        </div>
-
-        <button class="main-btn" id="submitBtn" type="submit">
-          متابعة التبرع
-        </button>
-
-      </form>
-
-      <div class="status" id="status" aria-live="polite">
-        اختر مجال التبرع والمبلغ لعرض محفظة AQX المتاحة.
-      </div>
-
-      <div class="wallet-card" id="walletCard">
-        <div class="wallet-title">محفظة الاستقبال المتاحة حاليًا</div>
-        <div class="wallet-label" id="walletLabel">محفظة AQX</div>
-        <div class="wallet-number" id="walletPhone">—</div>
-        <button class="copy-btn" id="copyPhone" type="button">
-          نسخ رقم المحفظة
-        </button>
-        <button class="copy-btn" id="copyDetails" type="button">
-          نسخ تفاصيل التبرع
-        </button>
-        <div class="status success" id="refreshInfo">
-          يتم تحديث بيانات المحفظة تلقائيًا.
+  <section class="section wrap" id="transfer">
+    <div class="section-head">
+      <h2>بيانات التحويل</h2>
+      <p>يمكنك نسخ رقم التحويل ورسالة المساهمة بسهولة.</p>
+    </div>
+    <div class="details">
+      <div class="card">
+        <h3>📱 رقم فودافون كاش</h3>
+        <div class="copyline">
+          <code id="walletNumber" dir="ltr">01027834695</code>
+          <button class="btn secondary copy" type="button" data-copy="wallet">نسخ الرقم</button>
         </div>
       </div>
-    </section>
-
-    <aside class="card">
-      <h2>كيف تساهم؟</h2>
-
-      <div class="info-item">
-        <div class="info-icon">1</div>
-        <div>
-          <strong>اختر مجال الدعم</strong>
-          <p>حدد المشروع أو المجال الذي ترغب في دعمه.</p>
-        </div>
+      <div class="card">
+        <h3>✉️ رسالة التحويل</h3>
+        <p class="message" id="transferMessage">مساهمة لدعم وتطوير منظومة AQX</p>
+        <button class="btn secondary copy" type="button" data-copy="message">نسخ الرسالة</button>
       </div>
+    </div>
+    <div class="note">تنبيه: الانتقال إلى تطبيق فودافون كاش لا يعني أن المساهمة وصلت أو تم تأكيدها. يُرجى إتمام التحويل داخل التطبيق والاحتفاظ بإشعار نجاح العملية. لا تشارك الرقم السري أو رمز OTP مع أي شخص.</div>
+  </section>
 
-      <div class="info-item">
-        <div class="info-icon">2</div>
-        <div>
-          <strong>حدد مبلغ التبرع</strong>
-          <p>اختر المبلغ الذي يناسبك بالجنيه المصري.</p>
-        </div>
-      </div>
+  <section class="section wrap">
+    <div class="section-head"><h2>خطوات المساهمة</h2><p>عملية واضحة وبسيطة من البداية إلى النهاية.</p></div>
+    <div class="steps">
+      <div class="step"><b>01 — اختر المبلغ</b><p>حدد إحدى القيم المتاحة أو اختر المبلغ الحر.</p></div>
+      <div class="step"><b>02 — أكمل التحويل</b><p>راجع بيانات الدفع داخل تطبيق فودافون كاش وأكد العملية بنفسك.</p></div>
+      <div class="step"><b>03 — احتفظ بالإيصال</b><p>احتفظ بإشعار نجاح التحويل للرجوع إليه عند الحاجة.</p></div>
+    </div>
+  </section>
+</main>
 
-      <div class="info-item">
-        <div class="info-icon">3</div>
-        <div>
-          <strong>استلم رقم المحفظة</strong>
-          <p>يعرض النظام محفظة Vodafone Cash المناسبة تلقائيًا.</p>
-        </div>
-      </div>
-
-      <div class="info-item">
-        <div class="info-icon">4</div>
-        <div>
-          <strong>أرسل مساهمتك</strong>
-          <p>حوّل المبلغ إلى رقم المحفظة واحتفظ برسالة التأكيد.</p>
-        </div>
-      </div>
-
-      <div class="notice">
-        يتم اختيار المحفظة وفق المحافظ المسجلة وحالتها
-        والسعة المتاحة لحدودها اليومية والشهرية.
-        عرض رقم المحفظة لا يُعد تأكيدًا لوصول التبرع.
-        يجب الاحتفاظ برسالة التحويل حتى تتم مراجعة العملية.
-      </div>
-    </aside>
-
-  </main>
-
-  <footer>
-    © AQX — جميع الحقوق محفوظة
-    <br>
-    مساهمتك تدعم التطوير والاستدامة.
-  </footer>
-
-</div>
+<footer class="wrap">AQX © <span id="year"></span> — شكرًا لمساهمتك وثقتك.</footer>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (() => {
   "use strict";
 
-  const API_URL =
-    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-vodafone-cash-donation-wallet";
-
-  const form = document.getElementById("donationForm");
-  const amountInput = document.getElementById("amount");
-  const categoryInput = document.getElementById("category");
-  const submitBtn = document.getElementById("submitBtn");
-  const statusBox = document.getElementById("status");
-  const walletCard = document.getElementById("walletCard");
-  const walletPhone = document.getElementById("walletPhone");
-  const walletLabel = document.getElementById("walletLabel");
-  const refreshInfo = document.getElementById("refreshInfo");
-
-  let currentWallet = null;
-  let refreshTimer = null;
-  let debounceTimer = null;
-  let requestNumber = 0;
-
-  function setStatus(message, type = "") {
-    statusBox.textContent = message;
-    statusBox.className = "status " + type;
-  }
-
-  async function loadWallet(showLoading = false) {
-    const amount = Number(amountInput.value);
-    const requestId = ++requestNumber;
-
-    if (!Number.isFinite(amount) || amount <= 0 || amount > 60000) {
-      walletCard.style.display = "none";
-      currentWallet = null;
-      setStatus("أدخل مبلغًا صحيحًا بين 1 و60,000 جنيه.", "error");
-      return false;
-    }
-
-    if (showLoading) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = "جارٍ تحديد المحفظة...";
-      setStatus("جارٍ فحص المحافظ والسعة المتاحة...");
-    }
-
-    try {
-      const response = await fetch(
-        API_URL + "?amount=" + encodeURIComponent(amount),
-        {
-          method: "GET",
-          cache: "no-store",
-          headers: { "Accept": "application/json" }
-        }
-      );
-
-      const data = await response.json();
-
-      if (requestId !== requestNumber) return false;
-
-      if (!response.ok || !data.available || !data.wallet) {
-        currentWallet = null;
-        walletCard.style.display = "none";
-        setStatus(
-          data.error || "لا توجد محفظة متاحة لهذا المبلغ حاليًا.",
-          "error"
-        );
-        return false;
-      }
-
-      currentWallet = data.wallet;
-      walletPhone.textContent = data.wallet.phone;
-      walletLabel.textContent = data.wallet.label;
-      walletCard.style.display = "block";
-
-      refreshInfo.textContent =
-        "آخر تحديث: " +
-        new Date(data.refreshed_at).toLocaleTimeString("ar-EG");
-
-      setStatus("تم تحديد محفظة التبرع المتاحة بنجاح.", "success");
-      return true;
-
-    } catch (error) {
-      currentWallet = null;
-      walletCard.style.display = "none";
-      setStatus(
-        "تعذر الاتصال بخدمة المحافظ. حاول مرة أخرى.",
-        "error"
-      );
-      return false;
-
-    } finally {
-      if (showLoading) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "متابعة التبرع";
-      }
-    }
-  }
-
-  async function copyText(text, successMessage) {
-    try {
-      await navigator.clipboard.writeText(text);
-      setStatus(successMessage, "success");
-    } catch {
-      const field = document.createElement("textarea");
-      field.value = text;
-      document.body.appendChild(field);
-      field.select();
-      const copied = document.execCommand("copy");
-      field.remove();
-      setStatus(
-        copied ? successMessage : "تعذر النسخ. انسخ الرقم يدويًا.",
-        copied ? "success" : "error"
-      );
-    }
-  }
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    if (!categoryInput.value) {
-      setStatus("يرجى اختيار نوع التبرع أولًا.", "error");
-      return;
-    }
-
-    await loadWallet(true);
+  // روابط الدفع الثابتة التي زوّد بها مالك الصفحة.
+  // لا تُعدّل parameters أو qrString؛ فهي بيانات دفع خاصة بكل مبلغ.
+  const PAYMENT_LINKS = Object.freeze({
+    "50": "http://vf.eg/vfcash?id=mt&qrId=IZKhDj&qrString=21c612d86801d06cb12f74095a3dbb483e95ad3159fd858ae96f2f48cac98f6f&parameters=JkenZLbVP8YxhgXcLKC5vLe/U5fJHJ1qsNbbnIVV+p/1czXLbGvFHilkbr0DtiQ9",
+    "100": "http://vf.eg/vfcash?id=mt&qrId=IZKhDj&qrString=21c612d86801d06cb12f74095a3dbb483e95ad3159fd858ae96f2f48cac98f6f&parameters=/HsFdh+PGzN/+G5L4BkSg1Bb0z1cSyc4iic+WDH7kF8rtxEFSz7g5c1WKV4sF+ek",
+    "200": "http://vf.eg/vfcash?id=mt&qrId=IZKhDj&qrString=21c612d86801d06cb12f74095a3dbb483e95ad3159fd858ae96f2f48cac98f6f&parameters=EDfjkF1wgWNgS/WilyvglkKFgKO5eiuaDnzFbp3efVXsV715E7JvAyVeL9ck77Zv",
+    "500": "http://vf.eg/vfcash?id=mt&qrId=IZKhDj&qrString=21c612d86801d06cb12f74095a3dbb483e95ad3159fd858ae96f2f48cac98f6f&parameters=S6hZGSi8CuLAASJJilyCrknSE8Ftf819nU6nkhYy6MgUmYg4200oFSHzCU8CWg+e",
+    "1000": "http://vf.eg/vfcash?id=mt&qrId=IZKhDj&qrString=21c612d86801d06cb12f74095a3dbb483e95ad3159fd858ae96f2f48cac98f6f&parameters=fQgDc2K1n1um7laqknpN5fOigFDvQi9D//OsSND4jfnOdd2uBVYhOkc1zD5nrfVv",
+    "custom": "http://vf.eg/vfcash?id=mt&qrId=IZKhDj"
   });
 
-  document.querySelectorAll("[data-amount]").forEach((button) => {
+  const ALLOWED_HOST = "vf.eg";
+  const toast = document.getElementById("toast");
+  let toastTimer;
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2300);
+  }
+
+  function openPayment(key) {
+    const raw = PAYMENT_LINKS[key];
+    if (typeof raw !== "string") {
+      showToast("رابط الدفع غير متاح حاليًا.");
+      return;
+    }
+    let parsed;
+    try { parsed = new URL(raw); } catch (_) {
+      showToast("تعذر التحقق من رابط الدفع.");
+      return;
+    }
+    if (parsed.protocol !== "http:" || parsed.hostname !== ALLOWED_HOST ||
+        parsed.pathname !== "/vfcash" || parsed.searchParams.get("id") !== "mt" ||
+        parsed.searchParams.get("qrId") !== "IZKhDj") {
+      showToast("تم إيقاف الرابط لعدم اجتياز فحص الأمان.");
+      return;
+    }
+    // الرابط ثابت ومحدد مسبقًا، ولا توجد أي بيانات مستخدم تُضاف إليه.
+    window.location.assign(parsed.href);
+  }
+
+  async function copyText(value, successMessage) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const field = document.createElement("textarea");
+        field.value = value;
+        field.setAttribute("readonly", "");
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        const copied = document.execCommand("copy");
+        field.remove();
+        if (!copied) throw new Error("copy failed");
+      }
+      showToast(successMessage);
+    } catch (_) {
+      showToast("تعذر النسخ تلقائيًا؛ يمكنك تحديد النص ونسخه يدويًا.");
+    }
+  }
+
+  document.querySelectorAll("[data-payment]").forEach(button => {
+    button.addEventListener("click", () => openPayment(button.dataset.payment));
+  });
+
+  document.querySelectorAll("[data-copy]").forEach(button => {
     button.addEventListener("click", () => {
-      amountInput.value = button.dataset.amount;
-      loadWallet(true);
+      const value = button.dataset.copy === "wallet"
+        ? document.getElementById("walletNumber").textContent.trim()
+        : document.getElementById("transferMessage").textContent.trim();
+      copyText(value, button.dataset.copy === "wallet" ? "تم نسخ رقم التحويل." : "تم نسخ رسالة التحويل.");
     });
   });
 
-  amountInput.addEventListener("input", () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => loadWallet(false), 450);
-  });
-
-  document.getElementById("copyPhone").addEventListener("click", () => {
-    if (!currentWallet) return;
-    copyText(currentWallet.phone, "تم نسخ رقم محفظة AQX.");
-  });
-
-  document.getElementById("copyDetails").addEventListener("click", () => {
-    if (!currentWallet || !categoryInput.value) {
-      setStatus("اختر نوع التبرع أولًا.", "error");
-      return;
-    }
-
-    const details =
-      "تبرع لـ AQX\n" +
-      "نوع التبرع: " + categoryInput.value + "\n" +
-      "المبلغ: " + amountInput.value + " جنيه مصري\n" +
-      "Vodafone Cash: " + currentWallet.phone;
-
-    copyText(details, "تم نسخ تفاصيل التبرع.");
-  });
-
-  // تحديث المحفظة دوريًا حتى ينتقل العرض تلقائيًا
-  // إلى محفظة أخرى عند تغير حالة المحافظ أو سعتها.
-  refreshTimer = setInterval(() => {
-    if (!document.hidden) loadWallet(false);
-  }, 45000);
-
-  // جلب المحفظة الحالية عند فتح الصفحة.
-  loadWallet(false);
-
+  document.getElementById("year").textContent = String(new Date().getFullYear());
 })();
 </script>
-
 </body>
 </html>
