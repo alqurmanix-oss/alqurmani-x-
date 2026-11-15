@@ -1,374 +1,189 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <title>متابعة التبرع | AQX</title>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 24px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #101827;
-      color: #f8fafc;
-      font-family: Tahoma, Arial, sans-serif;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 480px;
-      padding: 30px 24px;
-      border: 1px solid #29374b;
-      border-radius: 22px;
-      background: #172337;
-      box-shadow: 0 20px 60px #0005;
-    }
-
-    .brand {
-      text-align: center;
-      color: #65d6b0;
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: 3px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 23px;
-      margin: 14px 0 8px;
-    }
-
-    .intro {
-      text-align: center;
-      color: #aab8ca;
-      line-height: 1.8;
-      font-size: 14px;
-      margin-bottom: 28px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 9px;
-      font-size: 14px;
-    }
-
-    input {
-      width: 100%;
-      padding: 16px;
-      border: 1px solid #40516a;
-      border-radius: 12px;
-      background: #101827;
-      color: white;
-      font-size: 17px;
-      outline: none;
-      direction: ltr;
-      text-align: center;
-    }
-
-    input:focus { border-color: #65d6b0; }
-
-    button {
-      width: 100%;
-      margin-top: 16px;
-      padding: 16px;
-      border: 0;
-      border-radius: 12px;
-      background: #65d6b0;
-      color: #10251f;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
-
-    #result {
-      display: none;
-      margin-top: 22px;
-      padding: 18px;
-      border-radius: 14px;
-      background: #101827;
-      line-height: 2;
-      overflow-wrap: anywhere;
-    }
-
-    .status {
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .muted {
-      color: #aab8ca;
-      font-size: 13px;
-    }
-
-    .notice {
-      margin-top: 22px;
-      color: #8293a9;
-      text-align: center;
-      font-size: 12px;
-      line-height: 1.8;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>متابعة التبرع | AQX</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121e30;--line:#263951;--text:#f3f6fb;--muted:#a9b8ca;--accent:#55c4b5;--bad:#ff9c9c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#1b3047 0,#0b1220 58%);color:var(--text);font-family:Tahoma,Arial,sans-serif;display:grid;place-items:center;padding:22px}
+main{width:min(100%,520px)}
+header{text-align:center;margin-bottom:22px}
+.logo{width:62px;height:62px;margin:0 auto 13px;border-radius:19px;display:grid;place-items:center;background:linear-gradient(135deg,#65d3c1,#268a91);color:#071820;font-size:22px;font-weight:900;letter-spacing:1px}
+h1{font-size:25px;margin:0 0 8px}
+header p{color:var(--muted);font-size:14px;line-height:1.8;margin:0}
+.card{background:linear-gradient(160deg,#16263a,#101a2a);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 18px 55px #0006}
+label{display:block;font-size:14px;font-weight:700;margin-bottom:10px}
+input{width:100%;height:54px;border-radius:12px;border:1px solid #38516b;background:#0b1524;color:#fff;padding:0 15px;font:inherit;font-size:17px;direction:ltr;text-align:left;outline:none}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #55c4b522}
+.hint{color:var(--muted);font-size:12px;line-height:1.8;margin:9px 0 17px}
+button{width:100%;height:52px;border:0;border-radius:12px;background:linear-gradient(90deg,#65d3c1,#45b5b5);color:#062025;font:inherit;font-weight:900;font-size:16px;cursor:pointer}
+button:disabled{opacity:.58;cursor:wait}
+#result{display:none;margin-top:18px;border:1px solid var(--line);border-radius:14px;padding:15px;line-height:1.9;overflow-wrap:anywhere}
+#result.show{display:block}
+#result.error{border-color:#824b56;background:#351d2a;color:#ffe1e1}
+#result.info{background:#102c30;border-color:#28645f}
+.record{padding:13px 0;border-bottom:1px solid #2b4057}
+.record:last-child{border-bottom:0;padding-bottom:0}
+.record:first-child{padding-top:0}
+.record strong{color:#fff}
+.record-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;font-size:13px;color:#c8d5e4}
+.record-grid span{overflow-wrap:anywhere}
+footer{text-align:center;color:#8192a8;font-size:11px;margin-top:17px}
+@media(max-width:390px){.card{padding:18px}.record-grid{grid-template-columns:1fr}}
+</style>
 </head>
-
 <body>
-  <main class="container">
-    <div class="brand">AQX</div>
-
-    <h1>متابعة التبرع</h1>
-
-    <p class="intro">
-      تحقق من حالة مساهمتك من خلال رقم الهاتف
-      الذي تم تحويل مبلغ التبرع منه.
-    </p>
-
-    <form id="lookupForm">
-      <label for="phone">رقم الهاتف المحوَّل منه</label>
-
-      <input
-        id="phone"
-        name="phone"
-        type="tel"
-        inputmode="tel"
-        autocomplete="tel"
-        placeholder="01XXXXXXXXX"
-        maxlength="20"
-        required
-      >
-
-      <button id="submitBtn" type="submit">
-        الاستعلام عن التبرع
-      </button>
-    </form>
-
-    <section id="result" aria-live="polite"></section>
-
-    <p class="notice">
-      يتم البحث في الرسائل المتزامنة مع نظام AQX.
-      ظهور رسالة مطابقة لا يعني تأكيد وصول الأموال
-      إلا بعد اكتمال التحقق المالي.
-    </p>
-  </main>
-
+<main>
+<header>
+  <div class="logo" aria-hidden="true">AQX</div>
+  <h1>متابعة التبرع</h1>
+  <p>استعلم عن حالة التبرع باستخدام رقم الهاتف الذي تم التحويل منه.</p>
+</header>
+<section class="card">
+  <form id="lookupForm" novalidate>
+    <label for="phone">رقم الهاتف المحوَّل منه</label>
+    <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="01xxxxxxxxx" required>
+    <p class="hint">اكتب رقم الهاتف المستخدم في التحويل، ويمكن إدخاله بالأرقام العربية أو الإنجليزية.</p>
+    <button id="lookupButton" type="submit">استعلام عن التبرع</button>
+  </form>
+  <div id="result" role="status" aria-live="polite"></div>
+</section>
+<footer>© AQX — متابعة التبرعات</footer>
+</main>
 <script>
-(() => {
-  "use strict";
+"use strict";
 
-  const API_URL =
-    "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-public-donations?action=lookup";
+const API_URL = "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-public-donations?action=lookup";
+const form = document.getElementById("lookupForm");
+const phoneInput = document.getElementById("phone");
+const button = document.getElementById("lookupButton");
+const resultBox = document.getElementById("result");
 
-  const form = document.getElementById("lookupForm");
-  const phoneInput = document.getElementById("phone");
-  const button = document.getElementById("submitBtn");
-  const result = document.getElementById("result");
+function normalizePhone(value) {
+  const digits = String(value || "")
+    .replace(/[٠-٩]/g, d => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+    .replace(/[۰-۹]/g, d => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+    .replace(/\D/g, "");
+  if (digits.startsWith("0020")) return digits.slice(2);
+  if (digits.startsWith("20") && digits.length >= 12) return digits;
+  if (digits.startsWith("0")) return "20" + digits.slice(1);
+  return digits;
+}
 
-  function normalizePhone(value) {
-    // تحويل الأرقام العربية والفارسية أولاً
-    let digits = value
-      .replace(/[٠-٩]/g, d =>
-        String("٠١٢٣٤٥٦٧٨٩".indexOf(d))
-      )
-      .replace(/[۰-۹]/g, d =>
-        String("۰۱۲۳۴۵۶۷۸۹".indexOf(d))
-      );
+function showMessage(message, type = "info") {
+  resultBox.className = "show " + type;
+  resultBox.replaceChildren(document.createTextNode(message));
+}
 
-    // الاحتفاظ بالأرقام الإنجليزية فقط
-    digits = digits.replace(/[^0-9]/g, "");
+function addField(parent, label, value) {
+  const span = document.createElement("span");
+  const strong = document.createElement("strong");
+  strong.textContent = label + ": ";
+  span.append(strong, document.createTextNode(value == null || value === "" ? "—" : String(value)));
+  parent.appendChild(span);
+}
 
-    if (digits.startsWith("0020")) {
-      digits = "0" + digits.slice(4);
-    } else if (digits.startsWith("20")) {
-      digits = "0" + digits.slice(2);
-    }
+function renderRecords(records) {
+  resultBox.className = "show info";
+  resultBox.replaceChildren();
 
-    return digits;
+  if (!Array.isArray(records) || records.length === 0) {
+    resultBox.textContent = "لم نعثر على تبرع مسجل بهذا الرقم حتى الآن. راجع الرقم وحاول مرة أخرى.";
+    return;
   }
 
-  function showMessage(title, detail) {
-    result.replaceChildren();
+  const heading = document.createElement("div");
+  heading.textContent = records.length === 1 ? "نتيجة الاستعلام" : "نتائج الاستعلام: " + records.length;
+  heading.style.fontWeight = "900";
+  heading.style.marginBottom = "10px";
+  resultBox.appendChild(heading);
 
-    const heading = document.createElement("div");
-    heading.className = "status";
-    heading.textContent = title;
+  records.forEach((record, index) => {
+    const item = document.createElement("article");
+    item.className = "record";
 
-    const paragraph = document.createElement("div");
-    paragraph.textContent = detail;
+    const title = document.createElement("div");
+    title.style.fontWeight = "800";
+    title.style.marginBottom = "8px";
+    title.textContent = "عملية تبرع رقم " + (index + 1);
+    item.appendChild(title);
 
-    result.append(heading, paragraph);
-    result.style.display = "block";
-  }
-
-  function renderRecords(records) {
-    result.replaceChildren();
-
-    if (!Array.isArray(records) || records.length === 0) {
-      showMessage(
-        "لم يتم العثور على نتائج",
-        "لم نعثر على سجل مطابق لهذا الرقم ضمن البيانات المتاحة."
-      );
-      return;
-    }
-
-    const heading = document.createElement("div");
-    heading.className = "status";
-    heading.textContent = "نتائج البحث";
-
-    result.appendChild(heading);
-
-    records.forEach(record => {
-      const item = document.createElement("div");
-
-      item.style.cssText =
-        "border-top:1px solid #29374b;padding:14px 0;line-height:2";
-
-      const status = document.createElement("strong");
-
-      if (record.status === "verified") {
-        status.textContent = "تم التحقق من العملية";
-      } else if (record.status === "duplicate") {
-        status.textContent = "عملية مكررة";
-      } else {
-        status.textContent =
-          record.status_label || "العملية قيد المراجعة";
-      }
-
-      item.appendChild(status);
-
-      if (record.amount !== null && record.amount !== undefined) {
-        const amount = document.createElement("div");
-        amount.textContent =
-          "المبلغ: " +
-          String(record.amount) +
-          " " +
-          String(record.currency || "EGP");
-
-        item.appendChild(amount);
-      }
-
-      if (record.date) {
-        const dateValue = new Date(record.date);
-
-        if (!Number.isNaN(dateValue.getTime())) {
-          const date = document.createElement("div");
-          date.textContent =
-            "التاريخ: " +
-            dateValue.toLocaleString("ar-EG");
-
-          item.appendChild(date);
-        }
-      }
-
-      result.appendChild(item);
-    });
-  }
-
-  async function readResponse(response) {
-    const rawText = await response.text();
-
-    if (!rawText.trim()) {
-      throw new Error(
-        "الخادم أعاد استجابة فارغة. يرجى مراجعة خدمة الاستعلام."
-      );
-    }
-
-    try {
-      return JSON.parse(rawText);
-    } catch {
-      throw new Error(
-        "استجابة خدمة الاستعلام ليست بصيغة JSON صحيحة."
-      );
-    }
-  }
-
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    const phone = normalizePhone(phoneInput.value);
-
-    if (!/^01[0125][0-9]{8}$/.test(phone)) {
-      showMessage(
-        "رقم الهاتف غير صحيح",
-        "أدخل رقم هاتف مصري صحيحًا مكونًا من 11 رقمًا."
-      );
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = "جاري البحث...";
-    result.style.display = "none";
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ phone }),
-        signal: controller.signal
-      });
-
-      const data = await readResponse(response);
-
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          data.message ||
-          "تعذر تنفيذ الاستعلام. رمز الاستجابة: " +
-          response.status
-        );
-      }
-
-      if (data.success === false) {
-        throw new Error(
-          data.error ||
-          data.message ||
-          "لم تتمكن الخدمة من إكمال البحث."
-        );
-      }
-
-      if (!Array.isArray(data.records)) {
-        throw new Error(
-          "الخدمة استجابت، لكن تنسيق نتائج البحث غير متوقع."
-        );
-      }
-
-      renderRecords(data.records);
-
-    } catch (error) {
-      if (error.name === "AbortError") {
-        showMessage(
-          "انتهت مهلة الاتصال",
-          "لم تصل استجابة الخدمة خلال 15 ثانية. حاول مرة أخرى."
-        );
-      } else {
-        showMessage(
-          "تعذر إتمام الاستعلام",
-          error.message || "حدث خطأ غير متوقع أثناء البحث."
-        );
-      }
-    } finally {
-      clearTimeout(timeout);
-      button.disabled = false;
-      button.textContent = "الاستعلام عن التبرع";
-    }
+    const grid = document.createElement("div");
+    grid.className = "record-grid";
+    addField(grid, "الحالة", record.status_label || record.status || "قيد المراجعة");
+    addField(grid, "المبلغ", [record.amount, record.currency].filter(Boolean).join(" ") || "—");
+    addField(grid, "التاريخ والوقت", record.date || "—");
+    addField(grid, "رقم العملية", record.reference || "—");
+    item.appendChild(grid);
+    resultBox.appendChild(item);
   });
-})();
+}
+
+async function readResponse(response) {
+  const raw = await response.text();
+  if (!raw) throw new Error("وصل رد فارغ من خدمة الاستعلام.");
+  let data;
+  try { data = JSON.parse(raw); }
+  catch { throw new Error("تعذر قراءة رد خدمة الاستعلام."); }
+  if (!response.ok) {
+    throw new Error(data.message || data.error || ("تعذر تنفيذ الاستعلام (HTTP " + response.status + ")."));
+  }
+  return data;
+}
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (button.disabled) return;
+
+  const phone = normalizePhone(phoneInput.value);
+  if (!/^20\d{10}$/.test(phone)) {
+    showMessage("أدخل رقم هاتف مصريًا صحيحًا مكوّنًا من 11 رقمًا، مثل 01xxxxxxxxx.", "error");
+    phoneInput.focus();
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "جارٍ البحث...";
+  showMessage("جارٍ الاتصال بخدمة AQX والتحقق من رقم الهاتف...");
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({ phone }),
+      cache: "no-store",
+      credentials: "omit",
+      referrerPolicy: "strict-origin-when-cross-origin",
+      signal: controller.signal
+    });
+
+    const data = await readResponse(response);
+    if (data.success !== true) {
+      throw new Error(data.message || data.error || "لم تكتمل عملية الاستعلام.");
+    }
+    renderRecords(data.records);
+  } catch (error) {
+    const message = error && error.name === "AbortError"
+      ? "انتهت مهلة الاتصال بخدمة الاستعلام. حاول مرة أخرى."
+      : (error instanceof TypeError
+          ? "تعذر الاتصال من المتصفح. تحقق من اتصال الإنترنت وإعدادات الوصول للخدمة."
+          : (error.message || "حدث خطأ غير متوقع أثناء الاستعلام."));
+    showMessage(message, "error");
+  } finally {
+    clearTimeout(timeout);
+    button.disabled = false;
+    button.textContent = "استعلام عن التبرع";
+  }
+});
 </script>
 </body>
 </html>
