@@ -1,1 +1,231 @@
-يا رب
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a2c">
+  <meta name="description" content="تواصل مع فريق القرماني إكس AQX. أرسل استفسارك أو طلب الدعم وسنقوم بمراجعته.">
+  <title>تواصل معنا | القرماني إكس AQX</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#0b1220;--panel:#111d31;--panel2:#15243a;--gold:#d8b66d;
+      --gold2:#f0d99e;--text:#f5f2e9;--muted:#aab5c5;--line:rgba(216,182,109,.22);
+      --ok:#48c78e;--bad:#ff7777;--focus:rgba(216,182,109,.22);
+      font-family:Tahoma,Arial,sans-serif
+    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;color:var(--text);background:
+      radial-gradient(ellipse at 85% 5%,rgba(216,182,109,.13),transparent 34%),
+      radial-gradient(ellipse at 5% 90%,rgba(43,93,145,.18),transparent 35%),var(--bg)}
+    a{color:var(--gold2)}
+    .wrap{width:min(100% - 32px,1080px);margin:auto;padding:34px 0 28px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:13px}
+    .logo{width:54px;height:54px;border:1px solid var(--gold);border-radius:16px;display:grid;place-items:center;
+      color:var(--gold2);font-size:22px;font-weight:900;letter-spacing:1px;background:linear-gradient(145deg,#1b2a40,#0c1525);
+      box-shadow:0 8px 28px #0005}
+    .brand-name{font-weight:800;font-size:17px}.brand-sub{font-size:12px;color:var(--muted);margin-top:5px}
+    .secure{font-size:12px;color:var(--gold2);border:1px solid var(--line);border-radius:99px;padding:9px 13px;white-space:nowrap}
+    .hero{text-align:center;margin:34px auto 28px;max-width:720px}
+    .eyebrow{color:var(--gold);font-size:12px;letter-spacing:2px;font-weight:bold}
+    h1{font-size:clamp(30px,5vw,46px);margin:12px 0;color:#fff;line-height:1.3}
+    .hero p{color:var(--muted);line-height:2;margin:0;font-size:15px}
+    .layout{display:grid;grid-template-columns:.82fr 1.35fr;gap:22px;align-items:start}
+    .info,.form-card{background:linear-gradient(155deg,rgba(21,36,58,.96),rgba(14,25,42,.97));
+      border:1px solid var(--line);border-radius:22px;box-shadow:0 22px 60px #0004}
+    .info{padding:26px;position:relative;overflow:hidden}
+    .info:after{content:"AQX";position:absolute;left:-8px;bottom:-28px;font-size:92px;font-weight:900;color:#ffffff08;pointer-events:none}
+    .info h2{font-size:20px;margin:0 0 12px;color:var(--gold2)}
+    .info>p{color:var(--muted);font-size:13px;line-height:2;margin:0 0 24px}
+    .info-item{display:flex;gap:12px;align-items:flex-start;padding:15px 0;border-top:1px solid #ffffff12}
+    .ico{width:36px;height:36px;flex:0 0 36px;border-radius:11px;display:grid;place-items:center;background:#d8b66d18;color:var(--gold2);font-size:17px}
+    .info-item b{display:block;font-size:13px;margin:1px 0 6px}
+    .info-item span{display:block;color:var(--muted);font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+    .form-card{padding:clamp(20px,4vw,34px)}
+    .form-head{margin-bottom:22px}
+    .form-head h2{font-size:21px;margin:0 0 8px}
+    .form-head p{font-size:13px;color:var(--muted);margin:0;line-height:1.8}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .field{margin-bottom:16px}
+    label{display:block;font-size:13px;font-weight:bold;margin-bottom:9px;color:#e9e4d8}
+    .req{color:var(--gold)}
+    input,select,textarea{width:100%;border:1px solid #ffffff20;background:#0b1628;color:#fff;border-radius:12px;
+      padding:14px 14px;font:14px Tahoma,Arial,sans-serif;outline:none;transition:border .2s,box-shadow .2s}
+    input,select{height:49px}
+    textarea{min-height:170px;resize:vertical;line-height:1.9}
+    input::placeholder,textarea::placeholder{color:#7f8da2}
+    input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px var(--focus)}
+    select{appearance:auto}
+    .hint{font-size:11px;color:#8f9bad;margin-top:7px;line-height:1.7}
+    .submit{width:100%;border:0;border-radius:13px;padding:15px 18px;font: bold 15px Tahoma,Arial,sans-serif;
+      color:#172033;background:linear-gradient(110deg,#c9a45c,#f0d99e);cursor:pointer;transition:transform .2s,opacity .2s;
+      box-shadow:0 10px 24px #c9a45c22}
+    .submit:hover{transform:translateY(-1px)}.submit:disabled{opacity:.6;cursor:wait;transform:none}
+    .status{display:none;margin-top:17px;padding:15px;border-radius:12px;font-size:13px;line-height:1.9;overflow-wrap:anywhere}
+    .status.show{display:block}.status.success{background:#48c78e16;border:1px solid #48c78e66;color:#a8f0cc}
+    .status.error{background:#ff777714;border:1px solid #ff777766;color:#ffc0c0}
+    .reference{display:block;font-size:15px;font-weight:bold;direction:ltr;text-align:right;margin-top:6px;color:#fff}
+    .privacy{font-size:11px;color:#8794a7;line-height:1.8;text-align:center;margin:15px 0 0}
+    .hp{position:absolute!important;right:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+    footer{text-align:center;color:#77869a;font-size:11px;margin-top:26px;line-height:2}
+    @media(max-width:760px){.layout{grid-template-columns:1fr}.info{order:2}.form-card{order:1}.hero{margin:24px auto}.top{margin-bottom:18px}}
+    @media(max-width:480px){.wrap{width:min(100% - 22px,1080px);padding-top:20px}.secure{font-size:10px;padding:8px}.grid{grid-template-columns:1fr;gap:0}.form-card{padding:20px 16px}.logo{width:47px;height:47px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">AQX</div>
+        <div><div class="brand-name">القرماني إكس</div><div class="brand-sub">منظومة AQX الرقمية</div></div>
+      </div>
+      <div class="secure">✦ قناة تواصل رسمية</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">AQX CONTACT CENTER</div>
+      <h1>يسعدنا تواصلك معنا</h1>
+      <p>فريق القرماني إكس جاهز لاستقبال استفساراتك وملاحظاتك وطلبات الدعم. اكتب رسالتك وسنقوم بتسجيلها ومراجعتها.</p>
+    </section>
+
+    <section class="layout" aria-label="معلومات التواصل ونموذج الرسالة">
+      <aside class="info">
+        <h2>نحن هنا لمساعدتك</h2>
+        <p>اختر التصنيف الأقرب لموضوع رسالتك، واكتب التفاصيل بوضوح حتى يتم توجيهها للفريق المختص.</p>
+        <div class="info-item"><div class="ico">✉</div><div><b>البريد الإداري</b><span>alqurmanix@gmail.com</span></div></div>
+        <div class="info-item"><div class="ico">✓</div><div><b>رقم متابعة مستقل</b><span>ستحصل على رقم مرجعي بعد تسجيل الرسالة بنجاح.</span></div></div>
+        <div class="info-item"><div class="ico">⌁</div><div><b>حماية البيانات</b><span>لا تكتب كلمات المرور أو رموز التحقق أو بياناتك المالية السرية داخل الرسالة.</span></div></div>
+      </aside>
+
+      <section class="form-card">
+        <div class="form-head"><h2>نموذج تواصل معنا</h2><p>الحقول المميزة بنجمة مطلوبة لإرسال الرسالة.</p></div>
+        <form id="contactForm" novalidate>
+          <div class="grid">
+            <div class="field">
+              <label for="name">الاسم الكامل <span class="req">*</span></label>
+              <input id="name" name="name" type="text" autocomplete="name" minlength="2" maxlength="120" placeholder="اكتب اسمك" required>
+            </div>
+            <div class="field">
+              <label for="email">البريد الإلكتروني <span class="req">*</span></label>
+              <input id="email" name="email" type="email" autocomplete="email" maxlength="320" placeholder="name@example.com" required>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="phone">رقم الهاتف (اختياري)</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="+20 1XXXXXXXXX">
+            </div>
+            <div class="field">
+              <label for="category">نوع الرسالة <span class="req">*</span></label>
+              <select id="category" name="category" required>
+                <option value="general">استفسار عام</option>
+                <option value="technical">دعم فني</option>
+                <option value="account">الحساب والعضوية</option>
+                <option value="payments">المدفوعات والمحفظة</option>
+                <option value="complaint">شكوى</option>
+                <option value="suggestion">اقتراح</option>
+                <option value="other">موضوع آخر</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="subject">عنوان الرسالة <span class="req">*</span></label>
+            <input id="subject" name="subject" type="text" minlength="3" maxlength="180" placeholder="اكتب عنوانًا مختصرًا للرسالة" required>
+          </div>
+          <div class="field">
+            <label for="message">تفاصيل الرسالة <span class="req">*</span></label>
+            <textarea id="message" name="message" minlength="10" maxlength="10000" placeholder="اكتب رسالتك بالتفصيل..." required></textarea>
+            <div class="hint">الحد الأقصى 10,000 حرف. لا تُرفق أو تكتب أي كلمات مرور أو أكواد تحقق.</div>
+          </div>
+          <div class="hp" aria-hidden="true"><label for="website">اترك هذا الحقل فارغًا</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+          <button class="submit" id="submitButton" type="submit">إرسال الرسالة ←</button>
+          <div id="status" class="status" role="status" aria-live="polite"></div>
+          <p class="privacy">بإرسال النموذج، توافق على استخدام بياناتك بالقدر اللازم لمراجعة رسالتك والرد عليها.</p>
+        </form>
+      </section>
+    </section>
+    <footer>© <span id="year"></span> القرماني إكس AQX — جميع الحقوق محفوظة</footer>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+      const API_URL = "https://fkiokwwztbyztleeuwks.supabase.co/functions/v1/aqx-contact-center";
+      const form = document.getElementById("contactForm");
+      const button = document.getElementById("submitButton");
+      const statusBox = document.getElementById("status");
+      const year = document.getElementById("year");
+      year.textContent = String(new Date().getFullYear());
+
+      const showStatus = (type, html) => {
+        statusBox.className = "status show " + type;
+        statusBox.innerHTML = html;
+      };
+      const safeText = value => String(value).replace(/[&<>"']/g, char => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[char]));
+
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+        statusBox.className = "status";
+        statusBox.textContent = "";
+
+        if (!form.reportValidity()) return;
+        if (document.getElementById("website").value.trim()) return;
+
+        const data = {
+          name: document.getElementById("name").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          category: document.getElementById("category").value,
+          subject: document.getElementById("subject").value.trim(),
+          message: document.getElementById("message").value.trim(),
+          source_platform: "website",
+          source_path: window.location.pathname || "/"
+        };
+
+        if (data.name.length < 2 || data.subject.length < 3 || data.message.length < 10) {
+          showStatus("error", "يرجى التأكد من إدخال الاسم وعنوان الرسالة والتفاصيل بصورة صحيحة.");
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "جارٍ إرسال رسالتك...";
+        try {
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+            mode: "cors",
+            cache: "no-store",
+            credentials: "omit"
+          });
+          const result = await response.json().catch(() => ({}));
+          if (response.ok && result.success === true && result.accepted === true) {
+            const ref = safeText(result.reference_code || "تم التسجيل");
+            showStatus("success",
+              "تم استلام رسالتك بنجاح. شكرًا لتواصلك مع القرماني إكس AQX." +
+              '<span class="reference">رقم المتابعة: ' + ref + "</span>" +
+              "<br>احتفظ برقم المتابعة للرجوع إلى رسالتك.");
+            form.reset();
+          } else if (response.status === 429 || result.error === "RATE_LIMITED") {
+            showStatus("error", safeText(result.message || "وصلت إلى الحد المؤقت لإرسال الرسائل. حاول لاحقًا."));
+          } else if (response.status === 400) {
+            showStatus("error", safeText(result.message || "البيانات المدخلة غير مكتملة أو غير صحيحة. راجع الحقول وحاول مجددًا."));
+          } else {
+            showStatus("error", safeText(result.message || "تعذر تسجيل الرسالة حاليًا. حاول مرة أخرى بعد قليل."));
+          }
+        } catch (error) {
+          console.error("AQX contact form error:", error);
+          showStatus("error", "تعذر الاتصال بخدمة التواصل. تحقق من اتصال الإنترنت، وإذا استمرت المشكلة تواصل مع إدارة الموقع.");
+        } finally {
+          button.disabled = false;
+          button.textContent = "إرسال الرسالة ←";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
