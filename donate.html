@@ -1,1 +1,275 @@
-نتتتتتتت
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="ادعم AQX بتبرع آمن باستخدام USDT على شبكة TRON TRC20.">
+  <title>تبرع إلى AQX</title>
+  <style>
+    :root{
+      --bg:#0b1220;--panel:#121d2e;--panel2:#17253a;--line:#26364d;
+      --text:#f4f7fb;--muted:#aab8ca;--gold:#e7b85c;--gold2:#f5d58e;
+      --green:#36c98f;--danger:#ff8d8d;--shadow:0 18px 55px rgba(0,0,0,.28)
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;color:var(--text);
+      background:radial-gradient(ellipse at 50% -10%,#20334e 0%,var(--bg) 55%);
+      font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+      line-height:1.65
+    }
+    .wrap{width:min(100% - 32px,760px);margin:0 auto;padding:34px 0 48px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px;letter-spacing:.5px}
+    .logo{
+      width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+      color:#172033;background:linear-gradient(145deg,var(--gold2),var(--gold));
+      font-weight:950;font-size:20px;box-shadow:0 8px 25px #e7b85c33
+    }
+    .lang{border:1px solid var(--line);background:#142238;color:var(--text);padding:8px 13px;border-radius:10px;cursor:pointer}
+    .hero{text-align:center;margin:12px auto 26px}
+    .eyebrow{color:var(--gold2);font-size:13px;font-weight:800;letter-spacing:1.5px}
+    h1{font-size:clamp(29px,6vw,43px);line-height:1.2;margin:10px 0}
+    .hero p{color:var(--muted);max-width:570px;margin:0 auto}
+    .card{background:linear-gradient(160deg,#17263b,#101a2a);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,4vw,30px);box-shadow:var(--shadow)}
+    .section-title{font-size:18px;font-weight:800;margin:0 0 14px}
+    .amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .amount{
+      border:1px solid #35465e;background:#142238;color:var(--text);border-radius:13px;
+      padding:13px 8px;font-weight:800;font-size:17px;cursor:pointer;transition:.18s
+    }
+    .amount small{display:block;color:var(--muted);font-size:11px;font-weight:500}
+    .amount.active{border-color:var(--gold);background:#3a3020;box-shadow:0 0 0 2px #e7b85c22}
+    .custom{margin-top:13px}
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}
+    input{
+      width:100%;border:1px solid #35465e;border-radius:12px;background:#0e1929;color:var(--text);
+      padding:13px 14px;font-size:16px;outline:none
+    }
+    input:focus{border-color:var(--gold)}
+    .selected{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 0 22px;padding:13px 15px;background:#0e1929;border:1px solid var(--line);border-radius:13px}
+    .selected span:first-child{color:var(--muted);font-size:13px}
+    .selected strong{font-size:21px;color:var(--gold2);direction:ltr}
+    .network{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #285342;background:#102a25;border-radius:12px;margin-bottom:18px}
+    .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px #36c98f88;flex:none}
+    .network strong{color:#8ce4bd}
+    .network span{color:#b6c9c5;font-size:12px;margin-inline-start:auto}
+    .pay-grid{display:grid;grid-template-columns:1fr 190px;gap:18px;align-items:center}
+    .address-box{min-width:0}
+    .address{
+      direction:ltr;text-align:left;overflow-wrap:anywhere;background:#0b1524;border:1px solid #31435b;
+      border-radius:12px;padding:13px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+      font-size:13px;color:#e9eef7;user-select:all
+    }
+    .copy{width:100%;margin-top:10px;border:0;border-radius:12px;padding:13px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#172033;font-weight:900;font-size:15px;cursor:pointer}
+    .copy:active,.amount:active{transform:scale(.99)}
+    .qr-wrap{background:#fff;border-radius:16px;padding:12px;width:190px;min-height:190px;display:grid;place-items:center}
+    #qrcode{width:166px;height:166px;display:grid;place-items:center}
+    #qrcode img,#qrcode canvas{max-width:100%;height:auto}
+    .qr-caption{text-align:center;color:var(--muted);font-size:11px;margin-top:7px}
+    .instructions{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+    .instructions ol{margin:8px 0 0;padding-right:21px;color:var(--muted);font-size:14px}
+    .instructions li{padding:3px 0}
+    .warning{margin-top:18px;padding:13px 14px;border:1px solid #70552c;background:#2c2418;border-radius:12px;color:#f0d6a5;font-size:13px}
+    .warning strong{color:#ffe0a0}
+    .footer{text-align:center;color:#77879c;font-size:12px;margin-top:22px}
+    .toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+      background:#18392f;color:#c8f8e3;border:1px solid #2c765c;padding:10px 16px;border-radius:12px;transition:.2s;z-index:5}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    [hidden]{display:none!important}
+    @media(max-width:560px){
+      .wrap{width:min(100% - 22px,760px);padding-top:20px}
+      .top{margin-bottom:22px}
+      .brand{font-size:19px}
+      .pay-grid{grid-template-columns:1fr}
+      .qr-wrap{margin:0 auto;grid-row:1}
+      .amounts{gap:8px}
+      .amount{font-size:15px;padding:11px 5px}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand"><div class="logo">AQX</div><span data-ar="تبرعات AQX" data-en="AQX Donations">تبرعات AQX</span></div>
+      <button class="lang" id="langBtn" type="button">English</button>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">SUPPORT AQX</div>
+      <h1 data-ar="ساهم في دعم AQX" data-en="Support AQX">ساهم في دعم AQX</h1>
+      <p data-ar="مساهمتك تساعدنا على مواصلة التطوير وتوسيع أثر مشاريع AQX. اختر قيمة التبرع ثم أرسل USDT إلى عنوان الإيداع الموضح." data-en="Your contribution helps us continue developing and expanding AQX projects. Choose an amount and send USDT to the deposit address below.">
+        مساهمتك تساعدنا على مواصلة التطوير وتوسيع أثر مشاريع AQX. اختر قيمة التبرع ثم أرسل USDT إلى عنوان الإيداع الموضح.
+      </p>
+    </section>
+
+    <section class="card" aria-label="Donation details">
+      <h2 class="section-title" data-ar="اختر مبلغ التبرع" data-en="Choose donation amount">اختر مبلغ التبرع</h2>
+      <div class="amounts" id="amountOptions">
+        <button class="amount active" type="button" data-amount="5">5 USDT<small data-ar="مساهمة" data-en="Contribution">مساهمة</small></button>
+        <button class="amount" type="button" data-amount="10">10 USDT<small data-ar="مساهمة" data-en="Contribution">مساهمة</small></button>
+        <button class="amount" type="button" data-amount="25">25 USDT<small data-ar="مساهمة" data-en="Contribution">مساهمة</small></button>
+        <button class="amount" type="button" data-amount="50">50 USDT<small data-ar="مساهمة" data-en="Contribution">مساهمة</small></button>
+        <button class="amount" type="button" data-amount="100">100 USDT<small data-ar="مساهمة" data-en="Contribution">مساهمة</small></button>
+        <button class="amount" type="button" data-amount="custom" data-ar="مبلغ مخصص" data-en="Custom amount">مبلغ مخصص<small data-ar="حدد بنفسك" data-en="Set your amount">حدد بنفسك</small></button>
+      </div>
+
+      <div class="custom" id="customWrap" hidden>
+        <label for="customAmount" data-ar="أدخل مبلغ التبرع بـ USDT" data-en="Enter donation amount in USDT">أدخل مبلغ التبرع بـ USDT</label>
+        <input id="customAmount" type="number" min="1" max="1000000" step="0.01" inputmode="decimal" placeholder="مثال: 15">
+      </div>
+
+      <div class="selected">
+        <span data-ar="المبلغ المختار" data-en="Selected amount">المبلغ المختار</span>
+        <strong id="selectedAmount">5 USDT</strong>
+      </div>
+
+      <div class="network">
+        <i class="dot"></i>
+        <strong>USDT — TRC20</strong>
+        <span data-ar="شبكة TRON فقط" data-en="TRON network only">شبكة TRON فقط</span>
+      </div>
+
+      <div class="pay-grid">
+        <div class="address-box">
+          <h2 class="section-title" data-ar="عنوان التبرع" data-en="Donation address">عنوان التبرع</h2>
+          <div class="address" id="walletAddress">TPnHdpnVyYUSf3Pv253A139fb4HMFFmXx1</div>
+          <button class="copy" id="copyBtn" type="button" data-ar="نسخ عنوان المحفظة" data-en="Copy wallet address">نسخ عنوان المحفظة</button>
+          <p class="qr-caption" data-ar="انسخ العنوان أو امسح رمز QR لإرساله من محفظتك." data-en="Copy the address or scan the QR code from your wallet.">انسخ العنوان أو امسح رمز QR لإرساله من محفظتك.</p>
+        </div>
+        <div>
+          <div class="qr-wrap"><div id="qrcode" aria-label="Wallet address QR code"></div></div>
+          <div class="qr-caption" data-ar="رمز QR لعنوان المحفظة" data-en="Wallet address QR code">رمز QR لعنوان المحفظة</div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h2 class="section-title" data-ar="طريقة التبرع" data-en="How to donate">طريقة التبرع</h2>
+        <ol>
+          <li data-ar="افتح محفظتك أو حسابك الذي يحتوي على USDT." data-en="Open the wallet or account holding your USDT.">افتح محفظتك أو حسابك الذي يحتوي على USDT.</li>
+          <li data-ar="اختر إرسال USDT وحدد شبكة TRON (TRC20) تحديدًا." data-en="Choose to send USDT and select the TRON (TRC20) network exactly.">اختر إرسال USDT وحدد شبكة TRON (TRC20) تحديدًا.</li>
+          <li data-ar="انسخ عنوان التبرع أعلاه، وأدخل المبلغ الذي اخترته." data-en="Copy the donation address above and enter your selected amount.">انسخ عنوان التبرع أعلاه، وأدخل المبلغ الذي اخترته.</li>
+          <li data-ar="راجع الشبكة والعنوان والمبلغ قبل تأكيد التحويل." data-en="Verify the network, address, and amount before confirming the transfer.">راجع الشبكة والعنوان والمبلغ قبل تأكيد التحويل.</li>
+        </ol>
+      </div>
+
+      <div class="warning">
+        <strong data-ar="تنبيه مهم:" data-en="Important:">تنبيه مهم:</strong>
+        <span data-ar=" أرسل USDT عبر شبكة TRC20 (TRON) فقط. لا ترسل عبر ERC20 أو BEP20 أو أي شبكة أخرى. التحويلات الخاطئة قد تؤدي إلى فقدان الأموال. هذه الصفحة لا تتحقق من وصول التحويل ولا تصدر إيصالًا أو تأكيدًا تلقائيًا." data-en=" Send USDT via TRC20 (TRON) only. Do not use ERC20, BEP20, or any other network. Incorrect transfers may result in loss of funds. This page does not verify incoming transfers or issue an automatic receipt or confirmation.">
+          أرسل USDT عبر شبكة TRC20 (TRON) فقط. لا ترسل عبر ERC20 أو BEP20 أو أي شبكة أخرى. التحويلات الخاطئة قد تؤدي إلى فقدان الأموال. هذه الصفحة لا تتحقق من وصول التحويل ولا تصدر إيصالًا أو تأكيدًا تلقائيًا.
+        </span>
+      </div>
+    </section>
+
+    <footer class="footer">AQX · <span data-ar="شكرًا لدعمكم ومساهمتكم" data-en="Thank you for your support">شكرًا لدعمكم ومساهمتكم</span></footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" referrerpolicy="no-referrer"></script>
+  <script>
+    "use strict";
+
+    // AQX donation wallet: USDT on TRON (TRC20) only.
+    const WALLET_ADDRESS = "TPnHdpnVyYUSf3Pv253A139fb4HMFFmXx1";
+    const amountButtons = [...document.querySelectorAll(".amount")];
+    const selectedAmount = document.getElementById("selectedAmount");
+    const customWrap = document.getElementById("customWrap");
+    const customInput = document.getElementById("customAmount");
+    const toast = document.getElementById("toast");
+    let selected = "5";
+    let currentLang = "ar";
+
+    document.getElementById("walletAddress").textContent = WALLET_ADDRESS;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2300);
+    }
+
+    function getAmount() {
+      if (selected === "custom") {
+        const value = Number(customInput.value);
+        return Number.isFinite(value) && value >= 1 && value <= 1000000 ? value : null;
+      }
+      return Number(selected);
+    }
+
+    function updateAmount() {
+      const amount = getAmount();
+      selectedAmount.textContent = amount === null
+        ? (currentLang === "ar" ? "أدخل مبلغًا صحيحًا" : "Enter a valid amount")
+        : `${new Intl.NumberFormat(currentLang === "ar" ? "ar-EG" : "en-US", {maximumFractionDigits:2}).format(amount)} USDT`;
+    }
+
+    amountButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        amountButtons.forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        selected = button.dataset.amount;
+        customWrap.hidden = selected !== "custom";
+        if (selected === "custom") customInput.focus();
+        updateAmount();
+      });
+    });
+    customInput.addEventListener("input", updateAmount);
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(WALLET_ADDRESS);
+        } else {
+          const temp = document.createElement("textarea");
+          temp.value = WALLET_ADDRESS;
+          temp.style.position = "fixed";
+          temp.style.opacity = "0";
+          document.body.appendChild(temp);
+          temp.select();
+          const copied = document.execCommand("copy");
+          temp.remove();
+          if (!copied) throw new Error("copy failed");
+        }
+        showToast(currentLang === "ar" ? "تم نسخ عنوان المحفظة" : "Wallet address copied");
+      } catch (_) {
+        showToast(currentLang === "ar" ? "تعذر النسخ تلقائيًا؛ اضغط مطولًا على العنوان لنسخه" : "Copy failed; press and hold the address to copy it");
+      }
+    });
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      document.querySelectorAll("[data-ar][data-en]").forEach(element => {
+        if (element.dataset.amount === "custom") {
+          element.childNodes[0].textContent = lang === "ar" ? "مبلغ مخصص" : "Custom amount";
+        } else {
+          element.textContent = element.dataset[lang];
+        }
+      });
+      document.getElementById("langBtn").textContent = lang === "ar" ? "English" : "العربية";
+      document.getElementById("copyBtn").textContent = lang === "ar" ? "نسخ عنوان المحفظة" : "Copy wallet address";
+      updateAmount();
+    }
+
+    document.getElementById("langBtn").addEventListener("click", () => {
+      setLanguage(currentLang === "ar" ? "en" : "ar");
+    });
+
+    if (window.QRCode) {
+      new QRCode(document.getElementById("qrcode"), {
+        text: WALLET_ADDRESS,
+        width: 166,
+        height: 166,
+        colorDark: "#101827",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } else {
+      document.getElementById("qrcode").textContent = "QR unavailable";
+    }
+    updateAmount();
+  </script>
+</body>
+</html>
